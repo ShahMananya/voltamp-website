@@ -1,7 +1,7 @@
 # Project TODO
 
-- [x] Review and convert the supplied VOLTAMP master specification into the initial customer-board scope
-- [x] Apply supplied VOLTAMP logo and establish a yellow/orange/white/brown design system
+- [x] Review and convert the supplied VOLAMP master specification into the initial customer-board scope
+- [x] Apply supplied VOLAMP logo and establish a yellow/orange/white/brown design system
 - [x] Build playful, approachable, elegant mobile-first public homepage
 - [x] Add company information, leadership, certificates, awards, testimonials, resources, and contact sections
 - [x] Add product categories, catalog browsing, product detail views, and inquiry/quotation CTAs
@@ -17,3 +17,4 @@
 - [x] Add accessible responsive states, conversion tracking hooks, and production-ready error/empty/loading states
 - [x] Add or update Vitest coverage for the implemented customer and authentication behavior
 - [x] Verify desktop and mobile rendering, then save the final project checkpoint
+- [x] Correct the brand spelling everywhere to VOLAMP across all website, metadata, AI, and project-facing content
