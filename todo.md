@@ -29,3 +29,4 @@
 - [x] Capture fresh post-restart browser/dev-server evidence that the HTML parse warnings are gone, then repeat route checks
 - [x] Refactor the customer portal layout more substantially around shared industrial section structure, panel hierarchy, typography, and spacing
 - [x] Add a project-record note pointing to the clean post-restart log verification (`redesign-validation.md`)
+- [x] Rename the Volamp AI assistant from Volt to Vola across frontend copy, backend guidance, labels, and project-facing content
