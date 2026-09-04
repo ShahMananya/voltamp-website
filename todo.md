@@ -31,3 +31,7 @@
 - [x] Add a project-record note pointing to the clean post-restart log verification (`redesign-validation.md`)
 - [x] Rename the Volamp AI assistant from Volt to Vola across frontend copy, backend guidance, labels, and project-facing content
 - [x] Redesign customer portal ideation around active projects, next actions, quotation progress, delivery visibility, documents, and human support instead of a generic record dashboard
+- [x] Adapt the Volamp homepage into a clean B2B electrical marketplace inspired by the supplied reference: utility header, global search, campaign panels, category tiles, quick actions, account access, and persistent enquiry support
+- [x] Add actual SKU fields and SKU-aware matching to marketplace product search, or remove SKU wording from the search interface
+- [x] Implement a truthful upload-PO workflow with file selection, validation, and user feedback, or relabel the action until uploads are connected
+- [x] Re-run marketplace desktop/mobile verification after correcting search and quick-action behavior
