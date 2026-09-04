@@ -5,11 +5,11 @@
 - [x] Build playful, approachable, elegant mobile-first public homepage
 - [x] Add company information, leadership, certificates, awards, testimonials, resources, and contact sections
 - [x] Add product categories, catalog browsing, product detail views, and inquiry/quotation CTAs
-- [ ] Add product comparison with dynamic quantity, discount, and calculated total presentation
+- [x] Add product comparison with dynamic quantity, discount, and calculated total presentation
 - [x] Add price calculator with configurable formula foundation and future GST/freight/customer-pricing extension points
 - [x] Add customer registration and login with profile, company, address, and delivery-information management
-- [ ] Add customer portal with isolated quotation statuses, order history/tracking, invoices/documents, and support-ticket entry points
-- [ ] Add secure backend data boundaries so customers can access only their own records
+- [x] Add customer portal with isolated quotation statuses, order history/tracking, invoices/documents, and support-ticket entry points
+- [x] Add secure backend data boundaries so customers can access only their own records
 - [x] Add employee signup and login only; defer employee dashboards, tasks, CAPTCHA, HR, and executive tools
 - [x] Add friendly AI assistant for approved product, quotation, and company questions
 - [x] Add human-support escalation entry point from the AI assistant
