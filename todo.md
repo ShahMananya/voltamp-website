@@ -39,3 +39,12 @@
 - [x] Make the portal’s shared-auth behavior explicit: customer login and first-time registration use the same secure sign-in provider, while employee entry records a distinct employee access intent
 - [x] Re-verify the clarified portal access entry on desktop and mobile
 - [x] Re-verify the clarified portal access entry on desktop after the shared-auth clarification and capture fresh evidence alongside the mobile check
+- [x] Add a persistent dark/light theme switcher across the Volamp marketplace, portal, navigation, dialogs, and forms with accessible contrast
+- [x] Verify both light and dark themes visually on the homepage and portal, including toggled dark-mode screenshots on desktop and mobile
+- [x] Verify dark-mode states for account/product dialogs, AI drawer, inquiry form, and portal forms and fix any contrast issues
+- [x] Add focused theme persistence coverage or a validation note proving dark-mode class application across routes
+- [x] Open and verify account modal, product modal, AI drawer, inquiry form, and portal forms in dark mode on desktop and mobile
+- [x] Add explicit dark-mode styles for the AI drawer and remaining interactive surfaces if needed, then update theme validation evidence
+- [x] Open and capture desktop/mobile dark-mode evidence for the homepage inquiry form specifically
+- [x] Open and capture desktop/mobile dark-mode evidence for authenticated portal profile and support forms
+- [x] Update theme-validation.md with explicit inquiry and portal form evidence

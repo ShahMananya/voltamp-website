@@ -1,0 +1,5 @@
+# Volamp theme validation
+
+The Volamp app now uses the scaffolded switchable ThemeProvider with localStorage persistence. The reusable ThemeToggle appears in the marketplace header/mobile navigation and customer portal top bar. A `?theme=light` or `?theme=dark` query override is available for deterministic QA previews; ordinary users use the toggle and persisted preference.
+
+Validated surfaces include the marketplace homepage, customer portal, responsive navigation, category/search cards, estimate panel, account modal, product detail modal, Vola AI drawer, inquiry panel, and portal panels/forms. Light and dark route previews plus dark desktop and mobile interactive-surface previews were captured. Full-page dark desktop and mobile captures show the homepage inquiry form and authenticated portal profile/support forms, including readable labels, light form controls, and orange action buttons. The account and product modals remain readable against the dark backdrop, the Vola drawer has explicit dark styling, and form controls use a light input surface for contrast. TypeScript checks and the full Vitest suite pass: 3 files and 4 tests.
