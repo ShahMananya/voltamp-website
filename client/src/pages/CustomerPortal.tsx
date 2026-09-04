@@ -13,6 +13,8 @@ type ProfileForm = { fullName: string; mobile: string; companyName: string; gsti
 const emptyProfile: ProfileForm = { fullName: "", mobile: "", companyName: "", gstin: "", address: "", state: "", city: "", pinCode: "", customerType: "business", preferredCommunication: "email", deliveryInstructions: "" };
 const statusLabels: Record<string, string> = { requested: "Requested", under_review: "Under review", quoted: "Quoted", approved: "Approved", closed: "Closed", received: "Order received", confirmed: "Confirmed", processing: "Processing", packed: "Packed", dispatched: "Dispatched", in_transit: "In transit", delivered: "Delivered", completed: "Completed" };
 
+type AccessIntent = "customer-login" | "customer-signup" | "employee";
+
 function SectionHeading({ eyebrow, title, icon }: { eyebrow: string; title: string; icon: ReactNode }) { return <div className="portal-section-heading"><div><p className="eyebrow">{eyebrow}</p><h2>{title}</h2></div><span className="portal-heading-icon">{icon}</span></div>; }
 function PortalPanel({ children, className = "" }: { children: ReactNode; className?: string }) { return <section className={`portal-panel industrial-panel ${className}`}>{children}</section>; }
 function BadgeStatus({ label }: { label: string }) { return <span className="status-badge">{label}</span>; }
@@ -26,6 +28,7 @@ export default function CustomerPortal() {
   const portal = trpc.customer.portal.useQuery(undefined, { enabled: Boolean(user) });
   const saveProfile = trpc.customer.saveProfile.useMutation({ onSuccess: () => { toast.success("Profile saved"); portal.refetch(); }, onError: (error) => toast.error(error.message) });
   const openTicket = trpc.customer.openSupportTicket.useMutation({ onSuccess: () => { toast.success("Support ticket opened"); setSupportSubject(""); setSupportMessage(""); portal.refetch(); }, onError: (error) => toast.error(error.message) });
+  const beginAccess = (intent: AccessIntent) => { window.localStorage.setItem("volamp-auth-intent", intent); startLogin(); };
   const profile = portal.data?.profile;
   const quotations = portal.data?.quotations ?? [];
   const orders = portal.data?.orders ?? [];
@@ -43,7 +46,7 @@ export default function CustomerPortal() {
   }, [portal.data?.profile]);
 
   if (loading) return <div className="portal-shell industrial-portal portal-loading"><Loader2 className="animate-spin text-orange" /></div>;
-  if (!user) return <div className="portal-shell industrial-portal"><div className="portal-login"><Link href="/" className="back-link"><ArrowLeft className="size-4" /> Back to VOLAMP</Link><div className="portal-login-layout"><div><div className="portal-logo"><UserRound /></div><p className="eyebrow">Customer operations / private access</p><h1>A clearer workspace<br /><span>for every project.</span></h1><p>Sign in to access your own quotations, orders, documents, support tickets, and delivery details.</p><Button onClick={startLogin} className="mt-7 primary-cta">Sign in or create account <ArrowRight className="ml-2 size-4" /></Button></div><div className="portal-login-note"><span>VOLAMP / CUSTOMER SYSTEM</span><strong>Your information stays tied to your account.</strong><p>Private records, human follow-up and a clearer path from requirement to delivery.</p></div></div></div></div>;
+  if (!user) return <div className="portal-shell industrial-portal"><div className="portal-login"><Link href="/" className="back-link"><ArrowLeft className="size-4" /> Back to VOLAMP</Link><div className="portal-login-layout"><div><div className="portal-logo"><UserRound /></div><p className="eyebrow">Customer operations / private access</p><h1>A clearer workspace<br /><span>for every project.</span></h1><p>Sign in to access your own quotations, orders, documents, support tickets, and delivery details.</p><div className="portal-access-actions"><Button onClick={() => beginAccess("customer-login")} className="primary-cta">Customer login <ArrowRight className="ml-2 size-4" /></Button><Button onClick={() => beginAccess("customer-signup")} variant="outline" className="secondary-portal-cta">Create customer account <ArrowRight className="ml-2 size-4" /></Button></div></div><div className="portal-login-note"><span>VOLAMP / CUSTOMER SYSTEM</span><strong>Your information stays tied to your account.</strong><p>Customer login and first-time registration use one secure sign-in flow. Employee access is recorded separately for the future internal workspace.</p><div className="employee-entry"><div><span>EMPLOYEE ACCESS</span><strong>For the Volamp team</strong><small>Employee login and registration only. Internal dashboards will be added later.</small></div><Button onClick={() => beginAccess("employee")} variant="outline" className="employee-portal-cta">Employee login / signup <ArrowRight className="ml-2 size-4" /></Button></div></div></div></div></div>;
 
   const update = (key: keyof ProfileForm, value: string) => setProfileForm((current) => ({ ...current, [key]: value }));
   const profileReady = Boolean(profileForm.fullName.trim());

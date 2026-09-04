@@ -35,3 +35,7 @@
 - [x] Add actual SKU fields and SKU-aware matching to marketplace product search, or remove SKU wording from the search interface
 - [x] Implement a truthful upload-PO workflow with file selection, validation, and user feedback, or relabel the action until uploads are connected
 - [x] Re-run marketplace desktop/mobile verification after correcting search and quick-action behavior
+- [x] Redesign the portal entry with explicit customer login/sign-up access and a separate employee access section, while keeping employee dashboards deferred
+- [x] Make the portal’s shared-auth behavior explicit: customer login and first-time registration use the same secure sign-in provider, while employee entry records a distinct employee access intent
+- [x] Re-verify the clarified portal access entry on desktop and mobile
+- [x] Re-verify the clarified portal access entry on desktop after the shared-auth clarification and capture fresh evidence alongside the mobile check
