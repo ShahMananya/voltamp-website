@@ -18,3 +18,14 @@
 - [x] Add or update Vitest coverage for the implemented customer and authentication behavior
 - [x] Verify desktop and mobile rendering, then save the final project checkpoint
 - [x] Correct the brand spelling everywhere to VOLAMP across all website, metadata, AI, and project-facing content
+- [x] Remake the Volamp website visual identity and customer-facing homepage to feel like a credible electrical/electronics company, using the supplied Volamp history document and removing the food-brand visual language
+- [x] Replace the gaudy yellow/orange/brown color treatment with a restrained premium electrical-industry palette and remove food-like visual cues
+- [x] Rebuild the homepage structure and art direction so it clearly reads as an electrical/electronics company rather than the prior playful food-like concept
+- [x] Add accurate history-driven company story blocks covering reported heritage, 2012 revival, 2021 incorporation, export visibility, and supply-partner positioning
+- [x] Replace legacy playful visual motifs and warm-theme component styling across homepage and portal with one consistent industrial design language
+- [x] Re-verify and refactor the customer portal so its structure and styling fully match the new industrial Volamp design language
+- [x] Resolve remaining HTML parse warnings and run final desktop/mobile checks on both homepage and portal
+- [x] Refactor the customer portal structure explicitly around the industrial homepage system and re-verify it with updated screenshots
+- [x] Capture fresh post-restart browser/dev-server evidence that the HTML parse warnings are gone, then repeat route checks
+- [x] Refactor the customer portal layout more substantially around shared industrial section structure, panel hierarchy, typography, and spacing
+- [x] Add a project-record note pointing to the clean post-restart log verification (`redesign-validation.md`)
