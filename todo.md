@@ -48,3 +48,13 @@
 - [x] Open and capture desktop/mobile dark-mode evidence for the homepage inquiry form specifically
 - [x] Open and capture desktop/mobile dark-mode evidence for authenticated portal profile and support forms
 - [x] Update theme-validation.md with explicit inquiry and portal form evidence
+- [ ] Make Google Sheets the source of truth for the approximately 200 Wire & Cables and Switchgear products shown in the product section
+- [ ] Build product-aware Vola retrieval so answers are grounded in approved Sheet product fields and custom product questions
+- [ ] Add validation, freshness, and safe-answer boundaries so Vola does not invent specifications, prices, stock, or compatibility
+- [ ] Review websitekeydevelopment.docx and extract the intended dynamic product-section layout and interaction requirements
+- [ ] Inspect the linked Google Sheet read-only after secure Google Workspace authorization and map Wire & Cables and Switchgear fields
+- [ ] Refine the product-sync and Vola product-question architecture using the supplied document and real Sheet structure
+- [x] Implement the websitekeydevelopment.docx product-section interaction reference in the Volamp marketplace
+- [x] Add hover and keyboard-accessible mega-menu behavior for Wire & Cables and Switchgear nested subcategories
+- [x] Add the document-aligned Enquire Now form entry and WhatsApp contact placement, with a configurable business link
+- [ ] Configure the official Volamp WhatsApp Business click-to-chat URL once the business number or link is provided
