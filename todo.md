@@ -30,3 +30,4 @@
 - [x] Refactor the customer portal layout more substantially around shared industrial section structure, panel hierarchy, typography, and spacing
 - [x] Add a project-record note pointing to the clean post-restart log verification (`redesign-validation.md`)
 - [x] Rename the Volamp AI assistant from Volt to Vola across frontend copy, backend guidance, labels, and project-facing content
+- [x] Redesign customer portal ideation around active projects, next actions, quotation progress, delivery visibility, documents, and human support instead of a generic record dashboard
