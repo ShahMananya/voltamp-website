@@ -61,3 +61,22 @@
 - [x] Rebuild the product-section navigation from websitekeydevelopment.docx with complete nested hover states for every specified Wire & Cables and Switchgear subsection
 - [x] Make Enquire Now open a dedicated, responsive form flow matching the document instead of only scrolling to the page section
 - [x] Re-verify WhatsApp placement and keep the official business-link dependency explicit until the user provides it
+- [x] Replace the current category navigation with a reference-style cascading hover menu containing 11 main categories
+- [x] Add HDC and LDC subcategories exactly as provided, with placeholder expandable states for the remaining nine categories
+- [x] Make every main category and subcategory clickable and update the Explore Categories grid to the same 11-category structure
+- [x] Verify mouse hover, keyboard focus, click navigation, mobile behavior, dark/light themes, and existing enquiry/search/account flows
+- [x] Create dedicated category pages/routes for all 11 main categories and wire main-category, subcategory, and Explore grid clicks to navigate there
+- [x] Re-verify category click navigation, keyboard interaction, search, enquiry modal, account access, desktop/mobile, and light/dark themes after route implementation
+- [x] Style the new dedicated category pages so they use the Volamp marketplace header, spacing, typography, panels, and dark/light theme tokens instead of unstyled route content
+- [x] Re-capture desktop/mobile category-page evidence and verify category clicks, subcategory clicks, search, enquiry modal, and account access after the styling pass
+- [x] Re-verify search behavior, Enquire Now modal opening, and account access after category-route changes with fresh desktop/mobile evidence
+- [x] Capture explicit dark-mode screenshots for dedicated category pages and verify keyboard navigation through the cascading menu after route implementation
+- [x] Capture fresh mobile evidence for homepage search, Enquire Now modal, and account access after category-route changes
+- [x] Verify an actual product search query and visible result behavior after routing changes
+- [x] Verify keyboard-only focus movement through the cascading category menu and record the result
+- [x] Produce concrete focused-state evidence for keyboard-only navigation through Categories, main categories, and HDC/LDC subcategories, then update category-validation.md
+- [x] Capture concrete focused-state evidence for keyboard-only navigation through both HDC and LDC cascading submenu states in light and dark themes
+- [x] Update category-validation.md with the final HDC/LDC keyboard-focused verification evidence
+- [x] Add an accessible ArrowRight transition from focused HDC/LDC main categories into their first cascading subcategories
+- [x] Verify real Tab and ArrowRight focus progression for HDC and LDC in a live browser trace
+- [x] Update category-validation.md with the real keyboard-navigation trace
