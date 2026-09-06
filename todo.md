@@ -81,3 +81,4 @@
 - [x] Verify real Tab and ArrowRight focus progression for HDC and LDC in a live browser trace
 - [x] Update category-validation.md with the real keyboard-navigation trace
 - [x] Fix Categories mega-menu closing while the pointer moves from the trigger into the live cascading menu
+- [x] Remove the Published Starting Categories product section from the marketplace homepage while preserving adjacent marketplace sections and search behavior

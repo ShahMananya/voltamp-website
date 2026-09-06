@@ -24,3 +24,7 @@ A headless Chromium DevTools trace exercised actual key events against the live 
 ## Hover-gap fix
 
 The desktop pointer trace now moves from the Categories trigger through the former `.65rem` gap and into the cascading panel without closing it. The menu remained open at the trigger, bridge, panel edge, and panel content states, and HDC became active once the pointer entered the panel. The fix adds an invisible desktop-only hit-area bridge on `.category-menu-wrap::after`; it is disabled on mobile, where the panel uses the existing fixed layout.
+
+## Homepage product-section removal
+
+The `Published Starting Categories` section was removed from the homepage. The underlying product data remains available to the global SKU-aware search, product detail modal, comparison flow, and quick-order estimator, so removing the visual section does not remove those existing interactions.
