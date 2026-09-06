@@ -80,3 +80,4 @@
 - [x] Add an accessible ArrowRight transition from focused HDC/LDC main categories into their first cascading subcategories
 - [x] Verify real Tab and ArrowRight focus progression for HDC and LDC in a live browser trace
 - [x] Update category-validation.md with the real keyboard-navigation trace
+- [x] Fix Categories mega-menu closing while the pointer moves from the trigger into the live cascading menu

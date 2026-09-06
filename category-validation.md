@@ -20,3 +20,7 @@ The deterministic `?surface=keyboard` preview opened the HDC cascade and focused
 ## Real keyboard-only trace (final)
 
 A headless Chromium DevTools trace exercised actual key events against the live preview. For HDC, the sequence was `Categories` → `Tab` → `HDC (Heavy Duty Cable)` → `ArrowRight` → `LT Aluminium Arm Cable`. For LDC, the sequence was `Categories` → `Tab` → `HDC (Heavy Duty Cable)` → `Tab` → `LDC (Low Duty Cable)` → `ArrowRight` → `Multi Core Flexible`. The subcategory buttons received focus and exposed the same detail/action panel as pointer hover. This confirms real keyboard progression rather than only a query-parameter preview state.
+
+## Hover-gap fix
+
+The desktop pointer trace now moves from the Categories trigger through the former `.65rem` gap and into the cascading panel without closing it. The menu remained open at the trigger, bridge, panel edge, and panel content states, and HDC became active once the pointer entered the panel. The fix adds an invisible desktop-only hit-area bridge on `.category-menu-wrap::after`; it is disabled on mobile, where the panel uses the existing fixed layout.
