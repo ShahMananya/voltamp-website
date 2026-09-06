@@ -28,3 +28,7 @@ The desktop pointer trace now moves from the Categories trigger through the form
 ## Homepage product-section removal
 
 The `Published Starting Categories` section was removed from the homepage. The underlying product data remains available to the global SKU-aware search, product detail modal, comparison flow, and quick-order estimator, so removing the visual section does not remove those existing interactions.
+
+## Calculator tree update
+
+The header quick-action row now includes Calculator directly beside Track order. The previous Quick order jump no longer opens the calculator, and the inline calculator section was removed so the estimator is accessed only through the Calculator action. The calculator trace opened the modal, confirmed 11 main-category buttons, then exercised `HDC (Heavy Duty Cable)` → `LT Aluminium Arm Cable` → `LT Aluminium Arm Cable specification`. A mobile DevTools trace confirmed the modal is 374px wide at a 390px viewport, the tree collapses to one 340px column, the dark estimator background remains applied, and all 11 main-category buttons remain available. A live input trace changed quantity to 250 and planning discount to 12%, updating the displayed starting estimate from ₹11,210 to ₹25,960. Light-theme evidence reported `htmlClass: ""` with page background `rgb(247, 249, 251)`; dark-theme evidence reported `htmlClass: "dark"` with page background `rgb(11, 32, 51)`. In both themes the calculator modal remained visible with its intended dark background and light text.

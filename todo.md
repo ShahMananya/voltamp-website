@@ -82,3 +82,8 @@
 - [x] Update category-validation.md with the real keyboard-navigation trace
 - [x] Fix Categories mega-menu closing while the pointer moves from the trigger into the live cascading menu
 - [x] Remove the Published Starting Categories product section from the marketplace homepage while preserving adjacent marketplace sections and search behavior
+- [x] Add a Calculator icon beside Track order in the header quick actions and remove calculator access from the main navigation flow
+- [x] Replace the estimator product picker with a dynamic three-level tree for all 11 main categories and their supplied subcategories
+- [x] Verify calculator opening, tree selection, estimate updates, desktop/mobile layout, and light/dark themes
+- [x] Verify calculator estimate totals change when quantity and planning discount change in a live browser trace
+- [x] Capture successful calculator light/dark style evidence through live DOM traces and update category-validation.md
