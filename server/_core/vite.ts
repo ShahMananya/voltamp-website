@@ -6,17 +6,31 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
 
+export function resolveHmrClientPort(rawPort: string | undefined): number {
+  const parsedPort = Number(rawPort);
+  return Number.isInteger(parsedPort) && parsedPort > 0 ? parsedPort : 3000;
+}
+
 export async function setupVite(app: Express, server: Server) {
+  const hmrClientPort = resolveHmrClientPort(process.env.PORT);
   const serverOptions = {
-    middlewareMode: true,
-    hmr: { server },
+    middlewareMode: true as const,
+    port: hmrClientPort,
+    strictPort: true as const,
+    // The app is served through the Express HTTP server on the exposed port.
+    // Explicitly bind Vite's WebSocket transport to that same server and port
+    // so the client never falls back to the standalone localhost:5173 socket.
+    hmr: { server, port: hmrClientPort, clientPort: hmrClientPort },
+    ws: { server, port: hmrClientPort, clientPort: hmrClientPort },
     allowedHosts: true as const,
   };
 
   const vite = await createViteServer({
     ...viteConfig,
     configFile: false,
-    server: serverOptions,
+    // Vite exposes different server option unions for standalone and
+    // middleware mode; this object is intentionally the middleware shape.
+    server: serverOptions as any,
     appType: "custom",
   });
 

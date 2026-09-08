@@ -7,6 +7,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import CategoryPage from "./pages/CategoryPage";
+import AboutVolamp from "./pages/AboutVolamp";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/category/:slug"} component={CategoryPage} />
       <Route path="/portal" component={CustomerPortal} />
+      <Route path="/about-volamp" component={AboutVolamp} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

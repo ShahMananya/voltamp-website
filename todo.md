@@ -87,3 +87,14 @@
 - [x] Verify calculator opening, tree selection, estimate updates, desktop/mobile layout, and light/dark themes
 - [x] Verify calculator estimate totals change when quantity and planning discount change in a live browser trace
 - [x] Capture successful calculator light/dark style evidence through live DOM traces and update category-validation.md
+- [x] Add a dedicated /about-volamp route with the shared VOLAMP marketplace shell
+- [x] Build About Volamp story, goals, CEO message, and non-fabricated nine-member team structure
+- [x] Implement an interactive globe-to-India footprint experience with state-level drill-down and order information
+- [x] Verify About Volamp route, map interactions, responsive layout, light/dark themes, and content/data boundaries
+- [x] Document the recommended map libraries, implementation estimate, and remaining user-supplied team/order data needs
+- [x] Add true clickable/hoverable India state polygons to the footprint experience instead of relying only on point markers and the side list
+- [x] Add state-specific visual treatments and keep completed-order counts blocked until an approved regional ledger is supplied
+- [x] Run and record a successful mobile responsive About page trace, including footprint interaction in light and dark themes
+- [x] Add genuinely distinct, approved-safe per-state heritage visual variants rather than only changing the state code and text
+- [x] Run mobile light/dark traces that select a state and confirm the selected-region panel updates
+- [x] Fix the Vite HMR WebSocket connection failure shown on the homepage preview and verify the development server path
