@@ -98,3 +98,4 @@
 - [x] Add genuinely distinct, approved-safe per-state heritage visual variants rather than only changing the state code and text
 - [x] Run mobile light/dark traces that select a state and confirm the selected-region panel updates
 - [x] Fix the Vite HMR WebSocket connection failure shown on the homepage preview and verify the development server path
+- [x] Remove the About Volamp history and timeline section shown from the homepage while preserving the dedicated /about-volamp route
