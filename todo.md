@@ -102,3 +102,4 @@
 - [x] Add the GeM marketplace partner mark to the footer social/partner area, matching the supplied reference
 - [x] Rebuild the homepage footer with the reference-matched Blog bar, five VOLAMP columns, help/order support links, supplied social destinations, and requested copyright text
 - [x] Add the GeM marketplace partner mark to the footer social/partner area, matching the supplied reference
+- [x] Replace the footer Order Support placeholder with 9512365582 and make the number mobile-callable

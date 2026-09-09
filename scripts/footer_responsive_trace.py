@@ -51,6 +51,8 @@ def trace(width, theme):
         gemAlt: gem?.getAttribute('alt') || '',
         blog: document.querySelector('.footer-blog-inner strong')?.textContent?.trim() || '',
         copyright: document.querySelector('.footer-bottom span')?.textContent?.trim() || '',
+        supportPhone: document.querySelector('.footer-support-phone-link strong')?.textContent?.trim() || '',
+        supportPhoneHref: document.querySelector('.footer-support-phone-link')?.getAttribute('href') || '',
         footerBackground: style?.backgroundColor || '',
         gridColumns: grid ? getComputedStyle(grid).gridTemplateColumns : ''
       };
