@@ -99,3 +99,6 @@
 - [x] Run mobile light/dark traces that select a state and confirm the selected-region panel updates
 - [x] Fix the Vite HMR WebSocket connection failure shown on the homepage preview and verify the development server path
 - [x] Remove the About Volamp history and timeline section shown from the homepage while preserving the dedicated /about-volamp route
+- [x] Add the GeM marketplace partner mark to the footer social/partner area, matching the supplied reference
+- [x] Rebuild the homepage footer with the reference-matched Blog bar, five VOLAMP columns, help/order support links, supplied social destinations, and requested copyright text
+- [x] Add the GeM marketplace partner mark to the footer social/partner area, matching the supplied reference
