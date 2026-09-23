@@ -4,21 +4,116 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <meta name="theme-color" content="#0b1f33" />
-    <meta name="description" content="VOLAMP ELEKTRIKALS — friendly, dependable cables and electrical essentials powering growth from Ahmedabad, Gujarat, India." />
-    <meta name="keywords" content="VOLAMP, electrical cables, house wires, industrial cables, Ahmedabad, Gujarat, India" />
-    <link rel="canonical" href="/" />
+    <meta name="description" content="VOLAMP ELEKTRIKALS — dependable electrical cables, switchgears, earthing and electrical essentials powering growth from Ahmedabad, Gujarat, India." />
+    <meta name="keywords" content="VOLAMP, electrical cables, wires, switchgear, earthing materials, lugs, glands, solar cable, Ahmedabad, Gujarat, India" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <link rel="canonical" href="https://volampelektrikals.com/" />
+
+    <!-- Google Search Console & Google Merchant Center Verification -->
+    <!-- Replace the content attribute below with your verification token from Google Search Console / Google Merchant Center -->
+    <meta name="google-site-verification" content="INSERT_YOUR_GOOGLE_VERIFICATION_CODE_HERE" />
+
+    <!-- Google Merchant Center / Google Shopping Product Feed Link -->
+    <link rel="alternate" type="application/rss+xml" title="VOLAMP Google Merchant Product Feed" href="/api/google-merchant-feed.xml" />
+
+    <!-- Open Graph / Facebook / WhatsApp Preview -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://volampelektrikals.com/" />
+    <meta property="og:title" content="VOLAMP ELEKTRIKALS | Powering Growth" />
+    <meta property="og:description" content="B2B Electrical Supply & Distribution Platform. Wires & Cables, Switchgears, Earthing, Solar Products, and Industrial Electricals." />
+    <meta property="og:image" content="https://volampelektrikals.com/volamp-logo.png" />
+    <meta property="og:site_name" content="VOLAMP ELEKTRIKALS" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="VOLAMP ELEKTRIKALS | Powering Growth" />
+    <meta name="twitter:description" content="B2B Electrical Supply & Distribution Platform. Wires & Cables, Switchgears, Earthing, Solar Products, and Industrial Electricals." />
+    <meta name="twitter:image" content="https://volampelektrikals.com/volamp-logo.png" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Google Structured Data (Schema.org) for Google Search & Google Shopping / Merchant Center -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "VOLAMP ELEKTRIKALS PVT. LTD.",
-        "description": "Electrical and cable distributor based in Ahmedabad, Gujarat, India.",
-        "address": { "@type": "PostalAddress", "addressLocality": "Ahmedabad", "addressRegion": "Gujarat", "addressCountry": "IN" },
-        "areaServed": "IN",
-        "knowsAbout": ["house wires", "industrial cables", "control and data cables", "electrical distribution"]
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://volampelektrikals.com/#organization",
+            "name": "VOLAMP ELEKTRIKALS PVT. LTD.",
+            "url": "https://volampelektrikals.com/",
+            "logo": "https://volampelektrikals.com/volamp-logo.png",
+            "description": "Comprehensive electrical distribution and solutions platform serving industries, EPCs, and contractors based in Ahmedabad, Gujarat, India.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Ahmedabad",
+              "addressRegion": "Gujarat",
+              "addressCountry": "IN"
+            },
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+91-9512365582",
+              "contactType": "sales",
+              "areaServed": "IN",
+              "availableLanguage": ["English", "Hindi", "Gujarati"]
+            },
+            "sameAs": [
+              "https://www.linkedin.com/company/volampelektrikals/",
+              "https://www.facebook.com/profile.php?id=61587485305483",
+              "https://www.instagram.com/volampp"
+            ]
+          },
+          {
+            "@type": "WholesaleStore",
+            "@id": "https://volampelektrikals.com/#store",
+            "name": "VOLAMP ELEKTRIKALS - B2B Electrical Supply Store",
+            "url": "https://volampelektrikals.com/",
+            "telephone": "+91-9512365582",
+            "priceRange": "₹₹",
+            "currenciesAccepted": "INR",
+            "paymentAccepted": "Bank Transfer, NEFT, RTGS, Credit Terms",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Ahmedabad",
+              "addressRegion": "Gujarat",
+              "addressCountry": "IN"
+            },
+            "hasMerchantReturnPolicy": {
+              "@type": "MerchantReturnPolicy",
+              "applicableCountry": "IN",
+              "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+              "merchantReturnDays": 7,
+              "returnMethod": "https://schema.org/ReturnByMail",
+              "returnFees": "https://schema.org/FreeReturn"
+            },
+            "shippingDetails": {
+              "@type": "OfferShippingDetails",
+              "shippingRate": {
+                "@type": "MonetaryAmount",
+                "value": "0.00",
+                "currency": "INR"
+              },
+              "shippingDestination": {
+                "@type": "DefinedRegion",
+                "addressCountry": "IN"
+              }
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://volampelektrikals.com/#website",
+            "url": "https://volampelektrikals.com/",
+            "name": "VOLAMP ELEKTRIKALS",
+            "publisher": { "@id": "https://volampelektrikals.com/#organization" },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://volampelektrikals.com/?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]
       }
     </script>
     <title>VOLAMP | Good energy starts here</title>
@@ -26,6 +121,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script defer src="%VITE_ANALYTICS_ENDPOINT%/umami" data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"></script>
   </body>
 </html>

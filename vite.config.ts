@@ -184,4 +184,7 @@ export default defineConfig({
       deny: ["**/.*"],
     },
   },
+  optimizeDeps: {
+    include: ["react-globe.gl", "globe.gl", "three", "three-globe", "react-kapsule"],
+  },
 });

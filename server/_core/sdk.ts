@@ -154,7 +154,7 @@ class SDKServer {
   }
 
   private getSessionSecret() {
-    const secret = ENV.cookieSecret;
+    const secret = ENV.cookieSecret || "volamp-jwt-secret-key-32-chars-long-minimum-hs256";
     return new TextEncoder().encode(secret);
   }
 
@@ -227,6 +227,37 @@ class SDKServer {
       };
     } catch (error) {
       console.warn("[Auth] Session verification failed", String(error));
+      return null;
+    }
+  }
+
+  async createMfaPendingToken(email: string, accountType: string): Promise<string> {
+    const secretKey = this.getSessionSecret();
+    const expirationSeconds = Math.floor((Date.now() + 5 * 60 * 1000) / 1000); // 5 minutes
+    return new SignJWT({
+      email,
+      accountType,
+      purpose: "mfa_pending",
+    })
+      .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+      .setExpirationTime(expirationSeconds)
+      .sign(secretKey);
+  }
+
+  async verifyMfaPendingToken(token: string): Promise<{ email: string; accountType: string } | null> {
+    try {
+      const secretKey = this.getSessionSecret();
+      const { payload } = await jwtVerify(token, secretKey, {
+        algorithms: ["HS256"],
+      });
+      if (payload.purpose !== "mfa_pending" || typeof payload.email !== "string") {
+        return null;
+      }
+      return {
+        email: payload.email,
+        accountType: String(payload.accountType || "customer"),
+      };
+    } catch {
       return null;
     }
   }
