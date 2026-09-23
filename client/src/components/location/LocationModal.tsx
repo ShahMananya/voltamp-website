@@ -419,14 +419,14 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-center gap-2.5">
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 mt-2">
               <Button
                 onClick={() => {
                   setWelcomeLocation(null);
                   const el = document.getElementById("categories") || document.getElementById("products");
                   if (el) el.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="w-full bg-[#c46b19] hover:bg-[#b05d12] text-white text-xs font-bold py-2.5 rounded-lg flex items-center justify-center gap-1.5 shadow-md shadow-amber-600/10"
+                className="w-full sm:flex-1 bg-[#c46b19] hover:bg-[#b05d12] text-white text-xs font-bold py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5 shadow-md shadow-amber-600/10"
               >
                 Explore Cable Catalog for {cityName} <ArrowRight className="size-3.5" />
               </Button>
@@ -436,7 +436,7 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
                   setWelcomeLocation(null);
                   if (onQuoteClick) onQuoteClick();
                 }}
-                className="w-full sm:w-auto border-[#dce5eb] text-[#102a40] hover:bg-[#f8fafc] text-xs font-semibold py-2.5 rounded-lg shrink-0"
+                className="w-full sm:w-auto border-[#dce5eb] text-[#102a40] hover:bg-[#f8fafc] text-xs font-semibold py-2.5 px-3 rounded-lg shrink-0"
               >
                 {isInternational ? "Contact Export Desk" : "Talk to Supply Desk"}
               </Button>
