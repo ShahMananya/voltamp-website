@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+﻿import React, { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import {
   Briefcase,
@@ -70,10 +70,10 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "Senior HT / LT Power Cable Design Engineer",
     department: "Engineering & R&D",
     location: "Ahmedabad HQ (Gujarat)",
-    workMode: "Full-Time · On-Site",
-    experience: "4 – 8 Years",
+    workMode: "Full-Time Â· On-Site",
+    experience: "4 â€“ 8 Years",
     education: "B.E. / B.Tech / M.Tech in Electrical or Polymer Engineering",
-    packageLpa: "₹9.5 – 15.0 LPA",
+    packageLpa: "â‚¹9.5 â€“ 15.0 LPA",
     openingsCount: 2,
     isFeatured: true,
     overview:
@@ -97,10 +97,10 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "Quality Assurance & High-Voltage Test Lab Lead",
     department: "Quality & Testing",
     location: "Sanand / Ahmedabad Plant (Gujarat)",
-    workMode: "Full-Time · On-Site",
-    experience: "3 – 7 Years",
+    workMode: "Full-Time Â· On-Site",
+    experience: "3 â€“ 7 Years",
     education: "B.E. / B.Tech in Electrical Engineering or Diploma with QA Certification",
-    packageLpa: "₹7.5 – 12.0 LPA",
+    packageLpa: "â‚¹7.5 â€“ 12.0 LPA",
     openingsCount: 1,
     isFeatured: true,
     overview:
@@ -123,10 +123,10 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "Plant Extrusion & Continuous Vulcanization Supervisor",
     department: "Manufacturing & Plant",
     location: "Ahmedabad Manufacturing Complex",
-    workMode: "Full-Time · On-Site",
-    experience: "3 – 6 Years",
+    workMode: "Full-Time Â· On-Site",
+    experience: "3 â€“ 6 Years",
     education: "Diploma or B.E. in Mechanical / Electrical / Polymer Technology",
-    packageLpa: "₹6.0 – 9.5 LPA",
+    packageLpa: "â‚¹6.0 â€“ 9.5 LPA",
     openingsCount: 3,
     isFeatured: false,
     overview:
@@ -149,10 +149,10 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "B2B Infrastructure & EPC Project Sales Manager",
     department: "EPC & Project Sales",
     location: "Mumbai Regional Office (Western Hub)",
-    workMode: "Full-Time · Hybrid / Field",
-    experience: "5 – 10 Years",
+    workMode: "Full-Time Â· Hybrid / Field",
+    experience: "5 â€“ 10 Years",
     education: "B.Tech Electrical + MBA (Marketing or Supply Chain preferred)",
-    packageLpa: "₹12.0 – 18.0 LPA + Performance Bonus",
+    packageLpa: "â‚¹12.0 â€“ 18.0 LPA + Performance Bonus",
     openingsCount: 2,
     isFeatured: true,
     overview:
@@ -175,17 +175,17 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "Solar & Renewable Energy Key Account Executive",
     department: "EPC & Project Sales",
     location: "Jaipur / Ahmedabad Corridor",
-    workMode: "Full-Time · Field / Client Facing",
-    experience: "2 – 5 Years",
+    workMode: "Full-Time Â· Field / Client Facing",
+    experience: "2 â€“ 5 Years",
     education: "B.E. in Electrical / Renewable Energy Engineering or B.Sc",
-    packageLpa: "₹6.5 – 10.5 LPA + Incentives",
+    packageLpa: "â‚¹6.5 â€“ 10.5 LPA + Incentives",
     openingsCount: 2,
     isFeatured: false,
     overview:
       "Accelerate the adoption of Volamp's 1500V DC Solar Photovoltaic cables and renewable balance-of-plant cabling with IPPs, utility solar developers, and rooftop EPCs.",
     responsibilities: [
       "Cultivate key relationships with solar developers, IPPs, and turnkey EPC contractors across Gujarat, Rajasthan, and Western India.",
-      "Present technical value propositions of electron-beam cross-linked solar cables (EN 50618, TÜV 2 Pfg 1169 standards, UV & ozone resistance).",
+      "Present technical value propositions of electron-beam cross-linked solar cables (EN 50618, TÃœV 2 Pfg 1169 standards, UV & ozone resistance).",
       "Monitor national and state solar park tender bids to capture cable supply requirements early.",
     ],
     requirements: [
@@ -193,17 +193,17 @@ const FALLBACK_ROLES: JobRole[] = [
       "Solid technical understanding of DC cable sizing, voltage drop mitigation, and MC4 connector compatibility.",
       "Strong communication skills and proactive client engagement.",
     ],
-    tags: ["Solar 1500V DC", "Renewable IPPs", "TÜV Rheinland", "Utility Solar"],
+    tags: ["Solar 1500V DC", "Renewable IPPs", "TÃœV Rheinland", "Utility Solar"],
   },
   {
     id: "tendering-boq-estimation-engineer",
     title: "Tendering, BOQ & Cost Estimation Engineer",
     department: "Procurement & Supply Chain",
     location: "Ahmedabad Corporate HQ",
-    workMode: "Full-Time · On-Site",
-    experience: "2 – 5 Years",
+    workMode: "Full-Time Â· On-Site",
+    experience: "2 â€“ 5 Years",
     education: "B.E. / B.Tech in Electrical Engineering",
-    packageLpa: "₹6.0 – 9.0 LPA",
+    packageLpa: "â‚¹6.0 â€“ 9.0 LPA",
     openingsCount: 2,
     isFeatured: false,
     overview:
@@ -225,10 +225,10 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "Metal Procurement & Raw Material Supply Chain Specialist",
     department: "Procurement & Supply Chain",
     location: "Ahmedabad Corporate HQ",
-    workMode: "Full-Time · On-Site",
-    experience: "3 – 6 Years",
+    workMode: "Full-Time Â· On-Site",
+    experience: "3 â€“ 6 Years",
     education: "B.Com / B.E. + Supply Chain Certification or MBA",
-    packageLpa: "₹7.0 – 11.0 LPA",
+    packageLpa: "â‚¹7.0 â€“ 11.0 LPA",
     openingsCount: 1,
     isFeatured: false,
     overview:
@@ -247,13 +247,13 @@ const FALLBACK_ROLES: JobRole[] = [
   },
   {
     id: "get-electrical-batch-2026",
-    title: "Graduate Engineer Trainee (GET) – Electrical (Batch 2026)",
+    title: "Graduate Engineer Trainee (GET) â€“ Electrical (Batch 2026)",
     department: "Early Careers",
     location: "Ahmedabad HQ & Manufacturing Complex",
-    workMode: "Full-Time · 12-Month Rotation",
-    experience: "Fresh Graduate / 0 – 1 Year (Batch 2025/2026)",
+    workMode: "Full-Time Â· 12-Month Rotation",
+    experience: "Fresh Graduate / 0 â€“ 1 Year (Batch 2025/2026)",
     education: "B.E. / B.Tech in Electrical / Electronics Engineering (Min 65% aggregate)",
-    packageLpa: "₹4.5 – 6.0 LPA + Medical Coverage",
+    packageLpa: "â‚¹4.5 â€“ 6.0 LPA + Medical Coverage",
     openingsCount: 6,
     isFeatured: true,
     overview:
@@ -292,7 +292,7 @@ const LOCATIONS = [
   "Jaipur / Ahmedabad Corridor",
 ];
 
-const EXPERIENCES = ["All Experience", "Freshers / 0–1 Year", "2–5 Years", "5+ Years"];
+const EXPERIENCES = ["All Experience", "Freshers / 0â€“1 Year", "2â€“5 Years", "5+ Years"];
 
 const FAQS = [
   {
@@ -382,9 +382,9 @@ export default function CareersPage() {
       const matchLoc = selectedLocation === "All Locations" || role.location === selectedLocation;
 
       let matchExp = true;
-      if (selectedExp === "Freshers / 0–1 Year") {
-        matchExp = role.experience.toLowerCase().includes("fresh") || role.experience.includes("0 – 1");
-      } else if (selectedExp === "2–5 Years") {
+      if (selectedExp === "Freshers / 0â€“1 Year") {
+        matchExp = role.experience.toLowerCase().includes("fresh") || role.experience.includes("0 â€“ 1");
+      } else if (selectedExp === "2â€“5 Years") {
         matchExp = role.experience.includes("2") || role.experience.includes("3") || role.experience.includes("4");
       } else if (selectedExp === "5+ Years") {
         matchExp = role.experience.includes("5") || role.experience.includes("8") || role.experience.includes("10");
@@ -407,13 +407,13 @@ export default function CareersPage() {
     if (role) {
       setApplicantRole(role.title);
       setApplicantDept(role.department);
-      if (role.experience.includes("0 – 1") || role.experience.toLowerCase().includes("fresh")) {
+      if (role.experience.includes("0 â€“ 1") || role.experience.toLowerCase().includes("fresh")) {
         setExperienceYears("Fresh Graduate (0-1 Yrs)");
-      } else if (role.experience.includes("4 – 8")) {
+      } else if (role.experience.includes("4 â€“ 8")) {
         setExperienceYears("4-8 Years");
-      } else if (role.experience.includes("3 – 7") || role.experience.includes("3 – 6")) {
+      } else if (role.experience.includes("3 â€“ 7") || role.experience.includes("3 â€“ 6")) {
         setExperienceYears("3-6 Years");
-      } else if (role.experience.includes("5 – 10")) {
+      } else if (role.experience.includes("5 â€“ 10")) {
         setExperienceYears("6-10 Years");
       }
     } else {
@@ -484,14 +484,14 @@ export default function CareersPage() {
   };
 
   return (
-    <div className="careers-page min-h-screen bg-[#f7f9fb] dark:bg-[#071b2d] text-[#142b40] dark:text-[#eaf1f5] transition-colors">
+    <div className="careers-page min-h-screen bg-[#f5f7f9] dark:bg-[#0b1f33] text-[#0b1f33] dark:text-[#e8eef2] transition-colors">
       {/* Top Utility Bar (Consistent with Home & Marketplace) */}
-      <div className="bg-[#09233a] text-[#d9e3e9] text-xs py-2 border-b border-[#14395b]">
+      <div className="bg-[#0b1f33] text-[#d6e0e6] text-xs py-2 border-b border-[#223b51]">
         <div className="market-container flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Globe2 className="size-3.5 text-[#f2b84b]" />
             <span className="font-semibold text-slate-200">
-              VOLAMP Talent Acquisition Desk · Ahmedabad HQ & Pan-India Hubs
+              VOLAMP Talent Acquisition Desk Â· Ahmedabad HQ & Pan-India Hubs
             </span>
           </div>
           <div className="flex items-center gap-4 text-xs">
@@ -515,12 +515,12 @@ export default function CareersPage() {
       </div>
 
       {/* Main Header (Clean White / Dark Blue with Standard Slate Borders) */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0b2033]/95 backdrop-blur-md border-b border-[#dce4ea] dark:border-[#1e3d59] transition-colors shadow-sm">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0b1f33]/95 backdrop-blur-md border-b border-[#d6e0e6] dark:border-[#223b51] transition-colors shadow-sm">
         <div className="market-container flex items-center justify-between h-20">
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1d73b7] hover:text-[#155d94] bg-[#eef5fa] dark:bg-[#13324d] dark:text-[#75b8e7] px-3 py-1.5 rounded-lg transition-colors mr-2"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c56718] hover:text-[#9e4e0e] bg-[#f5f7f9] dark:bg-[#162d42] dark:text-[#f2b84b] px-3 py-1.5 rounded-lg transition-colors mr-2"
             >
               <ArrowLeft className="size-3.5" />
               <span>Back to Home</span>
@@ -535,22 +535,22 @@ export default function CareersPage() {
           </div>
 
           <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-[#334858] dark:text-[#cbdbe6]">
-            <Link href="/" className="hover:text-[#1d73b7] dark:hover:text-[#67b0e8] transition-colors">
+            <Link href="/" className="hover:text-[#c56718] dark:hover:text-[#c56718] transition-colors">
               Marketplace
             </Link>
-            <Link href="/about-volamp" className="hover:text-[#1d73b7] dark:hover:text-[#67b0e8] transition-colors">
+            <Link href="/about-volamp" className="hover:text-[#c56718] dark:hover:text-[#c56718] transition-colors">
               About Volamp
             </Link>
             <Link
               href="/business-segments"
-              className="hover:text-[#1d73b7] dark:hover:text-[#67b0e8] transition-colors"
+              className="hover:text-[#c56718] dark:hover:text-[#c56718] transition-colors"
             >
               Business Segments
             </Link>
-            <Link href="/collaborate" className="hover:text-[#1d73b7] dark:hover:text-[#67b0e8] transition-colors">
+            <Link href="/collaborate" className="hover:text-[#c56718] dark:hover:text-[#c56718] transition-colors">
               Collaborate
             </Link>
-            <span className="text-[#1d73b7] dark:text-[#67b0e8] font-bold border-b-2 border-[#1d73b7] dark:border-[#67b0e8] pb-1">
+            <span className="text-[#c56718] dark:text-[#c56718] font-bold border-b-2 border-[#c56718] dark:border-[#c56718] pb-1">
               Careers
             </span>
           </nav>
@@ -559,7 +559,7 @@ export default function CareersPage() {
             <ThemeToggle />
             <Button
               onClick={() => handleOpenApply()}
-              className="bg-[#1d73b7] hover:bg-[#155d94] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
+              className="bg-[#c56718] hover:bg-[#9e4e0e] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
             >
               <Send className="size-3.5" />
               <span>Submit CV</span>
@@ -567,7 +567,7 @@ export default function CareersPage() {
             <Button
               variant="outline"
               onClick={() => navigate("/about-volamp")}
-              className="hidden sm:flex text-xs font-semibold rounded-lg border-[#dce4ea] dark:border-[#2d4b68] hover:bg-[#f0f4f8] dark:hover:bg-[#13324d]"
+              className="hidden sm:flex text-xs font-semibold rounded-lg border-[#d6e0e6] dark:border-[#d6e0e6] hover:bg-[#e8eef2] dark:hover:bg-[#162d42]"
             >
               <span>Our Heritage</span>
               <ArrowRight className="size-3 ml-1" />
@@ -577,15 +577,15 @@ export default function CareersPage() {
       </header>
 
       {/* Hero Section (Matching .segments-hero & .about-hero Gradient) */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#071b2d] via-[#0c2d4a] to-[#10385c] text-white py-16 sm:py-24 border-b border-[#1b436b]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0b1f33] via-[#162d42] to-[#1e3d55] text-white py-16 sm:py-24 border-b border-[#223b51]">
         {/* Ambient Glows */}
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="market-container relative z-10 max-w-5xl text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#f2b84b] text-xs font-extrabold tracking-wider uppercase">
             <Sparkles className="size-3.5" />
-            <span>WE ARE HIRING · 2026 INFRASTRUCTURE EXPANSION</span>
+            <span>WE ARE HIRING Â· 2026 INFRASTRUCTURE EXPANSION</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] text-white tracking-tight leading-tight">
@@ -593,7 +593,7 @@ export default function CareersPage() {
             <span className="text-[#f2b84b]">Engineering Legacy</span> That Powers India.
           </h1>
 
-          <p className="text-base sm:text-lg text-[#e2ecf2] max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-[#aebdc8] max-w-3xl mx-auto leading-relaxed">
             Join 4 generations of electrical engineering leadership. From high-voltage underground transmission
             grids and metro rail networks to renewable solar farms, our team designs, compounds, and manufactures the
             critical cables energizing 28 states and 14+ export nations.
@@ -602,7 +602,7 @@ export default function CareersPage() {
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <a
               href="#open-roles"
-              className="px-6 py-3.5 rounded-lg bg-[#1d73b7] hover:bg-[#155d94] text-white font-bold text-sm shadow-lg shadow-sky-900/30 flex items-center gap-2 transition-all cursor-pointer"
+              className="px-6 py-3.5 rounded-lg bg-[#c56718] hover:bg-[#9e4e0e] text-white font-bold text-sm shadow-lg shadow-amber-900/30 flex items-center gap-2 transition-all cursor-pointer"
             >
               <span>Explore Open Positions ({roles.length})</span>
               <ArrowRight className="size-4" />
@@ -623,25 +623,25 @@ export default function CareersPage() {
               <span className="text-2xl sm:text-3xl font-extrabold text-[#f2b84b] font-['Space_Grotesk'] block">
                 60+ Years
               </span>
-              <span className="text-xs text-[#c0d5e2] font-semibold">Engineering Heritage (Est. 1964)</span>
+              <span className="text-xs text-[#aebdc8] font-semibold">Engineering Heritage (Est. 1964)</span>
             </div>
             <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
               <span className="text-2xl sm:text-3xl font-extrabold text-[#f2b84b] font-['Space_Grotesk'] block">
                 28 States
               </span>
-              <span className="text-xs text-[#c0d5e2] font-semibold">Pan-India Dispatches & 14+ Export Nations</span>
+              <span className="text-xs text-[#aebdc8] font-semibold">Pan-India Dispatches & 14+ Export Nations</span>
             </div>
             <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
               <span className="text-2xl sm:text-3xl font-extrabold text-[#f2b84b] font-['Space_Grotesk'] block">
                 100% In-House
               </span>
-              <span className="text-xs text-[#c0d5e2] font-semibold">CPRI & ERDA Certified Test Laboratories</span>
+              <span className="text-xs text-[#aebdc8] font-semibold">CPRI & ERDA Certified Test Laboratories</span>
             </div>
             <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
               <span className="text-2xl sm:text-3xl font-extrabold text-[#f2b84b] font-['Space_Grotesk'] block">
                 4.8 / 5.0
               </span>
-              <span className="text-xs text-[#c0d5e2] font-semibold">Team Growth & Job Security Index</span>
+              <span className="text-xs text-[#aebdc8] font-semibold">Team Growth & Job Security Index</span>
             </div>
           </div>
         </div>
@@ -650,10 +650,10 @@ export default function CareersPage() {
       {/* Why Build Your Career at Volamp (Values & Benefits - Crisp Slate & Navy) */}
       <section className="py-16 sm:py-20 market-container space-y-12">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <span className="text-xs font-bold text-[#1d73b7] dark:text-[#67b0e8] uppercase tracking-widest">
+          <span className="text-xs font-bold text-[#c56718] dark:text-[#c56718] uppercase tracking-widest">
             THE VOLAMP WORK CULTURE
           </span>
-          <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#102a40] dark:text-white">
+          <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
             Why Electrical Engineers & Leaders Choose Volamp
           </h2>
           <p className="text-sm text-[#5a6b78] dark:text-slate-400">
@@ -663,11 +663,11 @@ export default function CareersPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] shadow-sm hover:border-[#1d73b7] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-[#eef5fa] dark:bg-[#15344f] flex items-center justify-center text-[#1d73b7] dark:text-[#75b8e7]">
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-[#f5f7f9] dark:bg-[#162d42] flex items-center justify-center text-[#c56718] dark:text-[#f2b84b]">
               <Zap className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
               Nation-Building Impact
             </h3>
             <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
@@ -676,11 +676,11 @@ export default function CareersPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] shadow-sm hover:border-[#1d73b7] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-sky-50 dark:bg-[#15344f] flex items-center justify-center text-sky-600 dark:text-sky-400">
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-amber-50 dark:bg-[#162d42] flex items-center justify-center text-amber-600 dark:text-amber-400">
               <Factory className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
               World-Class Manufacturing Tech
             </h3>
             <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
@@ -689,11 +689,11 @@ export default function CareersPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] shadow-sm hover:border-[#1d73b7] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-emerald-50 dark:bg-[#15344f] flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-emerald-50 dark:bg-[#162d42] flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <Award className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
               Competitive CTC & Performance Bonuses
             </h3>
             <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
@@ -702,11 +702,11 @@ export default function CareersPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] shadow-sm hover:border-[#1d73b7] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-purple-50 dark:bg-[#15344f] flex items-center justify-center text-purple-600 dark:text-purple-400">
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-purple-50 dark:bg-[#162d42] flex items-center justify-center text-purple-600 dark:text-purple-400">
               <ShieldCheck className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
               Comprehensive Health & Safety
             </h3>
             <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
@@ -715,11 +715,11 @@ export default function CareersPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] shadow-sm hover:border-[#1d73b7] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-amber-50 dark:bg-[#15344f] flex items-center justify-center text-[#d97818] dark:text-amber-400">
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-amber-50 dark:bg-[#162d42] flex items-center justify-center text-[#d97818] dark:text-amber-400">
               <TrendingUp className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
               Accelerated Career Progression
             </h3>
             <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
@@ -728,11 +728,11 @@ export default function CareersPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] shadow-sm hover:border-[#1d73b7] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-blue-50 dark:bg-[#15344f] flex items-center justify-center text-[#1d73b7] dark:text-[#75b8e7]">
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-blue-50 dark:bg-[#162d42] flex items-center justify-center text-[#c56718] dark:text-[#f2b84b]">
               <BookOpen className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
               Continuous Technical Mentorship
             </h3>
             <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
@@ -744,14 +744,14 @@ export default function CareersPage() {
       </section>
 
       {/* Open Positions Section with Filters (Cool Slate-Muted Background) */}
-      <section id="open-roles" className="py-16 bg-[#edf3f7] dark:bg-[#0b2033] border-y border-[#dce4ea] dark:border-[#1e3d59]">
+      <section id="open-roles" className="py-16 bg-[#e8eef2] dark:bg-[#0b1f33] border-y border-[#d6e0e6] dark:border-[#223b51]">
         <div className="market-container space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <span className="text-xs font-bold text-[#1d73b7] dark:text-[#67b0e8] uppercase tracking-widest">
+              <span className="text-xs font-bold text-[#c56718] dark:text-[#c56718] uppercase tracking-widest">
                 CURRENT OPPORTUNITIES
               </span>
-              <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#102a40] dark:text-white">
+              <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
                 Explore Open Positions at Volamp
               </h2>
               <p className="text-sm text-[#5a6b78] dark:text-slate-400 mt-1">
@@ -763,7 +763,7 @@ export default function CareersPage() {
             <Button
               onClick={() => handleOpenApply()}
               variant="outline"
-              className="self-start md:self-auto rounded-lg border-[#1d73b7] text-[#1d73b7] dark:text-[#67b0e8] dark:border-[#67b0e8] font-bold hover:bg-[#1d73b7] hover:text-white transition-all text-xs"
+              className="self-start md:self-auto rounded-lg border-[#c56718] text-[#c56718] dark:text-[#c56718] dark:border-[#c56718] font-bold hover:bg-[#c56718] hover:text-white transition-all text-xs"
             >
               <Send className="size-3.5 mr-1.5" />
               <span>Can't find your role? Submit General Application</span>
@@ -771,7 +771,7 @@ export default function CareersPage() {
           </div>
 
           {/* Filter Bar (Crisp White with Slate Borders) */}
-          <div className="p-4 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] shadow-sm space-y-4">
+          <div className="p-4 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Search input */}
               <div className="relative">
@@ -780,7 +780,7 @@ export default function CareersPage() {
                   placeholder="Search role, keyword, or standard (e.g. XLPE, CPRI)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 rounded-lg border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338] text-xs h-10"
+                  className="pl-9 rounded-lg border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs h-10"
                 />
                 {searchQuery && (
                   <button
@@ -797,7 +797,7 @@ export default function CareersPage() {
                 <select
                   value={selectedDept}
                   onChange={(e) => setSelectedDept(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338] text-xs text-[#142b40] dark:text-[#eaf1f5] font-medium outline-none focus:border-[#1d73b7]"
+                  className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs text-[#0b1f33] dark:text-[#e8eef2] font-medium outline-none focus:border-[#c56718]"
                 >
                   {DEPARTMENTS.map((dept) => (
                     <option key={dept} value={dept}>
@@ -812,7 +812,7 @@ export default function CareersPage() {
                 <select
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338] text-xs text-[#142b40] dark:text-[#eaf1f5] font-medium outline-none focus:border-[#1d73b7]"
+                  className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs text-[#0b1f33] dark:text-[#e8eef2] font-medium outline-none focus:border-[#c56718]"
                 >
                   {LOCATIONS.map((loc) => (
                     <option key={loc} value={loc}>
@@ -827,7 +827,7 @@ export default function CareersPage() {
                 <select
                   value={selectedExp}
                   onChange={(e) => setSelectedExp(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338] text-xs text-[#142b40] dark:text-[#eaf1f5] font-medium outline-none focus:border-[#1d73b7]"
+                  className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs text-[#0b1f33] dark:text-[#e8eef2] font-medium outline-none focus:border-[#c56718]"
                 >
                   {EXPERIENCES.map((exp) => (
                     <option key={exp} value={exp}>
@@ -839,7 +839,7 @@ export default function CareersPage() {
             </div>
 
             {/* Department Quick Filter Pills */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#edf1f4] dark:border-[#1e3d59]">
+            <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#d6e0e6] dark:border-[#223b51]">
               <span className="text-[11px] font-bold text-slate-400 mr-1 flex items-center gap-1">
                 <Filter className="size-3" /> Quick Filter:
               </span>
@@ -851,8 +851,8 @@ export default function CareersPage() {
                     onClick={() => setSelectedDept(dept)}
                     className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
                       isSelected
-                        ? "bg-[#1d73b7] text-white shadow-sm"
-                        : "bg-[#eef5fa] dark:bg-[#13324d] text-[#1d73b7] dark:text-[#75b8e7] hover:bg-[#dbe9f4] dark:hover:bg-[#1a4060]"
+                        ? "bg-[#c56718] text-white shadow-sm"
+                        : "bg-[#f5f7f9] dark:bg-[#162d42] text-[#c56718] dark:text-[#f2b84b] hover:bg-[#e8eef2] dark:hover:bg-[#162d42]"
                     }`}
                   >
                     {dept}
@@ -880,9 +880,9 @@ export default function CareersPage() {
 
           {/* Job Cards Grid */}
           {filteredRoles.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-[#102b42] rounded-xl border border-dashed border-[#dce4ea] dark:border-[#29465b] space-y-4">
+            <div className="text-center py-16 bg-white dark:bg-[#0b1f33] rounded-xl border border-dashed border-[#d6e0e6] dark:border-[#223b51] space-y-4">
               <Briefcase className="size-12 text-slate-400 mx-auto opacity-50" />
-              <h3 className="text-lg font-bold text-[#102a40] dark:text-white">
+              <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white">
                 No matching open positions found
               </h3>
               <p className="text-xs text-[#5a6b78] dark:text-slate-400 max-w-md mx-auto">
@@ -891,7 +891,7 @@ export default function CareersPage() {
               </p>
               <Button
                 onClick={() => handleOpenApply()}
-                className="bg-[#1d73b7] hover:bg-[#155d94] text-white text-xs font-bold rounded-lg"
+                className="bg-[#c56718] hover:bg-[#9e4e0e] text-white text-xs font-bold rounded-lg"
               >
                 Submit General Application
               </Button>
@@ -901,12 +901,12 @@ export default function CareersPage() {
               {filteredRoles.map((role) => (
                 <div
                   key={role.id}
-                  className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] shadow-sm hover:border-[#1d73b7] hover:shadow-lg transition-all flex flex-col justify-between group"
+                  className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-lg transition-all flex flex-col justify-between group"
                 >
                   <div className="space-y-4">
                     {/* Header badges */}
                     <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-[#eef5fa] text-[#1d73b7] dark:bg-[#15344f] dark:text-[#75b8e7] border border-[#d0e3f2] dark:border-[#20496e]">
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-[#f5f7f9] text-[#c56718] dark:bg-[#162d42] dark:text-[#f2b84b] border border-[#c7d3dc] dark:border-[#223b51]">
                         {role.department}
                       </span>
                       <div className="flex items-center gap-2">
@@ -923,20 +923,20 @@ export default function CareersPage() {
 
                     {/* Role Title */}
                     <div>
-                      <h3 className="text-xl font-bold font-['Space_Grotesk'] text-[#102a40] dark:text-white group-hover:text-[#1d73b7] dark:group-hover:text-[#67b0e8] transition-colors">
+                      <h3 className="text-xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white group-hover:text-[#c56718] dark:group-hover:text-[#c56718] transition-colors">
                         {role.title}
                       </h3>
                       <div className="flex flex-wrap items-center gap-3 text-xs text-[#5a6b78] dark:text-slate-300 mt-2">
                         <span className="flex items-center gap-1">
-                          <MapPin className="size-3.5 text-[#1d73b7] dark:text-[#67b0e8]" />
+                          <MapPin className="size-3.5 text-[#c56718] dark:text-[#c56718]" />
                           {role.location}
                         </span>
-                        <span>•</span>
+                        <span>â€¢</span>
                         <span className="flex items-center gap-1">
                           <Clock className="size-3.5 text-slate-400" />
                           {role.workMode}
                         </span>
-                        <span>•</span>
+                        <span>â€¢</span>
                         <span className="flex items-center gap-1">
                           <GraduationCap className="size-3.5 text-slate-400" />
                           {role.experience}
@@ -950,12 +950,12 @@ export default function CareersPage() {
                     </p>
 
                     {/* Package & Key requirement */}
-                    <div className="p-3 rounded-lg bg-[#f7f9fb] dark:bg-[#0c2338] border border-[#e2e8f0] dark:border-[#1e3d59] flex items-center justify-between text-xs">
+                    <div className="p-3 rounded-lg bg-[#f5f7f9] dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] flex items-center justify-between text-xs">
                       <div>
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
                           INDICATIVE CTC PACKAGE
                         </span>
-                        <span className="font-bold text-[#102a40] dark:text-white">{role.packageLpa}</span>
+                        <span className="font-bold text-[#0b1f33] dark:text-white">{role.packageLpa}</span>
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -972,7 +972,7 @@ export default function CareersPage() {
                       {role.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#eef5fa] dark:bg-[#15344f] text-[#2c5270] dark:text-slate-300 border border-[#dce4ea] dark:border-[#234c70]"
+                          className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#f5f7f9] dark:bg-[#162d42] text-[#5a6b78] dark:text-slate-300 border border-[#d6e0e6] dark:border-[#c7d3dc]"
                         >
                           {tag}
                         </span>
@@ -981,11 +981,11 @@ export default function CareersPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="pt-5 mt-5 border-t border-[#edf1f4] dark:border-[#1e3d59] flex items-center justify-between gap-3">
+                  <div className="pt-5 mt-5 border-t border-[#d6e0e6] dark:border-[#223b51] flex items-center justify-between gap-3">
                     <button
                       type="button"
                       onClick={() => setSelectedRoleDetail(role)}
-                      className="text-xs font-bold text-[#1d73b7] dark:text-[#67b0e8] hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-bold text-[#c56718] dark:text-[#c56718] hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <span>View Full Job Spec</span>
                       <ArrowRight className="size-3.5" />
@@ -993,7 +993,7 @@ export default function CareersPage() {
 
                     <Button
                       onClick={() => handleOpenApply(role)}
-                      className="bg-[#1d73b7] hover:bg-[#155d94] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm cursor-pointer"
+                      className="bg-[#c56718] hover:bg-[#9e4e0e] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm cursor-pointer"
                     >
                       <span>Apply for this Role</span>
                       <ArrowRight className="size-3 ml-1" />
@@ -1008,24 +1008,24 @@ export default function CareersPage() {
 
       {/* Early Careers & GET Spotlight Banner (Matching .segments-hero Styling) */}
       <section className="py-14 market-container">
-        <div className="p-8 sm:p-10 rounded-2xl bg-gradient-to-r from-[#071b2d] via-[#0c2d4a] to-[#10385c] text-white shadow-xl border border-[#215782] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="p-8 sm:p-10 rounded-2xl bg-gradient-to-r from-[#0b1f33] via-[#162d42] to-[#1e3d55] text-white shadow-xl border border-[#223b51] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-4 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[#f2b84b] text-xs font-bold uppercase tracking-wider">
               <GraduationCap className="size-4" />
-              <span>COLLEGE GRADUATES · 2026 BATCH</span>
+              <span>COLLEGE GRADUATES Â· 2026 BATCH</span>
             </div>
             <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] leading-tight">
               Graduate Engineer Trainee (GET) Program
             </h3>
-            <p className="text-sm text-[#e2ecf2] leading-relaxed">
+            <p className="text-sm text-[#aebdc8] leading-relaxed">
               Are you a graduating electrical or electronics engineer looking to master power transmission, cable design,
               high-voltage lab testing, and extrusion engineering? Our 12-month accelerated rotational program provides full
               mentorship, live project exposure, and permanent absorption into Volamp leadership.
             </p>
             <div className="flex flex-wrap items-center gap-4 text-xs text-[#f2b84b] font-semibold pt-1">
-              <span>✓ 4 Rotational Modules</span>
-              <span>✓ Direct Executive Mentorship</span>
-              <span>✓ Fixed CTC + Full Health Cover</span>
+              <span>âœ“ 4 Rotational Modules</span>
+              <span>âœ“ Direct Executive Mentorship</span>
+              <span>âœ“ Fixed CTC + Full Health Cover</span>
             </div>
           </div>
 
@@ -1035,7 +1035,7 @@ export default function CareersPage() {
                 const getRole = roles.find((r) => r.id === "get-electrical-batch-2026");
                 handleOpenApply(getRole);
               }}
-              className="px-6 py-3.5 bg-[#f2b84b] hover:bg-[#e5a837] text-[#071b2d] font-extrabold text-sm rounded-lg shadow-lg shadow-amber-500/20"
+              className="px-6 py-3.5 bg-[#f2b84b] hover:bg-[#e5a837] text-[#1a0800] font-extrabold text-sm rounded-lg shadow-lg shadow-amber-500/20"
             >
               <span>Apply for GET 2026 Batch</span>
               <ArrowRight className="size-4 ml-1.5" />
@@ -1047,7 +1047,7 @@ export default function CareersPage() {
               }}
               className="text-xs text-center font-bold text-slate-300 hover:text-white hover:underline py-2"
             >
-              Review GET Syllabus & Details →
+              Review GET Syllabus & Details â†’
             </button>
           </div>
         </div>
@@ -1056,10 +1056,10 @@ export default function CareersPage() {
       {/* The 4-Step Hiring Process */}
       <section className="py-16 sm:py-20 market-container space-y-12">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <span className="text-xs font-bold text-[#1d73b7] dark:text-[#67b0e8] uppercase tracking-widest">
+          <span className="text-xs font-bold text-[#c56718] dark:text-[#c56718] uppercase tracking-widest">
             CLEAR, RESPECTFUL & FAST
           </span>
-          <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#102a40] dark:text-white">
+          <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
             Our 4-Step Candidate Journey
           </h2>
           <p className="text-sm text-[#5a6b78] dark:text-slate-400">
@@ -1068,14 +1068,14 @@ export default function CareersPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] relative space-y-3 shadow-sm hover:border-[#1d73b7] transition-all">
-            <span className="text-4xl font-extrabold text-[#1d73b7]/15 dark:text-sky-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] relative space-y-3 shadow-sm hover:border-[#c56718] transition-all">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 dark:text-amber-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
               01
             </span>
-            <div className="size-10 rounded-lg bg-[#eef5fa] dark:bg-[#15344f] flex items-center justify-center text-[#1d73b7] dark:text-[#75b8e7] font-bold text-sm">
+            <div className="size-10 rounded-lg bg-[#f5f7f9] dark:bg-[#162d42] flex items-center justify-center text-[#c56718] dark:text-[#f2b84b] font-bold text-sm">
               <FileCheck2 className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
               Application & Review
             </h4>
             <p className="text-xs text-[#5a6b78] dark:text-slate-300 leading-relaxed">
@@ -1084,30 +1084,30 @@ export default function CareersPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] relative space-y-3 shadow-sm hover:border-[#1d73b7] transition-all">
-            <span className="text-4xl font-extrabold text-[#1d73b7]/15 dark:text-sky-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] relative space-y-3 shadow-sm hover:border-[#c56718] transition-all">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 dark:text-amber-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
               02
             </span>
-            <div className="size-10 rounded-lg bg-[#eef5fa] dark:bg-[#15344f] flex items-center justify-center text-[#1d73b7] dark:text-[#75b8e7] font-bold text-sm">
+            <div className="size-10 rounded-lg bg-[#f5f7f9] dark:bg-[#162d42] flex items-center justify-center text-[#c56718] dark:text-[#f2b84b] font-bold text-sm">
               <Headphones className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
               Technical Discussion
             </h4>
             <p className="text-xs text-[#5a6b78] dark:text-slate-300 leading-relaxed">
-              A 30–45 minute virtual or in-person technical conversation with our Chief Engineer or Department Head
+              A 30â€“45 minute virtual or in-person technical conversation with our Chief Engineer or Department Head
               discussing your past projects.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] relative space-y-3 shadow-sm hover:border-[#1d73b7] transition-all">
-            <span className="text-4xl font-extrabold text-[#1d73b7]/15 dark:text-sky-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] relative space-y-3 shadow-sm hover:border-[#c56718] transition-all">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 dark:text-amber-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
               03
             </span>
-            <div className="size-10 rounded-lg bg-emerald-50 dark:bg-[#15344f] flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-sm">
+            <div className="size-10 rounded-lg bg-emerald-50 dark:bg-[#162d42] flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-sm">
               <Building2 className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
               Plant / Office Walkthrough
             </h4>
             <p className="text-xs text-[#5a6b78] dark:text-slate-300 leading-relaxed">
@@ -1116,14 +1116,14 @@ export default function CareersPage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] relative space-y-3 shadow-sm hover:border-[#1d73b7] transition-all">
-            <span className="text-4xl font-extrabold text-[#1d73b7]/15 dark:text-sky-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] relative space-y-3 shadow-sm hover:border-[#c56718] transition-all">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 dark:text-amber-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
               04
             </span>
-            <div className="size-10 rounded-lg bg-purple-50 dark:bg-[#15344f] flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-sm">
+            <div className="size-10 rounded-lg bg-purple-50 dark:bg-[#162d42] flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-sm">
               <Award className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
               Fast-Track Offer
             </h4>
             <p className="text-xs text-[#5a6b78] dark:text-slate-300 leading-relaxed">
@@ -1135,13 +1135,13 @@ export default function CareersPage() {
       </section>
 
       {/* Candidate FAQs Section (Crisp White / Slate Styling) */}
-      <section className="py-16 bg-[#edf3f7] dark:bg-[#092033] border-t border-[#dce4ea] dark:border-[#1e3d59]">
+      <section className="py-16 bg-[#e8eef2] dark:bg-[#092033] border-t border-[#d6e0e6] dark:border-[#223b51]">
         <div className="market-container max-w-3xl space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-[#1d73b7] dark:text-[#67b0e8] uppercase tracking-widest">
+            <span className="text-xs font-bold text-[#c56718] dark:text-[#c56718] uppercase tracking-widest">
               FREQUENTLY ASKED QUESTIONS
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#102a40] dark:text-white">
+            <h2 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
               Questions About Working at Volamp
             </h2>
           </div>
@@ -1152,22 +1152,22 @@ export default function CareersPage() {
               return (
                 <div
                   key={faq.q}
-                  className="rounded-xl border border-[#dce4ea] dark:border-[#1e3d59] bg-white dark:bg-[#0c2338] overflow-hidden transition-colors"
+                  className="rounded-xl border border-[#d6e0e6] dark:border-[#223b51] bg-white dark:bg-[#0b1f33] overflow-hidden transition-colors"
                 >
                   <button
                     type="button"
                     onClick={() => setActiveFaq(isOpen ? null : idx)}
-                    className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#102a40] dark:text-white hover:text-[#1d73b7] dark:hover:text-[#67b0e8] cursor-pointer"
+                    className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#0b1f33] dark:text-white hover:text-[#c56718] dark:hover:text-[#c56718] cursor-pointer"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
                       className={`size-4 shrink-0 transition-transform ${
-                        isOpen ? "rotate-180 text-[#1d73b7] dark:text-[#67b0e8]" : "text-slate-400"
+                        isOpen ? "rotate-180 text-[#c56718] dark:text-[#c56718]" : "text-slate-400"
                       }`}
                     />
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed border-t border-[#edf1f4] dark:border-[#1e3d59] bg-[#f7f9fb] dark:bg-[#102b42]">
+                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed border-t border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]">
                       {faq.a}
                     </div>
                   )}
@@ -1180,9 +1180,9 @@ export default function CareersPage() {
 
       {/* Spontaneous Application CTA Banner */}
       <section className="py-14 market-container">
-        <div className="p-8 sm:p-12 rounded-2xl bg-white dark:bg-[#102b42] border border-[#dce4ea] dark:border-[#29465b] text-center space-y-4 max-w-4xl mx-auto shadow-sm">
-          <HeartHandshake className="size-10 text-[#1d73b7] dark:text-[#67b0e8] mx-auto" />
-          <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#102a40] dark:text-white">
+        <div className="p-8 sm:p-12 rounded-2xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] text-center space-y-4 max-w-4xl mx-auto shadow-sm">
+          <HeartHandshake className="size-10 text-[#c56718] dark:text-[#c56718] mx-auto" />
+          <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
             Don't see your specific expertise listed?
           </h3>
           <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 max-w-xl mx-auto leading-relaxed">
@@ -1192,7 +1192,7 @@ export default function CareersPage() {
           <div className="pt-2">
             <Button
               onClick={() => handleOpenApply()}
-              className="bg-[#1d73b7] hover:bg-[#155d94] text-white text-sm font-bold px-6 py-3 rounded-lg shadow-md"
+              className="bg-[#c56718] hover:bg-[#9e4e0e] text-white text-sm font-bold px-6 py-3 rounded-lg shadow-md"
             >
               <span>Submit Spontaneous Application / CV</span>
               <ArrowRight className="size-4 ml-1.5" />
@@ -1204,7 +1204,7 @@ export default function CareersPage() {
       {/* Role Details Modal */}
       {selectedRoleDetail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#0e273c] rounded-2xl border border-[#dce4ea] dark:border-[#29465b] max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl relative">
+          <div className="bg-white dark:bg-[#0b1f33] rounded-2xl border border-[#d6e0e6] dark:border-[#223b51] max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl relative">
             <button
               onClick={() => setSelectedRoleDetail(null)}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-white"
@@ -1213,23 +1213,23 @@ export default function CareersPage() {
             </button>
 
             <div className="space-y-3">
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#eef5fa] text-[#1d73b7] dark:bg-[#15344f] dark:text-[#75b8e7] border border-[#d0e3f2] dark:border-[#20496e]">
+              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#f5f7f9] text-[#c56718] dark:bg-[#162d42] dark:text-[#f2b84b] border border-[#c7d3dc] dark:border-[#223b51]">
                 {selectedRoleDetail.department}
               </span>
-              <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-[#102a40] dark:text-white">
+              <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
                 {selectedRoleDetail.title}
               </h3>
               <div className="flex flex-wrap items-center gap-3 text-xs text-[#5a6b78] dark:text-slate-300">
                 <span className="flex items-center gap-1">
-                  <MapPin className="size-3.5 text-[#1d73b7] dark:text-[#67b0e8]" />
+                  <MapPin className="size-3.5 text-[#c56718] dark:text-[#c56718]" />
                   {selectedRoleDetail.location}
                 </span>
-                <span>•</span>
+                <span>â€¢</span>
                 <span className="flex items-center gap-1">
                   <Clock className="size-3.5 text-slate-400" />
                   {selectedRoleDetail.workMode}
                 </span>
-                <span>•</span>
+                <span>â€¢</span>
                 <span className="flex items-center gap-1">
                   <Award className="size-3.5 text-slate-400" />
                   {selectedRoleDetail.packageLpa}
@@ -1274,17 +1274,17 @@ export default function CareersPage() {
             </div>
 
             {/* Footer action */}
-            <div className="pt-4 border-t border-[#edf1f4] dark:border-[#1e3d59] flex items-center justify-between gap-4">
+            <div className="pt-4 border-t border-[#d6e0e6] dark:border-[#223b51] flex items-center justify-between gap-4">
               <Button
                 variant="outline"
                 onClick={() => setSelectedRoleDetail(null)}
-                className="text-xs rounded-lg border-[#dce4ea]"
+                className="text-xs rounded-lg border-[#d6e0e6]"
               >
                 Close
               </Button>
               <Button
                 onClick={() => handleOpenApply(selectedRoleDetail)}
-                className="bg-[#1d73b7] hover:bg-[#155d94] text-white text-xs font-bold px-6 py-2.5 rounded-lg shadow-md flex items-center gap-1.5"
+                className="bg-[#c56718] hover:bg-[#9e4e0e] text-white text-xs font-bold px-6 py-2.5 rounded-lg shadow-md flex items-center gap-1.5"
               >
                 <span>Proceed to Application</span>
                 <ArrowRight className="size-3.5" />
@@ -1297,7 +1297,7 @@ export default function CareersPage() {
       {/* Application Form Modal */}
       {applicationModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#0e273c] rounded-2xl border border-[#dce4ea] dark:border-[#29465b] max-w-xl w-full p-6 sm:p-8 max-h-[92vh] overflow-y-auto space-y-6 shadow-2xl relative">
+          <div className="bg-white dark:bg-[#0b1f33] rounded-2xl border border-[#d6e0e6] dark:border-[#223b51] max-w-xl w-full p-6 sm:p-8 max-h-[92vh] overflow-y-auto space-y-6 shadow-2xl relative">
             <button
               onClick={() => {
                 setApplicationModalOpen(false);
@@ -1318,7 +1318,7 @@ export default function CareersPage() {
                   <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
                     APPLICATION RECEIVED
                   </span>
-                  <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-[#102a40] dark:text-white">
+                  <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
                     Thank You, {fullName}!
                   </h3>
                   <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 max-w-md mx-auto">
@@ -1327,9 +1327,9 @@ export default function CareersPage() {
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#f7f9fb] dark:bg-[#133552] border border-[#dce4ea] dark:border-[#1e486d] space-y-1">
+                <div className="p-4 rounded-xl bg-[#f5f7f9] dark:bg-[#133552] border border-[#d6e0e6] dark:border-[#1e486d] space-y-1">
                   <span className="text-[11px] font-bold text-slate-400 uppercase">OFFICIAL APPLICATION ID</span>
-                  <div className="text-xl font-mono font-bold text-[#1d73b7] dark:text-[#75b8e7]">
+                  <div className="text-xl font-mono font-bold text-[#c56718] dark:text-[#f2b84b]">
                     {submittedAppId}
                   </div>
                   <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
@@ -1355,7 +1355,7 @@ export default function CareersPage() {
                       handleResetForm();
                       setApplicationModalOpen(false);
                     }}
-                    className="text-xs rounded-lg border-[#dce4ea]"
+                    className="text-xs rounded-lg border-[#d6e0e6]"
                   >
                     Done & Return
                   </Button>
@@ -1364,11 +1364,11 @@ export default function CareersPage() {
             ) : (
               // Form Screen
               <form onSubmit={handleSubmitApplication} className="space-y-4">
-                <div className="space-y-1 border-b border-[#edf1f4] dark:border-[#1e3d59] pb-4">
-                  <span className="text-xs font-bold text-[#1d73b7] dark:text-[#67b0e8] uppercase tracking-widest">
+                <div className="space-y-1 border-b border-[#d6e0e6] dark:border-[#223b51] pb-4">
+                  <span className="text-xs font-bold text-[#c56718] dark:text-[#c56718] uppercase tracking-widest">
                     VOLAMP TALENT APPLICATION
                   </span>
-                  <h3 className="text-xl font-bold font-['Space_Grotesk'] text-[#102a40] dark:text-white">
+                  <h3 className="text-xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
                     Submit Your Application
                   </h3>
                   <p className="text-xs text-[#5a6b78] dark:text-slate-400">
@@ -1378,7 +1378,7 @@ export default function CareersPage() {
 
                 {/* Role Applied Selector */}
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                  <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                     Position Applied For *
                   </label>
                   <select
@@ -1388,7 +1388,7 @@ export default function CareersPage() {
                       const matchingRole = roles.find((r) => r.title === e.target.value);
                       if (matchingRole) setApplicantDept(matchingRole.department);
                     }}
-                    className="w-full h-10 px-3 rounded-lg border border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338] text-xs font-medium text-[#142b40] dark:text-[#eaf1f5]"
+                    className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs font-medium text-[#0b1f33] dark:text-[#e8eef2]"
                     required
                   >
                     <option value="General Application (Talent Pool)">
@@ -1405,20 +1405,20 @@ export default function CareersPage() {
                 {/* Full Name & Email */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       Full Name *
                     </label>
                     <Input
                       placeholder="e.g. Rahul Sharma"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338]"
+                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
                       required
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       Email Address *
                     </label>
                     <Input
@@ -1426,7 +1426,7 @@ export default function CareersPage() {
                       placeholder="rahul.sharma@gmail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338]"
+                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
                       required
                     />
                   </div>
@@ -1435,40 +1435,40 @@ export default function CareersPage() {
                 {/* Phone & Location */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       Mobile / WhatsApp *
                     </label>
                     <Input
                       placeholder="e.g. 9876543210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338]"
+                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
                       required
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       Current City *
                     </label>
                     <Input
                       placeholder="e.g. Ahmedabad"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338]"
+                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
                       required
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       State *
                     </label>
                     <Input
                       placeholder="e.g. Gujarat"
                       value={state}
                       onChange={(e) => setState(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338]"
+                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
                       required
                     />
                   </div>
@@ -1477,13 +1477,13 @@ export default function CareersPage() {
                 {/* Experience & Qualification */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       Total Experience *
                     </label>
                     <select
                       value={experienceYears}
                       onChange={(e) => setExperienceYears(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338] text-xs font-medium text-[#142b40] dark:text-[#eaf1f5]"
+                      className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs font-medium text-[#0b1f33] dark:text-[#e8eef2]"
                       required
                     >
                       <option value="Fresh Graduate (0-1 Yrs)">Fresh Graduate (0-1 Yrs)</option>
@@ -1495,13 +1495,13 @@ export default function CareersPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       Highest Qualification *
                     </label>
                     <select
                       value={highestQualification}
                       onChange={(e) => setHighestQualification(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338] text-xs font-medium text-[#142b40] dark:text-[#eaf1f5]"
+                      className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs font-medium text-[#0b1f33] dark:text-[#e8eef2]"
                       required
                     >
                       <option value="B.E. / B.Tech (Electrical)">B.E. / B.Tech (Electrical)</option>
@@ -1518,37 +1518,37 @@ export default function CareersPage() {
                 {/* Company & Notice Period */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       Current Company
                     </label>
                     <Input
                       placeholder="e.g. Current Employer"
                       value={currentCompany}
                       onChange={(e) => setCurrentCompany(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338]"
+                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       Expected CTC (LPA)
                     </label>
                     <Input
-                      placeholder="e.g. ₹8.5 LPA"
+                      placeholder="e.g. â‚¹8.5 LPA"
                       value={expectedCtc}
                       onChange={(e) => setExpectedCtc(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338]"
+                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       Notice Period *
                     </label>
                     <select
                       value={noticePeriod}
                       onChange={(e) => setNoticePeriod(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338] text-xs font-medium text-[#142b40] dark:text-[#eaf1f5]"
+                      className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs font-medium text-[#0b1f33] dark:text-[#e8eef2]"
                       required
                     >
                       <option value="Immediate">Immediate</option>
@@ -1563,33 +1563,33 @@ export default function CareersPage() {
                 {/* Links */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       LinkedIn Profile URL
                     </label>
                     <Input
                       placeholder="https://linkedin.com/in/..."
                       value={linkedInUrl}
                       onChange={(e) => setLinkedInUrl(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338]"
+                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                       Resume Link (Google Drive / Dropbox / Cloud CV)
                     </label>
                     <Input
                       placeholder="https://drive.google.com/..."
                       value={resumeUrl}
                       onChange={(e) => setResumeUrl(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338]"
+                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
                     />
                   </div>
                 </div>
 
                 {/* Cover Statement */}
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[#142b40] dark:text-slate-200">
+                  <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
                     Brief Statement / Why Volamp? (Optional)
                   </label>
                   <Textarea
@@ -1597,16 +1597,16 @@ export default function CareersPage() {
                     value={coverNote}
                     onChange={(e) => setCoverNote(e.target.value)}
                     rows={2}
-                    className="rounded-lg text-xs border-[#dce4ea] dark:border-[#29465b] bg-[#f7f9fb] dark:bg-[#0c2338]"
+                    className="rounded-lg text-xs border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
                   />
                 </div>
 
                 {/* Submit Action */}
-                <div className="pt-2 border-t border-[#edf1f4] dark:border-[#1e3d59] space-y-2">
+                <div className="pt-2 border-t border-[#d6e0e6] dark:border-[#223b51] space-y-2">
                   <Button
                     type="submit"
                     disabled={applyMutation.isPending}
-                    className="w-full py-3.5 bg-[#1d73b7] hover:bg-[#155d94] text-white font-bold text-xs rounded-lg shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3.5 bg-[#c56718] hover:bg-[#9e4e0e] text-white font-bold text-xs rounded-lg shadow-md flex items-center justify-center gap-2 cursor-pointer"
                   >
                     {applyMutation.isPending ? (
                       <>
@@ -1706,7 +1706,7 @@ export default function CareersPage() {
         </div>
 
         <div className="market-container py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <div>Volamp Elektrikals © 2026. All rights reserved. Equal Opportunity Employer.</div>
+          <div>Volamp Elektrikals Â© 2026. All rights reserved. Equal Opportunity Employer.</div>
           <div className="flex items-center gap-4">
             <Link href="/privacy-policy" className="hover:text-[#f2b84b] transition-colors">
               Privacy Policy
@@ -1723,3 +1723,8 @@ export default function CareersPage() {
     </div>
   );
 }
+
+
+
+
+
