@@ -19,6 +19,7 @@ import TrackPage from "./pages/TrackPage";
 import PayInvoice from "./pages/PayInvoice";
 import CalculatorPage from "./pages/CalculatorPage";
 import CollaboratePage from "./pages/CollaboratePage";
+import CareersPage from "./pages/CareersPage";
 import BlogPage from "./pages/BlogPage";
 import EnquirePage from "./pages/EnquirePage";
 import FloatingActions from "./components/FloatingActions";
@@ -64,6 +65,11 @@ function Router() {
       <Route path="/collaborate-with-us" component={CollaboratePage} />
       <Route path="/partner" component={CollaboratePage} />
       <Route path="/dealership" component={CollaboratePage} />
+      <Route path="/careers" component={CareersPage} />
+      <Route path="/career" component={CareersPage} />
+      <Route path="/jobs" component={CareersPage} />
+      <Route path="/join-us" component={CareersPage} />
+      <Route path="/careers-at-volamp" component={CareersPage} />
       <Route path="/enquire" component={EnquirePage} />
       <Route path="/enquiry" component={EnquirePage} />
       <Route path="/quote" component={EnquirePage} />

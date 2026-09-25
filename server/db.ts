@@ -23,6 +23,9 @@ import {
   enquiries,
   Enquiry,
   InsertEnquiry,
+  careerApplications,
+  CareerApplication,
+  InsertCareerApplication,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -2914,5 +2917,101 @@ export async function getEnquiryByNumber(enquiryNumber: string): Promise<Enquiry
     } catch {}
   }
   return memoryEnquiries.find((e) => e.enquiryNumber === enquiryNumber) || null;
+}
+
+// ---------------------------------------------------------------------------
+// Career Applications & Talent Desk
+// ---------------------------------------------------------------------------
+
+export function generateCareerApplicationId(): string {
+  const year = new Date().getFullYear();
+  const randomNum = Math.floor(10000 + Math.random() * 90000);
+  return `VOL-HR-${year}-${randomNum}`;
+}
+
+const memoryCareerApplications: Array<CareerApplication> = [];
+
+export async function createCareerApplication(data: {
+  applicationId?: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  city: string;
+  state: string;
+  roleApplied: string;
+  department: string;
+  experienceYears: string;
+  highestQualification: string;
+  currentCompany?: string | null;
+  currentCtc?: string | null;
+  expectedCtc?: string | null;
+  noticePeriod: string;
+  linkedInUrl?: string | null;
+  resumeUrl?: string | null;
+  coverNote?: string | null;
+}): Promise<CareerApplication> {
+  const applicationId = data.applicationId || generateCareerApplicationId();
+  const now = new Date();
+
+  const record: CareerApplication = {
+    id: memoryCareerApplications.length + 1,
+    applicationId,
+    fullName: data.fullName.trim(),
+    email: data.email.trim().toLowerCase(),
+    phone: data.phone.trim(),
+    city: data.city.trim(),
+    state: data.state.trim(),
+    roleApplied: data.roleApplied.trim(),
+    department: data.department.trim(),
+    experienceYears: data.experienceYears.trim(),
+    highestQualification: data.highestQualification.trim(),
+    currentCompany: data.currentCompany?.trim() || null,
+    currentCtc: data.currentCtc?.trim() || null,
+    expectedCtc: data.expectedCtc?.trim() || null,
+    noticePeriod: data.noticePeriod.trim(),
+    linkedInUrl: data.linkedInUrl?.trim() || null,
+    resumeUrl: data.resumeUrl?.trim() || null,
+    coverNote: data.coverNote?.trim() || null,
+    status: "received",
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const db = await getDb();
+  if (db) {
+    try {
+      await db.insert(careerApplications).values(record);
+    } catch (err) {
+      console.warn("[Database] careerApplications insert error, saved in-memory:", err);
+    }
+  }
+
+  memoryCareerApplications.unshift(record);
+  return record;
+}
+
+export async function getCareerApplications(): Promise<CareerApplication[]> {
+  const db = await getDb();
+  if (db) {
+    try {
+      return await db.select().from(careerApplications);
+    } catch {}
+  }
+  return memoryCareerApplications;
+}
+
+export async function getCareerApplicationById(applicationId: string): Promise<CareerApplication | null> {
+  const db = await getDb();
+  if (db) {
+    try {
+      const rows = await db
+        .select()
+        .from(careerApplications)
+        .where(eq(careerApplications.applicationId, applicationId))
+        .limit(1);
+      if (rows[0]) return rows[0];
+    } catch {}
+  }
+  return memoryCareerApplications.find((app) => app.applicationId === applicationId) || null;
 }
 

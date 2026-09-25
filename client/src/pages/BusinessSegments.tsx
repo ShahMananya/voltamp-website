@@ -539,6 +539,7 @@ export default function BusinessSegments() {
             <span className="footer-column-title">ABOUT VOLAMP</span>
             <Link href="/about-volamp">About Us</Link>
             <Link href="/business-segments">Business Segments</Link>
+            <Link href="/careers">Careers</Link>
             <Link href="/collaborate">
               Collaborate with Us
             </Link>

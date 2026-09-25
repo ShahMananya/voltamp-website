@@ -203,6 +203,30 @@ export const enquiries = mysqlTable("enquiries", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
+export const careerApplications = mysqlTable("career_applications", {
+  id: int("id").autoincrement().primaryKey(),
+  applicationId: varchar("applicationId", { length: 40 }).notNull().unique(),
+  fullName: varchar("fullName", { length: 160 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  phone: varchar("phone", { length: 32 }).notNull(),
+  city: varchar("city", { length: 120 }).notNull(),
+  state: varchar("state", { length: 120 }).notNull(),
+  roleApplied: varchar("roleApplied", { length: 200 }).notNull(),
+  department: varchar("department", { length: 120 }).notNull(),
+  experienceYears: varchar("experienceYears", { length: 60 }).notNull(),
+  highestQualification: varchar("highestQualification", { length: 160 }).notNull(),
+  currentCompany: varchar("currentCompany", { length: 200 }),
+  currentCtc: varchar("currentCtc", { length: 80 }),
+  expectedCtc: varchar("expectedCtc", { length: 80 }),
+  noticePeriod: varchar("noticePeriod", { length: 80 }).notNull(),
+  linkedInUrl: varchar("linkedInUrl", { length: 300 }),
+  resumeUrl: text("resumeUrl"),
+  coverNote: text("coverNote"),
+  status: mysqlEnum("status", ["received", "under_review", "shortlisted", "interview_scheduled", "rejected", "offered"]).default("received").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type CustomerProfile = typeof customerProfiles.$inferSelect;
@@ -223,6 +247,8 @@ export type CollaborateSubmission = typeof collaborateSubmissions.$inferSelect;
 export type InsertCollaborateSubmission = typeof collaborateSubmissions.$inferInsert;
 export type Enquiry = typeof enquiries.$inferSelect;
 export type InsertEnquiry = typeof enquiries.$inferInsert;
+export type CareerApplication = typeof careerApplications.$inferSelect;
+export type InsertCareerApplication = typeof careerApplications.$inferInsert;
 
 export interface QuotedProductSnapshot {
   productId: string;

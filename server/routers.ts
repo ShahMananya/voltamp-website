@@ -42,6 +42,9 @@ import {
   createEnquiry,
   getEnquiries,
   getEnquiryByNumber,
+  createCareerApplication,
+  getCareerApplications,
+  getCareerApplicationById,
 } from "./db";
 import { generateVolaResponse } from "./volaBrain";
 import {
@@ -1153,6 +1156,264 @@ export const appRouter = router({
         timestamp: new Date().toISOString(),
       };
     }),
+  }),
+
+  careers: router({
+    getOpenRoles: publicProcedure.query(() => {
+      return [
+        {
+          id: "ht-lt-cable-design-engineer",
+          title: "Senior HT / LT Power Cable Design Engineer",
+          department: "Engineering & R&D",
+          location: "Ahmedabad HQ (Gujarat)",
+          workMode: "Full-Time · On-Site",
+          experience: "4 – 8 Years",
+          education: "B.E. / B.Tech / M.Tech in Electrical or Polymer Engineering",
+          packageLpa: "₹9.5 – 15.0 LPA",
+          openingsCount: 2,
+          isFeatured: true,
+          overview: "Lead technical design and compound formulation for 1.1kV up to 33kV XLPE and PVC insulated power/control cables, ensuring compliance with IS 7098, IS 1554, and IEC 60502 standards.",
+          responsibilities: [
+            "Develop conductor stranding calculations, radial insulation thicknesses, screening, and armouring specifications.",
+            "Formulate and optimize flame-retardant (FRLS, LSZH) and high-temperature PVC/XLPE compounds.",
+            "Draft comprehensive Guaranteed Technical Particulars (GTP) and test documentation for CPRI, ERDA, and DISCOM vendor approvals.",
+            "Collaborate with plant extrusion teams during pilot runs and prototype validation.",
+          ],
+          requirements: [
+            "Proven track record in power cable design (up to 33kV HT / MV cables).",
+            "Deep comprehension of IS 694, IS 1554 (Part 1), IS 7098 (Part 1 & 2), and IEC 60502 standards.",
+            "Proficiency in AutoCAD for cable cross-sections and technical CAD modeling.",
+            "Familiarity with raw material cost optimization and conductor weight indices.",
+          ],
+          tags: ["33kV HT / LT", "XLPE Compounding", "CPRI / ERDA", "GTP Preparation"],
+        },
+        {
+          id: "qa-hv-test-lab-lead",
+          title: "Quality Assurance & High-Voltage Test Lab Lead",
+          department: "Quality & Testing",
+          location: "Sanand / Ahmedabad Plant (Gujarat)",
+          workMode: "Full-Time · On-Site",
+          experience: "3 – 7 Years",
+          education: "B.E. / B.Tech in Electrical Engineering or Diploma with QA Certification",
+          packageLpa: "₹7.5 – 12.0 LPA",
+          openingsCount: 1,
+          isFeatured: true,
+          overview: "Oversee the central High-Voltage test laboratory, type-testing protocols, and routine factory acceptance tests (FAT) ensuring 0-defect dispatches with Mill Test Certificates (MTC).",
+          responsibilities: [
+            "Conduct and supervise high-voltage withstand testing, spark testing, insulation resistance (IR), and partial discharge (PD) measurements.",
+            "Inspect raw copper cathode, EC-grade aluminum wire rods, and polymer pellets for electrical conductivity and tensile elongation.",
+            "Issue official Mill Test Certificates (MTC) for EPC contractors, railway authorities, and GeM supplies.",
+            "Maintain lab instrument calibration compliant with ISO 9001 and ISO/IEC 17025 testing norms.",
+          ],
+          requirements: [
+            "Hands-on experience running HV test sets, Kelvin double bridge, spark testers, and thermal aging ovens.",
+            "Direct interaction experience with third-party inspection agencies (RITES, BV, SGS, DNV).",
+            "Rigorous commitment to zero-compromise electrical safety standards.",
+          ],
+          tags: ["High Voltage Lab", "Partial Discharge", "NABL / ISO 17025", "MTC Certification"],
+        },
+        {
+          id: "plant-extrusion-supervisor",
+          title: "Plant Extrusion & Continuous Vulcanization Supervisor",
+          department: "Manufacturing & Plant",
+          location: "Ahmedabad Manufacturing Complex",
+          workMode: "Full-Time · On-Site",
+          experience: "3 – 6 Years",
+          education: "Diploma or B.E. in Mechanical / Electrical / Polymer Technology",
+          packageLpa: "₹6.0 – 9.5 LPA",
+          openingsCount: 3,
+          isFeatured: false,
+          overview: "Drive shop-floor operations across continuous vulcanization (CCV) lines and triple-extrusion lines, optimizing line speed, wall concentricity, and raw material yield.",
+          responsibilities: [
+            "Supervise extrusion operations for insulation, bedding, steel wire/strip armouring, and final PVC/LSZH outer sheathing.",
+            "Maintain strict wall thickness tolerances, eccentricity controls, and smooth jacket surface finish.",
+            "Enforce preventive maintenance schedules, rapid tooling changeovers, and compound scrap minimization.",
+            "Direct shift workforce in adherence to 5S methodology and plant safety protocols.",
+          ],
+          requirements: [
+            "Hands-on supervisory background in cable extrusion and compounding plants.",
+            "Thorough knowledge of temperature profiles and screw geometry for PVC, XLPE, and HDPE.",
+            "Strong team leadership and practical problem-solving capability under shift schedules.",
+          ],
+          tags: ["CCV Extrusion", "Armouring Lines", "Shop Floor 5S", "Yield Optimization"],
+        },
+        {
+          id: "b2b-epc-sales-manager",
+          title: "B2B Infrastructure & EPC Project Sales Manager",
+          department: "EPC & Project Sales",
+          location: "Mumbai Regional Office (Western Hub)",
+          workMode: "Full-Time · Hybrid / Field",
+          experience: "5 – 10 Years",
+          education: "B.Tech Electrical + MBA (Marketing or Supply Chain preferred)",
+          packageLpa: "₹12.0 – 18.0 LPA + Performance Bonus",
+          openingsCount: 2,
+          isFeatured: true,
+          overview: "Drive strategic institutional cable sales to infrastructure EPCs, metro railway packages, data centers, airports, and power transmission utilities across Western India.",
+          responsibilities: [
+            "Secure multi-crore annual rate contracts and project supply packages with Tier-1 EPC contractors (L&T, Tata Projects, Sterling & Wilson, KEC, Kalpataru).",
+            "Lead vendor pre-qualification and consultant approvals with EIL, Mecon, NTPC, PGCIL, and state electricity boards.",
+            "Coordinate with central Ahmedabad dispatch operations for production schedules, stage-wise inspections, and LC/BG commercial terms.",
+            "Manage client relationships and ensure seamless post-dispatch technical documentation.",
+          ],
+          requirements: [
+            "Proven track record in B2B electrical cables, switchgears, or electrical transmission equipment sales.",
+            "Active professional network with EPC procurement heads, PMC consultants, and chief electrical engineers.",
+            "Excellent commercial negotiation, proposal structuring, and presentation acumen.",
+          ],
+          tags: ["EPC Sales", "Metro Rail / Utilities", "Vendor Approval", "Rate Contracts"],
+        },
+        {
+          id: "solar-renewable-sales-lead",
+          title: "Solar & Renewable Energy Key Account Executive",
+          department: "EPC & Project Sales",
+          location: "Jaipur / Ahmedabad Corridor",
+          workMode: "Full-Time · Field / Client Facing",
+          experience: "2 – 5 Years",
+          education: "B.E. in Electrical / Renewable Energy Engineering or B.Sc",
+          packageLpa: "₹6.5 – 10.5 LPA + Incentives",
+          openingsCount: 2,
+          isFeatured: false,
+          overview: "Accelerate the adoption of Volamp's 1500V DC Solar Photovoltaic cables and renewable balance-of-plant cabling with IPPs, utility solar developers, and rooftop EPCs.",
+          responsibilities: [
+            "Cultivate key relationships with solar developers, IPPs, and turnkey EPC contractors across Gujarat, Rajasthan, and Western India.",
+            "Present technical value propositions of electron-beam cross-linked solar cables (EN 50618, TÜV 2 Pfg 1169 standards, UV & ozone resistance).",
+            "Monitor national and state solar park tender bids to capture cable supply requirements early.",
+          ],
+          requirements: [
+            "Experience selling into the solar EPC, wind balance-of-plant, or renewable contractor ecosystem.",
+            "Solid technical understanding of DC cable sizing, voltage drop mitigation, and MC4 connector compatibility.",
+            "Strong communication skills and proactive client engagement.",
+          ],
+          tags: ["Solar 1500V DC", "Renewable IPPs", "TÜV Rheinland", "Utility Solar"],
+        },
+        {
+          id: "tendering-boq-estimation-engineer",
+          title: "Tendering, BOQ & Cost Estimation Engineer",
+          department: "Procurement & Supply Chain",
+          location: "Ahmedabad Corporate HQ",
+          workMode: "Full-Time · On-Site",
+          experience: "2 – 5 Years",
+          education: "B.E. / B.Tech in Electrical Engineering",
+          packageLpa: "₹6.0 – 9.0 LPA",
+          openingsCount: 2,
+          isFeatured: false,
+          overview: "Scrutinize technical tender specifications, prepare accurate Bill of Quantities (BOQ) costings linked to raw metal indices, and manage GeM and public e-procurement bids.",
+          responsibilities: [
+            "Analyze commercial and technical tender requirements from State DISCOMs, Railway Boards, GeM portal, and PSU utilities.",
+            "Calculate conductor metal weights (Copper/Aluminum), compound volume, steel armouring wire, and machine hour costs per km.",
+            "Apply IEEMA price variation clauses (PV formulas) and formulate competitive bid proposals within deadline.",
+          ],
+          requirements: [
+            "Proven expertise in tender BOQ preparation and electrical cable cost estimation.",
+            "Familiarity with GeM portal bids, e-procurement platforms, and IEEMA circular indices.",
+            "Analytical rigor and sharp attention to technical detail.",
+          ],
+          tags: ["Tendering & BOQ", "IEEMA Formulas", "GeM Bids", "Cost Estimation"],
+        },
+        {
+          id: "metal-procurement-specialist",
+          title: "Metal Procurement & Raw Material Supply Chain Specialist",
+          department: "Procurement & Supply Chain",
+          location: "Ahmedabad Corporate HQ",
+          workMode: "Full-Time · On-Site",
+          experience: "3 – 6 Years",
+          education: "B.Com / B.E. + Supply Chain Certification or MBA",
+          packageLpa: "₹7.0 – 11.0 LPA",
+          openingsCount: 1,
+          isFeatured: false,
+          overview: "Manage strategic procurement of primary raw metals (Electrolytic Copper cathode/wire rod, EC Grade Aluminum) and masterbatch polymers tied to MCX and LME indices.",
+          responsibilities: [
+            "Source high-purity copper rods and aluminum wire rods from primary smelters (Hindalco, Vedanta, NALCO).",
+            "Track daily MCX and LME commodity trends to execute strategic forward hedging and physical metal bookings.",
+            "Negotiate volume purchase contracts for polymer compounds (XLPE, PVC resin, plasticizers, masterbatches).",
+            "Coordinate just-in-time delivery schedules to minimize holding costs while ensuring zero manufacturing downtime.",
+          ],
+          requirements: [
+            "Direct experience procuring copper/aluminum or raw materials for cable or conductor manufacturing.",
+            "Understanding of commodity futures, price hedging, and vendor contract management.",
+          ],
+          tags: ["MCX / LME Hedging", "Copper & Aluminum", "Polymer Sourcing", "Vendor Negotiation"],
+        },
+        {
+          id: "get-electrical-batch-2026",
+          title: "Graduate Engineer Trainee (GET) – Electrical (Batch 2026)",
+          department: "Early Careers",
+          location: "Ahmedabad HQ & Manufacturing Complex",
+          workMode: "Full-Time · 12-Month Rotation",
+          experience: "Fresh Graduate / 0 – 1 Year (Batch 2025/2026)",
+          education: "B.E. / B.Tech in Electrical / Electronics Engineering (Min 65% aggregate)",
+          packageLpa: "₹4.5 – 6.0 LPA + Medical Coverage",
+          openingsCount: 6,
+          isFeatured: true,
+          overview: "An accelerated 1-year rotational leadership program designed to groom future engineering leaders across Cable Design, High-Voltage QA Labs, Plant Extrusion, and Technical Estimations.",
+          responsibilities: [
+            "Rotate through 4 quarterly modules: Cable Design & Standards, Plant Extrusion & CCV Lines, High-Voltage Testing & Lab Protocols, and Technical Sizing & Client BOQs.",
+            "Work alongside Senior Technical Mentors on real infrastructure supply consignments.",
+            "Deliver a capstone technical project focused on compound optimization, testing automation, or energy efficiency.",
+            "Receive full-time absorption into R&D, Quality, or Plant Engineering upon successful program completion.",
+          ],
+          requirements: [
+            "Strong academic grounding in power systems, electrical materials, and high-voltage fundamentals.",
+            "Passion for hands-on industrial engineering and nation-building infrastructure.",
+            "Proactive learner with excellent communication and team collaboration skills.",
+          ],
+          tags: ["Fast-Track GET", "12-Month Rotation", "Full Mentorship", "Batch 2026"],
+        },
+      ];
+    }),
+
+    submitApplication: publicProcedure
+      .input(
+        z.object({
+          fullName: z.string().trim().min(2, "Full name is required"),
+          email: z.string().trim().email("Please enter a valid email address"),
+          phone: z.string().trim().min(7, "Please enter a valid mobile or WhatsApp number"),
+          city: z.string().trim().min(2, "City is required"),
+          state: z.string().trim().min(2, "State is required"),
+          roleApplied: z.string().trim().min(2, "Role applied is required"),
+          department: z.string().trim().min(2, "Department is required"),
+          experienceYears: z.string().trim().min(1, "Please select your experience range"),
+          highestQualification: z.string().trim().min(2, "Highest qualification is required"),
+          currentCompany: z.string().trim().optional(),
+          currentCtc: z.string().trim().optional(),
+          expectedCtc: z.string().trim().optional(),
+          noticePeriod: z.string().trim().min(1, "Please select your notice period"),
+          linkedInUrl: z.string().trim().optional(),
+          resumeUrl: z.string().trim().optional(),
+          coverNote: z.string().trim().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const application = await createCareerApplication(input);
+        return {
+          success: true as const,
+          applicationId: application.applicationId,
+          application,
+        };
+      }),
+
+    list: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.accountType !== "employee") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only VOLAMP HR & authorized personnel can view career applications.",
+        });
+      }
+      return getCareerApplications();
+    }),
+
+    getById: publicProcedure
+      .input(z.object({ applicationId: z.string() }))
+      .query(async ({ input }) => {
+        const app = await getCareerApplicationById(input.applicationId);
+        if (!app) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Career application not found.",
+          });
+        }
+        return app;
+      }),
   }),
 });
 

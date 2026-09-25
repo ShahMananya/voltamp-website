@@ -942,6 +942,7 @@ export default function AboutVolamp() {
             <a href="#footprint">3D Interactive Map & Footprint</a>
             <a href="#legacy-timeline">Historic Timeline (1965–Present)</a>
             <a href="#team">Leadership & Management</a>
+            <Link href="/careers">Careers & Openings</Link>
             <Link href="/collaborate" className="highlight-link">
               Collaborate with Us <ArrowRight className="size-3 inline ml-1" />
             </Link>

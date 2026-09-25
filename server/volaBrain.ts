@@ -685,12 +685,36 @@ export async function generateVolaResponse(
     );
   }
 
-  // 13. GENERAL KNOWLEDGE, JOKES, POEMS & CHIT-CHAT
+  // 13. CAREERS, JOBS, HIRING & TALENT DESK
+  if (/career|job|opening|vacanc|hiring|recruit|internship|fresher|get\b|apply\s+for\s+job|work\s+at\s+volamp|hr\b|resume|cv\b/i.test(lower)) {
+    return (
+      `### ⚡ Build Your Career with Volamp Elektrikals\n\n` +
+      `We are actively hiring passionate engineers, manufacturing leaders, and commercial specialists to build the next generation of India's electrical infrastructure!\n\n` +
+      `Visit our official **[Careers & Open Roles Portal](/careers)** to explore current openings and submit your application directly.\n\n` +
+      `**Current Featured Openings:**\n` +
+      `• **Senior HT / LT Power Cable Design Engineer** (Ahmedabad HQ · 4–8 yrs)\n` +
+      `• **Quality Assurance & High-Voltage Test Lab Lead** (Sanand Plant · 3–7 yrs)\n` +
+      `• **Plant Extrusion & Continuous Vulcanization Supervisor** (Ahmedabad · 3–6 yrs)\n` +
+      `• **B2B Infrastructure & EPC Project Sales Manager** (Mumbai / Western · 5–10 yrs)\n` +
+      `• **Solar & Renewable Energy Key Account Executive** (Jaipur / Ahmedabad · 2–5 yrs)\n` +
+      `• **Tendering, BOQ & Cost Estimation Engineer** (Ahmedabad HQ · 2–5 yrs)\n` +
+      `• **Metal Procurement & Supply Chain Specialist** (Ahmedabad HQ · 3–6 yrs)\n` +
+      `• **Graduate Engineer Trainee (GET) – Electrical 2026 Batch** (Freshers · Ahmedabad)\n\n` +
+      `**Why Join Volamp?**\n` +
+      `• 60+ years industrial heritage & market leadership\n` +
+      `• Work on nation-building metro, solar, and power transmission projects\n` +
+      `• Competitive compensation, performance bonuses & family health coverage\n` +
+      `• State-of-the-art testing labs and continuous technical mentoring\n\n` +
+      `You can apply online at **[/careers](/careers)** or reach our Talent Acquisition Desk directly at **careers@volampelektrikals.com** or **+91 9512365582**!`
+    );
+  }
+
+  // 14. GENERAL KNOWLEDGE, JOKES, POEMS & CHIT-CHAT
   const generalResponse = handleGeneralKnowledgeAndChitChat(lastUserMsg);
   if (generalResponse) {
     return generalResponse;
   }
 
-  // 14. SMART OPEN-ENDED TOPIC SYNTHESIZER (Guarantees every question receives an actual answer!)
+  // 15. SMART OPEN-ENDED TOPIC SYNTHESIZER (Guarantees every question receives an actual answer!)
   return synthesizeOpenEndedResponse(lastUserMsg);
 }
