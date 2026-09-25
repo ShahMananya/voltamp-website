@@ -36,6 +36,12 @@ import {
   updateTeamMember,
   trackConsignmentOrder,
   subscribeNewsletter,
+  createCollaborateSubmission,
+  getCollaborateSubmissions,
+  getCollaborateSubmissionById,
+  createEnquiry,
+  getEnquiries,
+  getEnquiryByNumber,
 } from "./db";
 import { generateVolaResponse } from "./volaBrain";
 import {
@@ -889,6 +895,106 @@ export const appRouter = router({
       )
       .mutation(async ({ input }) => {
         return subscribeNewsletter(input.email, input.phone);
+      }),
+  }),
+
+  collaborate: router({
+    submit: publicProcedure
+      .input(
+        z.object({
+          companyName: z.string().trim().min(2, "Company / Organization name is required"),
+          contactName: z.string().trim().min(2, "Your name is required"),
+          designation: z.string().trim().min(2, "Designation is required"),
+          businessType: z.string().trim().min(1, "Please select your business type"),
+          collaborationTypes: z.array(z.string()).min(1, "Please select at least one collaboration type"),
+          opportunityDetails: z.string().trim().min(5, "Please share the opportunity you see for Volamp"),
+          partnershipStrengths: z.array(z.string()).min(1, "Please select at least one capability you bring"),
+          expectedBusinessPotential: z.string().trim().min(1, "Please select expected business potential"),
+          expectedTimeline: z.string().trim().min(1, "Please select expected timeline"),
+          mobile: z.string().trim().min(7, "Please enter a valid mobile / WhatsApp number"),
+          email: z.string().trim().email("Please enter a valid email address"),
+          cityCountry: z.string().trim().min(2, "City / Country is required"),
+          notes: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const submission = await createCollaborateSubmission(input);
+        return {
+          success: true as const,
+          applicationId: submission.applicationId,
+          submission,
+        };
+      }),
+
+    list: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.accountType !== "employee") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only VOLAMP authorized personnel can view collaboration applications.",
+        });
+      }
+      return getCollaborateSubmissions();
+    }),
+
+    getById: publicProcedure
+      .input(z.object({ applicationId: z.string() }))
+      .query(async ({ input }) => {
+        const sub = await getCollaborateSubmissionById(input.applicationId);
+        if (!sub) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Collaboration application not found.",
+          });
+        }
+        return sub;
+      }),
+  }),
+
+  enquiry: router({
+    submit: publicProcedure
+      .input(
+        z.object({
+          fullName: z.string().trim().min(2, "Your full name is required"),
+          companyName: z.string().trim().optional(),
+          email: z.string().trim().email("Please enter a valid work email address"),
+          phone: z.string().trim().min(7, "Please enter a valid mobile or phone number"),
+          location: z.string().trim().optional(),
+          category: z.string().trim().optional(),
+          quantity: z.string().trim().optional(),
+          urgency: z.string().trim().optional(),
+          details: z.string().trim().min(5, "Please share some details about your requirement"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const result = await createEnquiry(input);
+        return {
+          success: true as const,
+          enquiryNumber: result.enquiryNumber,
+          enquiry: result,
+        };
+      }),
+
+    list: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.accountType !== "employee") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only VOLAMP authorized personnel can view customer enquiries.",
+        });
+      }
+      return getEnquiries();
+    }),
+
+    getByNumber: publicProcedure
+      .input(z.object({ enquiryNumber: z.string() }))
+      .query(async ({ input }) => {
+        const item = await getEnquiryByNumber(input.enquiryNumber);
+        if (!item) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Enquiry not found.",
+          });
+        }
+        return item;
       }),
   }),
 

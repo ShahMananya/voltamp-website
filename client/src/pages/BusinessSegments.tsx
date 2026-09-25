@@ -4,6 +4,8 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { EnquireModal } from "@/components/enquire/EnquireModal";
+import FloatingActions from "@/components/FloatingActions";
 import {
   ArrowLeft,
   ArrowRight,
@@ -313,14 +315,12 @@ export default function BusinessSegments() {
           </div>
           <div className="segments-nav-right">
             <ThemeToggle />
-            <a
-              href="https://forms.gle/e8RWMKojHMwwfZof8"
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href="/collaborate"
               className="segments-collab-link"
             >
-              Collaborate with us <ExternalLink className="size-3.5" />
-            </a>
+              Collaborate with us <ArrowRight className="size-3.5" />
+            </Link>
             <Button
               onClick={() => handleOpenInquiry("General Business Segments")}
               className="segments-quote-btn"
@@ -502,14 +502,12 @@ export default function BusinessSegments() {
               <small>Connecting Products. Powering Businesses. Building Partnerships.</small>
             </div>
             <div className="vision-actions">
-              <a
-                href="https://forms.gle/e8RWMKojHMwwfZof8"
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href="/collaborate"
                 className="vision-collab-btn"
               >
-                Collaborate with us <ExternalLink className="size-4" />
-              </a>
+                Collaborate with us <ArrowRight className="size-4" />
+              </Link>
               <Button
                 onClick={() => handleOpenInquiry("Turnkey Supply Partnership")}
                 className="vision-quote-btn"
@@ -521,65 +519,15 @@ export default function BusinessSegments() {
         </div>
       </section>
 
-      {/* Floating Action Tabs */}
-      <a
-        className="whatsapp-tab"
-        href="https://wa.me/919512365582"
-        target="_blank"
-        rel="noreferrer"
-        aria-label="Chat with Volamp on WhatsApp (+91 9512365582)"
-      >
-        <MessageCircle className="size-5" />
-        <span>WhatsApp</span>
-      </a>
+      {/* Floating Action Buttons */}
+      <FloatingActions onOpenChat={() => (window.location.href = "/?surface=chat")} />
 
       {/* Inquiry Modal */}
-      {inquiryModalOpen && (
-        <div
-          className="modal-backdrop"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setInquiryModalOpen(false)}
-        >
-          <div className="inquiry-modal" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="modal-close"
-              onClick={() => setInquiryModalOpen(false)}
-              aria-label="Close form"
-            >
-              <X />
-            </button>
-            <div className="market-kicker">BUSINESS SEGMENT ENQUIRY</div>
-            <h2>{inquiryCategory || "Work with Volamp"}</h2>
-            <p>
-              Share your project context, required specifications, or estimated volumes. Our
-              Ahmedabad engineering desk will prepare an itemized quote.
-            </p>
-            <Input
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              placeholder="Your full name / Company name"
-              aria-label="Your name"
-            />
-            <Input
-              value={customerContact}
-              onChange={(e) => setCustomerContact(e.target.value)}
-              placeholder="Work email or phone number *"
-              aria-label="Contact information"
-            />
-            <textarea
-              className="inquiry-textarea"
-              value={customerNotes}
-              onChange={(e) => setCustomerNotes(e.target.value)}
-              placeholder={`Specify your requirement for ${inquiryCategory || "this segment"} (e.g. quantity, brand preference, delivery location)...`}
-              aria-label="Enquiry details"
-            />
-            <Button onClick={handleSendInquiry} className="primary-cta wide">
-              Submit Segment Requirement <ArrowRight className="ml-2 size-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <EnquireModal
+        isOpen={inquiryModalOpen}
+        onClose={() => setInquiryModalOpen(false)}
+        initialCategory={inquiryCategory}
+      />
 
       {/* Site Footer */}
       <footer className="site-footer">
@@ -591,9 +539,9 @@ export default function BusinessSegments() {
             <span className="footer-column-title">ABOUT VOLAMP</span>
             <Link href="/about-volamp">About Us</Link>
             <Link href="/business-segments">Business Segments</Link>
-            <a href="https://forms.gle/e8RWMKojHMwwfZof8" target="_blank" rel="noreferrer">
+            <Link href="/collaborate">
               Collaborate with Us
-            </a>
+            </Link>
             <Link href="/shipping-policy">Shipping Policy</Link>
             <Link href="/refund-policy">Return & Refund Policy</Link>
           </div>

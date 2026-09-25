@@ -655,7 +655,7 @@ export async function generateVolaResponse(
     return (
       `### 🤝 Collaborate with Volamp Elektrikals\n\n` +
       `We welcome electrical contractors, OEMs, distributors, project developers, and institutional partners to collaborate with us!\n\n` +
-      `Please fill out our official **[Collaboration & Partnership Form](https://forms.gle/e8RWMKojHMwwfZof8)**.\n\n` +
+      `Please fill out our official **[Collaboration & Partnership Form](/collaborate)**.\n\n` +
       `**Why Collaborate with Volamp?**\n` +
       `• **60+ Years Industrial Trust**: 4 generations of electrical engineering & distribution heritage.\n` +
       `• **Direct Factory Supply**: Direct-from-plant pricing with certified IS/IEC standard compliance.\n` +

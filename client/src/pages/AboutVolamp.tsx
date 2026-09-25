@@ -354,9 +354,9 @@ export default function AboutVolamp() {
             <a href="#story">Our story</a>
             <a href="#leadership">Leadership</a>
             <a href="#footprint">Global Presence & Footprint</a>
-            <a href="https://forms.gle/e8RWMKojHMwwfZof8" target="_blank" rel="noreferrer" className="collaborate-nav-link">
-              Collaborate with us <ExternalLink className="inline size-3 ml-0.5" />
-            </a>
+            <Link href="/collaborate" className="collaborate-nav-link">
+              Collaborate with us <ArrowRight className="inline size-3 ml-0.5" />
+            </Link>
           </nav>
           <div className="about-header-actions">
             <ThemeToggle />
@@ -942,9 +942,9 @@ export default function AboutVolamp() {
             <a href="#footprint">3D Interactive Map & Footprint</a>
             <a href="#legacy-timeline">Historic Timeline (1965–Present)</a>
             <a href="#team">Leadership & Management</a>
-            <a href="https://forms.gle/e8RWMKojHMwwfZof8" target="_blank" rel="noreferrer" className="highlight-link">
-              Collaborate with Us <ExternalLink className="size-3 inline ml-1" />
-            </a>
+            <Link href="/collaborate" className="highlight-link">
+              Collaborate with Us <ArrowRight className="size-3 inline ml-1" />
+            </Link>
           </div>
 
           {/* Column 3: Product Solutions */}

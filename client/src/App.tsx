@@ -18,6 +18,26 @@ import BusinessSegments from "./pages/BusinessSegments";
 import TrackPage from "./pages/TrackPage";
 import PayInvoice from "./pages/PayInvoice";
 import CalculatorPage from "./pages/CalculatorPage";
+import CollaboratePage from "./pages/CollaboratePage";
+import BlogPage from "./pages/BlogPage";
+import EnquirePage from "./pages/EnquirePage";
+import FloatingActions from "./components/FloatingActions";
+
+function GlobalFloatingActions() {
+  const [location, setLocation] = useLocation();
+  const isPortal = location.startsWith("/portal") || location.startsWith("/employee-portal");
+  if (isPortal) return null;
+
+  const handleOpenChat = () => {
+    if (location === "/") {
+      window.dispatchEvent(new CustomEvent("volamp:open-chat"));
+    } else {
+      setLocation("/?surface=chat");
+    }
+  };
+
+  return <FloatingActions onOpenChat={handleOpenChat} />;
+}
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -37,6 +57,22 @@ function Router() {
       <Route path="/portal" component={CustomerPortal} />
       <Route path="/employee-portal" component={EmployeePortal} />
       <Route path="/about-volamp" component={AboutVolamp} />
+      <Route path="/about" component={AboutVolamp} />
+      <Route path="/about-us" component={AboutVolamp} />
+      <Route path="/footprint" component={AboutVolamp} />
+      <Route path="/collaborate" component={CollaboratePage} />
+      <Route path="/collaborate-with-us" component={CollaboratePage} />
+      <Route path="/partner" component={CollaboratePage} />
+      <Route path="/dealership" component={CollaboratePage} />
+      <Route path="/enquire" component={EnquirePage} />
+      <Route path="/enquiry" component={EnquirePage} />
+      <Route path="/quote" component={EnquirePage} />
+      <Route path="/contact" component={EnquirePage} />
+      <Route path="/contact-us" component={EnquirePage} />
+      <Route path="/blog" component={BlogPage} />
+      <Route path="/journal" component={BlogPage} />
+      <Route path="/insights" component={BlogPage} />
+      <Route path="/blog/:slug" component={BlogPage} />
       <Route path="/business-segments" component={BusinessSegments} />
       <Route path="/segments" component={BusinessSegments} />
       <Route path="/track" component={TrackPage} />
@@ -60,6 +96,7 @@ function Router() {
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
+    <GlobalFloatingActions />
     </>
   );
 }

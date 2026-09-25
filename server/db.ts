@@ -17,6 +17,12 @@ import {
   footprintProjects,
   FootprintStateRecord,
   FootprintProjectRecord,
+  collaborateSubmissions,
+  CollaborateSubmission,
+  InsertCollaborateSubmission,
+  enquiries,
+  Enquiry,
+  InsertEnquiry,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -2732,3 +2738,181 @@ export async function subscribeNewsletter(email: string, phone?: string) {
   }
   return { success: true, email: cleanEmail };
 }
+
+// ---------------------------------------------------------------------------
+// Collaboration Submissions
+// ---------------------------------------------------------------------------
+
+export function generateCollaborateApplicationId(): string {
+  const year = new Date().getFullYear();
+  const randomNum = Math.floor(10000 + Math.random() * 90000);
+  return `COL-${year}-${randomNum}`;
+}
+
+const memoryCollaborateSubmissions: Array<CollaborateSubmission> = [];
+
+export async function createCollaborateSubmission(data: {
+  applicationId?: string;
+  companyName: string;
+  contactName: string;
+  designation: string;
+  businessType: string;
+  collaborationTypes: string[];
+  opportunityDetails: string;
+  partnershipStrengths: string[];
+  expectedBusinessPotential: string;
+  expectedTimeline: string;
+  mobile: string;
+  email: string;
+  cityCountry: string;
+  notes?: string | null;
+}): Promise<CollaborateSubmission> {
+  const applicationId = data.applicationId || generateCollaborateApplicationId();
+  const collaborationTypesJson = JSON.stringify(data.collaborationTypes);
+  const partnershipStrengthsJson = JSON.stringify(data.partnershipStrengths);
+  const now = new Date();
+
+  const record: CollaborateSubmission = {
+    id: memoryCollaborateSubmissions.length + 1,
+    applicationId,
+    companyName: data.companyName.trim(),
+    contactName: data.contactName.trim(),
+    designation: data.designation.trim(),
+    businessType: data.businessType.trim(),
+    collaborationTypes: collaborationTypesJson,
+    opportunityDetails: data.opportunityDetails.trim(),
+    partnershipStrengths: partnershipStrengthsJson,
+    expectedBusinessPotential: data.expectedBusinessPotential.trim(),
+    expectedTimeline: data.expectedTimeline.trim(),
+    mobile: data.mobile.trim(),
+    email: data.email.trim().toLowerCase(),
+    cityCountry: data.cityCountry.trim(),
+    notes: data.notes?.trim() || null,
+    status: "submitted",
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const db = await getDb();
+  if (db) {
+    try {
+      await db.insert(collaborateSubmissions).values(record);
+    } catch (err) {
+      console.warn("[Database] collaborateSubmissions insert error, saved in-memory:", err);
+    }
+  }
+
+  memoryCollaborateSubmissions.unshift(record);
+  return record;
+}
+
+export async function getCollaborateSubmissions(): Promise<CollaborateSubmission[]> {
+  const db = await getDb();
+  if (db) {
+    try {
+      return await db.select().from(collaborateSubmissions);
+    } catch {
+      // fallback
+    }
+  }
+  return memoryCollaborateSubmissions;
+}
+
+export async function getCollaborateSubmissionById(applicationId: string): Promise<CollaborateSubmission | null> {
+  const db = await getDb();
+  if (db) {
+    try {
+      const rows = await db
+        .select()
+        .from(collaborateSubmissions)
+        .where(eq(collaborateSubmissions.applicationId, applicationId))
+        .limit(1);
+      if (rows[0]) return rows[0];
+    } catch {
+      // fallback
+    }
+  }
+  return memoryCollaborateSubmissions.find((s) => s.applicationId === applicationId) || null;
+}
+
+// ---------------------------------------------------------------------------
+// Direct Enquiries / RFQ Desk
+// ---------------------------------------------------------------------------
+
+export function generateEnquiryNumber(): string {
+  const year = new Date().getFullYear();
+  const randomNum = Math.floor(10000 + Math.random() * 90000);
+  return `ENQ-${year}-${randomNum}`;
+}
+
+const memoryEnquiries: Array<Enquiry> = [];
+
+export async function createEnquiry(data: {
+  enquiryNumber?: string;
+  fullName: string;
+  companyName?: string;
+  email: string;
+  phone: string;
+  location?: string;
+  category?: string;
+  quantity?: string;
+  urgency?: string;
+  details: string;
+}): Promise<Enquiry> {
+  const enquiryNumber = data.enquiryNumber || generateEnquiryNumber();
+  const now = new Date();
+  const record: Enquiry = {
+    id: memoryEnquiries.length + 1,
+    enquiryNumber,
+    fullName: data.fullName.trim(),
+    companyName: data.companyName?.trim() || null,
+    email: data.email.trim().toLowerCase(),
+    phone: data.phone.trim(),
+    location: data.location?.trim() || null,
+    category: data.category?.trim() || null,
+    quantity: data.quantity?.trim() || null,
+    urgency: data.urgency?.trim() || "Standard",
+    details: data.details.trim(),
+    status: "received",
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  const db = await getDb();
+  if (db) {
+    try {
+      await db.insert(enquiries).values(record);
+    } catch (err) {
+      console.warn("[Database] enquiries insert error, saved in-memory:", err);
+    }
+  }
+
+  memoryEnquiries.unshift(record);
+  return record;
+}
+
+export async function getEnquiries(): Promise<Enquiry[]> {
+  const db = await getDb();
+  if (db) {
+    try {
+      return await db.select().from(enquiries);
+    } catch {}
+  }
+  return memoryEnquiries;
+}
+
+export async function getEnquiryByNumber(enquiryNumber: string): Promise<Enquiry | null> {
+  const db = await getDb();
+  if (db) {
+    try {
+      const rows = await db
+        .select()
+        .from(enquiries)
+        .where(eq(enquiries.enquiryNumber, enquiryNumber))
+        .limit(1);
+      if (rows[0]) return rows[0];
+    } catch {}
+  }
+  return memoryEnquiries.find((e) => e.enquiryNumber === enquiryNumber) || null;
+}
+

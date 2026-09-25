@@ -165,6 +165,44 @@ export const products = mysqlTable("products", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+export const collaborateSubmissions = mysqlTable("collaborate_submissions", {
+  id: int("id").autoincrement().primaryKey(),
+  applicationId: varchar("applicationId", { length: 40 }).notNull().unique(),
+  companyName: varchar("companyName", { length: 180 }).notNull(),
+  contactName: varchar("contactName", { length: 160 }).notNull(),
+  designation: varchar("designation", { length: 120 }).notNull(),
+  businessType: varchar("businessType", { length: 100 }).notNull(),
+  collaborationTypes: text("collaborationTypes").notNull(),
+  opportunityDetails: text("opportunityDetails").notNull(),
+  partnershipStrengths: text("partnershipStrengths").notNull(),
+  expectedBusinessPotential: varchar("expectedBusinessPotential", { length: 80 }).notNull(),
+  expectedTimeline: varchar("expectedTimeline", { length: 80 }).notNull(),
+  mobile: varchar("mobile", { length: 32 }).notNull(),
+  email: varchar("email", { length: 320 }).notNull(),
+  cityCountry: varchar("cityCountry", { length: 160 }).notNull(),
+  notes: text("notes"),
+  status: mysqlEnum("status", ["submitted", "under_review", "contacted", "approved", "archived"]).default("submitted").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const enquiries = mysqlTable("enquiries", {
+  id: int("id").autoincrement().primaryKey(),
+  enquiryNumber: varchar("enquiryNumber", { length: 40 }).notNull().unique(),
+  fullName: varchar("fullName", { length: 160 }).notNull(),
+  companyName: varchar("companyName", { length: 180 }),
+  email: varchar("email", { length: 320 }).notNull(),
+  phone: varchar("phone", { length: 32 }).notNull(),
+  location: varchar("location", { length: 200 }),
+  category: varchar("category", { length: 120 }),
+  quantity: varchar("quantity", { length: 120 }),
+  urgency: varchar("urgency", { length: 80 }),
+  details: text("details").notNull(),
+  status: mysqlEnum("status", ["received", "under_review", "quoted", "closed"]).default("received").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type CustomerProfile = typeof customerProfiles.$inferSelect;
@@ -181,6 +219,10 @@ export type FootprintProjectRecord = typeof footprintProjects.$inferSelect;
 export type InsertFootprintProjectRecord = typeof footprintProjects.$inferInsert;
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = typeof products.$inferInsert;
+export type CollaborateSubmission = typeof collaborateSubmissions.$inferSelect;
+export type InsertCollaborateSubmission = typeof collaborateSubmissions.$inferInsert;
+export type Enquiry = typeof enquiries.$inferSelect;
+export type InsertEnquiry = typeof enquiries.$inferInsert;
 
 export interface QuotedProductSnapshot {
   productId: string;

@@ -25,6 +25,8 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { CATEGORIES, findSubcategory, getCategoryBySlug, getProductImage, ICON_MAP } from "@/data/categories";
 import { trpc } from "@/lib/trpc";
 import { QuickOrderModal } from "@/components/quickorder/QuickOrderModal";
+import { EnquireModal } from "@/components/enquire/EnquireModal";
+import FloatingActions from "@/components/FloatingActions";
 import { toast } from "sonner";
 
 function BrandMark() {
@@ -87,8 +89,9 @@ export default function CategoryPage() {
   const [page, setPage] = useState(1);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Quick Order Modal State
+  // Quick Order & Enquire Modal State
   const [quickOrderOpen, setQuickOrderOpen] = useState(false);
+  const [enquireOpen, setEnquireOpen] = useState(false);
   const [selectedProductForOrder, setSelectedProductForOrder] = useState<any>(null);
 
   // Determine active subcategory (from URL or from pill filter)
@@ -192,14 +195,12 @@ export default function CategoryPage() {
           <Link href="/#categories">All Categories</Link>
           <Link href="/about-volamp">About Volamp</Link>
           <Link href="/portal">Customer Portal</Link>
-          <a
-            href="https://forms.gle/e8RWMKojHMwwfZof8"
-            target="_blank"
-            rel="noreferrer"
+          <Link
+            href="/collaborate"
             className="category-collaborate-link text-xs font-semibold text-amber-500 hover:text-amber-600"
           >
             Collaborate With Us
-          </a>
+          </Link>
         </nav>
         <div className="category-page-actions">
           <ThemeToggle />
@@ -792,19 +793,27 @@ export default function CategoryPage() {
               </span>
             </div>
           </div>
-          <Link href="/?surface=inquiry">
-            <Button variant="outline">
-              Start an Enquiry <ArrowRight className="ml-2 size-4" />
-            </Button>
-          </Link>
+          <Button variant="outline" onClick={() => setEnquireOpen(true)}>
+            Start an Enquiry <ArrowRight className="ml-2 size-4" />
+          </Button>
         </section>
       </main>
+
+      {/* Floating Action Buttons */}
+      <FloatingActions onOpenChat={() => (window.location.href = "/?surface=chat")} />
 
       {/* QUICK ORDER MODAL INTEGRATION */}
       <QuickOrderModal
         isOpen={quickOrderOpen}
         onClose={() => setQuickOrderOpen(false)}
         initialProduct={selectedProductForOrder}
+      />
+
+      {/* ENQUIRE MODAL INTEGRATION */}
+      <EnquireModal
+        isOpen={enquireOpen}
+        onClose={() => setEnquireOpen(false)}
+        initialCategory={category?.name}
       />
     </div>
   );
