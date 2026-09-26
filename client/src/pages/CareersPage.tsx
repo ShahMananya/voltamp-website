@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import {
   Briefcase,
@@ -70,10 +70,10 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "Senior HT / LT Power Cable Design Engineer",
     department: "Engineering & R&D",
     location: "Ahmedabad HQ (Gujarat)",
-    workMode: "Full-Time Â· On-Site",
-    experience: "4 â€“ 8 Years",
+    workMode: "Full-Time · On-Site",
+    experience: "4 – 8 Years",
     education: "B.E. / B.Tech / M.Tech in Electrical or Polymer Engineering",
-    packageLpa: "â‚¹9.5 â€“ 15.0 LPA",
+    packageLpa: "₹9.5 – 15.0 LPA",
     openingsCount: 2,
     isFeatured: true,
     overview:
@@ -97,10 +97,10 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "Quality Assurance & High-Voltage Test Lab Lead",
     department: "Quality & Testing",
     location: "Sanand / Ahmedabad Plant (Gujarat)",
-    workMode: "Full-Time Â· On-Site",
-    experience: "3 â€“ 7 Years",
+    workMode: "Full-Time · On-Site",
+    experience: "3 – 7 Years",
     education: "B.E. / B.Tech in Electrical Engineering or Diploma with QA Certification",
-    packageLpa: "â‚¹7.5 â€“ 12.0 LPA",
+    packageLpa: "₹7.5 – 12.0 LPA",
     openingsCount: 1,
     isFeatured: true,
     overview:
@@ -123,10 +123,10 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "Plant Extrusion & Continuous Vulcanization Supervisor",
     department: "Manufacturing & Plant",
     location: "Ahmedabad Manufacturing Complex",
-    workMode: "Full-Time Â· On-Site",
-    experience: "3 â€“ 6 Years",
+    workMode: "Full-Time · On-Site",
+    experience: "3 – 6 Years",
     education: "Diploma or B.E. in Mechanical / Electrical / Polymer Technology",
-    packageLpa: "â‚¹6.0 â€“ 9.5 LPA",
+    packageLpa: "₹6.0 – 9.5 LPA",
     openingsCount: 3,
     isFeatured: false,
     overview:
@@ -149,10 +149,10 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "B2B Infrastructure & EPC Project Sales Manager",
     department: "EPC & Project Sales",
     location: "Mumbai Regional Office (Western Hub)",
-    workMode: "Full-Time Â· Hybrid / Field",
-    experience: "5 â€“ 10 Years",
+    workMode: "Full-Time · Hybrid / Field",
+    experience: "5 – 10 Years",
     education: "B.Tech Electrical + MBA (Marketing or Supply Chain preferred)",
-    packageLpa: "â‚¹12.0 â€“ 18.0 LPA + Performance Bonus",
+    packageLpa: "₹12.0 – 18.0 LPA + Performance Bonus",
     openingsCount: 2,
     isFeatured: true,
     overview:
@@ -175,17 +175,17 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "Solar & Renewable Energy Key Account Executive",
     department: "EPC & Project Sales",
     location: "Jaipur / Ahmedabad Corridor",
-    workMode: "Full-Time Â· Field / Client Facing",
-    experience: "2 â€“ 5 Years",
+    workMode: "Full-Time · Field / Client Facing",
+    experience: "2 – 5 Years",
     education: "B.E. in Electrical / Renewable Energy Engineering or B.Sc",
-    packageLpa: "â‚¹6.5 â€“ 10.5 LPA + Incentives",
+    packageLpa: "₹6.5 – 10.5 LPA + Incentives",
     openingsCount: 2,
     isFeatured: false,
     overview:
       "Accelerate the adoption of Volamp's 1500V DC Solar Photovoltaic cables and renewable balance-of-plant cabling with IPPs, utility solar developers, and rooftop EPCs.",
     responsibilities: [
       "Cultivate key relationships with solar developers, IPPs, and turnkey EPC contractors across Gujarat, Rajasthan, and Western India.",
-      "Present technical value propositions of electron-beam cross-linked solar cables (EN 50618, TÃœV 2 Pfg 1169 standards, UV & ozone resistance).",
+      "Present technical value propositions of electron-beam cross-linked solar cables (EN 50618, TÜV 2 Pfg 1169 standards, UV & ozone resistance).",
       "Monitor national and state solar park tender bids to capture cable supply requirements early.",
     ],
     requirements: [
@@ -193,17 +193,17 @@ const FALLBACK_ROLES: JobRole[] = [
       "Solid technical understanding of DC cable sizing, voltage drop mitigation, and MC4 connector compatibility.",
       "Strong communication skills and proactive client engagement.",
     ],
-    tags: ["Solar 1500V DC", "Renewable IPPs", "TÃœV Rheinland", "Utility Solar"],
+    tags: ["Solar 1500V DC", "Renewable IPPs", "TÜV Rheinland", "Utility Solar"],
   },
   {
     id: "tendering-boq-estimation-engineer",
     title: "Tendering, BOQ & Cost Estimation Engineer",
     department: "Procurement & Supply Chain",
     location: "Ahmedabad Corporate HQ",
-    workMode: "Full-Time Â· On-Site",
-    experience: "2 â€“ 5 Years",
+    workMode: "Full-Time · On-Site",
+    experience: "2 – 5 Years",
     education: "B.E. / B.Tech in Electrical Engineering",
-    packageLpa: "â‚¹6.0 â€“ 9.0 LPA",
+    packageLpa: "₹6.0 – 9.0 LPA",
     openingsCount: 2,
     isFeatured: false,
     overview:
@@ -225,10 +225,10 @@ const FALLBACK_ROLES: JobRole[] = [
     title: "Metal Procurement & Raw Material Supply Chain Specialist",
     department: "Procurement & Supply Chain",
     location: "Ahmedabad Corporate HQ",
-    workMode: "Full-Time Â· On-Site",
-    experience: "3 â€“ 6 Years",
+    workMode: "Full-Time · On-Site",
+    experience: "3 – 6 Years",
     education: "B.Com / B.E. + Supply Chain Certification or MBA",
-    packageLpa: "â‚¹7.0 â€“ 11.0 LPA",
+    packageLpa: "₹7.0 – 11.0 LPA",
     openingsCount: 1,
     isFeatured: false,
     overview:
@@ -247,13 +247,13 @@ const FALLBACK_ROLES: JobRole[] = [
   },
   {
     id: "get-electrical-batch-2026",
-    title: "Graduate Engineer Trainee (GET) â€“ Electrical (Batch 2026)",
+    title: "Graduate Engineer Trainee (GET) – Electrical (Batch 2026)",
     department: "Early Careers",
     location: "Ahmedabad HQ & Manufacturing Complex",
-    workMode: "Full-Time Â· 12-Month Rotation",
-    experience: "Fresh Graduate / 0 â€“ 1 Year (Batch 2025/2026)",
+    workMode: "Full-Time · 12-Month Rotation",
+    experience: "Fresh Graduate / 0 – 1 Year (Batch 2025/2026)",
     education: "B.E. / B.Tech in Electrical / Electronics Engineering (Min 65% aggregate)",
-    packageLpa: "â‚¹4.5 â€“ 6.0 LPA + Medical Coverage",
+    packageLpa: "₹4.5 – 6.0 LPA + Medical Coverage",
     openingsCount: 6,
     isFeatured: true,
     overview:
@@ -292,7 +292,7 @@ const LOCATIONS = [
   "Jaipur / Ahmedabad Corridor",
 ];
 
-const EXPERIENCES = ["All Experience", "Freshers / 0â€“1 Year", "2â€“5 Years", "5+ Years"];
+const EXPERIENCES = ["All Experience", "Freshers / 0–1 Year", "2–5 Years", "5+ Years"];
 
 const FAQS = [
   {
@@ -382,9 +382,9 @@ export default function CareersPage() {
       const matchLoc = selectedLocation === "All Locations" || role.location === selectedLocation;
 
       let matchExp = true;
-      if (selectedExp === "Freshers / 0â€“1 Year") {
-        matchExp = role.experience.toLowerCase().includes("fresh") || role.experience.includes("0 â€“ 1");
-      } else if (selectedExp === "2â€“5 Years") {
+      if (selectedExp === "Freshers / 0–1 Year") {
+        matchExp = role.experience.toLowerCase().includes("fresh") || role.experience.includes("0 – 1") || role.experience.includes("0-1");
+      } else if (selectedExp === "2–5 Years") {
         matchExp = role.experience.includes("2") || role.experience.includes("3") || role.experience.includes("4");
       } else if (selectedExp === "5+ Years") {
         matchExp = role.experience.includes("5") || role.experience.includes("8") || role.experience.includes("10");
@@ -407,13 +407,13 @@ export default function CareersPage() {
     if (role) {
       setApplicantRole(role.title);
       setApplicantDept(role.department);
-      if (role.experience.includes("0 â€“ 1") || role.experience.toLowerCase().includes("fresh")) {
+      if (role.experience.includes("0 – 1") || role.experience.toLowerCase().includes("fresh") || role.experience.includes("0-1")) {
         setExperienceYears("Fresh Graduate (0-1 Yrs)");
-      } else if (role.experience.includes("4 â€“ 8")) {
+      } else if (role.experience.includes("4 – 8") || role.experience.includes("4-8")) {
         setExperienceYears("4-8 Years");
-      } else if (role.experience.includes("3 â€“ 7") || role.experience.includes("3 â€“ 6")) {
+      } else if (role.experience.includes("3 – 7") || role.experience.includes("3 – 6") || role.experience.includes("3-6")) {
         setExperienceYears("3-6 Years");
-      } else if (role.experience.includes("5 â€“ 10")) {
+      } else if (role.experience.includes("5 – 10") || role.experience.includes("5-10")) {
         setExperienceYears("6-10 Years");
       }
     } else {
@@ -486,18 +486,19 @@ export default function CareersPage() {
   return (
     <div className="careers-page min-h-screen bg-[#f5f7f9] dark:bg-[#0b1f33] text-[#0b1f33] dark:text-[#e8eef2] transition-colors">
       {/* Top Utility Bar (Consistent with Home & Marketplace) */}
-      <div className="bg-[#0b1f33] text-[#d6e0e6] text-xs py-2 border-b border-[#223b51]">
+      <div className="bg-[#09233a] text-[#d9e3e9] text-xs py-2 border-b border-[#223b51]">
         <div className="market-container flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Globe2 className="size-3.5 text-[#f2b84b]" />
-            <span className="font-semibold text-slate-200">
-              VOLAMP Talent Acquisition Desk Â· Ahmedabad HQ & Pan-India Hubs
+            <span className="status-dot" />
+            <Globe2 className="size-3.5 text-[#f2b84b] shrink-0" />
+            <span className="font-semibold text-white">
+              VOLAMP Talent Acquisition Desk · Ahmedabad HQ & Pan-India Hubs
             </span>
           </div>
           <div className="flex items-center gap-4 text-xs">
             <a
               href={`tel:+91${supportPhone}`}
-              className="text-slate-300 hover:text-[#f2b84b] transition-colors flex items-center gap-1.5"
+              className="text-[#d9e3e9] hover:text-[#f2b84b] transition-colors flex items-center gap-1.5 font-bold"
             >
               <PhoneCall className="size-3 text-[#f2b84b]" />
               <span>HR Direct: +91 {supportPhone}</span>
@@ -505,7 +506,7 @@ export default function CareersPage() {
             <span className="text-slate-600">|</span>
             <a
               href="mailto:careers@volampelektrikals.com"
-              className="text-slate-300 hover:text-[#f2b84b] transition-colors flex items-center gap-1.5"
+              className="text-[#d9e3e9] hover:text-[#f2b84b] transition-colors flex items-center gap-1.5"
             >
               <Send className="size-3 text-[#f2b84b]" />
               <span>careers@volampelektrikals.com</span>
@@ -515,12 +516,12 @@ export default function CareersPage() {
       </div>
 
       {/* Main Header (Clean White / Dark Blue with Standard Slate Borders) */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0b1f33]/95 backdrop-blur-md border-b border-[#d6e0e6] dark:border-[#223b51] transition-colors shadow-sm">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0b1f33]/95 backdrop-blur-md border-b border-[#dce4ea] dark:border-[#223b51] transition-colors shadow-xs">
         <div className="market-container flex items-center justify-between h-20">
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c56718] hover:text-[#9e4e0e] bg-[#f5f7f9] dark:bg-[#162d42] dark:text-[#f2b84b] px-3 py-1.5 rounded-lg transition-colors mr-2"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c56718] hover:text-[#9e4e0e] bg-[#f5f7f9] dark:bg-[#162d42] dark:text-[#f2b84b] px-3 py-1.5 rounded-md transition-colors mr-2 border border-[#d6e0e6] dark:border-[#223b51]"
             >
               <ArrowLeft className="size-3.5" />
               <span>Back to Home</span>
@@ -550,7 +551,7 @@ export default function CareersPage() {
             <Link href="/collaborate" className="hover:text-[#c56718] dark:hover:text-[#c56718] transition-colors">
               Collaborate
             </Link>
-            <span className="text-[#c56718] dark:text-[#c56718] font-bold border-b-2 border-[#c56718] dark:border-[#c56718] pb-1">
+            <span className="text-[#c56718] dark:text-[#c56718] font-bold border-b-2 border-[#c56718] pb-1">
               Careers
             </span>
           </nav>
@@ -567,7 +568,7 @@ export default function CareersPage() {
             <Button
               variant="outline"
               onClick={() => navigate("/about-volamp")}
-              className="hidden sm:flex text-xs font-semibold rounded-lg border-[#d6e0e6] dark:border-[#d6e0e6] hover:bg-[#e8eef2] dark:hover:bg-[#162d42]"
+              className="hidden sm:flex text-xs font-semibold rounded-lg border-[#d6e0e6] dark:border-[#223b51] hover:bg-[#e8eef2] dark:hover:bg-[#162d42]"
             >
               <span>Our Heritage</span>
               <ArrowRight className="size-3 ml-1" />
@@ -576,24 +577,23 @@ export default function CareersPage() {
         </div>
       </header>
 
-      {/* Hero Section (Matching .segments-hero & .about-hero Gradient) */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#0b1f33] via-[#162d42] to-[#1e3d55] text-white py-16 sm:py-24 border-b border-[#223b51]">
-        {/* Ambient Glows */}
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+      {/* Hero Section (Matching Main Page UI Color Theme) */}
+      <section className="relative overflow-hidden bg-[#f5f7f9] dark:bg-[#0b1f33] text-[#0b1f33] dark:text-[#e8eef2] py-16 sm:py-24 border-b border-[#d6e0e6] dark:border-[#223b51]">
+        {/* Subtle grid pattern background matching Home */}
+        <div className="absolute inset-0 opacity-[0.035] dark:opacity-[0.05] pointer-events-none bg-[radial-gradient(#0b1f33_1px,transparent_1px)] dark:bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]" />
 
         <div className="market-container relative z-10 max-w-5xl text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#f2b84b] text-xs font-extrabold tracking-wider uppercase">
-            <Sparkles className="size-3.5" />
-            <span>WE ARE HIRING Â· 2026 INFRASTRUCTURE EXPANSION</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#162d42] border border-[#d6e0e6] dark:border-[#223b51] text-[#c56718] dark:text-[#f2b84b] text-xs font-extrabold tracking-wider uppercase shadow-xs">
+            <Sparkles className="size-3.5 text-[#f2b84b]" />
+            <span>WE ARE HIRING · 2026 INFRASTRUCTURE EXPANSION</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] text-white tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white tracking-tight leading-tight">
             Power Your Career With an <br />
-            <span className="text-[#f2b84b]">Engineering Legacy</span> That Powers India.
+            <span className="text-[#c56718] dark:text-[#f2b84b]">Engineering Legacy</span> That Powers India.
           </h1>
 
-          <p className="text-base sm:text-lg text-[#aebdc8] max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-[#5a6b78] dark:text-[#aebdc8] max-w-3xl mx-auto leading-relaxed">
             Join 4 generations of electrical engineering leadership. From high-voltage underground transmission
             grids and metro rail networks to renewable solar farms, our team designs, compounds, and manufactures the
             critical cables energizing 28 states and 14+ export nations.
@@ -602,7 +602,7 @@ export default function CareersPage() {
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <a
               href="#open-roles"
-              className="px-6 py-3.5 rounded-lg bg-[#c56718] hover:bg-[#9e4e0e] text-white font-bold text-sm shadow-lg shadow-amber-900/30 flex items-center gap-2 transition-all cursor-pointer"
+              className="px-6 py-3.5 rounded-lg bg-[#c56718] hover:bg-[#9e4e0e] text-white font-bold text-sm shadow-md flex items-center gap-2 transition-all cursor-pointer"
             >
               <span>Explore Open Positions ({roles.length})</span>
               <ArrowRight className="size-4" />
@@ -610,38 +610,38 @@ export default function CareersPage() {
             <Button
               variant="outline"
               onClick={() => handleOpenApply()}
-              className="px-6 py-3.5 rounded-lg border-white/30 hover:border-white/60 bg-white/10 hover:bg-white/20 text-white font-semibold text-sm backdrop-blur-sm transition-all"
+              className="px-6 py-3.5 rounded-lg border-[#d6e0e6] dark:border-[#223b51] bg-white dark:bg-[#162d42] text-[#0b1f33] dark:text-[#e8eef2] hover:bg-[#e8eef2] dark:hover:bg-[#1f3e5c] font-semibold text-sm transition-all shadow-xs"
             >
-              <FileCheck2 className="size-4 mr-2 text-[#f2b84b]" />
+              <FileCheck2 className="size-4 mr-2 text-[#c56718] dark:text-[#f2b84b]" />
               <span>Join Talent Community / Submit CV</span>
             </Button>
           </div>
 
           {/* Metric Highlights Strip */}
-          <div className="pt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-white/15 mt-12 text-left">
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#f2b84b] font-['Space_Grotesk'] block">
+          <div className="pt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-[#d6e0e6] dark:border-[#223b51] mt-12 text-left">
+            <div className="p-4 rounded-xl bg-white dark:bg-[#162d42] border border-[#d6e0e6] dark:border-[#223b51] shadow-xs">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] dark:text-[#f2b84b] font-['Space_Grotesk'] block">
                 60+ Years
               </span>
-              <span className="text-xs text-[#aebdc8] font-semibold">Engineering Heritage (Est. 1964)</span>
+              <span className="text-xs text-[#5a6b78] dark:text-[#aebdc8] font-semibold">Engineering Heritage (Est. 1964)</span>
             </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#f2b84b] font-['Space_Grotesk'] block">
+            <div className="p-4 rounded-xl bg-white dark:bg-[#162d42] border border-[#d6e0e6] dark:border-[#223b51] shadow-xs">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] dark:text-[#f2b84b] font-['Space_Grotesk'] block">
                 28 States
               </span>
-              <span className="text-xs text-[#aebdc8] font-semibold">Pan-India Dispatches & 14+ Export Nations</span>
+              <span className="text-xs text-[#5a6b78] dark:text-[#aebdc8] font-semibold">Pan-India Dispatches & 14+ Export Nations</span>
             </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#f2b84b] font-['Space_Grotesk'] block">
+            <div className="p-4 rounded-xl bg-white dark:bg-[#162d42] border border-[#d6e0e6] dark:border-[#223b51] shadow-xs">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] dark:text-[#f2b84b] font-['Space_Grotesk'] block">
                 100% In-House
               </span>
-              <span className="text-xs text-[#aebdc8] font-semibold">CPRI & ERDA Certified Test Laboratories</span>
+              <span className="text-xs text-[#5a6b78] dark:text-[#aebdc8] font-semibold">CPRI & ERDA Certified Test Laboratories</span>
             </div>
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#f2b84b] font-['Space_Grotesk'] block">
+            <div className="p-4 rounded-xl bg-white dark:bg-[#162d42] border border-[#d6e0e6] dark:border-[#223b51] shadow-xs">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] dark:text-[#f2b84b] font-['Space_Grotesk'] block">
                 4.8 / 5.0
               </span>
-              <span className="text-xs text-[#aebdc8] font-semibold">Team Growth & Job Security Index</span>
+              <span className="text-xs text-[#5a6b78] dark:text-[#aebdc8] font-semibold">Team Growth & Job Security Index</span>
             </div>
           </div>
         </div>
@@ -931,12 +931,12 @@ export default function CareersPage() {
                           <MapPin className="size-3.5 text-[#c56718] dark:text-[#c56718]" />
                           {role.location}
                         </span>
-                        <span>â€¢</span>
+                        <span>·</span>
                         <span className="flex items-center gap-1">
                           <Clock className="size-3.5 text-slate-400" />
                           {role.workMode}
                         </span>
-                        <span>â€¢</span>
+                        <span>·</span>
                         <span className="flex items-center gap-1">
                           <GraduationCap className="size-3.5 text-slate-400" />
                           {role.experience}
@@ -1006,13 +1006,13 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* Early Careers & GET Spotlight Banner (Matching .segments-hero Styling) */}
+      {/* Early Careers & GET Spotlight Banner (Matching Home Callout Banner Styling) */}
       <section className="py-14 market-container">
-        <div className="p-8 sm:p-10 rounded-2xl bg-gradient-to-r from-[#0b1f33] via-[#162d42] to-[#1e3d55] text-white shadow-xl border border-[#223b51] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="p-8 sm:p-10 rounded-2xl bg-[#0b1f33] text-white shadow-xl border border-[#223b51] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-4 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[#f2b84b] text-xs font-bold uppercase tracking-wider">
-              <GraduationCap className="size-4" />
-              <span>COLLEGE GRADUATES Â· 2026 BATCH</span>
+              <GraduationCap className="size-4 text-[#f2b84b]" />
+              <span>COLLEGE GRADUATES · 2026 BATCH</span>
             </div>
             <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] leading-tight">
               Graduate Engineer Trainee (GET) Program
@@ -1023,9 +1023,9 @@ export default function CareersPage() {
               mentorship, live project exposure, and permanent absorption into Volamp leadership.
             </p>
             <div className="flex flex-wrap items-center gap-4 text-xs text-[#f2b84b] font-semibold pt-1">
-              <span>âœ“ 4 Rotational Modules</span>
-              <span>âœ“ Direct Executive Mentorship</span>
-              <span>âœ“ Fixed CTC + Full Health Cover</span>
+              <span>✓ 4 Rotational Modules</span>
+              <span>✓ Direct Executive Mentorship</span>
+              <span>✓ Fixed CTC + Full Health Cover</span>
             </div>
           </div>
 
@@ -1035,7 +1035,7 @@ export default function CareersPage() {
                 const getRole = roles.find((r) => r.id === "get-electrical-batch-2026");
                 handleOpenApply(getRole);
               }}
-              className="px-6 py-3.5 bg-[#f2b84b] hover:bg-[#e5a837] text-[#1a0800] font-extrabold text-sm rounded-lg shadow-lg shadow-amber-500/20"
+              className="px-6 py-3.5 bg-[#f2b84b] hover:bg-[#e5a837] text-[#0b1f33] font-extrabold text-sm rounded-lg shadow-lg shadow-amber-500/20"
             >
               <span>Apply for GET 2026 Batch</span>
               <ArrowRight className="size-4 ml-1.5" />
@@ -1047,7 +1047,7 @@ export default function CareersPage() {
               }}
               className="text-xs text-center font-bold text-slate-300 hover:text-white hover:underline py-2"
             >
-              Review GET Syllabus & Details â†’
+              Review GET Syllabus & Details →
             </button>
           </div>
         </div>
@@ -1095,7 +1095,7 @@ export default function CareersPage() {
               Technical Discussion
             </h4>
             <p className="text-xs text-[#5a6b78] dark:text-slate-300 leading-relaxed">
-              A 30â€“45 minute virtual or in-person technical conversation with our Chief Engineer or Department Head
+              A 30–45 minute virtual or in-person technical conversation with our Chief Engineer or Department Head
               discussing your past projects.
             </p>
           </div>
@@ -1224,12 +1224,12 @@ export default function CareersPage() {
                   <MapPin className="size-3.5 text-[#c56718] dark:text-[#c56718]" />
                   {selectedRoleDetail.location}
                 </span>
-                <span>â€¢</span>
+                <span>·</span>
                 <span className="flex items-center gap-1">
                   <Clock className="size-3.5 text-slate-400" />
                   {selectedRoleDetail.workMode}
                 </span>
-                <span>â€¢</span>
+                <span>·</span>
                 <span className="flex items-center gap-1">
                   <Award className="size-3.5 text-slate-400" />
                   {selectedRoleDetail.packageLpa}
@@ -1534,7 +1534,7 @@ export default function CareersPage() {
                       Expected CTC (LPA)
                     </label>
                     <Input
-                      placeholder="e.g. â‚¹8.5 LPA"
+                      placeholder="e.g. ₹8.5 LPA"
                       value={expectedCtc}
                       onChange={(e) => setExpectedCtc(e.target.value)}
                       className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
@@ -1633,16 +1633,16 @@ export default function CareersPage() {
         </div>
       )}
 
-      {/* Footer (Consistent with Collaborate & Blog) */}
-      <footer className="site-footer bg-[#0d2233] text-white">
-        <div className="market-container py-12 grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-slate-800 text-xs">
+      {/* Footer (Consistent with Home Marketplace Theme) */}
+      <footer className="site-footer bg-[#fbf8f5] dark:bg-[#140406] text-[#3d2b2d] dark:text-[#f5f7f9] border-t border-[#ebd7c7] dark:border-[#223b51]">
+        <div className="market-container py-12 grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-[#ebd7c7] dark:border-[#223b51] text-xs">
           <div className="space-y-3">
-            <img src="/volamp-logo.png" alt="VOLAMP Elektrikals" className="h-8 w-auto brightness-200" />
-            <p className="text-slate-400 leading-relaxed">
+            <img src="/volamp-logo.png" alt="VOLAMP Elektrikals" className="h-8 w-auto mix-blend-multiply dark:mix-blend-normal dark:brightness-200" />
+            <p className="text-[#5a6b78] dark:text-slate-400 leading-relaxed">
               Volamp Elektrikals Private Limited. Powering India's energy, infrastructure, and industrial growth for 60+
               years.
             </p>
-            <div className="text-slate-400 space-y-1">
+            <div className="text-[#5a6b78] dark:text-slate-400 space-y-1">
               <div>Corporate HQ: Ahmedabad, Gujarat, India</div>
               <div>Direct HR: +91 {supportPhone}</div>
             </div>
@@ -1651,22 +1651,22 @@ export default function CareersPage() {
           <div className="space-y-2">
             <span className="font-bold text-[#f2b84b] tracking-wider uppercase block mb-3">ABOUT VOLAMP</span>
             <div>
-              <Link href="/about-volamp" className="text-slate-400 hover:text-white transition-colors">
+              <Link href="/about-volamp" className="text-[#5a6b78] hover:text-[#c56718] dark:text-slate-400 dark:hover:text-[#f2b84b] transition-colors">
                 About Our Heritage
               </Link>
             </div>
             <div>
-              <Link href="/business-segments" className="text-slate-400 hover:text-white transition-colors">
+              <Link href="/business-segments" className="text-[#5a6b78] hover:text-[#c56718] dark:text-slate-400 dark:hover:text-[#f2b84b] transition-colors">
                 10 Business Segments
               </Link>
             </div>
             <div>
-              <Link href="/careers" className="text-[#f2b84b] font-semibold transition-colors">
+              <Link href="/careers" className="text-[#c56718] dark:text-[#f2b84b] font-semibold transition-colors">
                 Careers & Openings
               </Link>
             </div>
             <div>
-              <Link href="/collaborate" className="text-slate-400 hover:text-white transition-colors">
+              <Link href="/collaborate" className="text-[#5a6b78] hover:text-[#c56718] dark:text-slate-400 dark:hover:text-[#f2b84b] transition-colors">
                 Collaborate with Us
               </Link>
             </div>
@@ -1674,29 +1674,29 @@ export default function CareersPage() {
 
           <div className="space-y-2">
             <span className="font-bold text-[#f2b84b] tracking-wider uppercase block mb-3">CAREER DISCIPLINES</span>
-            <div className="text-slate-400">High-Voltage Cable Design & R&D</div>
-            <div className="text-slate-400">Quality Assurance & Lab Testing</div>
-            <div className="text-slate-400">Continuous Extrusion & Armouring</div>
-            <div className="text-slate-400">B2B Infrastructure & EPC Sales</div>
-            <div className="text-slate-400">Graduate Engineer Trainee (GET 2026)</div>
+            <div className="text-[#5a6b78] dark:text-slate-400">High-Voltage Cable Design & R&D</div>
+            <div className="text-[#5a6b78] dark:text-slate-400">Quality Assurance & Lab Testing</div>
+            <div className="text-[#5a6b78] dark:text-slate-400">Continuous Extrusion & Armouring</div>
+            <div className="text-[#5a6b78] dark:text-slate-400">B2B Infrastructure & EPC Sales</div>
+            <div className="text-[#5a6b78] dark:text-slate-400">Graduate Engineer Trainee (GET 2026)</div>
           </div>
 
           <div className="space-y-2">
             <span className="font-bold text-[#f2b84b] tracking-wider uppercase block mb-3">TALENT DESK</span>
-            <p className="text-slate-400 leading-relaxed">
+            <p className="text-[#5a6b78] dark:text-slate-400 leading-relaxed">
               Have specific questions regarding an opening or your application status? Reach our Talent Acquisition
               Desk directly.
             </p>
             <a
               href="mailto:careers@volampelektrikals.com"
-              className="inline-block text-[#f2b84b] font-bold hover:underline"
+              className="inline-block text-[#c56718] dark:text-[#f2b84b] font-bold hover:underline"
             >
               careers@volampelektrikals.com
             </a>
             <div className="pt-2">
               <a
                 href={`tel:+91${supportPhone}`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-[#f2b84b] font-bold text-xs"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#c56718] hover:bg-[#9e4e0e] text-white font-bold text-xs shadow-xs transition-colors"
               >
                 <PhoneCall className="size-3" />
                 <span>Call +91 {supportPhone}</span>
@@ -1705,16 +1705,16 @@ export default function CareersPage() {
           </div>
         </div>
 
-        <div className="market-container py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <div>Volamp Elektrikals Â© 2026. All rights reserved. Equal Opportunity Employer.</div>
+        <div className="market-container py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#826e70] dark:text-slate-400">
+          <div>Volamp Elektrikals © 2026. All rights reserved. Equal Opportunity Employer.</div>
           <div className="flex items-center gap-4">
-            <Link href="/privacy-policy" className="hover:text-[#f2b84b] transition-colors">
+            <Link href="/privacy-policy" className="hover:text-[#c56718] dark:hover:text-[#f2b84b] transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/shipping-policy" className="hover:text-[#f2b84b] transition-colors">
+            <Link href="/shipping-policy" className="hover:text-[#c56718] dark:hover:text-[#f2b84b] transition-colors">
               Shipping & Supply
             </Link>
-            <Link href="/" className="hover:text-[#f2b84b] transition-colors">
+            <Link href="/" className="hover:text-[#c56718] dark:hover:text-[#f2b84b] transition-colors">
               Back to Home
             </Link>
           </div>

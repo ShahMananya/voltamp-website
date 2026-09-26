@@ -9,6 +9,7 @@ import {
   ExternalLink,
   Facebook,
   FileText,
+  Globe2,
   Headphones,
   Instagram,
   Linkedin,
@@ -345,6 +346,29 @@ export default function AboutVolamp() {
 
   return (
     <div className="about-page">
+      {/* Top Utility Bar (Consistent with Home page) */}
+      <div className="market-utility">
+        <div className="market-container utility-inner">
+          <div className="flex items-center gap-2">
+            <span className="status-dot" />
+            <Globe2 className="size-3.5 text-amber-400 shrink-0" />
+            <span className="font-semibold text-white">Ahmedabad HQ · Pan-India & Global Supply Desk</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="desktop-only text-slate-300">60+ Years Engineering Heritage · Est. 1964</span>
+            <Link href="/careers" className="text-amber-400 font-bold hover:underline">
+              Careers & Hiring
+            </Link>
+            <Link href="/collaborate" className="utility-collaborate">
+              Collaborate with us <ArrowRight className="inline size-3" />
+            </Link>
+            <a href="tel:+919512365582" className="text-amber-400 font-bold hover:underline">
+              +91 9512365582
+            </a>
+          </div>
+        </div>
+      </div>
+
       <header className="about-header">
         <div className="about-header-inner">
           <Link href="/">
@@ -354,6 +378,9 @@ export default function AboutVolamp() {
             <a href="#story">Our story</a>
             <a href="#leadership">Leadership</a>
             <a href="#footprint">Global Presence & Footprint</a>
+            <Link href="/careers" className="hover:text-[#c56718] transition-colors">
+              Careers
+            </Link>
             <Link href="/collaborate" className="collaborate-nav-link">
               Collaborate with us <ArrowRight className="inline size-3 ml-0.5" />
             </Link>
