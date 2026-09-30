@@ -34,6 +34,7 @@ import {
   type RealCableCatalogItem,
   type CableSizingResult,
 } from "@/data/realWireData";
+import { findRealWireProduct, type RealWireProduct } from "@/data/realWireProductsCatalog";
 
 export type CableTypeOption = RealCableCatalogItem;
 export const CABLE_CATALOG: CableTypeOption[] = REAL_CABLE_CATALOG;
@@ -152,25 +153,33 @@ export default function CableCalculatorModal({
   const currentBrandObj =
     BRAND_MULTIPLIERS.find((b) => b.name === selectedBrand) ?? BRAND_MULTIPLIERS[0];
 
-  // Price calculations
-  const rawUnitPrice = useMemo(() => {
-    const base =
-      currentConductor === "Copper"
-        ? currentSizeObj.copperBasePrice
-        : currentSizeObj.aluBasePrice;
+  // Authentic real product lookup from website catalog (products_db.json)
+  const realProduct: RealWireProduct = useMemo(() => {
+    return findRealWireProduct({
+      brand: selectedBrand,
+      catId: selectedCableId,
+      material: currentConductor,
+      cores: currentCore,
+      size: currentSizeObj.size,
+    });
+  }, [selectedBrand, selectedCableId, currentConductor, currentCore, currentSizeObj]);
 
-    let coreFactor = 1.0;
-    if (currentCore.includes("2 Core")) coreFactor = 0.65;
-    else if (currentCore.includes("3 Core")) coreFactor = 0.9;
-    else if (currentCore.includes("3.5 Core")) coreFactor = 1.0;
-    else if (currentCore.includes("4 Core")) coreFactor = 1.15;
+  // Unit rate calculations
+  const unitListPrice = realProduct.listPrice;
+  const websiteDiscountPct = realProduct.discountPct; // e.g. 40%
+  const unitDiscountAmount = Math.round(unitListPrice * (websiteDiscountPct / 100));
+  const unitNetPrice = realProduct.netPrice;
 
-    return Math.round(base * coreFactor * currentBrandObj.multiplier);
-  }, [currentConductor, currentSizeObj, currentCore, currentBrandObj]);
+  // Project totals
+  const listTotal = unitListPrice * quantityMeters;
+  const websiteDiscountTotal = Math.round(listTotal * (websiteDiscountPct / 100));
+  const websiteNetSubtotal = listTotal - websiteDiscountTotal;
 
-  const listTotal = rawUnitPrice * quantityMeters;
-  const discountAmount = Math.round(listTotal * (contractorDiscount / 100));
-  const taxableSubtotal = listTotal - discountAmount;
+  // Optional contractor / volume slab discount
+  const contractorDiscountAmount = Math.round(websiteNetSubtotal * (contractorDiscount / 100));
+  const taxableSubtotal = websiteNetSubtotal - contractorDiscountAmount;
+  const totalSavings = websiteDiscountTotal + contractorDiscountAmount;
+
   const gstAmount = Math.round(taxableSubtotal * 0.18);
   const finalTotal = includeGst ? taxableSubtotal + gstAmount : taxableSubtotal;
 
@@ -185,18 +194,21 @@ export default function CableCalculatorModal({
   // Actions
   const handleCopySummary = () => {
     const summary = `VOLAMP ESTIMATE SUMMARY:
-Product: ${selectedBrand} - ${activeCableType.name}
+Brand: ${selectedBrand}
+Product: ${realProduct.name}
+Catalog SKU: ${realProduct.sku}
 Spec: ${currentCore} x ${currentSizeObj.size} (${currentConductor})
 Standard: ${activeCableType.standard} (${activeCableType.voltage})
 Quantity: ${quantityMeters.toLocaleString("en-IN")} Metres
-Indicative Rate: ₹${rawUnitPrice.toLocaleString("en-IN")}/m
-Contractor Discount: ${contractorDiscount}% (-₹${discountAmount.toLocaleString("en-IN")})
-Taxable Subtotal: ₹${taxableSubtotal.toLocaleString("en-IN")}
-GST (18%): ₹${gstAmount.toLocaleString("en-IN")}
-Estimated Net Total: ₹${finalTotal.toLocaleString("en-IN")}
+Gross List Price (MRP): ₹${unitListPrice.toLocaleString("en-IN")}/m (Gross Total: ₹${listTotal.toLocaleString("en-IN")})
+Website Discount (${websiteDiscountPct}% OFF): -₹${websiteDiscountTotal.toLocaleString("en-IN")}
+Net Rate: ₹${unitNetPrice.toLocaleString("en-IN")}/m
+${contractorDiscount > 0 ? `Additional Contractor Rebate (${contractorDiscount}%): -₹${contractorDiscountAmount.toLocaleString("en-IN")}\n` : ""}Taxable Subtotal: ₹${taxableSubtotal.toLocaleString("en-IN")}
+18% GST: ₹${gstAmount.toLocaleString("en-IN")}
+Final Payable Estimate: ₹${finalTotal.toLocaleString("en-IN")} (Total Savings: ₹${totalSavings.toLocaleString("en-IN")})
 Est. Weight: ~${totalWeightKg.toLocaleString("en-IN")} kg (${drumType})
 
-Shared via Volamp Elektrikals Quick Order Estimator.`;
+Generated via Volamp Online Estimation Desk: https://volampelektrikals.com/calculator`;
 
     navigator.clipboard.writeText(summary);
     toast.success("Estimate Copied to Clipboard!", {
@@ -205,19 +217,23 @@ Shared via Volamp Elektrikals Quick Order Estimator.`;
   };
 
   const handleWhatsAppQuote = () => {
-    const msg = `Hello VOLAMP Supply Desk, I used the Cable Project Estimator and would like an official quote for:\n\n` +
+    const msg = `Hello VOLAMP Supply Desk, I generated a cable project estimate on your calculator:\n\n` +
       `• Brand: ${selectedBrand}\n` +
-      `• Cable: ${activeCableType.name}\n` +
+      `• Product: ${realProduct.name}\n` +
+      `• Catalog SKU: ${realProduct.sku}\n` +
       `• Spec: ${currentCore} x ${currentSizeObj.size} (${currentConductor})\n` +
       `• Quantity: ${quantityMeters.toLocaleString("en-IN")} Metres\n` +
-      `• Est. Total: ₹${finalTotal.toLocaleString("en-IN")} (incl. GST)\n\n` +
-      `Please confirm stock availability, latest factory discount, and dispatch timeline.`;
+      `• Gross List (MRP): ₹${unitListPrice.toLocaleString("en-IN")}/m\n` +
+      `• Website Discount: ${websiteDiscountPct}% OFF\n` +
+      `• Net Rate: ₹${unitNetPrice.toLocaleString("en-IN")}/m\n` +
+      `• Est. Total: ₹${finalTotal.toLocaleString("en-IN")} (incl. 18% GST)\n\n` +
+      `Please confirm stock availability and dispatch schedule from Ahmedabad.`;
 
     window.open(`https://wa.me/919512365582?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
   const handleTurnIntoQuote = () => {
-    const summaryText = `${selectedBrand} ${activeCableType.name}, ${currentCore} x ${currentSizeObj.size} (${currentConductor}) - ${quantityMeters} Metres. Est: ₹${finalTotal.toLocaleString("en-IN")}`;
+    const summaryText = `${selectedBrand} ${realProduct.name}, ${currentCore} x ${currentSizeObj.size} (${currentConductor}) - ${quantityMeters} Metres. Est: ₹${finalTotal.toLocaleString("en-IN")}`;
     onClose();
     if (onQuote) {
       onQuote(summaryText);
@@ -566,8 +582,22 @@ Shared via Volamp Elektrikals Quick Order Estimator.`;
                     <span className="text-stone-800">{activeCableType.voltage}</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-stone-50">
-                    <span className="text-stone-500">Indicative Rate:</span>
-                    <strong className="text-[#c25e0a]">₹{rawUnitPrice.toLocaleString("en-IN")} / metre</strong>
+                    <span className="text-stone-500">List Price (Pricelist MRP):</span>
+                    <span className="font-semibold text-stone-400 line-through">₹{unitListPrice.toLocaleString("en-IN")}/m</span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-stone-50 items-center">
+                    <span className="text-stone-500">Website Discount:</span>
+                    <span className="font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded text-[11px] border border-amber-200">
+                      {websiteDiscountPct}% OFF (-₹{unitDiscountAmount.toLocaleString("en-IN")}/m)
+                    </span>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-stone-50 items-center">
+                    <span className="text-stone-500">Volamp Online Rate:</span>
+                    <strong className="text-emerald-700 text-sm font-bold">₹{unitNetPrice.toLocaleString("en-IN")} / metre</strong>
+                  </div>
+                  <div className="flex justify-between py-1 border-b border-stone-50 text-[11px]">
+                    <span className="text-stone-500">Catalog SKU:</span>
+                    <span className="font-mono text-stone-800 font-semibold">{realProduct.sku}</span>
                   </div>
                   <div className="flex justify-between py-1 border-b border-stone-50">
                     <span className="text-stone-500">Est. Total Weight:</span>
@@ -600,21 +630,26 @@ Shared via Volamp Elektrikals Quick Order Estimator.`;
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between text-stone-600">
                     <span>
-                      List Price ({quantityMeters}m @ ₹{rawUnitPrice}/m):
+                      Gross List Price ({quantityMeters}m @ ₹{unitListPrice}/m):
                     </span>
-                    <span>₹{listTotal.toLocaleString("en-IN")}</span>
+                    <span className="font-medium text-stone-800">₹{listTotal.toLocaleString("en-IN")}</span>
+                  </div>
+
+                  <div className="flex justify-between text-amber-700 font-semibold">
+                    <span>Website Discount ({websiteDiscountPct}% OFF):</span>
+                    <span>- ₹{websiteDiscountTotal.toLocaleString("en-IN")}</span>
                   </div>
 
                   {contractorDiscount > 0 && (
                     <div className="flex justify-between text-emerald-700 font-semibold">
-                      <span>Contractor Discount ({contractorDiscount}%):</span>
-                      <span>- ₹{discountAmount.toLocaleString("en-IN")}</span>
+                      <span>Additional Contractor Slab ({contractorDiscount}%):</span>
+                      <span>- ₹{contractorDiscountAmount.toLocaleString("en-IN")}</span>
                     </div>
                   )}
 
                   <div className="flex justify-between text-stone-800 font-semibold pt-1 border-t border-[#ebd8ca]">
-                    <span>Taxable Subtotal:</span>
-                    <span>₹{taxableSubtotal.toLocaleString("en-IN")}</span>
+                    <span>Net Taxable Subtotal:</span>
+                    <span className="font-bold text-sm">₹{taxableSubtotal.toLocaleString("en-IN")}</span>
                   </div>
 
                   {includeGst && (
@@ -624,13 +659,23 @@ Shared via Volamp Elektrikals Quick Order Estimator.`;
                     </div>
                   )}
 
+                  {/* Savings Indicator */}
+                  <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-center justify-between text-xs">
+                    <span className="font-bold flex items-center gap-1">
+                      <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0" /> Total Savings:
+                    </span>
+                    <span className="font-extrabold text-emerald-700 font-mono">
+                      ₹{totalSavings.toLocaleString("en-IN")} ({websiteDiscountPct + (contractorDiscount > 0 ? contractorDiscount : 0)}% off MRP)
+                    </span>
+                  </div>
+
                   <div className="pt-3 border-t-2 border-[#e0c4ae] flex items-end justify-between">
                     <div>
                       <span className="text-xs font-bold text-stone-600 block">
                         Estimated Net Total:
                       </span>
                       <small className="text-[10px] text-stone-500">
-                        {includeGst ? "Inclusive of all taxes" : "Before GST"}
+                        {includeGst ? "Inclusive of 18% GST" : "Before GST"}
                       </small>
                     </div>
                     <div className="text-right">
