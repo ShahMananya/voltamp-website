@@ -40,6 +40,25 @@ interface NewsArticle {
 
 const NEWS_ARTICLES: NewsArticle[] = [
   {
+    id: "news-ahmedabad-mirror-2026",
+    title: "Ahmedabad Mirror: Top 10 Inspiring Entrepreneurs in Ahmedabad to Watch in 2026 Features Naimil Vipul Patel (CEO, Volamp Elektrikals)",
+    source: "Ahmedabad Mirror",
+    sourceBadge: "AHMEDABAD MIRROR · REAL COVERAGE",
+    date: "September 30, 2026",
+    readTime: "3 min read",
+    category: "press",
+    summary:
+      "Ahmedabad Mirror has named Naimil Vipul Patel, CEO and Director of Volamp Elektrikals Private Limited, among the Top 10 Inspiring Entrepreneurs in Ahmedabad to watch in 2026. The profile celebrates Volamp's transformation into a modern, technology-driven one-stop electrical distribution powerhouse across Gujarat and neighbouring markets, distributing leading brands including Polycab, KEI, and Finolex.",
+    details: [
+      "Recognized in Ahmedabad Mirror's prestigious 2026 business leadership list celebrating visionary entrepreneurs driving Gujarat's growth.",
+      "Highlights Volamp's dependable one-stop multi-brand distribution serving contractors, infrastructure corporations, industries, dealers, and institutions.",
+      "Spotlights Naimil Patel's vision: combining strong customer trust with technology-driven processes, efficient logistics, and data-based decision making.",
+      "Affirms Volamp's commitment to sustainable expansion, verified manufacturer quality, competitive pricing, and prompt delivery across Western India.",
+    ],
+    link: "https://www.ahmedabadmirror.com/top-10-inspiring-entrepreneurs-in-ahmedabad-to-watch-in-2026/81922949.html",
+    image: "/ahmedabad-mirror-top-10-entrepreneurs-2026.jpg",
+  },
+  {
     id: "news-metro-2025",
     title: "VOLAMP Elektrikals Dispatches 250km Specialized Armoured Power Cables for Metro Rail Expansion",
     source: "Infrastructure & EPC World Review",
@@ -291,48 +310,84 @@ export default function InTheNews() {
 
       {/* Featured Headline Spotlight */}
       <section className="py-10 market-container">
-        <div className="rounded-3xl bg-gradient-to-br from-[#4d1217] via-[#5c161d] to-[#6b2024] text-white p-7 sm:p-10 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div className="rounded-3xl bg-gradient-to-br from-[#2a080b] via-[#4d1217] to-[#731920] text-white p-7 sm:p-10 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8 border border-white/10">
           <div className="space-y-4 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-0.5 rounded-full bg-amber-400 text-stone-950 text-[10px] font-black uppercase tracking-wider">
-                FEATURED STORY
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-3 py-1 rounded-full bg-red-600 text-white text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                <img src="/ahmedabad-mirror-logo.svg" alt="Ahmedabad Mirror" className="h-3.5 invert brightness-200" />
+                OFFICIAL PRESS FEATURE
               </span>
-              <span className="text-xs text-amber-200 font-medium">
-                Infrastructure & EPC World Review · Feb 2025
+              <span className="text-xs text-amber-200 font-semibold">
+                Ahmedabad Mirror · September 30, 2026
               </span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] leading-tight">
-              VOLAMP Dispatches 250km Specialized Armoured Power Cables for Metro Rail Expansion
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-['Space_Grotesk'] leading-tight text-white">
+              Ahmedabad Mirror: Naimil Vipul Patel Named Among Top 10 Inspiring Entrepreneurs in Ahmedabad to Watch in 2026
             </h2>
 
-            <p className="text-xs sm:text-sm text-stone-200 leading-relaxed">
-              Consignment delivered in record time with verified CPRI impulse testing and customized continuous span drums to eliminate underground joint failure risks across metro transit routes.
+            <p className="text-xs sm:text-sm text-stone-200 leading-relaxed font-['DM_Sans']">
+              Under Naimil Patel's leadership as CEO & Director, Volamp Elektrikals has built a strong presence in the electrical distribution industry, specialising in multi-brand wires and cables from leading brands including KEI, Polycab, and Finolex. His business approach combines strong customer relationships with technology-driven processes, efficient operations, and data-based decision making.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-stone-300">
-              <span className="flex items-center gap-1.5">
-                <BadgeCheck className="size-4 text-emerald-400" /> 100% On-Time Milestone Fulfilled
+            <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-stone-300">
+              <span className="flex items-center gap-1.5 bg-black/30 px-3 py-1.5 rounded-lg border border-white/10 font-medium">
+                <BadgeCheck className="size-4 text-emerald-400" /> Top 10 Inspiring Entrepreneurs 2026
               </span>
-              <span className="flex items-center gap-1.5">
-                <BadgeCheck className="size-4 text-emerald-400" /> MTC Batch Certificates Issued
+              <span className="flex items-center gap-1.5 bg-black/30 px-3 py-1.5 rounded-lg border border-white/10 font-medium">
+                <BadgeCheck className="size-4 text-emerald-400" /> Multi-Brand Cable Powerhouse
               </span>
+              <span className="flex items-center gap-1.5 bg-black/30 px-3 py-1.5 rounded-lg border border-white/10 font-medium">
+                <BadgeCheck className="size-4 text-emerald-400" /> Tech-Enabled B2B Supply Desk
+              </span>
+            </div>
+
+            <div className="pt-3 flex flex-wrap items-center gap-3">
+              <a
+                href="https://www.ahmedabadmirror.com/top-10-inspiring-entrepreneurs-in-ahmedabad-to-watch-in-2026/81922949.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-red-950/40 active:scale-95 transition-all cursor-pointer"
+              >
+                <span>Read Full Article on Ahmedabad Mirror</span>
+                <ExternalLink className="size-4" />
+              </a>
+              <button
+                onClick={() => handleOpenRFQ("Ahmedabad Mirror Feature Inquiry")}
+                className="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs transition-colors cursor-pointer"
+              >
+                Connect with Volamp Leadership
+              </button>
             </div>
           </div>
 
-          <div className="shrink-0 w-full lg:w-72 p-5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center space-y-3">
-            <span className="text-[11px] font-bold text-amber-300 uppercase tracking-wider block">
-              Press Requisition Desk
-            </span>
-            <p className="text-xs text-stone-200">
-              Need editorial materials, leadership quotes, or project case study data?
-            </p>
-            <button
-              onClick={() => handleOpenRFQ("Press Kit Request")}
-              className="w-full py-2.5 rounded-xl bg-white text-[#4d1217] hover:bg-amber-100 font-bold text-xs transition-colors cursor-pointer"
-            >
-              Request Press Kit
-            </button>
+          <div className="shrink-0 w-full lg:w-80 rounded-2xl overflow-hidden border border-white/20 bg-stone-900/60 shadow-2xl group">
+            <img
+              src="/ahmedabad-mirror-top-10-entrepreneurs-2026.jpg"
+              alt="Ahmedabad Mirror Top 10 Inspiring Entrepreneurs in Ahmedabad 2026"
+              className="w-full h-48 sm:h-56 object-cover object-top group-hover:scale-105 transition-transform duration-300"
+            />
+            <div className="p-4 bg-stone-950/80 backdrop-blur-md space-y-2 border-t border-white/10">
+              <div className="flex items-center justify-between text-[11px] text-amber-300 font-bold">
+                <div className="flex items-center gap-1.5">
+                  <img src="/ahmedabad-mirror-logo.svg" alt="Ahmedabad Mirror" className="h-3 invert brightness-200" />
+                  <span>Ahmedabad Mirror</span>
+                </div>
+                <span>Sep 2026</span>
+              </div>
+              <p className="text-[11px] text-stone-300 leading-snug">
+                Featuring Volamp Elektrikals CEO & Director Naimil Patel among Gujarat's top visionary leaders.
+              </p>
+              <a
+                href="https://www.ahmedabadmirror.com/top-10-inspiring-entrepreneurs-in-ahmedabad-to-watch-in-2026/81922949.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] font-bold text-red-400 hover:text-red-300 flex items-center gap-1 pt-1"
+              >
+                <span>View Live Publication</span>
+                <ExternalLink className="size-3" />
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -374,9 +429,24 @@ export default function InTheNews() {
           {filteredArticles.map((article) => (
             <article
               key={article.id}
-              className="rounded-2xl bg-white dark:bg-slate-800/90 border border-stone-200/90 dark:border-slate-700/80 p-6 flex flex-col justify-between hover:shadow-xl hover:border-amber-300 dark:hover:border-amber-500/50 transition-all group"
+              className="rounded-2xl bg-white dark:bg-slate-800/90 border border-stone-200/90 dark:border-slate-700/80 p-6 flex flex-col justify-between hover:shadow-xl hover:border-amber-300 dark:hover:border-amber-500/50 transition-all group overflow-hidden"
             >
               <div>
+                {article.image && (
+                  <div className="relative -mx-6 -mt-6 mb-4 h-48 overflow-hidden rounded-t-2xl bg-stone-100 dark:bg-slate-900 border-b border-stone-200 dark:border-slate-700">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                    />
+                    {article.link && (
+                      <span className="absolute top-3 right-3 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-xs text-white text-[10px] font-bold flex items-center gap-1">
+                        <ExternalLink className="size-2.5" /> Official Press
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/10 text-[#c56718] dark:text-amber-400 border border-amber-500/30">
                     {article.sourceBadge}
@@ -417,13 +487,25 @@ export default function InTheNews() {
               </div>
 
               <div className="mt-6 pt-4 border-t border-stone-200 dark:border-slate-700 flex items-center justify-between">
-                <button
-                  onClick={() => handleOpenRFQ(article.title)}
-                  className="text-xs font-bold text-[#c56718] dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Request Full Press Release</span>
-                  <ArrowRight className="size-3" />
-                </button>
+                {article.link ? (
+                  <a
+                    href={article.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <span>Read Full Article on {article.source}</span>
+                    <ExternalLink className="size-3.5" />
+                  </a>
+                ) : (
+                  <button
+                    onClick={() => handleOpenRFQ(article.title)}
+                    className="text-xs font-bold text-[#c56718] dark:text-amber-400 hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Request Full Press Release</span>
+                    <ArrowRight className="size-3" />
+                  </button>
+                )}
               </div>
             </article>
           ))}

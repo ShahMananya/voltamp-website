@@ -775,6 +775,19 @@ export default function AboutVolamp() {
                   {(ceo as any).headline && (
                     <h4 className="about-ceo-headline">{(ceo as any).headline}</h4>
                   )}
+                  <div className="pt-2">
+                    <a
+                      href="https://www.ahmedabadmirror.com/top-10-inspiring-entrepreneurs-in-ahmedabad-to-watch-in-2026/81922949.html"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/60 text-red-700 dark:text-red-300 text-xs font-bold hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors shadow-xs"
+                      title="Read official feature on Ahmedabad Mirror"
+                    >
+                      <img src="/ahmedabad-mirror-logo.svg" alt="Ahmedabad Mirror" className="h-3.5" />
+                      <span>Featured in Ahmedabad Mirror: Top 10 Inspiring Entrepreneurs to Watch in 2026</span>
+                      <ExternalLink className="size-3 inline ml-0.5" />
+                    </a>
+                  </div>
                 </div>
 
                 <div className="about-ceo-message-body">
