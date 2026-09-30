@@ -13860,12 +13860,12 @@ html.dark .home-seg-collab-btn {
 
 .tiles-heading {
   font-family: "Space Grotesk", sans-serif;
-  font-size: 1.85rem;
+  font-size: 2.75rem;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.15;
   color: #ffffff;
-  margin: 0 0 0.6rem;
-  letter-spacing: -0.02em;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.025em;
 }
 
 .tiles-heading em {
@@ -14355,12 +14355,12 @@ html:not(.dark) .state-dot {
 
 .tile-title {
   font-family: "Space Grotesk", sans-serif;
-  font-size: 1.08rem;
+  font-size: 1.28rem;
   font-weight: 800;
   color: #ffffff;
-  line-height: 1.35;
-  margin: 0 0 0.45rem;
-  letter-spacing: -0.01em;
+  line-height: 1.3;
+  margin: 0 0 0.55rem;
+  letter-spacing: -0.015em;
 }
 
 html:not(.dark) .tile-title {
@@ -14674,7 +14674,11 @@ html:not(.dark) .home-landmarks-desc {
   }
 
   .tiles-heading {
-    font-size: 1.5rem;
+    font-size: 2rem;
+  }
+
+  .tile-title {
+    font-size: 1.18rem;
   }
 
   .home-landmarks-title {

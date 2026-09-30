@@ -71,7 +71,7 @@ export default function WhereVolampContributed() {
                 <span>Nation-Building Infrastructure · 28 States & UTs</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white tracking-tight leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white tracking-tight leading-tight">
                 Where Volamp <span className="text-[#c56718] dark:text-amber-400">Contributed</span>
               </h1>
 
