@@ -16,7 +16,8 @@ import {
   ShieldCheck,
   UserCheck,
   Truck,
-  RotateCcw
+  RotateCcw,
+  Scale,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { toast } from "sonner";
@@ -101,6 +102,22 @@ const privacySections: PrivacySection[] = [
       "Update company billing address, delivery site addresses, or authorized contact persons.",
       "Correct tax identification or GST details for upcoming billing cycles."
     ]
+  },
+  {
+    number: 6,
+    title: "Cookies & Tracking Technologies",
+    lead: "VOLAMP uses strictly essential cookies required for basic platform operation, along with optional cookies for analytics and user preferences:",
+    paragraphs: [],
+    subsections: [
+      {
+        subtitle: "Core Essential Cookies (Always Active / Technical Necessity)",
+        text: "1. Authentication Cookies: Keep a user logged in as they navigate from page to page. Without them, the user logs out on every click.\n2. Session ID Cookies: Track a temporary browsing session and delete automatically when the browser closes.\n3. Shopping Cart Cookies: Remember items added to an e-commerce cart or cable project estimation during a session.\n4. Security Cookies: Detect threats and prevent attacks like Cross-Site Request Forgery (CSRF) or fake logins.\n5. Load-Balancing Cookies: Spread site traffic across server clusters to keep the website fast and stable.\n6. Consent Management Cookies: Remember a user's cookie privacy choices so the notice does not reappear on every page load."
+      },
+      {
+        subtitle: "What is NOT Essential (Optional Consent)",
+        text: "• Analytics: Tracking tools like Google Analytics require active consent.\n• Marketing: Ad pixels and retargeting tools are never essential.\n• Preferences: Dark mode or non-critical styling choices are user conveniences, not technical necessities."
+      }
+    ]
   }
 ];
 
@@ -140,14 +157,10 @@ export default function PrivacyPolicy() {
       <header className="policy-navbar">
         <div className="policy-nav-container">
           <div className="policy-nav-left">
-            <Link href="/" className="policy-back-btn">
-              <ArrowLeft className="size-4" />
-              <span>Back to Marketplace</span>
-            </Link>
-            <div className="policy-nav-brand">
+            <Link href="/" className="policy-nav-brand">
               <img src="/volamp-logo.png" alt="VOLAMP" className="policy-brand-img" />
               <span className="policy-brand-badge">LEGAL & PRIVACY</span>
-            </div>
+            </Link>
           </div>
 
           <div className="policy-nav-actions">
@@ -164,6 +177,10 @@ export default function PrivacyPolicy() {
               <Link href="/refund-policy" className="policy-switch-pill">
                 <RotateCcw className="size-3.5" />
                 <span>Refund Policy</span>
+              </Link>
+              <Link href="/terms-and-conditions" className="policy-switch-pill">
+                <Scale className="size-3.5" />
+                <span>Terms & Conditions</span>
               </Link>
             </div>
 

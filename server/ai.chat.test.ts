@@ -183,4 +183,86 @@ describe("ai.chat", () => {
     expect(mockInvoke).toHaveBeenCalledTimes(2);
     mockInvoke.mockRestore();
   });
+
+  describe("volaBrain local engine (intense non-AI responses)", () => {
+    it("provides contractor discount slabs and pricing architecture", async () => {
+      const caller = appRouter.createCaller(context);
+      // Let it fall back to local volaBrain engine (simulate LLM offline)
+      const mockInvoke = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+
+      const response = await caller.ai.chat({
+        messages: [{ role: "user", content: "What contractor discounts do you offer on wires and switchgear?" }],
+      });
+
+      expect(response).toContain("Contractor Discount");
+      expect(response).toContain("40% OFF");
+      expect(response).toContain("Wires & Cables");
+      expect(response).toContain("Switchgear");
+      expect(response).toContain("18% GST");
+      expect(response).not.toContain("As an AI");
+      mockInvoke.mockRestore();
+    });
+
+    it("details the 10 business segments comprehensively", async () => {
+      const caller = appRouter.createCaller(context);
+      const mockInvoke = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+
+      const response = await caller.ai.chat({
+        messages: [{ role: "user", content: "Explain your business segments and what you supply for solar and EPC" }],
+      });
+
+      expect(response).toContain("EPC & Infrastructure");
+      expect(response).toContain("IS 7098");
+      expect(response).not.toContain("As an AI");
+      mockInvoke.mockRestore();
+    });
+
+    it("recounts the 60-year 4-generation Volamp story and CEO vision without sounding like an AI", async () => {
+      const caller = appRouter.createCaller(context);
+      const mockInvoke = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+
+      const response = await caller.ai.chat({
+        messages: [{ role: "user", content: "Tell me about Volamp history, the 4 generations, and CEO" }],
+      });
+
+      expect(response).toContain("Soma Bhai Khatubhai Patel");
+      expect(response).toContain("Naimil");
+      expect(response).toContain("Ahmedabad");
+      expect(response).toContain("1964");
+      expect(response).not.toContain("As an AI");
+      mockInvoke.mockRestore();
+    });
+
+    it("calculates high-precision cable sizing for a given kW load", async () => {
+      const caller = appRouter.createCaller(context);
+      const mockInvoke = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+
+      const response = await caller.ai.chat({
+        messages: [{ role: "user", content: "Calculate cable size for 45 kW load at 415V" }],
+      });
+
+      expect(response).toContain("45.0 kW Load");
+      expect(response).toContain("Amperes");
+      expect(response).toContain("Copper");
+      expect(response).toContain("Aluminium");
+      expect(response).toContain("IS 7098");
+      expect(response).not.toContain("As an AI");
+      mockInvoke.mockRestore();
+    });
+
+    it("searches live products from the 3,385+ database and renders live prices and specs", async () => {
+      const caller = appRouter.createCaller(context);
+      const mockInvoke = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+
+      const response = await caller.ai.chat({
+        messages: [{ role: "user", content: "Show me 4 sqmm copper cables with price and discount" }],
+      });
+
+      expect(response).toContain("4 SQMM");
+      expect(response).toContain("Copper");
+      expect(response).toContain("Price");
+      expect(response).not.toContain("As an AI");
+      mockInvoke.mockRestore();
+    });
+  });
 });

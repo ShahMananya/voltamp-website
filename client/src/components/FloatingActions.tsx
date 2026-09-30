@@ -69,14 +69,14 @@ export default function FloatingActions({
               : "opacity-0 translate-x-2 pointer-events-none"
           }`}
         >
-          <span>Ask Vola AI</span>
+          <span>Chat with Vola</span>
           <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 border-y-4 border-y-transparent border-l-4 border-l-[#0b1f33]" />
         </div>
 
         <button
           type="button"
           onClick={onOpenChat}
-          aria-label="Ask Vola AI · Instant Help & Quotations"
+          aria-label="Chat with Vola · Instant Sizing, Pricing & Quotations"
           onMouseEnter={() => setHoveredButton("chat")}
           onMouseLeave={() => setHoveredButton(null)}
           className="group relative flex items-center justify-center w-12 h-12 md:w-[50px] md:h-[50px] rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-[0_4px_16px_rgba(37,99,235,0.45)] hover:shadow-[0_8px_24px_rgba(37,99,235,0.65)] hover:scale-108 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-3 focus:ring-[#2563EB]/40 border-none"

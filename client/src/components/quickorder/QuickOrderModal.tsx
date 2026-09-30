@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useUserLocation } from "@/contexts/LocationContext";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,8 @@ import {
   ExternalLink,
   Copy,
   FileText,
+  Lock,
+  LogIn,
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
@@ -72,16 +75,25 @@ const createEmptyRow = (): QuickOrderRow => ({
 });
 
 export function QuickOrderModal({ isOpen, onClose, initialProduct }: QuickOrderModalProps) {
+  const { user } = useAuth();
   const { location } = useUserLocation();
 
   // Customer details
-  const [customerName, setCustomerName] = useState("");
+  const [customerName, setCustomerName] = useState(() => user?.name || "");
   const [companyName, setCompanyName] = useState("");
   const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => user?.email || "");
   const [gstin, setGstin] = useState("");
   const [projectLocation, setProjectLocation] = useState(location || "Ahmedabad, Gujarat, India");
   const [notes, setNotes] = useState("");
+
+  // Sync user profile when authenticated
+  React.useEffect(() => {
+    if (user) {
+      if (user.name && !customerName) setCustomerName(user.name);
+      if (user.email && !email) setEmail(user.email);
+    }
+  }, [user]);
 
   // Product list state - starts with initialProduct or demo items
   const [rows, setRows] = useState<QuickOrderRow[]>(() => {
@@ -274,6 +286,17 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
   }, [waInvoiceText]);
 
   const handleDirectWhatsAppSend = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!user) {
+      e.preventDefault();
+      toast.error("Account Required to Place Order", {
+        description: "Please login or create your customer account to place orders with Volamp Elektrikals.",
+      });
+      window.dispatchEvent(
+        new CustomEvent("volamp:open-auth", { detail: { accountType: "customer" } })
+      );
+      return;
+    }
+
     if (!customerName.trim()) {
       e.preventDefault();
       toast.error("Please enter your name before sending to WhatsApp.");
@@ -333,6 +356,16 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
   };
 
   const handleShareFileDirectly = async () => {
+    if (!user) {
+      toast.error("Account Required to Place Order", {
+        description: "Please login or create your customer account to generate official order invoices.",
+      });
+      window.dispatchEvent(
+        new CustomEvent("volamp:open-auth", { detail: { accountType: "customer" } })
+      );
+      return;
+    }
+
     const activeId = submittedOrderId || activeOrderId;
     if (validItems.length === 0) {
       toast.error("Please add at least one product with name and quantity.");
@@ -458,6 +491,50 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
                 </p>
               </div>
             </div>
+
+            {/* AUTHENTICATION GATE / REQUIREMENT */}
+            {!user ? (
+              <div className="mb-5 p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-start gap-3">
+                  <div className="size-8 rounded-lg bg-amber-500/20 text-[#c56718] flex items-center justify-center shrink-0 mt-0.5">
+                    <Lock className="size-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-amber-950 font-['Space_Grotesk']">
+                      Account Login Required to Place Orders
+                    </h4>
+                    <p className="text-[11px] text-amber-800 leading-relaxed mt-0.5">
+                      To generate your official PDF invoice, lock in wholesale pricing, and track consignment dispatch, you must be logged into your Volamp customer account.
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => {
+                    window.dispatchEvent(
+                      new CustomEvent("volamp:open-auth", { detail: { accountType: "customer" } })
+                    );
+                  }}
+                  className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold h-9 px-4 rounded-xl shadow-sm shrink-0 cursor-pointer flex items-center gap-1.5"
+                >
+                  <LogIn className="size-3.5" />
+                  <span>Login / Create Account</span>
+                </Button>
+              </div>
+            ) : (
+              <div className="mb-5 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs text-emerald-900">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+                  <span className="text-[11px] font-medium">
+                    Verified Customer Account: <strong>{user.name || user.email}</strong> ({user.email})
+                  </span>
+                </div>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-950 uppercase tracking-wide">
+                  Account Active
+                </span>
+              </div>
+            )}
 
             {/* PRODUCT ENTRY SECTION */}
             <div className="mb-6 rounded-xl border border-[#dce5eb] bg-[#f8fafc] p-4">
@@ -702,17 +779,35 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
             <div className="pt-3 border-t border-[#e8eff3] space-y-2">
               <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
                 {/* DIRECT WHATSAPP ANCHOR LINK */}
-                <a
-                  id="qo-whatsapp-direct-link"
-                  href={waUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={handleDirectWhatsAppSend}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs h-11 rounded-lg shadow-md flex items-center justify-center gap-2 cursor-pointer no-underline transition-all select-none"
-                >
-                  <MessageCircle className="size-4" />
-                  <span>Send to WhatsApp (+91 9512365582) & Create Invoice</span>
-                </a>
+                {!user ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      toast.error("Account Required to Place Order", {
+                        description: "Please login or create your customer account to place orders with Volamp Elektrikals.",
+                      });
+                      window.dispatchEvent(
+                        new CustomEvent("volamp:open-auth", { detail: { accountType: "customer" } })
+                      );
+                    }}
+                    className="flex-1 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-bold text-xs h-11 rounded-lg shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all select-none"
+                  >
+                    <Lock className="size-4" />
+                    <span>Login or Create Account to Place Order</span>
+                  </button>
+                ) : (
+                  <a
+                    id="qo-whatsapp-direct-link"
+                    href={waUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={handleDirectWhatsAppSend}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs h-11 rounded-lg shadow-md flex items-center justify-center gap-2 cursor-pointer no-underline transition-all select-none"
+                  >
+                    <MessageCircle className="size-4" />
+                    <span>Send to WhatsApp (+91 9512365582) & Create Invoice</span>
+                  </a>
+                )}
 
                 <Button
                   type="button"

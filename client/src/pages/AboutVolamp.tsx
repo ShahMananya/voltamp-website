@@ -351,18 +351,18 @@ export default function AboutVolamp() {
         <div className="market-container utility-inner">
           <div className="flex items-center gap-2">
             <span className="status-dot" />
-            <Globe2 className="size-3.5 text-amber-400 shrink-0" />
-            <span className="font-semibold text-white">Ahmedabad HQ · Pan-India & Global Supply Desk</span>
+            <Globe2 className="size-3.5 text-[#c56718] dark:text-amber-400 shrink-0" />
+            <span className="font-semibold text-[#4d1217] dark:text-white">Ahmedabad HQ · Pan-India & Global Supply Desk</span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="desktop-only text-slate-300">60+ Years Engineering Heritage · Est. 1964</span>
-            <Link href="/careers" className="text-amber-400 font-bold hover:underline">
+            <span className="desktop-only text-[#5d4a4b] dark:text-slate-300">60+ Years Engineering Heritage · Est. 1964</span>
+            <Link href="/careers" className="text-[#c56718] dark:text-amber-400 font-bold hover:underline">
               Careers & Hiring
             </Link>
             <Link href="/collaborate" className="utility-collaborate">
               Collaborate with us <ArrowRight className="inline size-3" />
             </Link>
-            <a href="tel:+919512365582" className="text-amber-400 font-bold hover:underline">
+            <a href="tel:+919512365582" className="text-[#c56718] dark:text-amber-400 font-bold hover:underline">
               +91 9512365582
             </a>
           </div>
@@ -378,6 +378,9 @@ export default function AboutVolamp() {
             <a href="#story">Our story</a>
             <a href="#leadership">Leadership</a>
             <a href="#footprint">Global Presence & Footprint</a>
+            <Link href="/where-volamp-contributed" className="hover:text-[#c56718] transition-colors">
+              Where Volamp Contributed
+            </Link>
             <Link href="/careers" className="hover:text-[#c56718] transition-colors">
               Careers
             </Link>
@@ -437,10 +440,6 @@ export default function AboutVolamp() {
                 <em>One Electrical Legacy.</em>
               </h2>
             </div>
-            <p>
-              The story of Volamp Electricals is a story of entrepreneurship, resilience, and a
-              four-generation commitment to the electrical industry.
-            </p>
           </div>
 
           <div className="about-container about-timeline">
@@ -656,10 +655,6 @@ export default function AboutVolamp() {
                   <em>feel more certain.</em>
                 </h2>
               </div>
-              <p>
-                Our goal is not to make electrical sourcing louder. It is to make every next step more
-                legible, better documented and easier to own.
-              </p>
             </div>
             <div className="about-goal-grid">
               <article>
@@ -667,8 +662,7 @@ export default function AboutVolamp() {
                 <span>01</span>
                 <h3>Clarity before commitment</h3>
                 <p>
-                  Help teams begin with the right category, a useful specification conversation and
-                  transparent next actions.
+                  Direct technical specifications, verified cable sizing, and transparent manufacturer pricing.
                 </p>
               </article>
               <article>
@@ -676,8 +670,7 @@ export default function AboutVolamp() {
                 <span>02</span>
                 <h3>Reliability in the handoff</h3>
                 <p>
-                  Build dependable follow-through from enquiry to quotation, dispatch and private customer
-                  records.
+                  Dependable follow-through from enquiry to quotation, dispatch, and Mill Test Certificates (MTC).
                 </p>
               </article>
               <article>
@@ -685,8 +678,7 @@ export default function AboutVolamp() {
                 <span>03</span>
                 <h3>Growth with accountability</h3>
                 <p>
-                  Grow across India while preserving the human responsibility behind every project
-                  conversation.
+                  Pan-India distribution backed by dedicated engineers for every project consignment.
                 </p>
               </article>
             </div>
@@ -704,10 +696,6 @@ export default function AboutVolamp() {
                   <em>close to the work.</em>
                 </h2>
               </div>
-              <p>
-                Meet the leadership and committed team driving VOLAMP’s vision of dependable electrical
-                distribution, trusted partnerships, and accountable execution across India.
-              </p>
             </div>
             <div className="about-ceo-card">
               <CeoPortrait ceo={ceo} />
@@ -893,14 +881,31 @@ export default function AboutVolamp() {
                   <em>Connecting Possibilities.</em>
                 </h2>
               </div>
-              <p>
-                From our engineering origin in Ahmedabad to mission-critical infrastructure across 28
-                Indian States & Union Territories and expanding international exports, explore Volamp’s nationwide footprint,
-                regional project heritage, and verified customer partnerships.
-              </p>
             </div>
 
             <GlobeProjectsExperience />
+
+            {/* Direct Link to Standalone Where Volamp Contributed Page */}
+            <div className="mt-12 p-8 rounded-2xl bg-gradient-to-r from-[#0c2a44] to-[#082236] border border-[#2d648b]/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
+              <div>
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">
+                  <Sparkles className="size-3.5" /> Pan-India Project Directory · 28 States
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white font-['Space_Grotesk']">
+                  Explore Where Volamp Contributed
+                </h3>
+                <p className="text-slate-300 text-sm mt-1 max-w-xl">
+                  View authentic real-world photography and engineering specifications across 46+ landmark airports, solar parks, defense reactors, and utility tunnels.
+                </p>
+              </div>
+              <Link
+                href="/where-volamp-contributed"
+                className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 px-6 py-3 rounded-lg text-sm font-extrabold shadow-lg transition-all shrink-0"
+              >
+                <span>View 46+ Projects Directory</span>
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
           </div>
         </section>
       </main>
@@ -965,6 +970,7 @@ export default function AboutVolamp() {
           <div className="about-footer-col">
             <span className="col-title">ABOUT VOLAMP</span>
             <a href="#top">Our Heritage & 4 Generations</a>
+            <Link href="/where-volamp-contributed">Where Volamp Contributed</Link>
             <Link href="/business-segments">10 Business Segments</Link>
             <a href="#footprint">3D Interactive Map & Footprint</a>
             <a href="#legacy-timeline">Historic Timeline (1965–Present)</a>
@@ -973,6 +979,8 @@ export default function AboutVolamp() {
             <Link href="/collaborate" className="highlight-link">
               Collaborate with Us <ArrowRight className="size-3 inline ml-1" />
             </Link>
+            <Link href="/certifications-and-awards">Certifications & Quality</Link>
+            <Link href="/in-the-news">In the News</Link>
           </div>
 
           {/* Column 3: Product Solutions */}
@@ -989,9 +997,11 @@ export default function AboutVolamp() {
           {/* Column 4: Compliance & Governance */}
           <div className="about-footer-col">
             <span className="col-title">POLICIES & STANDARDS</span>
+            <Link href="/branch-locations">Branch Locations & Hubs</Link>
             <Link href="/shipping-policy">Shipping & Pan-India Delivery</Link>
             <Link href="/refund-policy">Return & Refund Policy</Link>
             <Link href="/privacy-policy">Privacy & Data Policy</Link>
+            <Link href="/terms-and-conditions">Terms & Conditions</Link>
             <a href="#footprint">IS / IEC / CE Quality Compliance</a>
             <a href="https://gem.gov.in/" target="_blank" rel="noreferrer">GeM Registered Supplier</a>
           </div>
@@ -1000,20 +1010,28 @@ export default function AboutVolamp() {
           <div className="about-footer-col col-contact">
             <span className="col-title">CENTRAL SUPPLY DESK</span>
             <div className="about-contact-item">
-              <span className="contact-label">CORPORATE HEADQUARTERS</span>
-              <strong>Ahmedabad, Gujarat, India</strong>
-              <small>Serving 28 States & Global Export</small>
+              <span className="contact-label">CORPORATE MAIN OFFICE</span>
+              <strong>1753, Khadia, Ahmedabad, Gujarat 380001</strong>
+              <small>Central Fulfillment Center: Aslali, Ahmedabad · Factory supply to any location</small>
+            </div>
+            <div className="about-contact-item">
+              <span className="contact-label">STATUTORY REGISTRATIONS</span>
+              <small className="font-mono block">GST: 24AAICV0754B1ZO</small>
+              <small className="font-mono block">CIN: U31900GJ2021PTC122730</small>
             </div>
             <div className="about-contact-item">
               <span className="contact-label">DIRECT PHONE & WHATSAPP</span>
               <a href="tel:+919512365582" className="contact-phone-link">
                 <strong>+91 9512365582</strong>
               </a>
-              <small>Monday – Saturday: 9:00 AM – 7:30 PM IST</small>
+              <small>Monday – Saturday: 9:30 AM – 7:30 PM IST</small>
             </div>
             <div className="about-footer-quick-links">
               <Link href="/pay-invoice" className="quick-action-link">
                 Pay an Invoice Online <ArrowRight className="size-3" />
+              </Link>
+              <Link href="/branch-locations" className="quick-action-link">
+                View Branch Locations <ArrowRight className="size-3" />
               </Link>
               <Link href="/" className="quick-action-link">
                 Return to Marketplace <ArrowRight className="size-3" />
@@ -1025,9 +1043,9 @@ export default function AboutVolamp() {
         {/* Bottom Legal & Copyright Bar */}
         <div className="about-footer-bottom-bar">
           <div className="about-container bottom-bar-inner">
-            <span>© 2026 Volamp Elektrikals Private Limited. All rights reserved.</span>
+            <span>© 2026 Volamp Elektrikals Private Limited (CIN: U31900GJ2021PTC122730 · GST: 24AAICV0754B1ZO). All rights reserved.</span>
             <span className="footer-tagline">
-              Powering Progress. Connecting Possibilities. Built for clearer electrical sourcing across India.
+              Main Office: Khadia · Warehouse: Aslali · Manufacturing supply to any location
             </span>
             <a href="#top" className="back-to-top-btn" title="Back to top">
               Top ↑

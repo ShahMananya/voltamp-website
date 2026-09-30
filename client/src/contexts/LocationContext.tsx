@@ -168,12 +168,12 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Automatically fetch location on website entry
+  // Automatically show welcome location popup when anybody opens the website
   useEffect(() => {
     let isMounted = true;
 
-    // Check if welcome was already dismissed in this browser session
-    const isDismissed = typeof window !== "undefined" ? sessionStorage.getItem(SESSION_WELCOME_KEY) : null;
+    // Show welcome popup immediately on open
+    setWelcomeLocation(location || DEFAULT_LOCATION);
 
     detectVisitorLocation()
       .then((detected) => {
@@ -181,14 +181,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         setIsDetecting(false);
         if (detected) {
           setLocation(detected);
-          // Automatically show celebration welcome popup on entry if not dismissed in this session
-          if (!isDismissed) {
-            setTimeout(() => {
-              if (isMounted) {
-                setWelcomeLocation(detected);
-              }
-            }, 350);
-          }
+          setWelcomeLocation((prev) => (prev ? detected : null));
         }
       })
       .catch((err) => {
@@ -204,10 +197,6 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
 
   const handleSetWelcomeLocation = (loc: string | null) => {
     setWelcomeLocation(loc);
-    if (!loc && typeof window !== "undefined") {
-      // Mark as dismissed for current session when closed
-      sessionStorage.setItem(SESSION_WELCOME_KEY, "true");
-    }
   };
 
   const country = React.useMemo(() => extractCountryFromLocation(location), [location]);

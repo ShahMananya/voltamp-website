@@ -25,7 +25,7 @@ def parse_num_price(val_str):
     cleaned = re.sub(r"[^\d.]", "", str(val_str))
     try:
         f = float(cleaned)
-        return int(round(f))
+        return round(f, 2)
     except:
         return None
 

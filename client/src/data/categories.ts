@@ -28,7 +28,7 @@ export const CATEGORIES: Category[] = [
     slug: "wire-cables",
     detail: "Industrial, building, power, control, communication & HT armoured cables",
     iconName: "Cable",
-    image: "/products/cables.jpg",
+    image: "/products/cables.jpg?v=4",
     subcategories: [
       {
         name: "Industrial Flexible (FRLS) Insulated Cable",
@@ -217,7 +217,7 @@ export const CATEGORIES: Category[] = [
     slug: "lugs",
     detail: "Ring, pin and tubular heavy-duty cable terminations",
     iconName: "PlugZap",
-    image: "/products/cable-lugs.jpg",
+    image: "/products/cable-lugs.jpg?v=3",
     subcategories: [
       {
         name: "Ring",
@@ -245,31 +245,31 @@ export const CATEGORIES: Category[] = [
     ],
   },
   {
-    id: "pvc-pipe",
-    name: "PVC PIPE",
-    shortName: "PVC",
+    id: "conduit",
+    name: "CONDUIT",
+    shortName: "CON",
     code: "04",
-    slug: "pvc-pipe",
+    slug: "conduit",
     detail: "LMS, MMS, HMS conduits, casing capping & corrugated pipes",
     iconName: "Layers",
-    image: "/products/pvc-pipe.jpg",
+    image: "/products/pvc-pipe.jpg?v=3",
     subcategories: [
       {
         name: "LMS (Light Mechanical Stress)",
         slug: "lms-light-mechanical-stress",
-        detail: "Light duty PVC electrical conduit for concealed building wiring",
+        detail: "Light duty electrical conduit for concealed building wiring",
         items: ["LMS (Light Mechanical Stress)"],
       },
       {
         name: "MMS (Medium Mechanical Stress)",
         slug: "mms-medium-mechanical-stress",
-        detail: "Medium duty PVC electrical conduit for standard commercial installations",
+        detail: "Medium duty electrical conduit for standard commercial installations",
         items: ["MMS (Medium Mechanical Stress)"],
       },
       {
         name: "HMS (Heavy Mechanical Stress)",
         slug: "hms-heavy-mechanical-stress",
-        detail: "Heavy duty PVC conduit for industrial, exposed and slab casting applications",
+        detail: "Heavy duty conduit for industrial, exposed and slab casting applications",
         items: ["HMS (Heavy Mechanical Stress)"],
       },
       {
@@ -324,7 +324,7 @@ export const CATEGORIES: Category[] = [
     slug: "glands",
     detail: "Single, double compression, weatherproof & flameproof cable glands",
     iconName: "Wrench",
-    image: "/products/cable-gland.jpg",
+    image: "/products/cable-gland.jpg?v=3",
     subcategories: [
       {
         name: "Single Compression",
@@ -360,7 +360,7 @@ export const CATEGORIES: Category[] = [
     slug: "wiring-device",
     detail: "Switches, plugs, junction boxes, accessories, tools & safety gear",
     iconName: "PlugZap",
-    image: "/products/wiring-devices.jpg",
+    image: "/products/wiring-devices.jpg?v=4",
     subcategories: [
       {
         name: "Insulation Tape",
@@ -468,7 +468,7 @@ export const CATEGORIES: Category[] = [
     slug: "earthing-wires",
     detail: "Electrodes, pit covers, chemicals, copper, GI & aluminium materials",
     iconName: "ShieldCheck",
-    image: "/products/earthing-rods.png",
+    image: "/products/earthing-rods.png?v=3",
     subcategories: [
       {
         name: "Earthing Electrodes",
@@ -539,7 +539,7 @@ export const CATEGORIES: Category[] = [
     slug: "solar",
     detail: "Solar cables, TOPCon/bifacial solar panels & inverters",
     iconName: "SunMedium",
-    image: "/products/solar-panel.jpg",
+    image: "/products/solar-panel.jpg?v=3",
     subcategories: [
       {
         name: "Solar Cable",
@@ -589,6 +589,9 @@ export const ICON_MAP = {
 
 export function getCategoryBySlug(slug: string): Category | undefined {
   const normalized = slug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  if (normalized === "pvc-pipe" || normalized === "pvc-pipes" || normalized === "pvc") {
+    return CATEGORIES.find((c) => c.slug === "conduit");
+  }
   return CATEGORIES.find(
     (c) =>
       c.slug === normalized ||
@@ -611,7 +614,33 @@ export function findSubcategory(slugOrName: string): { category: Category; subca
   return undefined;
 }
 
+export function extractDriveThumbnail(url?: string | null): string | null {
+  if (!url || typeof url !== "string") return null;
+  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+  }
+  return null;
+}
+
+export function getCategoryFallbackImage(categorySlugOrName?: string): string {
+  const text = (categorySlugOrName || "").toLowerCase();
+  if (text.includes("solar") || text.includes("pv")) return "/products/solar-panel.jpg?v=3";
+  if (text.includes("earth") || text.includes("fastn")) return "/products/earthing-rods.png?v=3";
+  if (text.includes("gland")) return "/products/cable-gland.jpg?v=3";
+  if (text.includes("lug")) return "/products/cable-lugs.jpg?v=3";
+  if (text.includes("switch")) return "/products/switchgear.jpg?v=3";
+  if (text.includes("pipe") || text.includes("conduit") || text.includes("pvc")) return "/products/pvc-pipe.jpg?v=3";
+  if (text.includes("wiring") || text.includes("device")) return "/products/wiring-devices.jpg?v=3";
+  return "/products/cables.jpg?v=3";
+}
+
 export function getProductImage(prod?: any, categorySlugOrName?: string): string {
+  const driveImg = extractDriveThumbnail(prod?.imageUrl || prod?.threeDImageUrl);
+  if (driveImg) {
+    return driveImg;
+  }
+
   if (
     prod?.imageUrl &&
     typeof prod.imageUrl === "string" &&
@@ -626,41 +655,41 @@ export function getProductImage(prod?: any, categorySlugOrName?: string): string
   // Solar modules & panels
   if (text.includes("solar") || text.includes("pv") || text.includes("topcon") || text.includes("bifacial") || text.includes("inverter")) {
     if (text.includes("solar cable") || text.includes("pv1-f") || text.includes("h1z2z2")) {
-      return "/products/cables.jpg";
+      return "/products/cables.jpg?v=3";
     }
-    return "/products/solar-panel.jpg";
+    return "/products/solar-panel.jpg?v=3";
   }
 
   // Earthing & Lightning Protection
   if (text.includes("earth") || text.includes("electrode") || text.includes("pit") || text.includes("chemical") || text.includes("copper flat") || text.includes("gi rod") || text.includes("busbar")) {
-    return "/products/earthing-rods.png";
+    return "/products/earthing-rods.png?v=3";
   }
 
   // Cable Glands
   if (text.includes("gland") || text.includes("compression") || text.includes("flameproof") || text.includes("weatherproof")) {
-    return "/products/cable-gland.jpg";
+    return "/products/cable-gland.jpg?v=3";
   }
 
   // Cable Lugs & Terminals
   if (text.includes("lug") || text.includes("terminal") || text.includes("crimp") || text.includes("barrel") || text.includes("tubular")) {
-    return "/products/cable-lugs.jpg";
+    return "/products/cable-lugs.jpg?v=3";
   }
 
   // Switchgear & Distribution
   if (text.includes("switch gear") || text.includes("switchgear") || text.includes("mcb") || text.includes("mccb") || text.includes("contactor") || text.includes("isolator") || text.includes("fuse") || text.includes("distribution board") || text.includes("breaker") || text.includes("powergear")) {
-    return "/products/switchgear.jpg";
+    return "/products/switchgear.jpg?v=3";
   }
 
-  // PVC Pipe & Conduits
+  // Conduit & Raceway Systems
   if (text.includes("pvc") || text.includes("pipe") || text.includes("conduit") || text.includes("casing") || text.includes("corrugated") || text.includes("lms") || text.includes("mms") || text.includes("hms")) {
-    return "/products/pvc-pipe.jpg";
+    return "/products/pvc-pipe.jpg?v=3";
   }
 
   // Wiring Devices, Switches, Tools
   if (text.includes("wiring device") || text.includes("switch") || text.includes("plug") || text.includes("tape") || text.includes("socket") || text.includes("junction") || text.includes("helmet") || text.includes("screwdriver") || text.includes("pliers")) {
-    return "/products/wiring-devices.jpg";
+    return "/products/wiring-devices.jpg?v=3";
   }
 
   // Default to Cables
-  return "/products/cables.jpg";
+  return "/products/cables.jpg?v=3";
 }

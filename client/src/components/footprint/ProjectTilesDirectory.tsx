@@ -59,62 +59,7 @@ const STATE_NAMES: Record<string, string> = {
   WB: "West Bengal",
 };
 
-const OFFICIAL_STATE_PROJECT_COUNTS: Record<string, string> = {
-  GJ: "100+",
-  RJ: "50+",
-  MP: "25",
-  MH: "20",
-  KA: "15",
-  UP: "15",
-  OD: "10",
-  TN: "5",
-  CG: "3",
-  TG: "3",
-  AS: "2",
-  BR: "2",
-  PB: "2",
-  AP: "1",
-  GA: "1",
-  HR: "1",
-  HP: "1",
-  JH: "1",
-  KL: "1",
-  MN: "1",
-  MZ: "1",
-  WB: "1",
-  AR: "0",
-  ML: "0",
-  NL: "0",
-  SK: "0",
-  TR: "0",
-  UK: "0",
-};
 
-// Numerical rank for sorting states by volume
-const STATE_SORT_WEIGHT: Record<string, number> = {
-  GJ: 1000,
-  RJ: 500,
-  MP: 250,
-  MH: 200,
-  KA: 150,
-  UP: 150,
-  OD: 100,
-  TN: 50,
-  CG: 30,
-  TG: 30,
-  AS: 20,
-  BR: 20,
-  PB: 20,
-  AP: 10,
-  GA: 10,
-  HR: 10,
-  HP: 10,
-  JH: 10,
-  KL: 10,
-  MN: 10,
-  MZ: 10,
-  WB: 10,
-};
 
 function getCategoryIcon(category: string, name: string) {
   const cat = category.toLowerCase();
@@ -130,6 +75,60 @@ function getCategoryIcon(category: string, name: string) {
   if (cat.includes("health") || n.includes("medical") || n.includes("hospital")) return HeartPulse;
   if (cat.includes("manufacturing") || cat.includes("industrial") || cat.includes("steel") || cat.includes("chemical") || n.includes("factory") || n.includes("voltas")) return Factory;
   return Zap;
+}
+
+function getCategoryFallback(category: string, name: string): string {
+  const cat = (category || "").toLowerCase();
+  const n = (name || "").toLowerCase();
+
+  if (cat.includes("aviation") || n.includes("airport")) {
+    return "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("solar") || cat.includes("renewable")) {
+    return "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("water") || cat.includes("jal") || n.includes("wtp")) {
+    return "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("heritage") || cat.includes("temple") || n.includes("mandir")) {
+    return "https://images.unsplash.com/photo-1609766857041-ed402ea8069a?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("monument") || n.includes("statue") || n.includes("sou")) {
+    return "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("bridge") || n.includes("bridge") || n.includes("riverfront")) {
+    return "https://images.unsplash.com/photo-1545167622-3a6ac756afa4?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("smart") || cat.includes("financial") || n.includes("gift city")) {
+    return "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("steel") || n.includes("steel") || n.includes("bhilai")) {
+    return "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("sanctuary") || n.includes("vantara") || cat.includes("wildlife")) {
+    return "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("education") || n.includes("campus") || n.includes("iit") || n.includes("university")) {
+    return "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("health") || cat.includes("medical") || n.includes("hospital")) {
+    return "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("ropeway") || n.includes("girnar") || n.includes("pavagadh")) {
+    return "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80";
+  }
+  if (cat.includes("petrochemical") || cat.includes("refinery") || n.includes("lng") || n.includes("iocl")) {
+    return "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80";
+  }
+  return "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80";
+}
+
+function getProjectImageUrl(img?: string | null): string {
+  if (!img) return "";
+  if (img.startsWith("/projects/")) {
+    return `${img}?v=20260929_4`;
+  }
+  return img;
 }
 
 interface ProjectTilesDirectoryProps {
@@ -178,15 +177,15 @@ export default function ProjectTilesDirectory({
     return counts;
   }, [projects]);
 
-  // Available states that have projects or official presences
+  // Available states that actually have projects in this directory
   const activeStatesList = useMemo(() => {
-    const presentCodes = Object.keys(stateProjectCounts);
-    // Include all states that have projects or verified presence
-    const allKnown = Array.from(new Set([...presentCodes, ...Object.keys(OFFICIAL_STATE_PROJECT_COUNTS)]));
-    return allKnown.sort((a, b) => {
-      const weightA = STATE_SORT_WEIGHT[a] ?? 0;
-      const weightB = STATE_SORT_WEIGHT[b] ?? 0;
-      if (weightA !== weightB) return weightB - weightA;
+    const presentCodes = Object.keys(stateProjectCounts).filter(
+      (code) => (stateProjectCounts[code] || 0) > 0
+    );
+    return presentCodes.sort((a, b) => {
+      const countA = stateProjectCounts[a] || 0;
+      const countB = stateProjectCounts[b] || 0;
+      if (countB !== countA) return countB - countA;
       return (STATE_NAMES[a] || a).localeCompare(STATE_NAMES[b] || b);
     });
   }, [stateProjectCounts]);
@@ -220,7 +219,7 @@ export default function ProjectTilesDirectory({
 
     if (featuredOnly) {
       // Show top landmark national projects
-      const featuredKeywords = ["statue", "barc", "hero", "gift city", "bhilai", "goa", "begusarai", "guwahati", "nal-se-jal", "indore"];
+      const featuredKeywords = ["statue", "barc", "hero", "gift city", "bhilai", "goa", "begusarai", "guwahati", "nal-se-jal", "indore", "iit", "gandhinagar", "charanka", "petronet"];
       list = list.filter((p) =>
         featuredKeywords.some((k) => p.name.toLowerCase().includes(k))
       );
@@ -330,7 +329,7 @@ export default function ProjectTilesDirectory({
             </button>
             {activeStatesList.map((code) => {
               const name = STATE_NAMES[code] || code;
-              const officialCount = OFFICIAL_STATE_PROJECT_COUNTS[code] ?? (stateProjectCounts[code] || 0);
+              const count = stateProjectCounts[code] || 0;
               return (
                 <button
                   key={code}
@@ -338,7 +337,7 @@ export default function ProjectTilesDirectory({
                   onClick={() => setSelectedState(code)}
                 >
                   <span className="state-pill-name">{name}</span>
-                  <span className="state-pill-badge">{officialCount}</span>
+                  <span className="state-pill-badge">{count}</span>
                 </button>
               );
             })}
@@ -357,15 +356,28 @@ export default function ProjectTilesDirectory({
               <article key={proj.id} className="volamp-project-tile group" onClick={() => handleOpenDetail(proj)}>
                 <div className="tile-ambient-glow" />
 
-                {/* Top Row: Category + State Badge */}
-                <div className="tile-header-row">
-                  <div className="tile-category-tag">
-                    <Icon className="size-3.5" />
-                    <span>{proj.category}</span>
-                  </div>
-                  <div className="tile-state-tag" title={`Located in ${stateName}`}>
-                    <span className="state-dot" />
-                    <span>{stateName}</span>
+                {/* Real-World Landmark Photo Cover */}
+                <div className="tile-photo-wrapper">
+                  <img
+                    src={getProjectImageUrl(proj.images) || getCategoryFallback(proj.category, proj.name)}
+                    alt={proj.name}
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                    className="tile-photo-img"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = getCategoryFallback(proj.category, proj.name);
+                    }}
+                  />
+                  <div className="tile-photo-overlay" />
+                  <div className="tile-photo-tags">
+                    <div className="tile-category-tag">
+                      <Icon className="size-3.5" />
+                      <span className="truncate max-w-[190px]">{proj.category}</span>
+                    </div>
+                    <div className="tile-state-tag" title={`Located in ${stateName}`}>
+                      <span className="state-dot" />
+                      <span>{stateName}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -443,6 +455,29 @@ export default function ProjectTilesDirectory({
       {activeModalProject && (
         <div className="modal-overlay" onClick={() => setActiveModalProject(null)}>
           <div className="project-detail-modal" onClick={(e) => e.stopPropagation()}>
+            {/* Modal Hero Landmark Photo */}
+            {activeModalProject.images && (
+              <div className="modal-hero-photo-wrapper">
+                <img
+                  src={getProjectImageUrl(activeModalProject.images)}
+                  alt={activeModalProject.name}
+                  referrerPolicy="no-referrer"
+                  className="modal-hero-photo-img"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = getCategoryFallback(activeModalProject.category, activeModalProject.name);
+                  }}
+                />
+                <div className="modal-hero-photo-overlay" />
+                <button
+                  className="modal-hero-close-btn"
+                  onClick={() => setActiveModalProject(null)}
+                  aria-label="Close modal"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+            )}
+
             <div className="modal-header">
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -459,13 +494,15 @@ export default function ProjectTilesDirectory({
                   <span>Year: {activeModalProject.year}</span>
                 </div>
               </div>
-              <button
-                className="modal-close-btn"
-                onClick={() => setActiveModalProject(null)}
-                aria-label="Close modal"
-              >
-                <X className="size-5" />
-              </button>
+              {!activeModalProject.images && (
+                <button
+                  className="modal-close-btn"
+                  onClick={() => setActiveModalProject(null)}
+                  aria-label="Close modal"
+                >
+                  <X className="size-5" />
+                </button>
+              )}
             </div>
 
             <div className="modal-body">

@@ -34,7 +34,7 @@ const CATEGORY_OPTIONS = [
   "Switch Gears (MCB / MCCB / ACB / DBs)",
   "Lugs & Cable Accessories",
   "Glands & Cable Management",
-  "PVC Pipe & Heavy Conduits",
+  "Conduits (LMS / MMS / HMS Pipes & Fittings)",
   "Wiring Device & Modular Accessories",
   "Earthing Wires & Chemical Electrodes",
   "Solar DC Cables & Structure Hardware",
@@ -174,9 +174,9 @@ export function EnquireModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-[#0b1f33] text-white border-b border-[#1c3852]">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-gradient-to-r from-[#4d1217] via-[#5c161d] to-[#6b2024] text-white border-b border-[#822a31]">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-[#1d73b7] text-white flex items-center justify-center shadow-inner">
+            <div className="size-10 rounded-xl bg-gradient-to-br from-[#c56718] to-[#9a3412] text-white flex items-center justify-center shadow-[0_4px_12px_rgba(197,103,24,0.4)]">
               <Headphones className="size-5" />
             </div>
             <div>
@@ -227,7 +227,7 @@ export function EnquireModal({
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="font-mono text-lg sm:text-xl font-bold text-[#1d73b7]">
+                <span className="font-mono text-lg sm:text-xl font-bold text-[#c56718]">
                   {submittedData.enquiryNumber}
                 </span>
                 <button
@@ -294,12 +294,12 @@ export function EnquireModal({
           /* Form Screen */
           <form onSubmit={handleSubmit} className="p-5 sm:p-7 space-y-5">
             {/* Top Info Banner */}
-            <div className="flex items-center justify-between p-3 rounded-xl bg-[#f0f6fa] border border-[#d2e2ec] text-xs text-[#1e4869]">
+            <div className="flex items-center justify-between p-3 rounded-xl bg-[#fff8f0] border border-[#fed7aa] text-xs text-[#7c2d12]">
               <div className="flex items-center gap-2">
-                <Sparkles className="size-4 text-[#1d73b7] shrink-0" />
+                <Sparkles className="size-4 text-[#c56718] shrink-0" />
                 <span>Direct Mill & Distributor Pricing · Fast Technical Spec Verification</span>
               </div>
-              <span className="hidden sm:inline-block text-[11px] font-semibold text-[#1d73b7] bg-white px-2 py-0.5 rounded border border-[#bed4e4]">
+              <span className="hidden sm:inline-block text-[11px] font-semibold text-[#c56718] bg-white px-2 py-0.5 rounded border border-[#fed7aa]">
                 24h Response
               </span>
             </div>
@@ -326,7 +326,7 @@ export function EnquireModal({
                       placeholder="e.g. Rajesh Sharma"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#1d73b7] focus:ring-1 focus:ring-[#1d73b7] focus:outline-none transition-all"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#c56718] focus:ring-1 focus:ring-[#c56718] focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -342,7 +342,7 @@ export function EnquireModal({
                       placeholder="e.g. Metro EPC / Apex Infra"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#1d73b7] focus:ring-1 focus:ring-[#1d73b7] focus:outline-none transition-all"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#c56718] focus:ring-1 focus:ring-[#c56718] focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -361,7 +361,7 @@ export function EnquireModal({
                       placeholder="e.g. rajesh@metroepc.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#1d73b7] focus:ring-1 focus:ring-[#1d73b7] focus:outline-none transition-all"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#c56718] focus:ring-1 focus:ring-[#c56718] focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -378,7 +378,7 @@ export function EnquireModal({
                       placeholder="e.g. +91 98765 43210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#1d73b7] focus:ring-1 focus:ring-[#1d73b7] focus:outline-none transition-all"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#c56718] focus:ring-1 focus:ring-[#c56718] focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -402,7 +402,7 @@ export function EnquireModal({
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#1d73b7] focus:ring-1 focus:ring-[#1d73b7] focus:outline-none transition-all"
+                    className="w-full px-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#c56718] focus:ring-1 focus:ring-[#c56718] focus:outline-none transition-all"
                   >
                     {CATEGORY_OPTIONS.map((cat) => (
                       <option key={cat} value={cat}>
@@ -421,7 +421,7 @@ export function EnquireModal({
                       <button
                         type="button"
                         onClick={() => setLocation(detectedLocation)}
-                        className="text-[10px] text-[#1d73b7] hover:underline flex items-center gap-1 font-semibold"
+                        className="text-[10px] text-[#c56718] hover:underline flex items-center gap-1 font-semibold"
                       >
                         <MapPin className="size-3" />
                         Use detected
@@ -435,7 +435,7 @@ export function EnquireModal({
                       placeholder="e.g. Ahmedabad, Gujarat or International Destination"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#1d73b7] focus:ring-1 focus:ring-[#1d73b7] focus:outline-none transition-all"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#c56718] focus:ring-1 focus:ring-[#c56718] focus:outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -451,7 +451,7 @@ export function EnquireModal({
                     placeholder="e.g. 1500m / 50 rolls / Turnkey supply"
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#1d73b7] focus:ring-1 focus:ring-[#1d73b7] focus:outline-none transition-all"
+                    className="w-full px-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#c56718] focus:ring-1 focus:ring-[#c56718] focus:outline-none transition-all"
                   />
                 </div>
 
@@ -464,7 +464,7 @@ export function EnquireModal({
                     <select
                       value={urgency}
                       onChange={(e) => setUrgency(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#1d73b7] focus:ring-1 focus:ring-[#1d73b7] focus:outline-none transition-all"
+                      className="w-full pl-9 pr-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#c56718] focus:ring-1 focus:ring-[#c56718] focus:outline-none transition-all"
                     >
                       {TIMELINE_OPTIONS.map((time) => (
                         <option key={time} value={time}>
@@ -486,7 +486,7 @@ export function EnquireModal({
                   value={details}
                   onChange={(e) => setDetails(e.target.value)}
                   placeholder="Mention cable cross-section (e.g. 4C x 185 sqmm), conductor type (Copper/Aluminium), insulation (XLPE/PVC/FRLS), voltage class (1.1kV/11kV/33kV), approved brand preference (Polycab, Finolex, Schneider, KEI), or project specs."
-                  className="w-full px-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#1d73b7] focus:ring-1 focus:ring-[#1d73b7] focus:outline-none transition-all resize-y"
+                  className="w-full px-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#c56718] focus:ring-1 focus:ring-[#c56718] focus:outline-none transition-all resize-y"
                 />
               </div>
             </div>
@@ -512,7 +512,7 @@ export function EnquireModal({
               <button
                 type="submit"
                 disabled={submitMutation.isPending}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#1d73b7] to-[#155b93] hover:from-[#17629c] hover:to-[#124d7d] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 transition-all disabled:opacity-75"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#c56718] to-[#b45309] hover:from-[#d97706] hover:to-[#c56718] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-amber-900/25 transition-all disabled:opacity-75 active:scale-[0.98] cursor-pointer"
               >
                 {submitMutation.isPending ? (
                   <>

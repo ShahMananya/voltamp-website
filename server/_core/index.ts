@@ -34,6 +34,7 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 async function startServer() {
+  console.log("[Server] Initializing Express app...");
   const app = express();
   const server = createServer(app);
   // Configure body parser with larger size limit for file uploads
@@ -54,12 +55,15 @@ async function startServer() {
   );
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
+    console.log("[Server] Configuring Vite middleware...");
     await setupVite(app, server);
+    console.log("[Server] Vite middleware configured.");
   } else {
     serveStatic(app);
   }
 
   const preferredPort = parseInt(process.env.PORT || "3000");
+  console.log(`[Server] Finding available port starting from ${preferredPort}...`);
   const port = await findAvailablePort(preferredPort);
 
   if (port !== preferredPort) {
@@ -71,4 +75,7 @@ async function startServer() {
   });
 }
 
-startServer().catch(console.error);
+console.log("[Server] Bootstrapping...");
+startServer().catch((err) => {
+  console.error("[Server] Startup error:", err);
+});

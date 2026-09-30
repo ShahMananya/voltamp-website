@@ -47,6 +47,9 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useUserLocation } from "@/contexts/LocationContext";
 
+import UniversalHeader from "@/components/layout/UniversalHeader";
+import UniversalFooter from "@/components/layout/UniversalFooter";
+
 interface JobRole {
   id: string;
   title: string;
@@ -484,116 +487,27 @@ export default function CareersPage() {
   };
 
   return (
-    <div className="careers-page min-h-screen bg-[#f5f7f9] dark:bg-[#0b1f33] text-[#0b1f33] dark:text-[#e8eef2] transition-colors">
-      {/* Top Utility Bar (Consistent with Home & Marketplace) */}
-      <div className="bg-[#09233a] text-[#d9e3e9] text-xs py-2 border-b border-[#223b51]">
-        <div className="market-container flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="status-dot" />
-            <Globe2 className="size-3.5 text-[#f2b84b] shrink-0" />
-            <span className="font-semibold text-white">
-              VOLAMP Talent Acquisition Desk · Ahmedabad HQ & Pan-India Hubs
-            </span>
-          </div>
-          <div className="flex items-center gap-4 text-xs">
-            <a
-              href={`tel:+91${supportPhone}`}
-              className="text-[#d9e3e9] hover:text-[#f2b84b] transition-colors flex items-center gap-1.5 font-bold"
-            >
-              <PhoneCall className="size-3 text-[#f2b84b]" />
-              <span>HR Direct: +91 {supportPhone}</span>
-            </a>
-            <span className="text-slate-600">|</span>
-            <a
-              href="mailto:careers@volampelektrikals.com"
-              className="text-[#d9e3e9] hover:text-[#f2b84b] transition-colors flex items-center gap-1.5"
-            >
-              <Send className="size-3 text-[#f2b84b]" />
-              <span>careers@volampelektrikals.com</span>
-            </a>
-          </div>
-        </div>
-      </div>
+    <div className="careers-page min-h-screen bg-[#fdfbf9] text-[#0b1f33] transition-colors">
+      {/* Universal Header (Matching Home Page White Palette) */}
+      <UniversalHeader currentPage="careers" />
 
-      {/* Main Header (Clean White / Dark Blue with Standard Slate Borders) */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0b1f33]/95 backdrop-blur-md border-b border-[#dce4ea] dark:border-[#223b51] transition-colors shadow-xs">
-        <div className="market-container flex items-center justify-between h-20">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c56718] hover:text-[#9e4e0e] bg-[#f5f7f9] dark:bg-[#162d42] dark:text-[#f2b84b] px-3 py-1.5 rounded-md transition-colors mr-2 border border-[#d6e0e6] dark:border-[#223b51]"
-            >
-              <ArrowLeft className="size-3.5" />
-              <span>Back to Home</span>
-            </Link>
-            <Link href="/" className="flex items-center gap-3 group">
-              <img
-                src="/volamp-logo.png"
-                alt="Volamp Elektrikals"
-                className="h-9 w-auto object-contain transition-transform group-hover:scale-105"
-              />
-            </Link>
-          </div>
-
-          <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-[#334858] dark:text-[#cbdbe6]">
-            <Link href="/" className="hover:text-[#c56718] dark:hover:text-[#c56718] transition-colors">
-              Marketplace
-            </Link>
-            <Link href="/about-volamp" className="hover:text-[#c56718] dark:hover:text-[#c56718] transition-colors">
-              About Volamp
-            </Link>
-            <Link
-              href="/business-segments"
-              className="hover:text-[#c56718] dark:hover:text-[#c56718] transition-colors"
-            >
-              Business Segments
-            </Link>
-            <Link href="/collaborate" className="hover:text-[#c56718] dark:hover:text-[#c56718] transition-colors">
-              Collaborate
-            </Link>
-            <span className="text-[#c56718] dark:text-[#c56718] font-bold border-b-2 border-[#c56718] pb-1">
-              Careers
-            </span>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Button
-              onClick={() => handleOpenApply()}
-              className="bg-[#c56718] hover:bg-[#9e4e0e] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-1.5 transition-all"
-            >
-              <Send className="size-3.5" />
-              <span>Submit CV</span>
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate("/about-volamp")}
-              className="hidden sm:flex text-xs font-semibold rounded-lg border-[#d6e0e6] dark:border-[#223b51] hover:bg-[#e8eef2] dark:hover:bg-[#162d42]"
-            >
-              <span>Our Heritage</span>
-              <ArrowRight className="size-3 ml-1" />
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section (Matching Main Page UI Color Theme) */}
-      <section className="relative overflow-hidden bg-[#f5f7f9] dark:bg-[#0b1f33] text-[#0b1f33] dark:text-[#e8eef2] py-16 sm:py-24 border-b border-[#d6e0e6] dark:border-[#223b51]">
-        {/* Subtle grid pattern background matching Home */}
-        <div className="absolute inset-0 opacity-[0.035] dark:opacity-[0.05] pointer-events-none bg-[radial-gradient(#0b1f33_1px,transparent_1px)] dark:bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]" />
+      {/* Hero Section (Matching Main Page Warm Light Theme) */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf8f5] to-[#fdfbf9] text-[#0b1f33] py-16 sm:py-24 border-b border-[#ebd7c7]">
+        {/* Subtle dot pattern background matching Home */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#4d1217_1px,transparent_1px)] [background-size:24px_24px]" />
 
         <div className="market-container relative z-10 max-w-5xl text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-[#162d42] border border-[#d6e0e6] dark:border-[#223b51] text-[#c56718] dark:text-[#f2b84b] text-xs font-extrabold tracking-wider uppercase shadow-xs">
-            <Sparkles className="size-3.5 text-[#f2b84b]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f7ede6] border border-[#ebd4c2] text-[#c56718] text-xs font-extrabold tracking-wider uppercase shadow-xs">
+            <Sparkles className="size-3.5 text-[#ef7d19]" />
             <span>WE ARE HIRING · 2026 INFRASTRUCTURE EXPANSION</span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] text-[#4d1217] tracking-tight leading-tight">
             Power Your Career With an <br />
-            <span className="text-[#c56718] dark:text-[#f2b84b]">Engineering Legacy</span> That Powers India.
+            <span className="text-[#c56718]">Engineering Legacy</span> That Powers India.
           </h1>
 
-          <p className="text-base sm:text-lg text-[#5a6b78] dark:text-[#aebdc8] max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-[#5d4a4b] max-w-3xl mx-auto leading-relaxed">
             Join 4 generations of electrical engineering leadership. From high-voltage underground transmission
             grids and metro rail networks to renewable solar farms, our team designs, compounds, and manufactures the
             critical cables energizing 28 states and 14+ export nations.
@@ -602,7 +516,7 @@ export default function CareersPage() {
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <a
               href="#open-roles"
-              className="px-6 py-3.5 rounded-lg bg-[#c56718] hover:bg-[#9e4e0e] text-white font-bold text-sm shadow-md flex items-center gap-2 transition-all cursor-pointer"
+              className="px-6 py-3.5 rounded-lg bg-[#c56718] hover:bg-[#b45309] text-white font-bold text-sm shadow-md flex items-center gap-2 transition-all cursor-pointer"
             >
               <span>Explore Open Positions ({roles.length})</span>
               <ArrowRight className="size-4" />
@@ -610,132 +524,132 @@ export default function CareersPage() {
             <Button
               variant="outline"
               onClick={() => handleOpenApply()}
-              className="px-6 py-3.5 rounded-lg border-[#d6e0e6] dark:border-[#223b51] bg-white dark:bg-[#162d42] text-[#0b1f33] dark:text-[#e8eef2] hover:bg-[#e8eef2] dark:hover:bg-[#1f3e5c] font-semibold text-sm transition-all shadow-xs"
+              className="px-6 py-3.5 rounded-lg border-[#ebd7c7] bg-white text-[#4d1217] hover:bg-[#f7ede6] font-semibold text-sm transition-all shadow-xs cursor-pointer"
             >
-              <FileCheck2 className="size-4 mr-2 text-[#c56718] dark:text-[#f2b84b]" />
+              <FileCheck2 className="size-4 mr-2 text-[#c56718]" />
               <span>Join Talent Community / Submit CV</span>
             </Button>
           </div>
 
           {/* Metric Highlights Strip */}
-          <div className="pt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-[#d6e0e6] dark:border-[#223b51] mt-12 text-left">
-            <div className="p-4 rounded-xl bg-white dark:bg-[#162d42] border border-[#d6e0e6] dark:border-[#223b51] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] dark:text-[#f2b84b] font-['Space_Grotesk'] block">
+          <div className="pt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-[#ebd7c7] mt-12 text-left">
+            <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Space_Grotesk'] block">
                 60+ Years
               </span>
-              <span className="text-xs text-[#5a6b78] dark:text-[#aebdc8] font-semibold">Engineering Heritage (Est. 1964)</span>
+              <span className="text-xs text-[#5d4a4b] font-semibold">Engineering Heritage (Est. 1964)</span>
             </div>
-            <div className="p-4 rounded-xl bg-white dark:bg-[#162d42] border border-[#d6e0e6] dark:border-[#223b51] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] dark:text-[#f2b84b] font-['Space_Grotesk'] block">
+            <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Space_Grotesk'] block">
                 28 States
               </span>
-              <span className="text-xs text-[#5a6b78] dark:text-[#aebdc8] font-semibold">Pan-India Dispatches & 14+ Export Nations</span>
+              <span className="text-xs text-[#5d4a4b] font-semibold">Pan-India Dispatches & 14+ Export Nations</span>
             </div>
-            <div className="p-4 rounded-xl bg-white dark:bg-[#162d42] border border-[#d6e0e6] dark:border-[#223b51] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] dark:text-[#f2b84b] font-['Space_Grotesk'] block">
+            <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Space_Grotesk'] block">
                 100% In-House
               </span>
-              <span className="text-xs text-[#5a6b78] dark:text-[#aebdc8] font-semibold">CPRI & ERDA Certified Test Laboratories</span>
+              <span className="text-xs text-[#5d4a4b] font-semibold">CPRI & ERDA Certified Test Laboratories</span>
             </div>
-            <div className="p-4 rounded-xl bg-white dark:bg-[#162d42] border border-[#d6e0e6] dark:border-[#223b51] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] dark:text-[#f2b84b] font-['Space_Grotesk'] block">
+            <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Space_Grotesk'] block">
                 4.8 / 5.0
               </span>
-              <span className="text-xs text-[#5a6b78] dark:text-[#aebdc8] font-semibold">Team Growth & Job Security Index</span>
+              <span className="text-xs text-[#5d4a4b] font-semibold">Team Growth & Job Security Index</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why Build Your Career at Volamp (Values & Benefits - Crisp Slate & Navy) */}
+      {/* Why Build Your Career at Volamp (Values & Benefits - Warm Home Theme) */}
       <section className="py-16 sm:py-20 market-container space-y-12">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <span className="text-xs font-bold text-[#c56718] dark:text-[#c56718] uppercase tracking-widest">
+          <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
             THE VOLAMP WORK CULTURE
           </span>
-          <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
+          <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
             Why Electrical Engineers & Leaders Choose Volamp
           </h2>
-          <p className="text-sm text-[#5a6b78] dark:text-slate-400">
+          <p className="text-sm text-[#5d4a4b]">
             We provide the stability of a 60-year industrial foundation combined with the velocity of India's rapid
             infrastructure buildout.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-[#f5f7f9] dark:bg-[#162d42] flex items-center justify-center text-[#c56718] dark:text-[#f2b84b]">
+          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <Zap className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
               Nation-Building Impact
             </h3>
-            <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
               Every cable you design, test, or dispatch carries electricity to metro rails, solar parks, critical
               hospitals, and smart cities across India.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-amber-50 dark:bg-[#162d42] flex items-center justify-center text-amber-600 dark:text-amber-400">
+          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <Factory className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
               World-Class Manufacturing Tech
             </h3>
-            <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
               Work with state-of-the-art continuous vulcanization (CCV) lines, triple extrusion heads, high-voltage partial
               discharge test sets, and specialized polymer formulations.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-emerald-50 dark:bg-[#162d42] flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <Award className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
               Competitive CTC & Performance Bonuses
             </h3>
-            <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
               Above-industry fixed compensation, structured annual appraisals, performance milestone bonuses, and
               long-term wealth-building security.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-purple-50 dark:bg-[#162d42] flex items-center justify-center text-purple-600 dark:text-purple-400">
+          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <ShieldCheck className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
               Comprehensive Health & Safety
             </h3>
-            <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
               Group Mediclaim family insurance, personal accident coverage, routine wellness camps, and a zero-compromise
               plant safety mandate.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-amber-50 dark:bg-[#162d42] flex items-center justify-center text-[#d97818] dark:text-amber-400">
+          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <TrendingUp className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
               Accelerated Career Progression
             </h3>
-            <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
               Clear internal promotion ladders. Graduate Engineer Trainees (GET) consistently advance into Project Leads,
               Lab Heads, and Branch Directors.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-blue-50 dark:bg-[#162d42] flex items-center justify-center text-[#c56718] dark:text-[#f2b84b]">
+          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
+            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <BookOpen className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
               Continuous Technical Mentorship
             </h3>
-            <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
               Learn directly from senior cable technologists with decades of experience preparing CPRI type tests,
               DISCOM tender GTPs, and international IEC specifications.
             </p>
@@ -743,18 +657,18 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* Open Positions Section with Filters (Cool Slate-Muted Background) */}
-      <section id="open-roles" className="py-16 bg-[#e8eef2] dark:bg-[#0b1f33] border-y border-[#d6e0e6] dark:border-[#223b51]">
+      {/* Open Positions Section with Filters */}
+      <section id="open-roles" className="py-16 bg-[#fbf8f5] border-y border-[#ebd7c7]">
         <div className="market-container space-y-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <span className="text-xs font-bold text-[#c56718] dark:text-[#c56718] uppercase tracking-widest">
+              <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
                 CURRENT OPPORTUNITIES
               </span>
-              <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
+              <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
                 Explore Open Positions at Volamp
               </h2>
-              <p className="text-sm text-[#5a6b78] dark:text-slate-400 mt-1">
+              <p className="text-sm text-[#5d4a4b] mt-1">
                 Showing {filteredRoles.length} of {roles.length} published positions across engineering, manufacturing,
                 and business development.
               </p>
@@ -763,29 +677,29 @@ export default function CareersPage() {
             <Button
               onClick={() => handleOpenApply()}
               variant="outline"
-              className="self-start md:self-auto rounded-lg border-[#c56718] text-[#c56718] dark:text-[#c56718] dark:border-[#c56718] font-bold hover:bg-[#c56718] hover:text-white transition-all text-xs"
+              className="self-start md:self-auto rounded-lg border-[#c56718] text-[#c56718] font-bold hover:bg-[#c56718] hover:text-white transition-all text-xs cursor-pointer"
             >
               <Send className="size-3.5 mr-1.5" />
               <span>Can't find your role? Submit General Application</span>
             </Button>
           </div>
 
-          {/* Filter Bar (Crisp White with Slate Borders) */}
-          <div className="p-4 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm space-y-4">
+          {/* Filter Bar */}
+          <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Search input */}
               <div className="relative">
-                <Search className="size-4 absolute left-3 top-3 text-slate-400" />
+                <Search className="size-4 absolute left-3 top-3 text-[#5d4a4b]" />
                 <Input
                   placeholder="Search role, keyword, or standard (e.g. XLPE, CPRI)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 rounded-lg border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs h-10"
+                  className="pl-9 rounded-lg border-[#ebd7c7] bg-[#fdfbf9] text-xs h-10 text-[#0b1f33] placeholder:text-stone-400"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-3 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-3 text-stone-400 hover:text-[#4d1217]"
                   >
                     <X className="size-4" />
                   </button>
@@ -797,7 +711,7 @@ export default function CareersPage() {
                 <select
                   value={selectedDept}
                   onChange={(e) => setSelectedDept(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs text-[#0b1f33] dark:text-[#e8eef2] font-medium outline-none focus:border-[#c56718]"
+                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#0b1f33] font-medium outline-none focus:border-[#c56718]"
                 >
                   {DEPARTMENTS.map((dept) => (
                     <option key={dept} value={dept}>
@@ -812,7 +726,7 @@ export default function CareersPage() {
                 <select
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs text-[#0b1f33] dark:text-[#e8eef2] font-medium outline-none focus:border-[#c56718]"
+                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#0b1f33] font-medium outline-none focus:border-[#c56718]"
                 >
                   {LOCATIONS.map((loc) => (
                     <option key={loc} value={loc}>
@@ -827,7 +741,7 @@ export default function CareersPage() {
                 <select
                   value={selectedExp}
                   onChange={(e) => setSelectedExp(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs text-[#0b1f33] dark:text-[#e8eef2] font-medium outline-none focus:border-[#c56718]"
+                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#0b1f33] font-medium outline-none focus:border-[#c56718]"
                 >
                   {EXPERIENCES.map((exp) => (
                     <option key={exp} value={exp}>
@@ -839,9 +753,9 @@ export default function CareersPage() {
             </div>
 
             {/* Department Quick Filter Pills */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#d6e0e6] dark:border-[#223b51]">
-              <span className="text-[11px] font-bold text-slate-400 mr-1 flex items-center gap-1">
-                <Filter className="size-3" /> Quick Filter:
+            <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#ebd7c7]">
+              <span className="text-[11px] font-bold text-[#5d4a4b] mr-1 flex items-center gap-1">
+                <Filter className="size-3 text-[#c56718]" /> Quick Filter:
               </span>
               {DEPARTMENTS.map((dept) => {
                 const isSelected = selectedDept === dept;
@@ -849,10 +763,10 @@ export default function CareersPage() {
                   <button
                     key={dept}
                     onClick={() => setSelectedDept(dept)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-[#c56718] text-white shadow-sm"
-                        : "bg-[#f5f7f9] dark:bg-[#162d42] text-[#c56718] dark:text-[#f2b84b] hover:bg-[#e8eef2] dark:hover:bg-[#162d42]"
+                        ? "bg-[#c56718] text-white shadow-xs"
+                        : "bg-[#f7ede6] text-[#5d4a4b] hover:bg-[#ebd4c2] border border-[#ebd4c2]"
                     }`}
                   >
                     {dept}
@@ -870,7 +784,7 @@ export default function CareersPage() {
                     setSelectedExp("All Experience");
                     setSearchQuery("");
                   }}
-                  className="px-2 py-1 text-[11px] font-bold text-rose-500 hover:underline ml-auto"
+                  className="px-2 py-1 text-[11px] font-bold text-[#c56718] hover:underline ml-auto cursor-pointer"
                 >
                   Reset All Filters
                 </button>
@@ -880,18 +794,18 @@ export default function CareersPage() {
 
           {/* Job Cards Grid */}
           {filteredRoles.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-[#0b1f33] rounded-xl border border-dashed border-[#d6e0e6] dark:border-[#223b51] space-y-4">
-              <Briefcase className="size-12 text-slate-400 mx-auto opacity-50" />
-              <h3 className="text-lg font-bold text-[#0b1f33] dark:text-white">
+            <div className="text-center py-16 bg-white rounded-xl border border-dashed border-[#ebd7c7] space-y-4">
+              <Briefcase className="size-12 text-[#ebd4c2] mx-auto" />
+              <h3 className="text-lg font-bold text-[#4d1217]">
                 No matching open positions found
               </h3>
-              <p className="text-xs text-[#5a6b78] dark:text-slate-400 max-w-md mx-auto">
+              <p className="text-xs text-[#5d4a4b] max-w-md mx-auto">
                 We couldn't find an open role matching your exact filter criteria. Try adjusting your filters or submit a
                 spontaneous CV to our talent database.
               </p>
               <Button
                 onClick={() => handleOpenApply()}
-                className="bg-[#c56718] hover:bg-[#9e4e0e] text-white text-xs font-bold rounded-lg"
+                className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold rounded-lg cursor-pointer"
               >
                 Submit General Application
               </Button>
@@ -901,21 +815,21 @@ export default function CareersPage() {
               {filteredRoles.map((role) => (
                 <div
                   key={role.id}
-                  className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] shadow-sm hover:border-[#c56718] hover:shadow-lg transition-all flex flex-col justify-between group"
+                  className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all flex flex-col justify-between group"
                 >
                   <div className="space-y-4">
                     {/* Header badges */}
                     <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-[#f5f7f9] text-[#c56718] dark:bg-[#162d42] dark:text-[#f2b84b] border border-[#c7d3dc] dark:border-[#223b51]">
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2]">
                         {role.department}
                       </span>
                       <div className="flex items-center gap-2">
                         {role.isFeatured && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#d97818] text-white flex items-center gap-1">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#c56718] text-white flex items-center gap-1 shadow-xs">
                             <Sparkles className="size-2.5" /> PRIORITY
                           </span>
                         )}
-                        <span className="text-[11px] font-semibold text-slate-400">
+                        <span className="text-[11px] font-semibold text-[#5d4a4b]">
                           {role.openingsCount} {role.openingsCount === 1 ? "opening" : "openings"}
                         </span>
                       </div>
@@ -923,45 +837,45 @@ export default function CareersPage() {
 
                     {/* Role Title */}
                     <div>
-                      <h3 className="text-xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white group-hover:text-[#c56718] dark:group-hover:text-[#c56718] transition-colors">
+                      <h3 className="text-xl font-bold font-['Space_Grotesk'] text-[#4d1217] group-hover:text-[#c56718] transition-colors">
                         {role.title}
                       </h3>
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-[#5a6b78] dark:text-slate-300 mt-2">
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-[#5d4a4b] mt-2">
                         <span className="flex items-center gap-1">
-                          <MapPin className="size-3.5 text-[#c56718] dark:text-[#c56718]" />
+                          <MapPin className="size-3.5 text-[#c56718]" />
                           {role.location}
                         </span>
                         <span>·</span>
                         <span className="flex items-center gap-1">
-                          <Clock className="size-3.5 text-slate-400" />
+                          <Clock className="size-3.5 text-[#5d4a4b]" />
                           {role.workMode}
                         </span>
                         <span>·</span>
                         <span className="flex items-center gap-1">
-                          <GraduationCap className="size-3.5 text-slate-400" />
+                          <GraduationCap className="size-3.5 text-[#5d4a4b]" />
                           {role.experience}
                         </span>
                       </div>
                     </div>
 
                     {/* Overview snippet */}
-                    <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed line-clamp-2">
+                    <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed line-clamp-2">
                       {role.overview}
                     </p>
 
                     {/* Package & Key requirement */}
-                    <div className="p-3 rounded-lg bg-[#f5f7f9] dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] flex items-center justify-between text-xs">
+                    <div className="p-3 rounded-lg bg-[#f7ede6] border border-[#ebd4c2] flex items-center justify-between text-xs">
                       <div>
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                        <span className="text-[10px] font-bold text-[#5d4a4b] uppercase tracking-wider block">
                           INDICATIVE CTC PACKAGE
                         </span>
-                        <span className="font-bold text-[#0b1f33] dark:text-white">{role.packageLpa}</span>
+                        <span className="font-bold text-[#4d1217]">{role.packageLpa}</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                        <span className="text-[10px] font-bold text-[#5d4a4b] uppercase tracking-wider block">
                           EDUCATION
                         </span>
-                        <span className="font-semibold text-slate-600 dark:text-slate-300 max-w-[150px] truncate block">
+                        <span className="font-semibold text-[#4d1217] max-w-[150px] truncate block">
                           {role.education.split("/")[0]}
                         </span>
                       </div>
@@ -972,7 +886,7 @@ export default function CareersPage() {
                       {role.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#f5f7f9] dark:bg-[#162d42] text-[#5a6b78] dark:text-slate-300 border border-[#d6e0e6] dark:border-[#c7d3dc]"
+                          className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#fdfbf9] text-[#5d4a4b] border border-[#ebd7c7]"
                         >
                           {tag}
                         </span>
@@ -981,11 +895,11 @@ export default function CareersPage() {
                   </div>
 
                   {/* Actions */}
-                  <div className="pt-5 mt-5 border-t border-[#d6e0e6] dark:border-[#223b51] flex items-center justify-between gap-3">
+                  <div className="pt-5 mt-5 border-t border-[#ebd7c7] flex items-center justify-between gap-3">
                     <button
                       type="button"
                       onClick={() => setSelectedRoleDetail(role)}
-                      className="text-xs font-bold text-[#c56718] dark:text-[#c56718] hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-bold text-[#c56718] hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <span>View Full Job Spec</span>
                       <ArrowRight className="size-3.5" />
@@ -993,7 +907,7 @@ export default function CareersPage() {
 
                     <Button
                       onClick={() => handleOpenApply(role)}
-                      className="bg-[#c56718] hover:bg-[#9e4e0e] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm cursor-pointer"
+                      className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs cursor-pointer"
                     >
                       <span>Apply for this Role</span>
                       <ArrowRight className="size-3 ml-1" />
@@ -1008,21 +922,21 @@ export default function CareersPage() {
 
       {/* Early Careers & GET Spotlight Banner (Matching Home Callout Banner Styling) */}
       <section className="py-14 market-container">
-        <div className="p-8 sm:p-10 rounded-2xl bg-[#0b1f33] text-white shadow-xl border border-[#223b51] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="p-8 sm:p-10 rounded-2xl bg-[#fdfbf9] text-[#0b1f33] shadow-xs border-2 border-[#ef7d19]/40 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-4 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[#f2b84b] text-xs font-bold uppercase tracking-wider">
-              <GraduationCap className="size-4 text-[#f2b84b]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f7ede6] text-[#c25e0a] text-xs font-bold uppercase tracking-wider border border-[#ebd4c2]">
+              <GraduationCap className="size-4 text-[#ef7d19]" />
               <span>COLLEGE GRADUATES · 2026 BATCH</span>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] leading-tight">
+            <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] leading-tight text-[#4d1217]">
               Graduate Engineer Trainee (GET) Program
             </h3>
-            <p className="text-sm text-[#aebdc8] leading-relaxed">
+            <p className="text-sm text-[#5d4a4b] leading-relaxed">
               Are you a graduating electrical or electronics engineer looking to master power transmission, cable design,
               high-voltage lab testing, and extrusion engineering? Our 12-month accelerated rotational program provides full
               mentorship, live project exposure, and permanent absorption into Volamp leadership.
             </p>
-            <div className="flex flex-wrap items-center gap-4 text-xs text-[#f2b84b] font-semibold pt-1">
+            <div className="flex flex-wrap items-center gap-4 text-xs text-[#c25e0a] font-semibold pt-1">
               <span>✓ 4 Rotational Modules</span>
               <span>✓ Direct Executive Mentorship</span>
               <span>✓ Fixed CTC + Full Health Cover</span>
@@ -1035,7 +949,7 @@ export default function CareersPage() {
                 const getRole = roles.find((r) => r.id === "get-electrical-batch-2026");
                 handleOpenApply(getRole);
               }}
-              className="px-6 py-3.5 bg-[#f2b84b] hover:bg-[#e5a837] text-[#0b1f33] font-extrabold text-sm rounded-lg shadow-lg shadow-amber-500/20"
+              className="px-6 py-3.5 bg-[#c56718] hover:bg-[#b45309] text-white font-extrabold text-sm rounded-lg shadow-md cursor-pointer"
             >
               <span>Apply for GET 2026 Batch</span>
               <ArrowRight className="size-4 ml-1.5" />
@@ -1045,7 +959,7 @@ export default function CareersPage() {
                 const getRole = roles.find((r) => r.id === "get-electrical-batch-2026");
                 if (getRole) setSelectedRoleDetail(getRole);
               }}
-              className="text-xs text-center font-bold text-slate-300 hover:text-white hover:underline py-2"
+              className="text-xs text-center font-bold text-[#5d4a4b] hover:text-[#c25e0a] hover:underline py-2 cursor-pointer transition-colors"
             >
               Review GET Syllabus & Details →
             </button>
@@ -1056,77 +970,77 @@ export default function CareersPage() {
       {/* The 4-Step Hiring Process */}
       <section className="py-16 sm:py-20 market-container space-y-12">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <span className="text-xs font-bold text-[#c56718] dark:text-[#c56718] uppercase tracking-widest">
+          <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
             CLEAR, RESPECTFUL & FAST
           </span>
-          <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
+          <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
             Our 4-Step Candidate Journey
           </h2>
-          <p className="text-sm text-[#5a6b78] dark:text-slate-400">
+          <p className="text-sm text-[#5d4a4b]">
             We value your time. Our hiring committee ensures transparent communication and zero prolonged waiting times.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] relative space-y-3 shadow-sm hover:border-[#c56718] transition-all">
-            <span className="text-4xl font-extrabold text-[#c56718]/15 dark:text-amber-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
+          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] relative space-y-3 shadow-xs hover:border-[#c56718] transition-all">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Space_Grotesk'] absolute top-4 right-4">
               01
             </span>
-            <div className="size-10 rounded-lg bg-[#f5f7f9] dark:bg-[#162d42] flex items-center justify-center text-[#c56718] dark:text-[#f2b84b] font-bold text-sm">
+            <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718] font-bold text-sm">
               <FileCheck2 className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#4d1217] font-['Space_Grotesk']">
               Application & Review
             </h4>
-            <p className="text-xs text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-[#5d4a4b] leading-relaxed">
               Submit your profile online. Our HR Talent desk reviews every CV within <strong>48 hours</strong> and assigns
               a dedicated hiring coordinator.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] relative space-y-3 shadow-sm hover:border-[#c56718] transition-all">
-            <span className="text-4xl font-extrabold text-[#c56718]/15 dark:text-amber-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
+          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] relative space-y-3 shadow-xs hover:border-[#c56718] transition-all">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Space_Grotesk'] absolute top-4 right-4">
               02
             </span>
-            <div className="size-10 rounded-lg bg-[#f5f7f9] dark:bg-[#162d42] flex items-center justify-center text-[#c56718] dark:text-[#f2b84b] font-bold text-sm">
+            <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718] font-bold text-sm">
               <Headphones className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#4d1217] font-['Space_Grotesk']">
               Technical Discussion
             </h4>
-            <p className="text-xs text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-[#5d4a4b] leading-relaxed">
               A 30–45 minute virtual or in-person technical conversation with our Chief Engineer or Department Head
               discussing your past projects.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] relative space-y-3 shadow-sm hover:border-[#c56718] transition-all">
-            <span className="text-4xl font-extrabold text-[#c56718]/15 dark:text-amber-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
+          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] relative space-y-3 shadow-xs hover:border-[#c56718] transition-all">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Space_Grotesk'] absolute top-4 right-4">
               03
             </span>
-            <div className="size-10 rounded-lg bg-emerald-50 dark:bg-[#162d42] flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-bold text-sm">
+            <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718] font-bold text-sm">
               <Building2 className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#4d1217] font-['Space_Grotesk']">
               Plant / Office Walkthrough
             </h4>
-            <p className="text-xs text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-[#5d4a4b] leading-relaxed">
               Visit our Ahmedabad headquarters or manufacturing plant. Meet the team, tour the testing lab, and discuss
               mutual culture fit.
             </p>
           </div>
 
-          <div className="p-6 rounded-xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] relative space-y-3 shadow-sm hover:border-[#c56718] transition-all">
-            <span className="text-4xl font-extrabold text-[#c56718]/15 dark:text-amber-400/20 font-['Space_Grotesk'] absolute top-4 right-4">
+          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] relative space-y-3 shadow-xs hover:border-[#c56718] transition-all">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Space_Grotesk'] absolute top-4 right-4">
               04
             </span>
-            <div className="size-10 rounded-lg bg-purple-50 dark:bg-[#162d42] flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold text-sm">
+            <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718] font-bold text-sm">
               <Award className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#0b1f33] dark:text-white font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#4d1217] font-['Space_Grotesk']">
               Fast-Track Offer
             </h4>
-            <p className="text-xs text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-[#5d4a4b] leading-relaxed">
               Transparent compensation breakdown, formal offer letter rollout within <strong>48 hours</strong> of final
               round, and a structured onboarding roadmap.
             </p>
@@ -1134,14 +1048,14 @@ export default function CareersPage() {
         </div>
       </section>
 
-      {/* Candidate FAQs Section (Crisp White / Slate Styling) */}
-      <section className="py-16 bg-[#e8eef2] dark:bg-[#092033] border-t border-[#d6e0e6] dark:border-[#223b51]">
+      {/* Candidate FAQs Section (Warm Sand Styling) */}
+      <section className="py-16 bg-[#fbf8f5] border-t border-[#ebd7c7]">
         <div className="market-container max-w-3xl space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-[#c56718] dark:text-[#c56718] uppercase tracking-widest">
+            <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
               FREQUENTLY ASKED QUESTIONS
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
+            <h2 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
               Questions About Working at Volamp
             </h2>
           </div>
@@ -1152,22 +1066,22 @@ export default function CareersPage() {
               return (
                 <div
                   key={faq.q}
-                  className="rounded-xl border border-[#d6e0e6] dark:border-[#223b51] bg-white dark:bg-[#0b1f33] overflow-hidden transition-colors"
+                  className="rounded-xl border border-[#ebd7c7] bg-white overflow-hidden transition-colors shadow-xs"
                 >
                   <button
                     type="button"
                     onClick={() => setActiveFaq(isOpen ? null : idx)}
-                    className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#0b1f33] dark:text-white hover:text-[#c56718] dark:hover:text-[#c56718] cursor-pointer"
+                    className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#4d1217] hover:text-[#c56718] cursor-pointer transition-colors"
                   >
                     <span>{faq.q}</span>
                     <ChevronDown
                       className={`size-4 shrink-0 transition-transform ${
-                        isOpen ? "rotate-180 text-[#c56718] dark:text-[#c56718]" : "text-slate-400"
+                        isOpen ? "rotate-180 text-[#c56718]" : "text-stone-400"
                       }`}
                     />
                   </button>
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed border-t border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]">
+                    <div className="px-5 pb-5 pt-2 text-xs sm:text-sm text-[#5d4a4b] leading-relaxed border-t border-[#ebd7c7] bg-[#fdfbf9]">
                       {faq.a}
                     </div>
                   )}
@@ -1180,19 +1094,19 @@ export default function CareersPage() {
 
       {/* Spontaneous Application CTA Banner */}
       <section className="py-14 market-container">
-        <div className="p-8 sm:p-12 rounded-2xl bg-white dark:bg-[#0b1f33] border border-[#d6e0e6] dark:border-[#223b51] text-center space-y-4 max-w-4xl mx-auto shadow-sm">
-          <HeartHandshake className="size-10 text-[#c56718] dark:text-[#c56718] mx-auto" />
-          <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
+        <div className="p-8 sm:p-12 rounded-2xl bg-white border border-[#ebd7c7] text-center space-y-4 max-w-4xl mx-auto shadow-xs">
+          <HeartHandshake className="size-10 text-[#c56718] mx-auto" />
+          <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
             Don't see your specific expertise listed?
           </h3>
-          <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 max-w-xl mx-auto leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#5d4a4b] max-w-xl mx-auto leading-relaxed">
             We are continuously building our leadership talent pipeline across Corporate Finance, Supply Chain Logistics,
             IT Systems, and International Export Operations. Join our Talent Community and get notified first.
           </p>
           <div className="pt-2">
             <Button
               onClick={() => handleOpenApply()}
-              className="bg-[#c56718] hover:bg-[#9e4e0e] text-white text-sm font-bold px-6 py-3 rounded-lg shadow-md"
+              className="bg-[#c56718] hover:bg-[#b45309] text-white text-sm font-bold px-6 py-3 rounded-lg shadow-md cursor-pointer transition-all"
             >
               <span>Submit Spontaneous Application / CV</span>
               <ArrowRight className="size-4 ml-1.5" />
@@ -1203,35 +1117,35 @@ export default function CareersPage() {
 
       {/* Role Details Modal */}
       {selectedRoleDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#0b1f33] rounded-2xl border border-[#d6e0e6] dark:border-[#223b51] max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl border border-[#ebd7c7] max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl relative text-[#0b1f33]">
             <button
               onClick={() => setSelectedRoleDetail(null)}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-[#f7ede6] text-stone-400 hover:text-[#4d1217] cursor-pointer"
             >
               <X className="size-5" />
             </button>
 
             <div className="space-y-3">
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#f5f7f9] text-[#c56718] dark:bg-[#162d42] dark:text-[#f2b84b] border border-[#c7d3dc] dark:border-[#223b51]">
+              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2]">
                 {selectedRoleDetail.department}
               </span>
-              <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
+              <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
                 {selectedRoleDetail.title}
               </h3>
-              <div className="flex flex-wrap items-center gap-3 text-xs text-[#5a6b78] dark:text-slate-300">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-[#5d4a4b]">
                 <span className="flex items-center gap-1">
-                  <MapPin className="size-3.5 text-[#c56718] dark:text-[#c56718]" />
+                  <MapPin className="size-3.5 text-[#c56718]" />
                   {selectedRoleDetail.location}
                 </span>
                 <span>·</span>
                 <span className="flex items-center gap-1">
-                  <Clock className="size-3.5 text-slate-400" />
+                  <Clock className="size-3.5 text-stone-400" />
                   {selectedRoleDetail.workMode}
                 </span>
                 <span>·</span>
                 <span className="flex items-center gap-1">
-                  <Award className="size-3.5 text-slate-400" />
+                  <Award className="size-3.5 text-stone-400" />
                   {selectedRoleDetail.packageLpa}
                 </span>
               </div>
@@ -1239,19 +1153,19 @@ export default function CareersPage() {
 
             {/* Overview */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">ROLE OVERVIEW</h4>
-              <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 leading-relaxed">
+              <h4 className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">ROLE OVERVIEW</h4>
+              <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
                 {selectedRoleDetail.overview}
               </p>
             </div>
 
             {/* Responsibilities */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">KEY RESPONSIBILITIES</h4>
-              <ul className="space-y-2 text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300">
+              <h4 className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">KEY RESPONSIBILITIES</h4>
+              <ul className="space-y-2 text-xs sm:text-sm text-[#5d4a4b]">
                 {selectedRoleDetail.responsibilities.map((res, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="size-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="size-4 text-emerald-600 shrink-0 mt-0.5" />
                     <span>{res}</span>
                   </li>
                 ))}
@@ -1260,13 +1174,13 @@ export default function CareersPage() {
 
             {/* Requirements */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">
                 QUALIFICATIONS & TECHNICAL SKILLS
               </h4>
-              <ul className="space-y-2 text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300">
+              <ul className="space-y-2 text-xs sm:text-sm text-[#5d4a4b]">
                 {selectedRoleDetail.requirements.map((req, i) => (
                   <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="size-4 text-sky-500 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="size-4 text-[#c56718] shrink-0 mt-0.5" />
                     <span>{req}</span>
                   </li>
                 ))}
@@ -1274,17 +1188,17 @@ export default function CareersPage() {
             </div>
 
             {/* Footer action */}
-            <div className="pt-4 border-t border-[#d6e0e6] dark:border-[#223b51] flex items-center justify-between gap-4">
+            <div className="pt-4 border-t border-[#ebd7c7] flex items-center justify-between gap-4">
               <Button
                 variant="outline"
                 onClick={() => setSelectedRoleDetail(null)}
-                className="text-xs rounded-lg border-[#d6e0e6]"
+                className="text-xs rounded-lg border-[#ebd7c7] text-[#5d4a4b] hover:bg-[#f7ede6] cursor-pointer"
               >
                 Close
               </Button>
               <Button
                 onClick={() => handleOpenApply(selectedRoleDetail)}
-                className="bg-[#c56718] hover:bg-[#9e4e0e] text-white text-xs font-bold px-6 py-2.5 rounded-lg shadow-md flex items-center gap-1.5"
+                className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold px-6 py-2.5 rounded-lg shadow-md flex items-center gap-1.5 cursor-pointer"
               >
                 <span>Proceed to Application</span>
                 <ArrowRight className="size-3.5" />
@@ -1296,14 +1210,14 @@ export default function CareersPage() {
 
       {/* Application Form Modal */}
       {applicationModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#0b1f33] rounded-2xl border border-[#d6e0e6] dark:border-[#223b51] max-w-xl w-full p-6 sm:p-8 max-h-[92vh] overflow-y-auto space-y-6 shadow-2xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl border border-[#ebd7c7] max-w-xl w-full p-6 sm:p-8 max-h-[92vh] overflow-y-auto space-y-6 shadow-2xl relative text-[#0b1f33]">
             <button
               onClick={() => {
                 setApplicationModalOpen(false);
                 setSubmittedAppId(null);
               }}
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              className="absolute top-6 right-6 p-2 rounded-full hover:bg-[#f7ede6] text-stone-400 hover:text-[#4d1217] cursor-pointer"
             >
               <X className="size-5" />
             </button>
@@ -1311,28 +1225,28 @@ export default function CareersPage() {
             {submittedAppId ? (
               // Success Screen
               <div className="text-center py-6 space-y-4">
-                <div className="size-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-500 mx-auto">
+                <div className="size-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 mx-auto">
                   <Check className="size-8 stroke-[3]" />
                 </div>
                 <div className="space-y-1">
-                  <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">
+                  <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest">
                     APPLICATION RECEIVED
                   </span>
-                  <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
+                  <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
                     Thank You, {fullName}!
                   </h3>
-                  <p className="text-xs sm:text-sm text-[#5a6b78] dark:text-slate-300 max-w-md mx-auto">
+                  <p className="text-xs sm:text-sm text-[#5d4a4b] max-w-md mx-auto">
                     Your application for <strong>{applicantRole}</strong> has been logged with our central Talent
                     Acquisition Desk.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#f5f7f9] dark:bg-[#133552] border border-[#d6e0e6] dark:border-[#1e486d] space-y-1">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase">OFFICIAL APPLICATION ID</span>
-                  <div className="text-xl font-mono font-bold text-[#c56718] dark:text-[#f2b84b]">
+                <div className="p-4 rounded-xl bg-[#f7ede6] border border-[#ebd4c2] space-y-1">
+                  <span className="text-[11px] font-bold text-[#5d4a4b] uppercase">OFFICIAL APPLICATION ID</span>
+                  <div className="text-xl font-mono font-bold text-[#c56718]">
                     {submittedAppId}
                   </div>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
+                  <span className="text-[11px] text-[#5d4a4b] block">
                     Our Talent Desk reviews every application within 48 business hours.
                   </span>
                 </div>
@@ -1344,7 +1258,7 @@ export default function CareersPage() {
                     )}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="px-5 py-3 rounded-lg bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                    className="px-5 py-3 rounded-lg bg-[#25D366] hover:bg-[#20ba5a] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
                   >
                     <MessageCircle className="size-4" />
                     <span>WhatsApp HR with Application ID</span>
@@ -1355,7 +1269,7 @@ export default function CareersPage() {
                       handleResetForm();
                       setApplicationModalOpen(false);
                     }}
-                    className="text-xs rounded-lg border-[#d6e0e6]"
+                    className="text-xs rounded-lg border-[#ebd7c7] text-[#5d4a4b] hover:bg-[#f7ede6] cursor-pointer"
                   >
                     Done & Return
                   </Button>
@@ -1364,21 +1278,21 @@ export default function CareersPage() {
             ) : (
               // Form Screen
               <form onSubmit={handleSubmitApplication} className="space-y-4">
-                <div className="space-y-1 border-b border-[#d6e0e6] dark:border-[#223b51] pb-4">
-                  <span className="text-xs font-bold text-[#c56718] dark:text-[#c56718] uppercase tracking-widest">
+                <div className="space-y-1 border-b border-[#ebd7c7] pb-4">
+                  <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
                     VOLAMP TALENT APPLICATION
                   </span>
-                  <h3 className="text-xl font-bold font-['Space_Grotesk'] text-[#0b1f33] dark:text-white">
+                  <h3 className="text-xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
                     Submit Your Application
                   </h3>
-                  <p className="text-xs text-[#5a6b78] dark:text-slate-400">
+                  <p className="text-xs text-[#5d4a4b]">
                     Please provide accurate details. All submissions are treated in strict confidence.
                   </p>
                 </div>
 
                 {/* Role Applied Selector */}
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                  <label className="text-xs font-semibold text-[#4d1217]">
                     Position Applied For *
                   </label>
                   <select
@@ -1388,7 +1302,7 @@ export default function CareersPage() {
                       const matchingRole = roles.find((r) => r.title === e.target.value);
                       if (matchingRole) setApplicantDept(matchingRole.department);
                     }}
-                    className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs font-medium text-[#0b1f33] dark:text-[#e8eef2]"
+                    className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#0b1f33] outline-none focus:border-[#c56718]"
                     required
                   >
                     <option value="General Application (Talent Pool)">
@@ -1405,20 +1319,20 @@ export default function CareersPage() {
                 {/* Full Name & Email */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       Full Name *
                     </label>
                     <Input
                       placeholder="e.g. Rahul Sharma"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
                       required
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       Email Address *
                     </label>
                     <Input
@@ -1426,7 +1340,7 @@ export default function CareersPage() {
                       placeholder="rahul.sharma@gmail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
                       required
                     />
                   </div>
@@ -1435,40 +1349,40 @@ export default function CareersPage() {
                 {/* Phone & Location */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       Mobile / WhatsApp *
                     </label>
                     <Input
                       placeholder="e.g. 9876543210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
                       required
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       Current City *
                     </label>
                     <Input
                       placeholder="e.g. Ahmedabad"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
                       required
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       State *
                     </label>
                     <Input
                       placeholder="e.g. Gujarat"
                       value={state}
                       onChange={(e) => setState(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
                       required
                     />
                   </div>
@@ -1477,13 +1391,13 @@ export default function CareersPage() {
                 {/* Experience & Qualification */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       Total Experience *
                     </label>
                     <select
                       value={experienceYears}
                       onChange={(e) => setExperienceYears(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs font-medium text-[#0b1f33] dark:text-[#e8eef2]"
+                      className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#0b1f33] outline-none focus:border-[#c56718]"
                       required
                     >
                       <option value="Fresh Graduate (0-1 Yrs)">Fresh Graduate (0-1 Yrs)</option>
@@ -1495,13 +1409,13 @@ export default function CareersPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       Highest Qualification *
                     </label>
                     <select
                       value={highestQualification}
                       onChange={(e) => setHighestQualification(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs font-medium text-[#0b1f33] dark:text-[#e8eef2]"
+                      className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#0b1f33] outline-none focus:border-[#c56718]"
                       required
                     >
                       <option value="B.E. / B.Tech (Electrical)">B.E. / B.Tech (Electrical)</option>
@@ -1518,37 +1432,37 @@ export default function CareersPage() {
                 {/* Company & Notice Period */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       Current Company
                     </label>
                     <Input
                       placeholder="e.g. Current Employer"
                       value={currentCompany}
                       onChange={(e) => setCurrentCompany(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       Expected CTC (LPA)
                     </label>
                     <Input
                       placeholder="e.g. ₹8.5 LPA"
                       value={expectedCtc}
                       onChange={(e) => setExpectedCtc(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       Notice Period *
                     </label>
                     <select
                       value={noticePeriod}
                       onChange={(e) => setNoticePeriod(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33] text-xs font-medium text-[#0b1f33] dark:text-[#e8eef2]"
+                      className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#0b1f33] outline-none focus:border-[#c56718]"
                       required
                     >
                       <option value="Immediate">Immediate</option>
@@ -1563,33 +1477,33 @@ export default function CareersPage() {
                 {/* Links */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       LinkedIn Profile URL
                     </label>
                     <Input
                       placeholder="https://linkedin.com/in/..."
                       value={linkedInUrl}
                       onChange={(e) => setLinkedInUrl(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                    <label className="text-xs font-semibold text-[#4d1217]">
                       Resume Link (Google Drive / Dropbox / Cloud CV)
                     </label>
                     <Input
                       placeholder="https://drive.google.com/..."
                       value={resumeUrl}
                       onChange={(e) => setResumeUrl(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
                     />
                   </div>
                 </div>
 
                 {/* Cover Statement */}
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-[#0b1f33] dark:text-slate-200">
+                  <label className="text-xs font-semibold text-[#4d1217]">
                     Brief Statement / Why Volamp? (Optional)
                   </label>
                   <Textarea
@@ -1597,16 +1511,16 @@ export default function CareersPage() {
                     value={coverNote}
                     onChange={(e) => setCoverNote(e.target.value)}
                     rows={2}
-                    className="rounded-lg text-xs border-[#d6e0e6] dark:border-[#223b51] bg-[#f5f7f9] dark:bg-[#0b1f33]"
+                    className="rounded-lg text-xs border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
                   />
                 </div>
 
                 {/* Submit Action */}
-                <div className="pt-2 border-t border-[#d6e0e6] dark:border-[#223b51] space-y-2">
+                <div className="pt-2 border-t border-[#ebd7c7] space-y-2">
                   <Button
                     type="submit"
                     disabled={applyMutation.isPending}
-                    className="w-full py-3.5 bg-[#c56718] hover:bg-[#9e4e0e] text-white font-bold text-xs rounded-lg shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3.5 bg-[#c56718] hover:bg-[#b45309] text-white font-bold text-xs rounded-lg shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
                   >
                     {applyMutation.isPending ? (
                       <>
@@ -1622,8 +1536,8 @@ export default function CareersPage() {
                     )}
                   </Button>
 
-                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
-                    <ShieldCheck className="size-3.5 text-emerald-500" />
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#5d4a4b]">
+                    <ShieldCheck className="size-3.5 text-emerald-600" />
                     <span>Equal opportunity employer. Confidential HR processing.</span>
                   </div>
                 </div>
@@ -1633,93 +1547,8 @@ export default function CareersPage() {
         </div>
       )}
 
-      {/* Footer (Consistent with Home Marketplace Theme) */}
-      <footer className="site-footer bg-[#fbf8f5] dark:bg-[#140406] text-[#3d2b2d] dark:text-[#f5f7f9] border-t border-[#ebd7c7] dark:border-[#223b51]">
-        <div className="market-container py-12 grid grid-cols-1 md:grid-cols-4 gap-8 border-b border-[#ebd7c7] dark:border-[#223b51] text-xs">
-          <div className="space-y-3">
-            <img src="/volamp-logo.png" alt="VOLAMP Elektrikals" className="h-8 w-auto mix-blend-multiply dark:mix-blend-normal dark:brightness-200" />
-            <p className="text-[#5a6b78] dark:text-slate-400 leading-relaxed">
-              Volamp Elektrikals Private Limited. Powering India's energy, infrastructure, and industrial growth for 60+
-              years.
-            </p>
-            <div className="text-[#5a6b78] dark:text-slate-400 space-y-1">
-              <div>Corporate HQ: Ahmedabad, Gujarat, India</div>
-              <div>Direct HR: +91 {supportPhone}</div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <span className="font-bold text-[#f2b84b] tracking-wider uppercase block mb-3">ABOUT VOLAMP</span>
-            <div>
-              <Link href="/about-volamp" className="text-[#5a6b78] hover:text-[#c56718] dark:text-slate-400 dark:hover:text-[#f2b84b] transition-colors">
-                About Our Heritage
-              </Link>
-            </div>
-            <div>
-              <Link href="/business-segments" className="text-[#5a6b78] hover:text-[#c56718] dark:text-slate-400 dark:hover:text-[#f2b84b] transition-colors">
-                10 Business Segments
-              </Link>
-            </div>
-            <div>
-              <Link href="/careers" className="text-[#c56718] dark:text-[#f2b84b] font-semibold transition-colors">
-                Careers & Openings
-              </Link>
-            </div>
-            <div>
-              <Link href="/collaborate" className="text-[#5a6b78] hover:text-[#c56718] dark:text-slate-400 dark:hover:text-[#f2b84b] transition-colors">
-                Collaborate with Us
-              </Link>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <span className="font-bold text-[#f2b84b] tracking-wider uppercase block mb-3">CAREER DISCIPLINES</span>
-            <div className="text-[#5a6b78] dark:text-slate-400">High-Voltage Cable Design & R&D</div>
-            <div className="text-[#5a6b78] dark:text-slate-400">Quality Assurance & Lab Testing</div>
-            <div className="text-[#5a6b78] dark:text-slate-400">Continuous Extrusion & Armouring</div>
-            <div className="text-[#5a6b78] dark:text-slate-400">B2B Infrastructure & EPC Sales</div>
-            <div className="text-[#5a6b78] dark:text-slate-400">Graduate Engineer Trainee (GET 2026)</div>
-          </div>
-
-          <div className="space-y-2">
-            <span className="font-bold text-[#f2b84b] tracking-wider uppercase block mb-3">TALENT DESK</span>
-            <p className="text-[#5a6b78] dark:text-slate-400 leading-relaxed">
-              Have specific questions regarding an opening or your application status? Reach our Talent Acquisition
-              Desk directly.
-            </p>
-            <a
-              href="mailto:careers@volampelektrikals.com"
-              className="inline-block text-[#c56718] dark:text-[#f2b84b] font-bold hover:underline"
-            >
-              careers@volampelektrikals.com
-            </a>
-            <div className="pt-2">
-              <a
-                href={`tel:+91${supportPhone}`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#c56718] hover:bg-[#9e4e0e] text-white font-bold text-xs shadow-xs transition-colors"
-              >
-                <PhoneCall className="size-3" />
-                <span>Call +91 {supportPhone}</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div className="market-container py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#826e70] dark:text-slate-400">
-          <div>Volamp Elektrikals © 2026. All rights reserved. Equal Opportunity Employer.</div>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy-policy" className="hover:text-[#c56718] dark:hover:text-[#f2b84b] transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/shipping-policy" className="hover:text-[#c56718] dark:hover:text-[#f2b84b] transition-colors">
-              Shipping & Supply
-            </Link>
-            <Link href="/" className="hover:text-[#c56718] dark:hover:text-[#f2b84b] transition-colors">
-              Back to Home
-            </Link>
-          </div>
-        </div>
-      </footer>
+      {/* Universal Warm Cream Footer (Matching Home Page) */}
+      <UniversalFooter />
     </div>
   );
 }

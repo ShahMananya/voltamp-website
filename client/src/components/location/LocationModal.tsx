@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useUserLocation, DEFAULT_LOCATION } from "@/contexts/LocationContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,6 +71,40 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
   const [activeTab, setActiveTab] = useState<"global" | "india">("global");
   const [customInput, setCustomInput] = useState("");
   const [isDetecting, setIsDetecting] = useState(false);
+  const [isInteracted, setIsInteracted] = useState(false);
+  const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const dismissWelcome = () => {
+    setWelcomeLocation(null);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("volamp:welcome-finished"));
+    }
+  };
+
+  // Auto-close welcome popup after 1.5 seconds if user does not press it
+  useEffect(() => {
+    if (welcomeLocation) {
+      setIsInteracted(false);
+      autoCloseTimerRef.current = setTimeout(() => {
+        dismissWelcome();
+      }, 1500);
+    }
+
+    return () => {
+      if (autoCloseTimerRef.current) {
+        clearTimeout(autoCloseTimerRef.current);
+        autoCloseTimerRef.current = null;
+      }
+    };
+  }, [welcomeLocation]);
+
+  const handleUserPress = () => {
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = null;
+    }
+    setIsInteracted(true);
+  };
 
   // Check if location is an international/global location
   const isGlobalLocation = (loc: string) => {
@@ -191,8 +225,8 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
 
             {/* Header */}
             <div className="flex items-center gap-3 mb-2">
-              <div className="size-11 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center">
-                <Globe2 className="size-5" />
+              <div className="size-11 rounded-xl bg-white border border-[#ebd7c7] p-1.5 flex items-center justify-center shadow-xs shrink-0">
+                <img src="/volamp-logo.png" alt="VOLAMP" className="h-7 w-auto object-contain" />
               </div>
               <div>
                 <span className="text-[10px] font-black tracking-widest text-[#c46b19] uppercase block">
@@ -326,26 +360,52 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
           className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in zoom-in-95 duration-200"
           role="dialog"
           aria-modal="true"
-          onClick={() => setWelcomeLocation(null)}
+          onClick={() => dismissWelcome()}
         >
           <div
-            className="account-modal relative w-full max-w-[520px] rounded-2xl bg-white border border-[#d2e0e8] p-7 shadow-2xl text-center"
-            onClick={(e) => e.stopPropagation()}
+            className="account-modal relative w-full max-w-[520px] rounded-2xl bg-white border border-[#d2e0e8] p-7 shadow-2xl text-center overflow-hidden"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleUserPress();
+            }}
+            onMouseDown={handleUserPress}
+            onTouchStart={handleUserPress}
           >
+            {/* 1.5s Auto-dismiss timer indicator */}
+            {!isInteracted && (
+              <div className="absolute top-0 left-0 right-0 h-1 bg-amber-100 overflow-hidden rounded-t-2xl">
+                <div
+                  className="h-full bg-gradient-to-r from-amber-500 to-[#c46b19]"
+                  style={{
+                    animation: "volampAutoDismiss 1500ms linear forwards",
+                  }}
+                />
+              </div>
+            )}
+            <style>{`
+              @keyframes volampAutoDismiss {
+                0% { width: 100%; }
+                100% { width: 0%; }
+              }
+            `}</style>
+
             {/* Close Button */}
             <button
-              onClick={() => setWelcomeLocation(null)}
-              className="absolute right-5 top-5 rounded-full p-2 text-gray-400 hover:text-gray-700 transition-colors"
+              onClick={() => dismissWelcome()}
+              className="absolute right-5 top-5 rounded-full p-2 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
               aria-label="Close welcome popup"
             >
               <X className="size-5" />
             </button>
 
-            {/* Glowing Icon */}
-            <div className="relative mx-auto mb-4 size-16">
-              <div className="absolute inset-0 rounded-2xl bg-amber-500/20 animate-ping opacity-60" />
-              <div className="relative size-16 rounded-2xl bg-gradient-to-br from-amber-500 to-[#c46b19] text-white flex items-center justify-center shadow-lg shadow-amber-500/20">
-                {isInternational ? <Globe2 className="size-8" /> : <MapPin className="size-8" />}
+            {/* VOLAMP Brand Logo */}
+            <div className="relative mx-auto mb-4 flex items-center justify-center">
+              <div className="relative px-6 py-2.5 rounded-2xl bg-white border border-[#ebd7c7] shadow-lg shadow-amber-900/5 flex items-center justify-center">
+                <img
+                  src="/volamp-logo.png"
+                  alt="VOLAMP Elektrikals"
+                  className="h-11 sm:h-12 w-auto object-contain"
+                />
               </div>
             </div>
 
@@ -422,21 +482,34 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
             <div className="flex flex-col sm:flex-row items-center gap-2.5 mt-2">
               <Button
                 onClick={() => {
-                  setWelcomeLocation(null);
+                  dismissWelcome();
                   const el = document.getElementById("categories") || document.getElementById("products");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                  if (el) {
+                    el.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    window.location.href = "/#categories";
+                  }
                 }}
-                className="w-full sm:flex-1 bg-[#c46b19] hover:bg-[#b05d12] text-white text-xs font-bold py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5 shadow-md shadow-amber-600/10"
+                className="w-full sm:flex-1 bg-[#c46b19] hover:bg-[#b05d12] text-white text-xs font-bold py-2.5 px-3 rounded-lg flex items-center justify-center gap-1.5 shadow-md shadow-amber-600/10 cursor-pointer"
               >
                 Explore Cable Catalog for {cityName} <ArrowRight className="size-3.5" />
               </Button>
               <Button
                 variant="outline"
                 onClick={() => {
-                  setWelcomeLocation(null);
-                  if (onQuoteClick) onQuoteClick();
+                  dismissWelcome();
+                  if (onQuoteClick) {
+                    onQuoteClick();
+                  } else {
+                    const quoteEl = document.getElementById("quote");
+                    if (quoteEl) {
+                      quoteEl.scrollIntoView({ behavior: "smooth" });
+                    } else {
+                      window.location.href = "/enquire";
+                    }
+                  }
                 }}
-                className="w-full sm:w-auto border-[#dce5eb] text-[#102a40] hover:bg-[#f8fafc] text-xs font-semibold py-2.5 px-3 rounded-lg shrink-0"
+                className="w-full sm:w-auto border-[#dce5eb] text-[#102a40] hover:bg-[#f8fafc] text-xs font-semibold py-2.5 px-3 rounded-lg shrink-0 cursor-pointer"
               >
                 {isInternational ? "Contact Export Desk" : "Talk to Supply Desk"}
               </Button>

@@ -147,9 +147,9 @@ export default function EmployeePortal() {
   const tickets = data?.tickets ?? [];
 
   return (
-    <div className="min-h-screen bg-[#f7f9fb] dark:bg-[#071b2d] text-[#142b40] dark:text-[#eaf1f5] transition-colors">
+    <div className="min-h-screen bg-[#fdfbf9] text-[#142b40] transition-colors">
       {/* Top Bar */}
-      <header className="sticky top-0 z-30 bg-white dark:bg-[#09233a] border-b border-[#dce4ea] dark:border-[#29465b]">
+      <header className="sticky top-0 z-30 bg-white border-b border-[#ebd7c7]">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link

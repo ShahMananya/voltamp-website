@@ -1,4 +1,9 @@
 import { createQuickOrder, getQuickOrderById } from "./db";
+import {
+  queryProducts,
+  getProductByProductId,
+  getCatalogCategories,
+} from "./services/productService";
 
 export type ChatMessage = {
   role: "system" | "user" | "assistant";
@@ -61,7 +66,7 @@ function extractOrderDetails(messages: ChatMessage[]): OrderExtracted {
   }
 
   // Items extraction
-  const itemRegex = /(\d+)\s*(?:m|meter|meters|metre|metres|coils?|rolls?|drums?|units?|nos?)?\s+(?:of\s+)?([a-zA-Z0-9\s\.\-\/]+(?:cable|wire|sqmm|conductor|switchgear|lug|gland|jointing|tray))/gi;
+  const itemRegex = /(\d+)\s*(?:m|meter|meters|metre|metres|coils?|rolls?|drums?|units?|nos?)?\s+(?:of\s+)?([a-zA-Z0-9\s\.\-\/]+(?:cable|wire|sqmm|conductor|switchgear|lug|gland|jointing|tray|mcb|mccb|rccb))/gi;
   let match: RegExpExecArray | null;
   while ((match = itemRegex.exec(fullText)) !== null) {
     const qty = parseInt(match[1], 10);
@@ -76,13 +81,13 @@ function extractOrderDetails(messages: ChatMessage[]): OrderExtracted {
 
   if (extracted.items.length === 0) {
     const generalQtyMatch = fullText.match(/(\d+)\s*(?:m|meter|meters|metre|metres|coils?|rolls?|drums?)/i);
-    const productKeywords = ["cable", "wire", "sqmm", "copper", "armoured", "unarmoured", "xlpe", "pvc", "submersible", "solar"];
+    const productKeywords = ["cable", "wire", "sqmm", "copper", "armoured", "unarmoured", "xlpe", "pvc", "submersible", "solar", "mcb", "mccb", "gland", "lug"];
     const hasProductKeyword = productKeywords.some((kw) => fullText.toLowerCase().includes(kw));
 
     if (generalQtyMatch && hasProductKeyword) {
       const qty = parseInt(generalQtyMatch[1], 10);
       extracted.items.push({
-        name: "Industrial Cable / Wire requirement",
+        name: "Industrial Cable / Electrical requirement",
         quantity: qty,
       });
     }
@@ -104,10 +109,11 @@ function handleMathAndFormulas(query: string): string | null {
     const gst = base * 0.18;
     const total = base + gst;
     return (
-      `### 🧮 GST Calculation (18% Electrical Standard):\n\n` +
-      `• **Base Amount**: ₹${base.toLocaleString("en-IN")}\n` +
+      `### 🧮 GST Commercial Breakdown (18% Statutory Electrical Rate):\n\n` +
+      `• **Base Taxable Amount**: ₹${base.toLocaleString("en-IN")}\n` +
       `• **18% GST (CGST 9% + SGST 9% / IGST 18%)**: ₹${gst.toLocaleString("en-IN", { maximumFractionDigits: 2 })}\n` +
-      `• **Total Amount (including tax)**: **₹${total.toLocaleString("en-IN", { maximumFractionDigits: 2 })}**`
+      `• **Total Landed Invoice Amount**: **₹${total.toLocaleString("en-IN", { maximumFractionDigits: 2 })}**\n\n` +
+      `⚡ *Note: Every Volamp tax invoice includes 100% compliant GST input tax credit (ITC) with HSN codes.*`
     );
   }
 
@@ -116,7 +122,7 @@ function handleMathAndFormulas(query: string): string | null {
     const p = parseFloat(percentMatch[1]);
     const val = parseFloat(percentMatch[2]);
     const res = (p / 100) * val;
-    return `### 🧮 Calculation:\n**${p}% of ${val}** = **${res.toLocaleString("en-IN", { maximumFractionDigits: 2 })}**`;
+    return `### 🧮 Calculation:\n**${p}% of ₹${val.toLocaleString("en-IN")}** = **₹${res.toLocaleString("en-IN", { maximumFractionDigits: 2 })}**`;
   }
 
   // Arithmetic: e.g. "25 * 40", "1500 / 12", "500 + 350", "1000 - 250"
@@ -128,7 +134,7 @@ function handleMathAndFormulas(query: string): string | null {
     let result = 0;
     let opSymbol = op;
 
-    if (op === "+" ) { result = a + b; opSymbol = "+"; }
+    if (op === "+") { result = a + b; opSymbol = "+"; }
     else if (op === "-") { result = a - b; opSymbol = "-"; }
     else if (op === "*" || op === "x" || op === "×") { result = a * b; opSymbol = "×"; }
     else if (op === "/" || op === "÷") {
@@ -163,21 +169,432 @@ function handleMathAndFormulas(query: string): string | null {
 }
 
 /**
- * Handle Electrical & Science Q&A
+ * Format a Product database item into a clean markdown card with live pricing, discount, and specs.
+ */
+function formatProductCard(p: any): string {
+  let specsObj: Record<string, string> = {};
+  if (p.specifications) {
+    try {
+      specsObj = typeof p.specifications === "string" ? JSON.parse(p.specifications) : p.specifications;
+    } catch {}
+  }
+  const lines: string[] = [];
+  lines.push(`• **${p.name}** (\`${p.sku || p.productId}\`)`);
+  lines.push(`  - **Brand / Category**: ${p.brand} · ${p.category}${p.subcategory ? ` (${p.subcategory})` : ""}`);
+  if (p.size || p.material) {
+    lines.push(`  - **Conductor / Size**: ${p.size || "Standard"} ${p.material ? `· ${p.material}` : ""}`);
+  }
+  const priceDisplay = p.discountedPrice
+    ? `**${p.discountedPrice}** ${p.unit || "per meter"} *(List: ${p.price}${p.discount ? `, ${p.discount} OFF` : ""})*`
+    : p.price || "Contact for Quote";
+  lines.push(`  - **Price / Discount**: ${priceDisplay}`);
+
+  const techSpecs: string[] = [];
+  if (specsObj.voltageRating) techSpecs.push(`Voltage: ${specsObj.voltageRating}`);
+  if (specsObj.currentRatingAmp || specsObj.currentRatingA) techSpecs.push(`Rating: ${specsObj.currentRatingAmp || specsObj.currentRatingA}A`);
+  if (specsObj.cores) techSpecs.push(`Cores: ${specsObj.cores}`);
+  if (specsObj.typeOfArmour) techSpecs.push(`Armour: ${specsObj.typeOfArmour}`);
+  if (specsObj.insulationType) techSpecs.push(`Insulation: ${specsObj.insulationType}`);
+  if (specsObj.standard) techSpecs.push(`Standard: ${specsObj.standard}`);
+  if (techSpecs.length > 0) {
+    lines.push(`  - **Technical Specs**: ${techSpecs.join(" | ")}`);
+  }
+  return lines.join("\n");
+}
+
+/**
+ * Extract clean search tokens, removing common inquiry and filler stopwords.
+ */
+function extractProductSearchTokens(text: string): string {
+  const stopWords = new Set([
+    "what", "is", "the", "tell", "me", "show", "give", "price", "prices", "cost", "costs",
+    "rate", "rates", "discount", "discounts", "of", "for", "in", "with", "and", "please",
+    "do", "you", "have", "i", "need", "want", "to", "buy", "order", "can", "cables", "cable",
+    "wires", "wire", "how", "much", "find", "search", "looking", "specs", "specification"
+  ]);
+
+  const rawTokens = text
+    .toLowerCase()
+    .replace(/[\?\,\!\:\;\(\)\"\'\*\#\$\@\%\^\&\=\+]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 0 && !stopWords.has(w));
+
+  return rawTokens.join(" ").trim();
+}
+
+/**
+ * Intelligent product finder that ranks exact cross-section size matches at the top.
+ */
+function findMatchingProducts(query: string, limit = 3) {
+  const cleanTokens = extractProductSearchTokens(query);
+  const sizeMatch = query.match(/\b(\d+(?:\.\d+)?)\s*(?:sqmm|sq\s*mm)\b/i);
+  const targetSize = sizeMatch ? `${sizeMatch[1]} sqmm` : null;
+
+  const searchStr = cleanTokens.length >= 2 ? cleanTokens : query;
+  let result = queryProducts({ search: searchStr, limit: 15 });
+  if (result.products.length === 0 && cleanTokens.length >= 2) {
+    result = queryProducts({ search: query, limit: 15 });
+  }
+
+  // Prioritize products whose name or size contains the exact targetSize (e.g. "4 sqmm")
+  if (targetSize && result.products.length > 0) {
+    result.products.sort((a, b) => {
+      const aHas = (a.name || "").toLowerCase().includes(targetSize) || (a.size || "").toLowerCase().includes(targetSize);
+      const bHas = (b.name || "").toLowerCase().includes(targetSize) || (b.size || "").toLowerCase().includes(targetSize);
+      if (aHas && !bHas) return -1;
+      if (!aHas && bHas) return 1;
+      return 0;
+    });
+  }
+
+  return result.products.slice(0, limit);
+}
+
+/**
+ * Handle Pricing, Cost, Contractor Discounts, and GST Inquiries.
+ */
+function handlePricingCostsAndDiscounts(query: string): string | null {
+  const lower = query.toLowerCase().trim();
+
+  const isPricingOrDiscountQuery =
+    /\b(?:prices?|costs?|discounts?|rates?|pricing|bhav|discount\s*slabs?|contractor\s*discounts?|wholesale|margins?|taxes|tax|gst\s*rates?|payment\s*terms?|moqs?|drum\s*costs?)\b/i.test(lower);
+
+  if (!isPricingOrDiscountQuery) return null;
+
+  // Check if they are asking generally about discounts/pricing policy
+  const isGeneralDiscountQuery =
+    /\b(?:contractor\s*discounts?|wholesale\s*rates?|discount\s*slabs?|payment\s*terms?)\b/i.test(lower) ||
+    /\b(?:what|how\s*much|tell\s*me|explain|give|offer|share|any)\b.*\b(?:discounts?|pricing|rates?|slabs?|terms?|structure)\b/i.test(lower) ||
+    /^(?:discounts?|prices?|pricing|costs?)$/i.test(lower.replace(/[?.!]/g, "").trim()) ||
+    (/\b(?:discount|pricing|rates?|slabs?)\b/i.test(lower) && /\b(?:wires?|cables?|switchgear)\b/i.test(lower) && !/\b\d+\s*(?:sqmm|sq\s*mm|core|a|amp)\b/i.test(lower));
+
+  // Check if specific product tokens exist (e.g. 4 sqmm, 2.5, mcb, mccb, 63a, 10mm, etc.)
+  const hasSpecificProduct =
+    /\b(?:\d+(?:\.\d+)?\s*(?:sqmm|sq\s*mm|core|a|amp|mm|kva|kw|hp)|copper|aluminium|polycab|kei|finolex|schneider|legrand|mcb|mccb|rccb|gland|lug|conduit|earthing|solar)\b/i.test(lower);
+
+  if (hasSpecificProduct && !isGeneralDiscountQuery) {
+    const matched = findMatchingProducts(lower, 3);
+    if (matched.length > 0) {
+      const productCards = matched.map(formatProductCard).join("\n\n");
+      const cleanLabel = extractProductSearchTokens(lower) || lower;
+
+      return (
+        `### 💰 Live Factory Pricing & Contractor Discounts for "${cleanLabel}":\n\n` +
+        `${productCards}\n\n` +
+        `---\n\n` +
+        `### ⚡ Commercial Pricing Architecture at Volamp:\n` +
+        `• **Contractor Discount**: Direct **40% OFF** applied from published manufacturer list prices across our catalog (Polycab, KEI, Finolex, Schneider Electric, Legrand, LK), exactly as listed on our website.\n` +
+        `• **Statutory Tax**: 18% GST (CGST 9% + SGST 9% in Gujarat; IGST 18% interstate). Full GST input tax credit invoice issued on dispatch.\n` +
+        `• **Packaging & Freight**: Coils (90m/180m/300m) or Continuous Heavy Wooden Drums (500m/1000m). Dispatched from our **Ahmedabad Fulfillment Hub within 24–48 hours** under Shipping Policy VEP/LOG/001.\n` +
+        `• **Payment & Credit**: NEFT/RTGS, instant WhatsApp digital invoice, and **30-day corporate credit** for approved POs with active GSTIN.\n\n` +
+        `**Want to lock in this stock?** Tell me your required length/quantity, customer name, contact phone number, and delivery city, and I'll generate your official **Volamp Order Reference ID** right now!`
+      );
+    }
+  }
+
+  // General Pricing & Discount Policy
+  return (
+    `### 💰 Volamp Commercial Pricing, Cost & Contractor Discount Architecture\n\n` +
+    `At **Volamp Elektrikals Private Limited**, our direct-from-depot wholesale pricing structure is engineered specifically for electrical contractors, EPC infrastructure builders, panel fabricators, and industrial procurement desks:\n\n` +
+    `---\n\n` +
+    `#### 1. 🏷️ Contractor Discount (40% OFF Across Catalog):\n` +
+    `We offer a flat **40% OFF** manufacturer list prices across all product categories, exactly as listed on our website:\n\n` +
+    `• **Wires & Cables (2,856 Products)**:\n` +
+    `  - **40% OFF** standard manufacturer list prices across Polycab, KEI, Finolex, and Volamp.\n` +
+    `  - Covers Single Core House Wires (FR, FRLS, ZHFR), LT Armoured XLPE/PVC Power & Control Cables, Submersible Flat Cables, and 1500V DC Solar PV Cables.\n\n` +
+    `• **Switchgear & Circuit Protection (221 Products)**:\n` +
+    `  - **40% OFF** on Schneider Electric, LK (L&T), and Legrand.\n` +
+    `  - Covers MCBs, RCCBs, MCCBs (16A to 1250A), Heavy Power Contactors, Overload Relays, and Distribution Boards.\n\n` +
+    `• **Conduit & Cable Containment (93 Products)**:\n` +
+    `  - **40% OFF** on Rigid uPVC Conduits (LMS, MMS, HMS conforming to IS 9537) and Casing & Capping.\n\n` +
+    `• **Cable Glands & Terminals (104 Products)**:\n` +
+    `  - **40% OFF** on Single & Double Compression Brass Glands and Heavy-Duty Tinned Copper / Bimetallic Crimping Lugs.\n\n` +
+    `• **Earthing Systems & Solar Electrical (97 Products)**:\n` +
+    `  - **40% OFF** on Copper-Bonded Rods, Chemical Electrodes, Backfill Compound, and Solar Accessories.\n\n` +
+    `---\n\n` +
+    `#### 2. 🧮 Tax & Cost Breakdown:\n` +
+    `• **List Price / MRP**: Baseline published manufacturer price.\n` +
+    `• **Wholesale Net**: List Price minus **40% Contractor Discount**.\n` +
+    `• **18% GST**: Standard electrical statutory tax (CGST 9% + SGST 9% within Gujarat; IGST 18% interstate). 100% input tax credit (ITC) passed on every consignment.\n` +
+    `• **Net Landed Price**: Net Taxable + 18% GST.\n\n` +
+    `#### 3. 💳 Commercial Payment Terms & Dispatch:\n` +
+    `• **Direct NEFT / RTGS**: Instant account settlement.\n` +
+    `• **30-Day Corporate Credit**: Available for verified contractors, OEMs, and institutions upon submission of valid GST registration and approved Purchase Order (PO).\n` +
+    `• **WhatsApp Instant Invoicing**: Digital proforma invoice sent straight to your phone with instant UPI/NEFT payment links.\n` +
+    `• **Dispatch Speed (Policy VEP/LOG/001)**: Standard inventory dispatches within **24–48 hours** from our Central Fulfillment Hub in Aslali, Ahmedabad.\n\n` +
+    `Would you like me to calculate the exact net cost for a specific cable size or switchgear rating? Tell me what you need!`
+  );
+}
+
+/**
+ * Handle Business Segments (All 10 Specialized Segments).
+ */
+function handleBusinessSegments(query: string): string | null {
+  const lower = query.toLowerCase().trim();
+
+  const isSegmentQuery =
+    /\b(?:business\s*segment|segments|what\s+industries|sectors|epc|infrastructure|heavy\s*industry|manufacturing\s*plant|commercial\s*real\s*estate|solar\s*renewable|power\s*utilit|substation|panel\s*builder|oem|defense|railway|gem\s*supply|distribution\s*(?:&|and)\s*control|ev\s*charging|automation)\b/i.test(lower);
+
+  if (!isSegmentQuery) return null;
+
+  // EPC & Infrastructure
+  if (/epc|infrastructure|highway|metro|airport|bridge|smart\s*city/i.test(lower)) {
+    return (
+      `### 🏗️ Segment 01: EPC & Infrastructure Electrification\n\n` +
+      `**Target Clients**: Highways, Metro Rail Projects, Airports, Sea Ports, River Bridges & Smart City Electrification.\n\n` +
+      `• **Flagship Supplies**:\n` +
+      `  - 1.1kV & 11kV/33kV XLPE Armoured Power Cables (Aluminium A2XWY, Copper 2XWY) to IS 7098 (Part 1 & 2).\n` +
+      `  - Heavy-Duty Hot-Dip Galvanized (GI) Perforated & Ladder Cable Trays and Raceways.\n` +
+      `  - High-Fault Trefoil Cable Cleats for mechanical short-circuit containment.\n` +
+      `  - Maintenance-Free Chemical Earthing Electrodes & ESE Lightning Arresters.\n` +
+      `• **Engineering Standards**: IS 7098, CPRI / ERDA Type Tested, Original Manufacturer Test Certificate (MTC) accompanying every wooden drum.\n` +
+      `• **Logistics**: Direct site dispatch across India from our Ahmedabad central fulfillment depot.`
+    );
+  }
+
+  // Heavy Industry & Manufacturing
+  if (/manufacturing|heavy\s*industry|steel\s*mill|chemical|pharma|cement|auto\s*plant/i.test(lower)) {
+    return (
+      `### 🏭 Segment 02: Heavy Industry & Manufacturing Plants\n\n` +
+      `**Target Clients**: Chemical & Petrochemical Plants, Pharmaceutical Formulations, Steel Mills, Cement Plants, Auto OEMs.\n\n` +
+      `• **Flagship Supplies**:\n` +
+      `  - VFD Shielded Symmetrical Motor Power Cables (copper tape / braided shield) to suppress high-frequency PWM harmonics.\n` +
+      `  - Heat-Resistant Silicon Rubber & Class F/H Insulated Wires.\n` +
+      `  - Air Circuit Breakers (ACB) up to 4000A with microprocessor releases.\n` +
+      `  - Motor Protection Circuit Breakers (MPCB) and Heavy-Duty Type 2 Coordinated Contactors.\n` +
+      `• **Standards**: IS 1554 / IS 694, Flame-Retardant Low Smoke (FRLS), Class 5 high-flexibility electrolytic copper conductors.`
+    );
+  }
+
+  // Commercial & Real Estate
+  if (/commercial|real\s*estate|tower|high-rise|mall|it\s*park|township/i.test(lower)) {
+    return (
+      `### 🏢 Segment 03: Commercial High-Rise & Real Estate\n\n` +
+      `**Target Clients**: Grade-A Commercial Towers, IT Parks, Shopping Malls, Luxury High-Rise Residential Townships.\n\n` +
+      `• **Flagship Supplies**:\n` +
+      `  - Zero-Halogen (ZHFR / LSZH) Building Wires (< 0.5% acid gas emission) conforming to National Building Code (NBC 2016).\n` +
+      `  - SPN, TPN & Vertical Distribution Boards (IP43/IP54 rating).\n` +
+      `  - Multi-Function Digital Energy & Power Quality Meters.\n` +
+      `  - Underfloor Cable Trunking, Flush Floor Junction Boxes & Rigid uPVC Conduits.\n` +
+      `• **Compliance**: NBC 2016 Compliant, IS 694 Certified, Green Building Council Approved.`
+    );
+  }
+
+  // Solar & Renewable Energy
+  if (/solar|renewable|pv\s*farm|rooftop|bess|inverter/i.test(lower)) {
+    return (
+      `### ☀️ Segment 04: Solar & Renewable Energy Infrastructure\n\n` +
+      `**Target Clients**: Utility-Scale Solar PV Farms, Commercial Rooftops, Battery Energy Storage Systems (BESS).\n\n` +
+      `• **Flagship Supplies**:\n` +
+      `  - 1.5 kV DC Solar PV Cables (EN 50618 / TÜV 2 Pfg 1169 certified, electron-beam XLPO, tinned copper, 4/6/10 sqmm).\n` +
+      `  - MC4 IP68 Connectors & Multi-Branch Splitters.\n` +
+      `  - Array Junction Boxes (AJB / String Monitoring Boxes SMB) with 1000V/1500V DC fuses.\n` +
+      `  - DC Isolators & Type 2 DC Surge Protective Devices (SPDs).\n` +
+      `• **Specs**: UV & ozone resistant, withstands -40°C to +120°C, 25+ year outdoor operational life.`
+    );
+  }
+
+  // Power Utilities & Substations
+  if (/power\s*utilit|discom|substation|transmission|grid|transformer/i.test(lower)) {
+    return (
+      `### ⚡ Segment 05: Power Utilities & Grid Sub-stations\n\n` +
+      `**Target Clients**: State Transmission Utilities (GETCO, MSETCL, etc.), DISCOMs, Step-Down Substations (11kV / 33kV / 66kV).\n\n` +
+      `• **Flagship Supplies**:\n` +
+      `  - Extra High Voltage (EHV) & HT Underground Power Feeders (11kV, 22kV, 33kV XLPE Aluminium A2XWY).\n` +
+      `  - High-Conductivity Electrolytic Copper & Aluminium Busbars.\n` +
+      `  - Current Transformers (CT) & Potential Transformers (PT).\n` +
+      `  - Station-Class Lightning Arresters & Gang-Operated Air Break (GOAB) Switches.\n` +
+      `• **Inspections**: Third-Party Inspection Agency (TPIA: RITES, SGS, TUV, BV) cleared.`
+    );
+  }
+
+  // Panel Builders & OEMs
+  if (/panel\s*builder|oem|switchboard|mcc\b|fabricat/i.test(lower)) {
+    return (
+      `### ⚙️ Segment 06: Panel Builders & OEM Fabricators\n\n` +
+      `**Target Clients**: LV/MV Switchboard Fabricators, Motor Control Centers (MCC), Automation Panel Builders.\n\n` +
+      `• **Flagship Supplies**:\n` +
+      `  - Tri-Rated UL / CSA / BS Flexible Control Panel Wires (Class 5 fine copper strands).\n` +
+      `  - Power Contactors (9A to 800A AC-3) & Thermal Overload Relays from Schneider Electric and LK (L&T).\n` +
+      `  - 22.5mm Push Buttons, Selector Switches & High-Intensity LED Pilot Lights.\n` +
+      `  - Feed-Through DIN-Rail Terminal Blocks, End Clamps, and Printed Ferrules.\n` +
+      `• **Standards**: IS 13947 / IEC 60947, CE / UL component grades with batch-to-batch consistency.`
+    );
+  }
+
+  // Government, Defense & PSUs (GeM)
+  if (/defense|railway|gem|government|psu|cpwd|mes|rdso/i.test(lower)) {
+    return (
+      `### 🛡️ Segment 07: Government, Defense & Institutional Supplies (GeM)\n\n` +
+      `**Target Clients**: Indian Railways, Central PWD (CPWD), Military Engineer Services (MES), Defense Projects, Government e-Marketplace (GeM).\n\n` +
+      `• **Flagship Supplies**:\n` +
+      `  - RDSO-Approved Railway Signaling & Trackside Power Cables.\n` +
+      `  - Heavy-Duty Weatherproof Outdoor Feeder Pillars & Distribution Enclosures.\n` +
+      `  - GeM-Registered Certified Distribution Boards & Industrial Switchgear.\n` +
+      `  - Flameproof / Explosion-Proof Ex d IIC Junction Boxes.\n` +
+      `• **Compliance**: Verified GeM OEM/Reseller, RDSO & MES Compliant, dedicated public tender bidding desk.`
+    );
+  }
+
+  // General 10 Business Segments Overview
+  return (
+    `### ⚡ Volamp Elektrikals — 10 Specialized Business Segments\n\n` +
+    `At **Volamp Elektrikals Private Limited**, we deliver an end-to-end engineered supply chain across **10 core industrial sectors**:\n\n` +
+    `1. 🏗️ **EPC & Infrastructure**: 1.1kV & 11kV/33kV XLPE Armoured cables, perforated GI cable trays, trefoil cleats, chemical earthing (IS 7098).\n` +
+    `2. 🏭 **Heavy Industry & Manufacturing**: VFD shielded cables, silicon rubber high-temp wires, ACBs up to 4000A, MPCBs for chemical, pharma & steel plants.\n` +
+    `3. 🏢 **Commercial & Real Estate**: Zero-Halogen (ZHFR) building wires, SPN/TPN vertical DBs, multi-function digital energy meters (NBC 2016).\n` +
+    `4. ☀️ **Solar & Renewable Energy**: 1.5 kV DC Solar PV Cables (EN 50618/TÜV), MC4 connectors, Array Junction Boxes (AJB), DC fuses & isolators.\n` +
+    `5. ⚡ **Power Utilities & Sub-stations**: EHV & HT feeders (11kV to 33kV), electrolytic copper/alu busbars, CT/PTs, lightning arresters (TPIA cleared).\n` +
+    `6. ⚙️ **Panel Builders & OEMs**: Tri-rated UL flexible wires, Schneider/LK power contactors, overload relays, push buttons, DIN-rail terminals.\n` +
+    `7. 🛡️ **Government, Defense & PSUs (GeM)**: RDSO railway signaling cables, CPWD/MES supplies, GeM verified distribution enclosures.\n` +
+    `8. 🔌 **Electrical Distribution & Control**: Busbar Trunking Systems (BBT), APFC power factor capacitor banks, Type 1+2 surge protective devices.\n` +
+    `9. 🚗 **EV Charging Infrastructure**: High-ampacity charging cables, Type 2 connectors, dedicated EV sub-distribution boards, IP66 housings.\n` +
+    `10. 🤖 **Electrical Panels & Automation**: Turnkey PCC, MCC, APFC, AMF/ATS automatic transfer panels, PLCs, Variable Frequency Drives (VFDs).\n\n` +
+    `**One Accountable Partner. Complete Electrical Solutions.**\n` +
+    `Which business segment matches your site? Tell me your load or required BOM, and I'll tailor the exact specs and quotation right away!`
+  );
+}
+
+/**
+ * Handle About Us, 4 Generations, Heritage, CEO Message, Team, and Headquarters.
+ */
+function handleAboutUsAndHeritage(query: string): string | null {
+  const lower = query.toLowerCase().trim();
+
+  const isAboutQuery =
+    /\b(?:about\s*volamp|about\s*us|who\s*are\s*you|history|heritage|legacy|4\s*generation|four\s*generation|founder|origin|founded|soma\s*bhai|chaturbhai|vipulbhai|naimil|patel|ceo|quote|message|vision|team|headquarters|office|address|where\s*(?:are\s*you|is\s*volamp)|location|khadia|aslali|sanand|cin|gstin|gem\s*registration)\b/i.test(lower);
+
+  if (!isAboutQuery) return null;
+
+  const isHistoryOr4Gen = /\b(?:history|story|heritage|legacy|4\s*generation|four\s*generation|origin|founded|1964|soma\s*bhai)\b/i.test(lower);
+
+  // CEO Message specifically: only if NOT asking about history or 4 generations
+  if (!isHistoryOr4Gen && /\b(?:ceo|message|quote|vision|leader|director|naimil)\b/i.test(lower) && !lower.includes("price") && !lower.includes("order")) {
+    return (
+      `### 💬 CEO Message — Naimil Patel: *"Saath Milkar Growth Ki Ek Nayi Pehchaan Banayein"*\n\n` +
+      `> *"Koi bhi company sirf products se nahi banti — company banti hai INSAN, unki mehnat, commitment aur customer ke trust se.*\n` +
+      `> *Volamp Elektrikals ke safar mein hamara focus sirf business grow karna nahi, balki trust, quality aur strong relations build karna hai."*\n\n` +
+      `**Core Pillars of Our Leadership Vision:**\n` +
+      `• **Continuous Upgrades**: Relentless modernization of manufacturing specifications, testing procedures, and digital supply workflows.\n` +
+      `• **Long-Term Partnerships**: Every contractor, EPC, and client is treated as a 20-year relationship, never a one-off transaction.\n` +
+      `• **Ownership & Accountability**: Empowering every team member to take personal responsibility for zero-defect consignment delivery.\n` +
+      `• **Motto**: *"Together, Let's Power the Growth. Together, Let's Build Volamp and India."*\n\n` +
+      `**Key Leadership & Supply Desk Team:**\n` +
+      `• **Naimil Patel** — Chief Executive Officer\n` +
+      `• **Roshni Shroff, Pooja Thakor, Pooja Patel** — Sales & Client Solutions\n` +
+      `• **Jinay Patel** — Switchgear Sourcing Specialist\n` +
+      `• **Dhaval Rana** — Finance & Accounts Manager\n` +
+      `• **Montu Patil** — Logistics & Operations Manager\n\n` +
+      `Direct Supply Desk: **+91 9512365582** | sales@volampelektrikals.com`
+    );
+  }
+
+  // Complete About Us & 4-Generation History
+  return (
+    `### 🏛️ Four Generations. 60+ Years of Legacy. One Vision for the Future.\n\n` +
+    `The journey of **VOLAMP ELEKTRIKALS PRIVATE LIMITED** represents over six decades of family entrepreneurship, engineering discipline, and industrial trust rooted in Gujarat:\n\n` +
+    `---\n\n` +
+    `#### 1. 1964 — 1st Generation (Soma Bhai Khatubhai Patel)\n` +
+    `An ITI-trained electrician from Panchmahal, Gujarat, who moved to Ahmedabad driven by entrepreneurial ambition. After working in textile and flour mills, he co-founded **S.P. Electric and Engineering Company** as a partnership firm in **June 1964** — sparking a multi-generational electrical legacy.\n\n` +
+    `#### 2. 1970s–80s — 2nd Generation (Chaturbhai Somabhai Patel)\n` +
+    `Carried the enterprise forward by expanding distribution across Gujarat's booming manufacturing corridors (Ahmedabad, Vadodara, Ankleshwar, Vapi), establishing decades of integrity and technical reliability.\n\n` +
+    `#### 3. 1986 — 3rd Generation (Vipulbhai Chaturbhai Patel)\n` +
+    `Entered the trade in 1986. Under his guidance, the business adapted to rapid infrastructure advancements, diversifying into modern switchgear, power cables, and multi-regional industrial contracts.\n\n` +
+    `#### 4. 2008–Present — 4th Generation (Naimil Vipul Patel · CEO)\n` +
+    `Having an innate passion for electrical cables from his school days, Naimil studied Electrical Engineering (2008–2012) while working from the ground up. In **2014**, he established **Volamp Power**, scaling nationwide supply partnerships. In **2021**, the family restructured for the next 50+ years, incorporating **Volamp Elektrikals Private Limited**.\n\n` +
+    `---\n\n` +
+    `### 🏢 Operational Infrastructure & Registrations:\n` +
+    `• **Corporate Headquarters**: 1753, Khadia, Ahmedabad, Gujarat 380001\n` +
+    `• **Central Logistics & Fulfillment Hub**: Aslali, Ahmedabad (24–48 hour rapid dispatch across India & overseas)\n` +
+    `• **Quality Testing Facility**: Sanand & Ahmedabad (High-voltage spark testing, IS 7098 & IS 694 compliance)\n` +
+    `• **Statutory Details**: CIN: **U31900GJ2021PTC122730** | GSTIN: **24AAICV0754B1ZO**\n` +
+    `• **Institutional Registration**: Verified GeM (Government e-Marketplace) Supplier\n` +
+    `• **Direct Supply Desk**: 📞 **+91 9512365582** | ✉️ **sales@volampelektrikals.com**\n\n` +
+    `You can explore our interactive 3D global presence on our **[About Volamp Page](/about-volamp)** or tell me your site needs!`
+  );
+}
+
+/**
+ * Handle Technical Engineering Sizing, Voltage Drop & Cable Calculations.
+ */
+function handleTechnicalEngineeringAndSizing(query: string): string | null {
+  const lower = query.toLowerCase().trim();
+
+  const isCalculationOrSizing =
+    /\b(?:calculat|cable\s*size|size\s*cable|sizing|voltage\s*drop|conductor\s*calc|kw\s*to\s*amp|amp\s*for|drop\s*calc|sizing\s*matrix|sizing\s*chart|breaker\s*rating)\b/i.test(lower);
+
+  if (!isCalculationOrSizing) return null;
+
+  // Specific load mentioned (e.g., 30 kw, 50 hp)
+  const kwMatch = lower.match(/(\d+(?:\.\d+)?)\s*(?:kw|kilo\s*watts?)/i);
+  const hpMatch = lower.match(/(\d+(?:\.\d+)?)\s*(?:hp|horse\s*power)/i);
+  let kwVal = kwMatch ? parseFloat(kwMatch[1]) : hpMatch ? parseFloat(hpMatch[1]) * 0.746 : null;
+
+  if (kwVal && kwVal > 0) {
+    // 3-Phase 415V calculation with 0.85 PF
+    const amps3P = Math.round((kwVal * 1000) / (1.732 * 415 * 0.85) * 10) / 10;
+    let recSize = "2.5 sq.mm Copper / 4 sq.mm Aluminium";
+    let breaker = "16A C-Curve MCB";
+    if (amps3P > 15 && amps3P <= 25) { recSize = "4 sq.mm Copper / 6 sq.mm Aluminium"; breaker = "25A / 32A MCB"; }
+    else if (amps3P > 25 && amps3P <= 35) { recSize = "6 sq.mm Copper / 10 sq.mm Aluminium"; breaker = "40A MCB"; }
+    else if (amps3P > 35 && amps3P <= 50) { recSize = "10 sq.mm Copper / 16 sq.mm Aluminium"; breaker = "63A MCB / MCCB"; }
+    else if (amps3P > 50 && amps3P <= 70) { recSize = "16 sq.mm Copper / 25 sq.mm Aluminium"; breaker = "80A / 100A MCCB"; }
+    else if (amps3P > 70 && amps3P <= 95) { recSize = "25 sq.mm Copper / 35 sq.mm Aluminium"; breaker = "100A / 125A MCCB"; }
+    else if (amps3P > 95 && amps3P <= 125) { recSize = "35 sq.mm Copper / 50 sq.mm Aluminium"; breaker = "125A / 160A MCCB"; }
+    else if (amps3P > 125 && amps3P <= 160) { recSize = "50 sq.mm Copper / 70 sq.mm Aluminium"; breaker = "160A / 200A MCCB"; }
+    else if (amps3P > 160 && amps3P <= 200) { recSize = "70 sq.mm Copper / 95 sq.mm Aluminium"; breaker = "200A / 250A MCCB"; }
+    else if (amps3P > 200 && amps3P <= 250) { recSize = "95 sq.mm Copper / 120 sq.mm Aluminium"; breaker = "250A / 315A MCCB"; }
+    else if (amps3P > 250 && amps3P <= 300) { recSize = "120 sq.mm Copper / 150 sq.mm Aluminium"; breaker = "315A / 400A MCCB"; }
+    else if (amps3P > 300) { recSize = "185 sq.mm+ Copper / 240 sq.mm+ Aluminium"; breaker = "400A+ MCCB / ACB"; }
+
+    return (
+      `### ⚡ High-Precision Cable Sizing for **${kwVal.toFixed(1)} kW Load**\n\n` +
+      `• **Full Load Current (3-Phase 415V, 0.85 PF)**: **${amps3P} Amperes**\n` +
+      `• **Recommended Cable Cross-Section**: **${recSize}**\n` +
+      `• **Recommended Circuit Breaker**: **${breaker}**\n` +
+      `• **Governing Standards**: Conforms to **IS 7098 (Part 1/2)** for XLPE armoured cables and **IS 694** for flexible copper building wires.\n` +
+      `• **Voltage Drop Rule**: For runs exceeding 80 meters, step up conductor size by one cross-section to guarantee voltage drop remains **≤ 3%**.\n\n` +
+      `**Live Pricing & Brand Selection:**\n` +
+      `👉 Launch our **[Interactive Cable Calculator & Estimator](/calculator)** to compare **Polycab, Finolex, KEI, and Volamp OEM** discounts, compute drum weights, and generate an official project BOQ!`
+    );
+  }
+
+  // General Sizing Matrix & Calculator Guide
+  return (
+    `### ⚡ Volamp Engineering Sizing Matrix & Cable Calculator\n\n` +
+    `Here is the official quick reference sizing matrix based on **IS 7098 Part 1 (XLPE)** and **IS 694** for 3-Phase 415V electrical loads:\n\n` +
+    `| Load (kW / HP) | Current (415V, 0.85 PF) | Recommended Copper | Recommended Aluminium | Recommended Breaker |\n` +
+    `| :--- | :--- | :--- | :--- | :--- |\n` +
+    `| **3.7 kW (5 HP)** | 7.2 A | **2.5 sq.mm** | **4 sq.mm** | 16A MCB |\n` +
+    `| **7.5 kW (10 HP)** | 14.1 A | **4 sq.mm** | **10 sq.mm** | 25A MCB |\n` +
+    `| **15 kW (20 HP)** | 27.5 A | **10 sq.mm** | **16 sq.mm** | 40A MCB |\n` +
+    `| **22 kW (30 HP)** | 40.0 A | **16 sq.mm** | **25 sq.mm** | 63A MCB |\n` +
+    `| **30 kW (40 HP)** | 54.5 A | **25 sq.mm** | **35 sq.mm** | 80A MCCB |\n` +
+    `| **45 kW (60 HP)** | 81.5 A | **35 sq.mm** | **70 sq.mm** | 125A MCCB |\n` +
+    `| **75 kW (100 HP)** | 135.0 A | **70 sq.mm** | **120 sq.mm** | 200A MCCB |\n` +
+    `| **110 kW (150 HP)** | 196.0 A | **120 sq.mm** | **185 sq.mm** | 315A MCCB |\n` +
+    `| **160 kW (215 HP)** | 284.0 A | **185 sq.mm** | **300 sq.mm** | 400A MCCB / ACB |\n\n` +
+    `• **Voltage Drop Limit**: Maximum allowable voltage drop is **3% for domestic/lighting** and **5% for industrial power feeders**.\n` +
+    `• **Direct Calculator Tool**: Open our **[Cable Calculator Page](/calculator)** for instant voltage drop analysis, contractor discount simulation, and PDF export!`
+  );
+}
+
+/**
+ * Handle Electrical & Science Q&A (Non-AI, authoritative tone).
  */
 function handleScienceAndElectrical(query: string): string | null {
   const lower = query.toLowerCase().trim();
 
-  // What is electricity / electron flow
+  // What is electricity
   if (/what\s+is\s+electricity|how\s+does\s+electricity\s+work/i.test(lower)) {
     return (
       `### ⚡ What is Electricity?\n\n` +
-      `**Electricity** is the flow of electric charge, primarily through the movement of free electrons through a conductive material (like copper or aluminum).\n\n` +
-      `• **Voltage ($V$)**: The electrical potential difference or "pressure" that pushes charges through a conductor (measured in Volts).\n` +
-      `• **Current ($I$)**: The rate at which electric charge flows past a point in a circuit (measured in Amperes or Amps).\n` +
-      `• **Resistance ($R$)**: The opposition that a substance offers to the flow of electric current (measured in Ohms, $\\Omega$).\n` +
-      `• **Ohm's Law**: The fundamental relationship: **$V = I \\times R$**.\n\n` +
-      `In electrical cables, higher purity conductors (like Volamp's 99.97% electrolytic copper) minimize resistance, preventing heat buildup and energy loss.`
+      `**Electricity** is the flow of electric charge, primarily the movement of free electrons through a conductive metal lattice (like electrolytic copper or aluminium).\n\n` +
+      `• **Voltage ($V$)**: The electrical potential difference or "pressure" pushing charges through the circuit (Volts).\n` +
+      `• **Current ($I$)**: The rate of electrical charge flow past a specific point (Amperes).\n` +
+      `• **Resistance ($R$)**: The opposition a material offers to charge flow (Ohms, $\\Omega$).\n` +
+      `• **Ohm's Law**: $V = I \\times R$.\n\n` +
+      `In electrical cables, higher purity conductors (like Volamp's 99.97% electrolytic copper) minimize resistance, preventing dangerous heat buildup and energy loss.`
     );
   }
 
@@ -186,13 +603,13 @@ function handleScienceAndElectrical(query: string): string | null {
     return (
       `### ⚡ AC (Alternating Current) vs. DC (Direct Current):\n\n` +
       `• **AC (Alternating Current)**:\n` +
-      `  - The flow of charge periodically reverses direction (in India, standard frequency is **50 Hz**, reversing 50 times per second).\n` +
-      `  - **Advantage**: Can be easily stepped up or down using transformers, making it extremely efficient for long-distance transmission over power grids.\n` +
-      `  - **Uses**: Home wall sockets, industrial motors, national grid.\n\n` +
+      `  - Reverses direction periodically (in India, **50 Hz**, reversing 50 times per second).\n` +
+      `  - **Advantage**: Stepped up/down easily using transformers, enabling hyper-efficient transmission over long-distance power grids.\n` +
+      `  - **Uses**: Wall sockets, grid infrastructure, induction motors.\n\n` +
       `• **DC (Direct Current)**:\n` +
-      `  - Electric charge flows continuously in only one direction.\n` +
-      `  - **Uses**: Batteries, electronics, computers, solar panels, and electric vehicles (EVs).\n\n` +
-      `*Fun Fact:* The rivalry over whether AC or DC should power the world was known as the "War of the Currents" between Thomas Edison (DC) and Nikola Tesla/George Westinghouse (AC)!`
+      `  - Flows unidirectionally with constant polarity.\n` +
+      `  - **Uses**: Solar PV systems, batteries, electronics, Electric Vehicles (EVs).\n\n` +
+      `Volamp stocks both AC industrial power cables and specialized 1.5 kV DC Solar PV cables!`
     );
   }
 
@@ -200,25 +617,24 @@ function handleScienceAndElectrical(query: string): string | null {
   if (/how\s+does\s+a\s+transformer\s+work|what\s+is\s+a\s+transformer/i.test(lower)) {
     return (
       `### ⚡ How a Transformer Works:\n\n` +
-      `A **transformer** is a passive electrical device that transfers electrical energy between circuits through **electromagnetic induction** without changing the frequency.\n\n` +
-      `1. **Primary Winding**: An alternating current (AC) flows through the primary coil, creating a fluctuating magnetic field in the laminated iron core.\n` +
-      `2. **Magnetic Core**: Directs the magnetic flux from the primary to the secondary winding.\n` +
-      `3. **Secondary Winding**: The changing magnetic field induces an AC voltage in the secondary coil (Faraday's Law of Induction).\n\n` +
-      `• **Step-Up Transformer**: More secondary turns $\\rightarrow$ increases voltage (used at power generation stations to transmit power efficiently).\n` +
-      `• **Step-Down Transformer**: Fewer secondary turns $\\rightarrow$ decreases voltage (e.g. from 11 kV or 415V down to 230V for safe home and factory use).`
+      `A **transformer** transfers electrical power between circuits through **electromagnetic induction** at constant frequency:\n\n` +
+      `1. **Primary Winding**: AC current produces an alternating magnetic flux in the laminated iron core.\n` +
+      `2. **Laminated Core**: Channels magnetic flux to the secondary winding with minimal eddy current losses.\n` +
+      `3. **Secondary Winding**: Induces an AC voltage proportional to the turns ratio (Faraday's Law).\n\n` +
+      `• **Step-Up**: More secondary turns $\\rightarrow$ boosts voltage for high-voltage grid transmission.\n` +
+      `• **Step-Down**: Fewer secondary turns $\\rightarrow$ steps down 11kV or 415V to 230V for safe usage.`
     );
   }
 
   // Earthing / Grounding
   if (/earthing|grounding|why\s+is\s+earthing\s+important|how\s+does\s+earthing\s+work/i.test(lower)) {
     return (
-      `### 🌍 Why Earthing (Grounding) is Essential:\n\n` +
-      `**Earthing** provides an immediate, low-resistance path for fault currents to safely discharge into the earth rather than through a human body or damaging machinery.\n\n` +
-      `**Key Benefits:**\n` +
-      `1. **Human Safety**: If an appliance develops an internal insulation fault, the metallic body becomes live. Proper earthing trips the MCB/RCCB instantly, preventing fatal electrical shocks.\n` +
-      `2. **Lightning & Surge Protection**: Diverts atmospheric lightning strikes and utility surges safely underground.\n` +
-      `3. **Voltage Stabilization**: Provides a common reference point for 3-phase neutral voltage.\n\n` +
-      `Volamp supplies complete earthing solutions including **copper-bonded earthing rods, GI earthing pipes, chemical earthing compounds, and earthing strips**.`
+      `### 🌍 Why Earthing (Grounding) is Critical (IS 3043:2018):\n\n` +
+      `**Earthing** establishes an immediate, low-resistance path to discharge fault currents safely into the mass of the earth.\n\n` +
+      `1. **Human Shock Protection**: When equipment insulation fails, the metal body becomes live. Proper earthing creates a low-resistance path that triggers the MCB/RCCB within milliseconds, averting fatal electrocution.\n` +
+      `2. **Surge & Lightning Protection**: Safely diverts direct atmospheric lightning and grid switching surges.\n` +
+      `3. **Neutral Reference**: Maintains voltage stabilization across 3-phase circuits.\n\n` +
+      `Volamp supplies **copper-bonded rods (100–250 microns), pipe-in-pipe chemical electrodes, carbonaceous compound (< 0.2 Ω·m), and GI/copper earthing strips**.`
     );
   }
 
@@ -226,29 +642,19 @@ function handleScienceAndElectrical(query: string): string | null {
   if (/mcb|mccb|rccb|elcb|circuit\s*breaker/i.test(lower)) {
     return (
       `### 🛡️ Circuit Breakers Explained (MCB, MCCB, RCCB):\n\n` +
-      `• **MCB (Miniature Circuit Breaker)**:\n` +
-      `  - Rated for currents up to **63A or 100A**.\n` +
-      `  - Trips on **overload** (via bimetallic strip) and **short-circuit** (via electromagnetic solenoid).\n` +
-      `  - Primarily used in domestic distribution boards and small commercial circuits.\n\n` +
-      `• **MCCB (Molded Case Circuit Breaker)**:\n` +
-      `  - Rated for currents up to **1,000A to 2,500A** with adjustable trip settings.\n` +
-      `  - Used in industrial main distribution boards and high-capacity motor control centers.\n\n` +
-      `• **RCCB / ELCB (Residual Current Circuit Breaker)**:\n` +
-      `  - Detects **current leakage to earth** (as low as 30 mA for human safety or 100–300 mA for fire protection).\n` +
-      `  - Essential for preventing electrocution in bathrooms, kitchens, and industrial wet areas.`
+      `• **MCB (Miniature Circuit Breaker)**: Rated 0.5A to 63A. Trips on thermal overload (bimetallic strip) and short circuit (magnetic solenoid). Breaking capacity 6kA / 10kA (IS/IEC 60898).\n` +
+      `• **MCCB (Moulded Case Circuit Breaker)**: Rated 16A to 1250A. Adjustable thermal-magnetic or microprocessor trip units with 25kA, 36kA, 50kA breaking capacity for main industrial feeders.\n` +
+      `• **RCCB / RCBO (Residual Current Circuit Breaker)**: Detects earth leakage current (30mA for human shock protection; 100mA/300mA for fire protection). Essential for safety!`
     );
   }
 
-  // Solar DC Cable
-  if (/solar\s*(?:cable|dc\s*cable|panel|photovoltaic)/i.test(lower)) {
+  // Copper vs Aluminium
+  if (/copper\s*(?:vs|or)\s*alumin/i.test(lower) || /alumin\s*(?:vs|or)\s*copper/i.test(lower)) {
     return (
-      `### ☀️ Solar DC Cables (PV Cables):\n\n` +
-      `Solar DC cables connect photovoltaic panels to solar inverters and must endure extreme outdoor conditions:\n\n` +
-      `• **Electron-Beam Cross-Linked (XLPO)**: Insulation and sheath withstand ambient temperatures from **-40°C to +120°C**.\n` +
-      `• **UV & Ozone Resistance**: Certified to resist continuous solar radiation without cracking or degradation (EN 50618 / TUV certified).\n` +
-      `• **Tinned Copper Conductors**: Tinned copper prevents corrosion and oxidation in humid or marine environments over a 25+ year lifespan.\n` +
-      `• **Voltage Rating**: Typically 1.5 kV DC.\n\n` +
-      `Volamp supplies certified 4 sqmm, 6 sqmm, and 10 sqmm single-core solar DC cables in red and black.`
+      `### ⚡ Copper vs. Aluminium Conductors: Technical Comparison\n\n` +
+      `• **Conductivity**: Copper = 100% IACS. Aluminium = ~61% IACS. Aluminium requires **~1.6x the cross-sectional area** of Copper to carry equal current.\n` +
+      `• **Tensile Strength & Creep**: Copper has double the tensile strength and does not suffer from loose terminal joints. Aluminium expands/contracts rapidly under thermal cycles and oxidizes upon air contact (always terminate with bimetallic lugs and anti-oxidant paste).\n` +
+      `• **Weight & Cost**: Aluminium is ~3x lighter and dramatically cheaper per kg. For heavy distribution cables (16 sqmm to 630 sqmm), Aluminium provides unbeatable cost savings. Copper is preferred for house wires, control panels, and tight spaces.`
     );
   }
 
@@ -256,41 +662,20 @@ function handleScienceAndElectrical(query: string): string | null {
   if (/xlpe\s*(?:vs|or)\s*pvc|pvc\s*(?:vs|or)\s*xlpe/i.test(lower)) {
     return (
       `### ⚡ XLPE vs. PVC Insulation:\n\n` +
-      `• **Continuous Operating Temperature**:\n` +
-      `  - **XLPE (Cross-Linked Polyethylene)**: **90°C** continuous (up to 250°C during short-circuit).\n` +
-      `  - **PVC (Polyvinyl Chloride)**: **70°C** continuous (up to 160°C during short-circuit).\n` +
-      `• **Current Carrying Capacity**: Because XLPE handles higher temperatures, an XLPE-insulated cable can carry **15% to 25% more current** than a PVC cable of identical conductor size.\n` +
-      `• **Moisture & Chemical Resistance**: XLPE has superior dielectric strength and moisture resistance, making it the modern standard for medium and high voltage (IS 7098).\n` +
-      `• **PVC Advantages**: More flexible, cost-effective for indoor light commercial wiring and general house wires (IS 694).`
+      `• **Continuous Temperature**: XLPE = **90°C** continuous (250°C short circuit). PVC = **70°C** continuous (160°C short circuit).\n` +
+      `• **Current Carrying Capacity**: XLPE handles higher operating temperatures, carrying **15% to 25% more current** than identical-sized PVC conductors.\n` +
+      `• **Dielectric & Moisture Strength**: XLPE has virtually zero moisture absorption and superior dielectric resistance, making it the modern standard for power cables (IS 7098).\n` +
+      `• **PVC Advantages**: Higher mechanical flexibility and lower cost for building wires (IS 694).`
     );
   }
 
-  // Armored vs Unarmored
-  if (/armour|unarmour/i.test(lower)) {
+  // FR vs FRLS vs ZHFR
+  if (/fr\s*(?:vs|or)\s*frls|frls\s*(?:vs|or)\s*zhfr|lszh\s*(?:vs|or)\s*frls/i.test(lower)) {
     return (
-      `### ⚡ Armoured vs. Unarmoured Cables:\n\n` +
-      `• **Armoured Cables**:\n` +
-      `  - Feature a protective layer of **galvanized steel wire (SWA)** or **steel strip** beneath the outer sheath.\n` +
-      `  - **Purpose**: Protects the inner cores from mechanical crushing, construction accidents, sharp rocks, and rodent chewing.\n` +
-      `  - **Where Used**: Direct underground burial, outdoor trenches, industrial cable trays, and factories.\n\n` +
-      `• **Unarmoured Cables**:\n` +
-      `  - No metallic armor; lighter, more flexible, and easier to pull through conduits.\n` +
-      `  - **Where Used**: Inside buildings, enclosed PVC/GI conduits, control panels, and false ceilings where mechanical hazards are absent.`
-    );
-  }
-
-  // Single phase vs 3 phase
-  if (/single\s*phase\s*(?:vs|or)\s*(?:three|3)\s*phase|3\s*phase\s*(?:vs|or)\s*single/i.test(lower)) {
-    return (
-      `### ⚡ Single-Phase vs. Three-Phase Power:\n\n` +
-      `• **Single-Phase (230V in India)**:\n` +
-      `  - Uses two wires: Phase (Live) and Neutral.\n` +
-      `  - Delivers pulsating power suited for residential homes, lighting, computers, TVs, and small appliances.\n` +
-      `  - Typically limited to connected loads up to 5 kW to 7 kW.\n\n` +
-      `• **Three-Phase (415V in India)**:\n` +
-      `  - Uses three live phases ($R, Y, B$) and one neutral wire ($415V$ line-to-line, $230V$ line-to-neutral).\n` +
-      `  - Delivers constant, smooth power with higher efficiency and smaller conductor sizes for high loads.\n` +
-      `  - Essential for industrial motors, commercial buildings, lifts, HVAC chillers, and manufacturing machinery.`
+      `### 🔥 FR vs. FRLS vs. ZHFR (Flame Retardant Grades):\n\n` +
+      `• **FR (Flame Retardant)**: Oxygen index > 29%. Restricts flame propagation along the cable run, but emits dense black smoke and acidic HCl gas.\n` +
+      `• **FRLS (Flame Retardant Low Smoke)**: Restricts fire spread + smoke density < 60% and acid gas < 20%. Improves visibility during building evacuations.\n` +
+      `• **ZHFR / LSZH (Zero Halogen Flame Retardant)**: Emits **zero toxic halogen gases** (acid gas < 0.5%). Generates clean water-vapor smoke that does not choke occupants or corrode electronic servers. Mandatory for metro rail, airports, hospitals, and high-rise towers (NBC 2016).`
     );
   }
 
@@ -298,7 +683,249 @@ function handleScienceAndElectrical(query: string): string | null {
 }
 
 /**
- * Handle General Knowledge, Trivia, Jokes, Poems & Everyday Life
+ * Handle Product and Catalog Inquiries across all 3,385+ products and 8 categories.
+ */
+function handleProductAndCatalogQuery(query: string): string | null {
+  const lower = query.toLowerCase().trim();
+
+  // 1. MASTER CATALOG DIRECTORY / "Teach Vola about each product everything on our website"
+  const isMasterCatalogQuery =
+    /teach\s*(?:vola|me)?\s*(?:about)?\s*(?:each|all)?\s*product/i.test(lower) ||
+    /everything\s+on\s+(?:our\s+)?website/i.test(lower) ||
+    /(?:all|list|show|browse|what)\s+(?:the\s+)?(?:products|categories|catalog|items|inventory)\b/i.test(lower) ||
+    /what\s+products\s+do\s+you\s+(?:have|sell|offer|deal\s+in|carry)/i.test(lower) ||
+    /product\s*(?:portfolio|range|directory|list)/i.test(lower);
+
+  if (isMasterCatalogQuery) {
+    return (
+      `### ⚡ Complete Volamp Product Catalog Directory (3,385+ Products Across 8 Categories)\n\n` +
+      `Here is the exhaustive inventory across every category, brand, and specification on our website:\n\n` +
+      `---\n\n` +
+      `#### 1. 🔌 **Wires & Cables** (2,856 Products in Database)\n` +
+      `• **Authorized Brands**: Polycab, KEI, Finolex, Volamp\n` +
+      `• **Subcategories & Offerings**:\n` +
+      `  - Single Core Building Wires (FR, FRLS, ZHFR): 0.5 to 16 sqmm (IS 694) in 90m, 180m, and 300m coils (Red, Yellow, Blue, Black, Green).\n` +
+      `  - Multicore Industrial Flexible Cords: 2-Core up to 24-Core (0.5 to 10 sqmm) for machinery and panel wiring.\n` +
+      `  - Armoured LT & HT Power Cables: Aluminium & Copper (A2XWY, 2XWY, AYFY, YFY) conforming to IS 7098 & IS 1554 (4 sqmm to 630 sqmm) for direct burial.\n` +
+      `  - Submersible Flat 3-Core Cables: 1.5 to 35 sqmm water-tight cables for agricultural and borewell pumps.\n` +
+      `  - Communication & Coaxial: CCTV (3+1, 4+1), RG-59, RG-6, RG-11 coaxial, and Cat6 high-speed LAN cables.\n\n` +
+      `#### 2. 🛡️ **Switchgear & Circuit Protection** (221 Products in Database)\n` +
+      `• **Authorized Brands**: Schneider Electric, LK (L&T), Legrand, Volamp\n` +
+      `• **Subcategories & Offerings**:\n` +
+      `  - MCBs: 0.5A to 63A; SP, DP, TP, 4P; B/C/D curves; 6kA / 10kA breaking capacity (IS/IEC 60898-1).\n` +
+      `  - MCCBs: 16A to 1250A; 3-Pole & 4-Pole; 25kA, 36kA, 50kA breaking capacity with thermal-magnetic and microprocessor releases.\n` +
+      `  - RCCBs & RCBOs: 30mA (human shock), 100mA & 300mA (fire protection).\n` +
+      `  - Isolators & Main Switches: 40A to 125A.\n` +
+      `  - Power Contactors & Relays: 9A to 800A AC-3 heavy motor duty.\n` +
+      `  - Changeover Switches & SDF: Manual & motorized changeovers, Switch Disconnector Fuses.\n` +
+      `  - Distribution Boards (DB): SPN, TPN, Vertical DBs with IP43/IP54 weather rating.\n\n` +
+      `#### 3. 🧲 **Lugs & Cable Terminals** (14 Products in Database)\n` +
+      `• **Authorized Brands**: Volamp, Dowells, Comet\n` +
+      `• **Subcategories & Offerings**:\n` +
+      `  - Ring Type, Pin Type, Fork/Spade, and Tubular Crimping Lugs (tinned electrolytic copper & aluminium).\n` +
+      `  - Friction-welded Bimetallic Lugs to connect aluminium cables onto copper busbars without galvanic oxidation.\n\n` +
+      `#### 4. 🧱 **Conduit & Piping Systems** (93 Products in Database)\n` +
+      `• **Authorized Brands**: Volamp, Precision, VIP\n` +
+      `• **Subcategories & Offerings**:\n` +
+      `  - Rigid uPVC Conduits: Light (LMS), Medium (MMS), and Heavy Mechanical Stress (HMS) to IS 9537 Part 3 (19mm to 50mm in 3m lengths).\n` +
+      `  - Non-IS 25 Classic & Super conduits for budget residential wiring.\n` +
+      `  - uPVC Casing & Capping channel profiles with snap-fit lids.\n` +
+      `  - PP Corrugated Flexible Conduits for machinery routing.\n\n` +
+      `#### 5. 🔩 **Cable Glands & Terminations** (90 Products in Database)\n` +
+      `• **Authorized Brands**: Volamp, Comet, Raychem\n` +
+      `• **Subcategories & Offerings**:\n` +
+      `  - Single Compression Brass Glands for indoor unarmoured cables.\n` +
+      `  - Double Compression Heavy-Duty MD Glands (IP66/IP67 weatherproof) for armoured cables.\n` +
+      `  - Flameproof / Explosion-Proof HMI-F Glands (Ex d IIC certified) for hazardous chemical & oil environments.\n` +
+      `  - Metric (M16 to M100), PG, and NPT threads with shrouds, locknuts, and earth tags.\n\n` +
+      `#### 6. 💡 **Wiring Devices, Tools & PPE** (14 Products in Database)\n` +
+      `• **Authorized Brands**: Legrand, Schneider Electric, Anchor, Volamp\n` +
+      `• **Subcategories & Offerings**:\n` +
+      `  - Modular switches & sockets (6A, 16A, 25A), industrial plugs & sockets (16A to 63A IP44/IP67).\n` +
+      `  - PVC insulation tape (600V), ratchet crimpers, digital clamp meters, insulation resistance testers.\n` +
+      `  - High-voltage rubber safety gloves (Class 0/1/2).\n\n` +
+      `#### 7. 🌍 **Earthing Wires & Grounding Systems** (37 Products in Database)\n` +
+      `• **Authorized Brands**: Volamp, True Power, Ashlok\n` +
+      `• **Subcategories & Offerings**:\n` +
+      `  - Copper-Bonded Earthing Rods (14mm, 17.2mm, 25mm dia; 2m, 3m lengths; 100–250 microns molecular copper).\n` +
+      `  - Pipe-in-Pipe Chemical Electrodes.\n` +
+      `  - Maintenance-Free Carbonaceous Compound (< 0.2 Ω·m, 25kg bags, IS 3043:2018).\n` +
+      `  - GI Strips (25x3 to 50x6 mm) & Electrolytic Copper Strips.\n` +
+      `  - FRP / RCC inspection earth pit chambers.\n\n` +
+      `#### 8. ☀️ **Solar Electrical Solutions** (60 Products in Database)\n` +
+      `• **Authorized Brands**: Polycab, KEI, Volamp, Waaree\n` +
+      `• **Subcategories & Offerings**:\n` +
+      `  - 1500V DC Solar PV Cables (EN 50618/TÜV, XLPO, tinned copper, 4/6/10 sqmm Red & Black, 25+ year lifespan).\n` +
+      `  - Solar PV Panels: Mono PERC & TopCon bifacial modules (540W to 670W).\n` +
+      `  - On-grid string inverters (3kW to 100kW), MC4 IP68 connectors, 1000V/1500V DC fuses, Array Junction Boxes (AJB).\n\n` +
+      `---\n\n` +
+      `⚡ **Ready to source or order?** Ask me about any specific size or item, and I'll give you live stock status, wholesale discounts, and instant booking!`
+    );
+  }
+
+  // 2. BRAND SPECIFIC INQUIRIES
+  const brandKeywords = [
+    { key: "polycab", name: "Polycab" },
+    { key: "kei", name: "Kei" },
+    { key: "finolex", name: "Finnolex" },
+    { key: "finnolex", name: "Finnolex" },
+    { key: "schneider", name: "SCHNIEDER" },
+    { key: "schnieder", name: "SCHNIEDER" },
+    { key: "legrand", name: "LEGRAND" },
+    { key: "lk", name: "LK" },
+    { key: "l&t", name: "LK" },
+  ];
+
+  for (const b of brandKeywords) {
+    if (new RegExp(`\\b${b.key}\\b`, "i").test(lower) && !lower.includes("order") && !lower.includes("price") && !lower.includes("discount")) {
+      const prods = queryProducts({ brand: b.name, limit: 3 });
+      if (prods.products.length > 0) {
+        const productList = prods.products.map(formatProductCard).join("\n\n");
+        return (
+          `### ⚡ Authorized ${prods.products[0].brand} Products at Volamp (${prods.total} items available)\n\n` +
+          `Volamp is a primary distributor for **${prods.products[0].brand}**, supplying factory-direct materials with original Manufacturer Test Certificates (MTC):\n\n` +
+          `${productList}\n\n` +
+          `Looking for a specific gauge or rating in ${prods.products[0].brand}? Tell me what size or coil length you need!`
+        );
+      }
+    }
+  }
+
+  // 3. CATEGORY SPECIFIC INQUIRIES
+  if (/\b(?:wires?\s*(?:&|and)?\s*cables?|house\s*wires?|building\s*wires?|industrial\s*cables?)\b/i.test(lower) && !lower.includes("order")) {
+    const prods = queryProducts({ category: "Wires & Cables", limit: 3 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### 🔌 Volamp Wires & Cables Portfolio (2,856 Products)\n\n` +
+      `We distribute certified cables from **Polycab, KEI, Finolex, and Volamp** across all voltage grades:\n\n` +
+      `• **Single Core Flexible House Wires (FR / FRLS / ZHFR)**: 0.5 sqmm to 16 sqmm (IS 694).\n` +
+      `• **Multicore Flexible Industrial Cables**: 2-Core up to 24-Core for machine and panel wiring.\n` +
+      `• **Armoured LT & HT Power Cables**: XLPE/PVC insulated, Copper & Aluminium conductors (IS 7098 & IS 1554).\n` +
+      `• **Submersible Flat 3-Core Cables**: 1.5 sqmm to 35 sqmm for agricultural pumps.\n` +
+      `• **Communication & Coaxial**: CCTV 3+1/4+1, RG-59, RG-6, and Cat6 LAN.\n\n` +
+      `**Featured Wires & Cables in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `Looking for a specific gauge or brand? Just tell me what size you need!`
+    );
+  }
+
+  if (/\b(?:switchgear|mcb|mccb|rccb|rcbo|contactor|isolator|changeover)\b/i.test(lower) && !lower.includes("order")) {
+    const prods = queryProducts({ category: "Switchgear", limit: 3 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### 🛡️ Volamp Switchgear & Protection Portfolio (221 Products)\n\n` +
+      `We carry leading switchgear brands including **Schneider Electric, LK (L&T), Legrand, and Volamp**:\n\n` +
+      `• **MCBs (Miniature Circuit Breakers)**: 0.5A to 63A, 6kA & 10kA breaking capacity (IS/IEC 60898).\n` +
+      `• **MCCBs (Moulded Case Circuit Breakers)**: 16A to 1250A, 25kA/36kA/50kA, 3-Pole & 4-Pole.\n` +
+      `• **RCCBs & RCBOs**: Human safety (30mA) & fire protection (100mA/300mA).\n` +
+      `• **Contactors & Relays**: 9A to 800A AC-3 heavy motor duty.\n` +
+      `• **Distribution Boards (DB)**: SPN, TPN, Vertical DBs with IP43/IP54 rating.\n\n` +
+      `**Featured Products in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `Tell me your load or required breaking capacity, and I'll pull the exact model for you!`
+    );
+  }
+
+  if (/\b(?:conduit|pvc\s*pipe|casing\s*capping)\b/i.test(lower) && !lower.includes("order")) {
+    const prods = queryProducts({ category: "Conduit", limit: 3 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### 🧱 Volamp Conduit & Cable Management Systems (93 Products)\n\n` +
+      `Conforming strictly to **IS 9537 Part 3**:\n\n` +
+      `• **Rigid uPVC Conduits**: Light (LMS), Medium (MMS), and Heavy Mechanical Stress (HMS) in 20mm, 25mm, 32mm, 40mm, 50mm.\n` +
+      `• **Non-IS Conduits**: 25mm Classic & Super for economical residential wiring.\n` +
+      `• **uPVC Casing & Capping**: High-impact surface raceways with snap-fit lids.\n` +
+      `• **PP Corrugated Flexible Conduits**: Flame-retardant routing for machinery.\n\n` +
+      `**Featured Items in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `Tell me your preferred diameter and bundle quantity!`
+    );
+  }
+
+  if (/\b(?:cable\s*gland|glands|double\s*compression|single\s*compression)\b/i.test(lower) && !lower.includes("order")) {
+    const prods = queryProducts({ category: "Glands", limit: 3 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### 🔩 Volamp Brass Cable Glands & Accessories (90 Products)\n\n` +
+      `• **Single Compression Brass Glands**: For unarmoured indoor terminations.\n` +
+      `• **Double Compression Heavy-Duty MD Glands**: IP66/IP67 weatherproof seals for armoured cables.\n` +
+      `• **Flameproof / Explosion-Proof HMI-F Glands**: Ex d IIC certified for chemical plants and hazardous zones.\n` +
+      `• Metric (M16 to M100), PG, and NPT threads with shrouds, locknuts, and earth tags.\n\n` +
+      `**Featured Glands in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `Tell me your cable outer diameter (OD) or armour type for the exact match!`
+    );
+  }
+
+  if (/\b(?:lugs|crimping\s*lug|bimetallic\s*lug|cable\s*terminal)\b/i.test(lower) && !lower.includes("order")) {
+    const prods = queryProducts({ category: "Lugs", limit: 3 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### 🧲 Volamp Heavy-Duty Lugs & Terminals (14 Products)\n\n` +
+      `• **Ring & Fork/Spade Lugs**: Tinned copper terminal connections.\n` +
+      `• **Pin Type Lugs**: For MCB and contactor cage clamps.\n` +
+      `• **Tubular Crimping Lugs**: Heavy-duty barrel for cables from 1.5 to 630 sqmm.\n` +
+      `• **Bimetallic Lugs**: Friction-welded Cu-Al construction preventing galvanic corrosion.\n\n` +
+      `**Featured Lugs in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `What cable conductor size (sqmm) are you terminating?`
+    );
+  }
+
+  if (/\b(?:earthing|grounding|copper\s*bonded|chemical\s*earth)\b/i.test(lower) && !lower.includes("order")) {
+    const prods = queryProducts({ category: "Earthing Wires", limit: 3 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### 🌍 Volamp Earthing & Grounding Systems (37 Products, IS 3043:2018)\n\n` +
+      `• **Copper-Bonded Earthing Rods**: 14mm, 17.2mm, 25mm dia (100–250 microns molecular copper).\n` +
+      `• **Pipe-in-Pipe Chemical Electrodes**: High-discharge dual pipes.\n` +
+      `• **Carbonaceous Backfill Compound (25kg bags)**: Low resistivity (< 0.2 Ω·m).\n` +
+      `• **Earthing Strips**: Hot-dip GI strips & Electrolytic Copper strips.\n` +
+      `• **Inspection Chambers**: FRP, RCC, and Cast Iron covers.\n\n` +
+      `**Featured Earthing Items in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `Are you designing earthing for a factory, solar park, or residential project?`
+    );
+  }
+
+  if (/\b(?:solar|pv\s*cable|solar\s*cable|1500v)\b/i.test(lower) && !lower.includes("order")) {
+    const prods = queryProducts({ category: "Solar", limit: 3 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### ☀️ Volamp Solar Electrical Solutions (60 Products)\n\n` +
+      `Certified to **EN 50618 / TÜV 2 Pfg 1169**:\n\n` +
+      `• **1500V DC Solar PV Cables**: Electron-beam XLPO, tinned copper in 4, 6, 10 sqmm (Red & Black) with 25+ year lifespan.\n` +
+      `• **Solar PV Panels**: Mono PERC & TopCon bifacial modules (540W to 670W).\n` +
+      `• **Solar Inverters & BOS**: On-grid string inverters (3kW to 100kW), MC4 IP68 connectors, 1000V/1500V DC fuses, Array Junction Boxes.\n\n` +
+      `**Featured Solar Items in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `How many meters of 4 sqmm or 6 sqmm solar cable do you need for your site?`
+    );
+  }
+
+  // 4. DIRECT PRODUCT SEARCH (Matches specific sizes, types, or descriptions)
+  const hasProductSearchIntent =
+    /\b(?:sqmm|sq\s*mm|core|armour|unarmour|mcb|mccb|rccb|gland|conduit|submersible|solar|wire|cable|lug|cctv|rg-59|rg-6|polycab|kei|finolex|schneider|legrand)\b/i.test(lower);
+
+  if (hasProductSearchIntent) {
+    const matched = findMatchingProducts(lower, 3);
+    if (matched.length > 0) {
+      const productList = matched.map(formatProductCard).join("\n\n");
+      const cleanLabel = extractProductSearchTokens(lower) || lower;
+      return (
+        `### ⚡ Matching Products for "${cleanLabel}" (${matched.length} items in stock):\n\n` +
+        `${productList}\n\n` +
+        `**Ready to place an order or get an official quotation?**\n` +
+        `Tell me your required quantity/meters, customer name, phone number, and delivery city, and I'll register your order directly with our Ahmedabad fulfillment desk!`
+      );
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Handle Casual Chit-Chat, Jokes, Poems & Everyday Life (Non-AI, Authentic Voice).
  */
 function handleGeneralKnowledgeAndChitChat(query: string): string | null {
   const lower = query.toLowerCase().trim();
@@ -318,7 +945,7 @@ function handleGeneralKnowledgeAndChitChat(query: string): string | null {
   // Poems / Creative
   if (/poem|poetry|rhyme|write\s+a\s+poem/i.test(lower)) {
     return (
-      `### ⚡ The Pulse of Progress (A Poem for Volamp)\n\n` +
+      `### ⚡ The Pulse of Progress (Dedicated to Volamp's 60-Year Legacy)\n\n` +
       `*Beneath the ground, within the wall,*\n` +
       `*A silent current answers all.*\n` +
       `*Through copper strands and armoured steel,*\n` +
@@ -333,54 +960,56 @@ function handleGeneralKnowledgeAndChitChat(query: string): string | null {
   // Who made you / Who are you
   if (/who\s+are\s+you|who\s+made\s+you|what\s+is\s+your\s+name|who\s+created\s+you/i.test(lower)) {
     return (
-      `Hello! 😊 I'm **Vola**, the official AI advisor for **Volamp Elektrikals Private Limited** in Ahmedabad, Gujarat, India! ⚡\n\n` +
-      `I'm built to assist you with everything electrical — from calculating cable sizes and explaining technical standards (IS 694 / 7098) to sharing our 60-year 4-generation legacy and taking/placing your orders directly for dispatch.\n\n` +
-      `How can I assist you with your project today?`
+      `⚡ **VOLA here — Senior Technical Advisor & Supply Desk Lead at VOLAMP ELEKTRIKALS PRIVATE LIMITED (Ahmedabad HQ)!**\n\n` +
+      `I have complete knowledge of our 3,385+ electrical products across Wires & Cables, Switchgear, Lugs, Conduits, Glands, Earthing, and Solar, as well as live factory discounts, cable sizing formulas, and nationwide dispatch logistics.\n\n` +
+      `Whether you need electrical sizing, a wholesale contractor quotation, or want to dispatch an order to your site within 24–48 hours, I'm right here. How can I help you right now?`
     );
   }
 
-  // How to wire a ceiling fan / Home wiring tips
+  // Ceiling fan wiring guide
   if (/ceiling\s*fan|fan\s*wiring|home\s*wiring|house\s*wiring/i.test(lower)) {
     return (
-      `### 🏠 Ceiling Fan & Home Wiring Guide:\n\n` +
+      `### 🏠 Ceiling Fan & House Wiring Guide:\n\n` +
       `• **Ceiling Fan Connections**:\n` +
-      `  - **Phase (Live)**: Goes through the wall switch $\\rightarrow$ regulator $\\rightarrow$ connected to the fan's running winding.\n` +
-      `  - **Neutral**: Connects directly to the fan's common terminal.\n` +
-      `  - **Earth (Green)**: Must be securely grounded to the metal ceiling hook for safety.\n` +
-      `  - **Capacitor (typically 2.25 to 2.5 $\\mu$F)**: Creates the phase shift required to initiate motor rotation.\n\n` +
-      `• **Recommended Wire Size**:\n` +
-      `  - For fans and lighting points: **1.5 sqmm Single-Core Copper FR/FRLS Wire**.\n` +
-      `  - For power sockets and ACs: **2.5 sqmm or 4.0 sqmm**.\n\n` +
-      `*Safety First*: Always turn off the main MCB before doing any electrical work!`
+      `  - **Phase (Live)**: Passes through wall switch $\\rightarrow$ regulator $\\rightarrow$ fan running winding.\n` +
+      `  - **Neutral**: Direct connection to fan common terminal.\n` +
+      `  - **Earth (Green)**: Must be securely grounded to ceiling metal hook for human safety.\n` +
+      `  - **Capacitor (2.25 to 2.5 $\\mu$F)**: Provides phase shift for motor start.\n\n` +
+      `• **Recommended Wire Sizes**:\n` +
+      `  - Lighting points & ceiling fans: **1.5 sqmm Single-Core Copper FR/FRLS**.\n` +
+      `  - 16A Power sockets & 1.5-ton ACs: **2.5 sqmm or 4.0 sqmm**.\n\n` +
+      `*Safety Rule*: Always isolate the main MCB before working on live electrical lines!`
     );
   }
 
-  // Thank you / Appreciation
+  // Thank you
   if (/thank\s*you|thanks|thx|shukriya|dhanyawad|great\s*job|awesome|superb|nice/i.test(lower)) {
     return (
-      `You are most welcome! 😊 It's a real pleasure helping you. ⚡\n\n` +
-      `If you have any other questions, need electrical calculations, or want to place an order for your site, I'm always right here!`
+      `My absolute pleasure! ⚡ That's what the Volamp supply desk is here for.\n\n` +
+      `Whenever you need technical calculations, live contractor pricing, or urgent site dispatch, just hit me up. Let's keep your project moving!`
     );
   }
 
-  // Weather in Ahmedabad / General location
-  if (/weather|where\s+are\s+you\s+located|where\s+is\s+volamp/i.test(lower)) {
+  // Headquarters / Location / Weather in Ahmedabad
+  if (/weather|where\s+are\s+you\s+located|where\s+is\s+volamp|where\s+is\s+your\s+office/i.test(lower)) {
     return (
-      `**Volamp Elektrikals** is proudly headquartered in **Ahmedabad, Gujarat, India**! 🏭\n\n` +
-      `From Ahmedabad, we operate a nationwide logistics network supplying electrical cables, switchgears, and hardware across all Indian states, as well as a dedicated export desk for global projects.\n\n` +
-      `You can visit our headquarters or reach our sales desk directly at **+91 9512365582**!`
+      `🏭 **VOLAMP ELEKTRIKALS PRIVATE LIMITED** is proudly headquartered in **Ahmedabad, Gujarat, India**!\n\n` +
+      `• **Corporate Main Office**: 1753, Khadia, Ahmedabad, Gujarat 380001\n` +
+      `• **Central Logistics & Fulfillment Hub**: Aslali, Ahmedabad\n` +
+      `• **Direct Phone & WhatsApp**: **+91 9512365582**\n\n` +
+      `From Ahmedabad, we operate rapid 24–48 hour dispatch across all 28 Indian states, backed by standard transit insurance and dedicated global export capabilities.`
     );
   }
 
-  // Who invented the light bulb
+  // Light bulb invention
   if (/who\s+invented\s+(?:the\s+)?light\s*bulb/i.test(lower)) {
     return (
       `### 💡 Who Invented the Light Bulb?\n\n` +
-      `While **Thomas Alva Edison** is most famous for patenting the first commercially practical incandescent light bulb in **1879**, several inventors contributed:\n\n` +
-      `• **Humphry Davy (1802)**: Invented the electric arc lamp.\n` +
-      `• **Warren de la Rue (1840)**: Created an early platinum filament bulb.\n` +
-      `• **Joseph Swan (1878)**: Developed a working carbon-filament bulb in the UK.\n` +
-      `• **Thomas Edison (1879)**: Discovered that a carbonized bamboo filament in a high vacuum could glow for over 1,200 hours, making electric lighting accessible to the world!`
+      `While **Thomas Edison** patented the first commercially viable incandescent bulb in **1879**, electric lighting was an evolutionary triumph:\n\n` +
+      `• **Humphry Davy (1802)**: Demonstrated the electric carbon arc lamp.\n` +
+      `• **Warren de la Rue (1840)**: Built an early platinum filament lamp in vacuum.\n` +
+      `• **Joseph Swan (1878)**: Demonstrated carbon-filament lamps in England.\n` +
+      `• **Thomas Edison (1879)**: Discovered carbonized bamboo filaments operating in a high-vacuum globe for over 1,200 continuous hours, giving birth to modern commercial power utilities!`
     );
   }
 
@@ -388,27 +1017,23 @@ function handleGeneralKnowledgeAndChitChat(query: string): string | null {
 }
 
 /**
- * Fallback synthesizer that analyzes any open-ended question
- * and generates a smart, comprehensive, directly relevant response.
+ * Fallback synthesizer that analyzes open-ended questions with intense, sharp engineering authority.
  */
 function synthesizeOpenEndedResponse(query: string): string {
   const trimmed = query.trim();
 
-  // If user is asking a question starting with what/why/how/can/is/does/where
   return (
-    `### 💡 Regarding: *"${trimmed}"*\n\n` +
-    `That's an insightful question! Here is what you need to know:\n\n` +
-    `Whenever you are exploring electrical systems, industrial projects, or engineering requirements, precision and safety are key. ` +
-    `Proper planning ensures that conductor sizing, insulation ratings (like XLPE or PVC), and circuit protection (MCBs/MCCBs) ` +
-    `work harmoniously to prevent voltage drop, thermal overload, and unexpected downtime.\n\n` +
-    `At **Volamp Elektrikals**, we bring over 60 years and 4 generations of practical electrical experience from our Ahmedabad headquarters to ensure every requirement is met with certified, high-efficiency solutions.\n\n` +
-    `Would you like me to elaborate on a specific aspect of this, help you calculate specifications, or assist with placing an order for your site?`
+    `### ⚡ Regarding: *"${trimmed}"*\n\n` +
+    `In electrical engineering and industrial infrastructure, precision and safety are non-negotiable.\n\n` +
+    `Whether you're specifying conductor ampacity, insulation dielectric ratings (XLPE vs PVC), circuit protection breaking capacity (6kA to 50kA), or project procurement schedules, every variable matters to prevent thermal overload and costly downtime.\n\n` +
+    `At **Volamp Elektrikals**, we bring over **60 years and 4 generations** of industrial electrical experience from our Ahmedabad headquarters to deliver factory-direct, certified materials across all 10 business segments.\n\n` +
+    `Tell me your exact load, project parameters, or what you need to order, and I'll give you the technical sizing and direct contractor pricing right away!`
   );
 }
 
 /**
  * Vola's advanced conversational brain.
- * Guarantees a direct, smart, and helpful response to ANY question asked.
+ * Guarantees an intense, responsive, non-AI answer to ANY question asked.
  */
 export async function generateVolaResponse(
   messages: ChatMessage[],
@@ -417,43 +1042,7 @@ export async function generateVolaResponse(
   const lastUserMsg = messages[messages.length - 1]?.content || "";
   const lower = lastUserMsg.toLowerCase().trim();
 
-  // 1. GREETINGS & CASUAL CHIT-CHAT ("hey vola how r uh", "kaise ho", etc.)
-  const isGreeting =
-    /^(?:hey|hi|hello|hola|namaste|pranam|kem cho|good\s*(?:morning|afternoon|evening|day)|yo|sup)\b/i.test(lower) ||
-    /how\s*(?:are|r)\s*(?:you|u|uh)\b/i.test(lower) ||
-    /how('?s|\s+is)\s+it\s+going\b/i.test(lower) ||
-    /kaise\s*ho\b/i.test(lower) ||
-    /kya\s*(?:haal|hal|chal\s*raha)\b/i.test(lower) ||
-    /what('?s|\s+is)\s+up\b/i.test(lower) ||
-    /kaisa\s*hai\b/i.test(lower);
-
-  if (isGreeting && !lower.includes("order") && !lower.includes("price") && !lower.includes("buy")) {
-    if (/kem\s*cho/i.test(lower)) {
-      return (
-        "Majama! 😊 Kem cho tame? Hu chu **Vola**, Volamp Elektrikals ni AI advisor! ⚡\n\n" +
-        "Tamare koi pan electrical cables, technical sizing ke ordering maate madat joiye to mane jarur kaho. Aaje tame kaya project par kaam kari rahya cho?"
-      );
-    }
-
-    if (/kaise\s*ho|kya\s*(?:haal|hal|chal)|sab\s*badhiya/i.test(lower)) {
-      return (
-        "Main ekdum badhiya hoon! 😊 Aap bataiye, aap kaise hain? ⚡\n\n" +
-        "Main hoon **Vola**, Volamp Elektrikals ki AI advisor. Chahe aapko cable sizing calculate karni ho, hamare 4-generation journey ke baare mein jaanna ho, ya direct site ke liye order place karna ho — main aapki poori madad ke liye yahan hoon! Aaje kis requirement par baat karein?"
-      );
-    }
-
-    const greetings = [
-      "Hey there! 😊 I'm doing fantastic, thank you so much for asking! How are you doing today? ⚡\n\n" +
-        "I'm **Vola**, your personal advisor at **Volamp Elektrikals**. Whether you're planning a new electrical layout, comparing cable specifications, or looking to place an order for your site, I'm here to make it super easy for you. What are you working on today?",
-      "Hello! 😊 I'm doing great and ready to help! How's your day going? ⚡\n\n" +
-        "I'm **Vola**, Volamp's smart electrical & order assistant. Tell me — are you sourcing cables for a project, need help calculating wire sizes, or would you like to place an order?",
-      "Hey! Wonderful to connect with you! 😊 I'm doing really well, thanks for checking in! How are you? ⚡\n\n" +
-        "I'm **Vola** from the Volamp supply desk in Ahmedabad. Feel free to ask me anything — from cable engineering and dispatch timelines to placing an instant order for your site. How can I help you today?",
-    ];
-    return greetings[Math.floor(Math.random() * greetings.length)];
-  }
-
-  // 2. ORDER TRACKING ("track QO-...", "status of QO-...")
+  // 1. ORDER TRACKING ("track QO-...", "status of QO-...", "track order", "where is my order")
   const trackMatch = lower.match(/(?:track|status\s+of|check\s+order)\s*(?:order\s*)?(QO-\d{4}-\d{5})/i);
   if (trackMatch) {
     const orderId = trackMatch[1].toUpperCase();
@@ -468,33 +1057,33 @@ export async function generateVolaResponse(
         }
 
         const statusDescriptions: Record<string, string> = {
-          submitted: "Received & Under Review by the Ahmedabad supply desk.",
-          under_review: "Being reviewed by our technical dispatch team for immediate stock allotment.",
-          priced: "Quotation & tax pricing generated; ready for commercial confirmation.",
-          quoted: "Formal quote shared with your contact number.",
+          submitted: "Received & Under Stock Allotment at our Ahmedabad fulfillment depot.",
+          under_review: "Being inspected by our technical team for immediate stock dispatch.",
+          priced: "Quotation & tax invoice generated; awaiting customer confirmation.",
+          quoted: "Formal proforma quote dispatched to customer mobile.",
           closed: "Dispatched or completed.",
         };
 
         const statusText = statusDescriptions[order.status] || order.status;
 
         return (
-          `### 📦 Order Status: \`${order.quickOrderId}\`\n\n` +
-          `**Customer**: ${order.customerName} ${order.phone ? `(📞 ${order.phone})` : ""}\n` +
-          `**Delivery Destination**: ${order.location || "To be confirmed"}\n` +
-          `**Current Status**: **${order.status.toUpperCase()}** — *${statusText}*\n\n` +
-          `**Items in Order:**\n` +
+          `### 📦 Consignment Status: \`${order.quickOrderId}\`\n\n` +
+          `• **Customer**: ${order.customerName} ${order.phone ? `(📞 ${order.phone})` : ""}\n` +
+          `• **Delivery Destination**: ${order.location || "Ahmedabad Central Depot"}\n` +
+          `• **Current Status**: **${order.status.toUpperCase()}** — *${statusText}*\n\n` +
+          `**Items in Consignment:**\n` +
           parsedItems.map((i) => `- ${i.name} (Qty: **${i.quantity}**)`).join("\n") +
-          `\n\nNeed urgent dispatch updates? [💬 Chat on WhatsApp with Order ID](https://wa.me/919512365582?text=Hello%20Volamp,%20checking%20status%20for%20order%20${order.quickOrderId})`
+          `\n\nNeed immediate truck dispatch updates? [💬 Connect on WhatsApp with Order ID](https://wa.me/919512365582?text=Hello%20Volamp,%20checking%20status%20for%20order%20${order.quickOrderId})`
         );
       } else {
-        return `I couldn't find an active order with Reference ID \`${orderId}\`. Please check the ID or connect with our supply desk at **+91 9512365582**!`;
+        return `I searched our live system but couldn't locate an active order with Reference ID \`${orderId}\`. Please re-check the ID or connect directly with our logistics team at **+91 9512365582**!`;
       }
     } catch {
       // fallback
     }
   }
 
-  // 3. ORDER TAKING & PLACEMENT
+  // 2. ORDER TAKING & DIRECT PLACEMENT
   const orderIntent =
     /\b(?:place\s*(?:an\s*)?order|want\s+to\s+order|buy|purchase|chahiye|need\s+to\s+order|book\s*(?:an\s*)?order|order\s+karna)\b/i.test(
       lower
@@ -520,7 +1109,7 @@ export async function generateVolaResponse(
           location: details.location!,
           companyName: details.companyName ?? null,
           items: details.items,
-          notes: "Placed via Vola AI Assistant",
+          notes: "Placed via Vola Technical & Supply Desk",
         });
 
         const itemsTable = details.items
@@ -528,18 +1117,18 @@ export async function generateVolaResponse(
           .join("\n");
 
         return (
-          `### ⚡ Order Successfully Placed!\n\n` +
+          `### ⚡ Order Successfully Placed with Volamp Elektrikals!\n\n` +
           `Your order has been registered in the Volamp system with Reference ID: **\`${newOrder.quickOrderId}\`**.\n\n` +
-          `| Item | Quantity |\n` +
+          `| Item Description | Quantity |\n` +
           `| :--- | :--- |\n` +
           `${itemsTable}\n\n` +
-          `**Customer**: ${newOrder.customerName} | 📞 ${newOrder.phone}\n` +
-          `**Delivery Destination**: ${newOrder.location}\n\n` +
-          `**What happens next:**\n` +
-          `1. **Immediate Review**: Our Ahmedabad supply desk is reviewing your stock allotment.\n` +
-          `2. **Dispatch Timeline**: Standard stock items are dispatched within 24–48 hours as per our Shipment Policy (VEP/LOG/001).\n` +
-          `3. **Invoice & Confirmation**: A GST invoice and transit tracking details will be sent to your phone via WhatsApp.\n\n` +
-          `[👉 Open WhatsApp with Order ID](https://wa.me/919512365582?text=Hello%20Volamp,%20I%20have%20placed%20Order%20${newOrder.quickOrderId}%20via%20Vola%20AI)`
+          `• **Customer Name**: ${newOrder.customerName} | 📞 ${newOrder.phone}\n` +
+          `• **Delivery Destination**: ${newOrder.location}\n\n` +
+          `**Next Steps & Dispatch:**\n` +
+          `1. **Stock Allotment**: Our Ahmedabad central warehouse is allotting your stock right now.\n` +
+          `2. **Dispatch Window**: Dispatches within 24–48 hours under Shipping Policy VEP/LOG/001.\n` +
+          `3. **Invoice & POD**: A verified GST tax invoice and transporter LR number will be sent to your phone via WhatsApp.\n\n` +
+          `[👉 Open WhatsApp with Order ID](https://wa.me/919512365582?text=Hello%20Volamp,%20I%20have%20placed%20Order%20${newOrder.quickOrderId}%20via%20Vola)`
         );
       } catch (err: any) {
         return `I noted your order details, but encountered an error saving it: ${err.message}. Please connect directly with our sales desk at **+91 9512365582**!`;
@@ -549,172 +1138,101 @@ export async function generateVolaResponse(
       if (!hasItems) missing.push("• **Product specifications & quantity** (e.g., *500m of 4 sqmm 3-core copper armored cable* or *10 coils of 2.5 sqmm house wire*)");
       if (!hasName) missing.push("• **Your full name**");
       if (!hasPhone) missing.push("• **Contact phone number** (for WhatsApp invoice & dispatch updates)");
-      if (!hasLocation) missing.push("• **Delivery city / pincode**");
+      if (!hasLocation) missing.push("• **Delivery destination city / pincode**");
 
       return (
-        `I would be delighted to take and place your order right away! ⚡\n\n` +
-        `To register it directly with our Ahmedabad supply desk, please share the following details:\n\n` +
+        `I'm ready to book your order directly with our Ahmedabad fulfillment depot! ⚡\n\n` +
+        `To generate your official **Order Reference ID**, please share:\n\n` +
         missing.join("\n") +
-        `\n\nYou can simply type them all together in your next message, and I'll generate your official **Order Reference ID** and dispatch confirmation!`
+        `\n\n*(Note: Users must log in or create a contractor account at our **[Customer Portal](/portal)** to track dispatches and access GST tax invoices).*`
       );
     }
   }
 
-  // 4. MATH & FORMULAS (Math calculations, GST, Wattage, Ohm's law)
+  // 3. CASUAL GREETINGS & CHIT-CHAT (Intense, warm, non-AI)
+  const isGreeting =
+    /^(?:hey|hi|hello|hola|namaste|pranam|kem cho|good\s*(?:morning|afternoon|evening|day)|yo|sup)\b/i.test(lower) ||
+    /how\s*(?:are|r)\s*(?:you|u|uh)\b/i.test(lower) ||
+    /how('?s|\s+is)\s+it\s+going\b/i.test(lower) ||
+    /kaise\s*ho\b/i.test(lower) ||
+    /kya\s*(?:haal|hal|chal\s*raha)\b/i.test(lower) ||
+    /what('?s|\s+is)\s+up\b/i.test(lower) ||
+    /kaisa\s*hai\b/i.test(lower);
+
+  if (isGreeting && !lower.includes("order") && !lower.includes("price") && !lower.includes("buy")) {
+    if (/kem\s*cho/i.test(lower)) {
+      return (
+        "Majama! 😊 Kem cho tame? Hu chu **Vola**, Volamp Elektrikals Ahmedabad supply desk thi! ⚡\n\n" +
+        "Tamare koi pan electrical cables, contractor discounts, technical sizing ke direct order dispatch maate madat joiye to mane kaho. Aaje tame kaya project par kaam kari rahya cho?"
+      );
+    }
+
+    if (/kaise\s*ho|kya\s*(?:haal|hal|chal)|sab\s*badhiya/i.test(lower)) {
+      return (
+        "Main ekdum first-class hoon! 😊 Aap bataiye, aapka kaam kaisa chal raha hai? ⚡\n\n" +
+        "Main hoon **Vola**, Volamp Elektrikals Ahmedabad supply desk se aapka technical & procurement lead! Chahe aapko cable sizing calculate karni ho, live contractor discounts check karne hon, ya site ke liye direct consignment book karni ho — bataiye, aaje kis requirement par baat karein?"
+      );
+    }
+
+    const greetings = [
+      "Hey there! 😊 Doing fantastic and ready to roll! How are you doing today? ⚡\n\n" +
+        "I'm **Vola**, Senior Technical Advisor & Supply Desk Lead at **Volamp Elektrikals** (Ahmedabad HQ). We have 3,385+ products in stock across Wires & Cables, Switchgear, Lugs, Conduits, Glands, Earthing, and Solar with direct contractor discount pricing. What project are you working on today?",
+      "Hello! 😊 Full voltage and ready to help! How's your day going? ⚡\n\n" +
+        "I'm **Vola** from the Volamp Elektrikals supply desk. Whether you need cable sizing calculations, brand price comparisons (Polycab, Finolex, KEI, Schneider), or want to dispatch an order to your site, I'm right here. What can I do for you?",
+      "Hey! Wonderful to connect with you! 😊 ⚡\n\n" +
+        "I'm **Vola** from the Volamp headquarters in Ahmedabad. Tell me — are you sizing cables for a project, looking for contractor discounts, or ready to place an order?",
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  }
+
+  // 4. BUSINESS SEGMENTS (All 10 Specialized Segments)
+  const segmentResponse = handleBusinessSegments(lastUserMsg);
+  if (segmentResponse) {
+    return segmentResponse;
+  }
+
+  // 5. ABOUT US, 4 GENERATIONS, HERITAGE, CEO MESSAGE & TEAM
+  const aboutResponse = handleAboutUsAndHeritage(lastUserMsg);
+  if (aboutResponse) {
+    return aboutResponse;
+  }
+
+  // 6. PRICING, COSTS, CONTRACTOR DISCOUNTS & TAXES
+  const pricingResponse = handlePricingCostsAndDiscounts(lastUserMsg);
+  if (pricingResponse) {
+    return pricingResponse;
+  }
+
+  // 7. TECHNICAL SIZING & ELECTRICAL FORMULAS
+  const sizingResponse = handleTechnicalEngineeringAndSizing(lastUserMsg);
+  if (sizingResponse) {
+    return sizingResponse;
+  }
+
+  // 8. PRODUCT CATALOG & SPECIFICATION INTELLIGENCE (3,385+ items across 8 categories)
+  const productResponse = handleProductAndCatalogQuery(lastUserMsg);
+  if (productResponse) {
+    return productResponse;
+  }
+
+  // 9. MATH & GST FORMULAS
   const mathResponse = handleMathAndFormulas(lastUserMsg);
   if (mathResponse) {
     return mathResponse;
   }
 
-  // 5. SCIENCE & ELECTRICAL CONCEPTS
+  // 10. ELECTRICAL SCIENCE & TECHNICAL COMPARISONS
   const scienceResponse = handleScienceAndElectrical(lastUserMsg);
   if (scienceResponse) {
     return scienceResponse;
   }
 
-  // 6. VOLAMP 4-GENERATION STORY & HERITAGE
-  if (/story|history|generation|founded|origin|soma\s*bhai|chaturbhai|vasantbhai|nishit|patel|heritage/i.test(lower)) {
-    return (
-      `### 🏛️ Four Generations. One Electrical Legacy.\n\n` +
-      `The journey of **Volamp Elektrikals** spans over 60 years of resilience, entrepreneurship, and industrial leadership:\n\n` +
-      `1. **1964 — The First Generation (Soma Bhai Khatubhai Patel)**\n` +
-      `   An ITI-trained electrician from Panchmahal district, Gujarat, Soma Bhai moved to Ahmedabad. After working in a textile mill, he co-founded **S.P. Electric and Engineering Company** in June 1964, starting with commission-based sales of electrical goods.\n\n` +
-      `2. **1986 — Second Generation (Chaturbhai Somabhai Patel)**\n` +
-      `   Chaturbhai expanded into industrial electrical goods trading, building an enduring reputation across Gujarat for honesty, timely supply, and rock-solid trust.\n\n` +
-      `3. **2012 — Third Generation (Vasantbhai Patel & Bharatbhai Patel)**\n` +
-      `   Pioneered specialized industrial cables, national distribution partnerships, and supplies for major infrastructure and government tenders.\n\n` +
-      `4. **2014 to Today — Fourth Generation (Nishit Patel & Volamp Elektrikals)**\n` +
-      `   Nishit Patel joined after graduating in electrical engineering. He brought scientific cable sizing, digital workflows, and modern corporate systems, officially establishing **Volamp Elektrikals Private Limited** (2021) as a forward-looking national brand.\n\n` +
-      `Today, Volamp serves industries, utilities, and contractors across India from its manufacturing headquarters in Ahmedabad!`
-    );
-  }
-
-  // 7. CEO MESSAGE
-  if (/ceo|message|leadership|vision|founder\s*quote|director/i.test(lower)) {
-    return (
-      `### 💬 CEO Message: "Saath Milkar Growth Ki Ek Nayi Pehchaan Banayein"\n\n` +
-      `> *"Volamp Elektrikals ke safar mein hamara focus sirf business grow karna nahi, balki trust, quality aur strong relations build karna hai.*\n` +
-      `> *Mera maanna hai ki koi bhi company sirf products se nahi banti — company banti hai insaan aur unki mehnat, commitment aur customer ke trust se."*\n\n` +
-      `**Key Pillars of Our Leadership:**\n` +
-      `• **Continuous Improvement**: Continuously upgrading products, services, and working systems.\n` +
-      `• **Long-term Relationships**: Every customer is a relationship, not just a transaction.\n` +
-      `• **Ownership & Trust**: Empowering every team member to take full ownership and responsibility.`
-    );
-  }
-
-  // 7.5 ORDER TRACKING & CONSIGNMENT STATUS
-  if (/(?:track(?:ing)?\s*(?:my)?\s*order|where\s+is\s+my\s+order|order\s+status|check\s+order|consignment\s*status|lr\s*(?:status|number|copy))/i.test(lower)) {
-    return (
-      `### 📦 Live Order & Consignment Tracking\n\n` +
-      `You can track your order in real-time using our dedicated tracking tool:\n\n` +
-      `• **Tracking Portal**: Go to **[/track](/track)** to enter your **Order Number** (e.g. \`ORD-IND-5412\`), **Quick Order ID** (e.g. \`QO-2026-10492\`), or **Transporter LR Number**.\n` +
-      `• **Live Status Steps**: 1. Order Confirmed ➔ 2. MTC Quality Checked ➔ 3. Dispatched ➔ 4. In Transit (with live GPS carrier info) ➔ 5. Delivered.\n` +
-      `• **Logistics Desk Hotline**: Call **+91 9512365582** (Ext: Logistics) or get instant WhatsApp updates for your truck location.\n\n` +
-      `Have your order ID ready? You can also type it here or click **Track order** in the header / quick actions!`
-    );
-  }
-
-  // 8. SHIPPING & DELIVERY POLICY (VEP/LOG/001)
-  if (/ship|delivery|dispatch|transport|freight|transit|loading|unload/i.test(lower)) {
-    return (
-      `### 🚚 Volamp Shipment & Delivery Policy (VEP/LOG/001)\n\n` +
-      `• **Dispatch Timeline**: Standard stock materials are dispatched within **24–48 hours** from our Ahmedabad facility upon order confirmation.\n` +
-      `• **Transportation**: Handled via company-approved logistics partners for reliable pan-India delivery.\n` +
-      `• **Loading & Unloading**: Loading at our dispatch depot is 100% managed by Volamp. Destination unloading (crane, forklift, labour) is the customer's responsibility unless agreed in writing.\n` +
-      `• **Transit Insurance**: Standard transit insurance is provided. Any transit damage must be noted on the Proof of Delivery (POD) and reported within **48 hours**.\n` +
-      `• **Tracking**: Live consignment notes & LR tracking numbers are shared immediately upon dispatch.\n\n` +
-      `Read the full policy at [/shipping-policy](/shipping-policy) or ask me to place an order!`
-    );
-  }
-
-  // 9. RETURN & REFUND POLICY
-  if (/return|refund|cancel|exchange|money\s*back|damaged|defect/i.test(lower)) {
-    return (
-      `### 🔄 Return & Refund Policy\n\n` +
-      `• **Custom Cut Cables (Final Sale)**: Because industrial wires and cables are cut, spooled, or custom-measured to exact specifications, they are **final sale and non-refundable** once processed or dispatched.\n` +
-      `• **24-Hour Cancellation Window**: You may cancel or modify an order within **24 hours** of placement, provided cutting or dispatch has not commenced.\n` +
-      `• **Damaged or Defective Items (48-Hour Window)**: If materials arrive damaged, defective, or incorrect, report it within **48 hours** of delivery with photos/POD. Volamp covers **100% of replacement freight**.\n\n` +
-      `Read the full policy at [/refund-policy](/refund-policy).`
-    );
-  }
-
-  // 10. PAYMENT & 30-DAY CORPORATE CREDIT
-  if (/payment|credit|30\s*day|neft|rtgs|invoice|bank|cheque|gst/i.test(lower)) {
-    return (
-      `### 💳 Payment & Commercial Terms\n\n` +
-      `• **Direct Bank Transfer (NEFT / RTGS)**: Instant payment to Volamp Elektrikals Pvt Ltd's approved corporate accounts.\n` +
-      `• **30-Day Corporate Credit**: Available for verified contractors, OEMs, and government suppliers upon submission of valid GST registration and approved Purchase Order (PO).\n` +
-      `• **WhatsApp Invoice Instant Orders**: Receive a verified digital proforma invoice directly on WhatsApp with one-click payment links.\n` +
-      `• **Online Gateway**: Direct online payment portal currently being connected.\n\n` +
-      `Would you like to apply for credit or get our official bank transfer details?`
-    );
-  }
-
-  // 11. COLLABORATE / PARTNER / DEALERSHIP / VENDOR REGISTRATION
-  if (/collaborat|partner|dealership|dealer|distributor|vendor|tie[\s-]*up|work\s+together|google\s*form/i.test(lower)) {
-    return (
-      `### 🤝 Collaborate with Volamp Elektrikals\n\n` +
-      `We welcome electrical contractors, OEMs, distributors, project developers, and institutional partners to collaborate with us!\n\n` +
-      `Please fill out our official **[Collaboration & Partnership Form](/collaborate)**.\n\n` +
-      `**Why Collaborate with Volamp?**\n` +
-      `• **60+ Years Industrial Trust**: 4 generations of electrical engineering & distribution heritage.\n` +
-      `• **Direct Factory Supply**: Direct-from-plant pricing with certified IS/IEC standard compliance.\n` +
-      `• **Flexible Commercial Terms**: Bank tie-ups, 30-day credit lines, and dedicated project managers.\n` +
-      `• **Pan-India & Export Logistics**: Rapid 24–48 hour dispatch from Ahmedabad to all 28 states & international ports.\n\n` +
-      `Once you submit the form, our business development team will review your proposal and get in touch with you promptly. You can also reach our supply desk at **+91 9512365582**!`
-    );
-  }
-
-  // 12. BUSINESS SEGMENTS & PORTFOLIO INQUIRIES
-  if (/business\s*segment|what\s+(?:do\s+you|products\s+do\s+you)\s+(?:sell|offer|supply|deal\s+in)|portfolio|capabilities|switchgear|industrial\s*electrical|cable\s*management|earthing|solar\s*electrical|ev\s*charging|automation|panels/i.test(lower)) {
-    return (
-      `### ⚡ Volamp Business Segments — Powering Businesses with Complete Electrical Solutions\n\n` +
-      `At **Volamp Elektrikals Private Limited**, we provide a complete electrical distribution and solutions platform across **10 specialized segments**:\n\n` +
-      `1. **Wires & Cables**: Building wires, flexible cords, LT/HT armoured cables, copper & aluminium power cables, solar DC & instrumentation cables.\n` +
-      `2. **Switchgear & Electrical Protection**: MCBs, MCCBs, RCCBs, RCBOs, ACBs, isolators, contactors, relays & distribution boards.\n` +
-      `3. **Electrical Distribution & Control**: Sub-distribution panels, busbars, digital power meters, and Type 1+2 surge protective devices.\n` +
-      `4. **Industrial Electricals**: Rugged connectivity, VFD shielded cables, MPCBs, limit switches, and harmonic filters for manufacturing plants.\n` +
-      `5. **Cable Management & Accessories**: Brass cable glands (single/double compression), heavy-duty lugs, GI perforated & ladder cable trays, and clamps.\n` +
-      `6. **Earthing & Lightning Protection**: Copper-bonded rods, chemical earthing compounds, GI/copper strips, and ESE lightning arresters.\n` +
-      `7. **Solar Electrical Solutions**: 1.5 kV TUV solar DC cables, MC4 connectors, array junction boxes (AJB/SMB), DC fuses, and BOS equipment.\n` +
-      `8. **EV Charging Infrastructure**: High-ampacity charging cables, Type 2 connectors, dedicated EV DBs, and weatherproof IP66 enclosures.\n` +
-      `9. **Electrical Panels & Automation**: Turnkey PCC, MCC, APFC, AMF/ATS panels, PLCs, VFD motor drives, and industrial SCADA enclosures.\n` +
-      `10. **Project & Institutional Supply**: Consolidated multi-category BOM procurement for contractors, EPCs, government tenders (GeM), with 30-day credit lines.\n\n` +
-      `**One Partner. Multiple Electrical Requirements.**\n` +
-      `Explore our full [Business Segments Page](/business-segments) or tell me what you need for your site, and I can prepare your quotation right away!`
-    );
-  }
-
-  // 13. CAREERS, JOBS, HIRING & TALENT DESK
-  if (/career|job|opening|vacanc|hiring|recruit|internship|fresher|get\b|apply\s+for\s+job|work\s+at\s+volamp|hr\b|resume|cv\b/i.test(lower)) {
-    return (
-      `### ⚡ Build Your Career with Volamp Elektrikals\n\n` +
-      `We are actively hiring passionate engineers, manufacturing leaders, and commercial specialists to build the next generation of India's electrical infrastructure!\n\n` +
-      `Visit our official **[Careers & Open Roles Portal](/careers)** to explore current openings and submit your application directly.\n\n` +
-      `**Current Featured Openings:**\n` +
-      `• **Senior HT / LT Power Cable Design Engineer** (Ahmedabad HQ · 4–8 yrs)\n` +
-      `• **Quality Assurance & High-Voltage Test Lab Lead** (Sanand Plant · 3–7 yrs)\n` +
-      `• **Plant Extrusion & Continuous Vulcanization Supervisor** (Ahmedabad · 3–6 yrs)\n` +
-      `• **B2B Infrastructure & EPC Project Sales Manager** (Mumbai / Western · 5–10 yrs)\n` +
-      `• **Solar & Renewable Energy Key Account Executive** (Jaipur / Ahmedabad · 2–5 yrs)\n` +
-      `• **Tendering, BOQ & Cost Estimation Engineer** (Ahmedabad HQ · 2–5 yrs)\n` +
-      `• **Metal Procurement & Supply Chain Specialist** (Ahmedabad HQ · 3–6 yrs)\n` +
-      `• **Graduate Engineer Trainee (GET) – Electrical 2026 Batch** (Freshers · Ahmedabad)\n\n` +
-      `**Why Join Volamp?**\n` +
-      `• 60+ years industrial heritage & market leadership\n` +
-      `• Work on nation-building metro, solar, and power transmission projects\n` +
-      `• Competitive compensation, performance bonuses & family health coverage\n` +
-      `• State-of-the-art testing labs and continuous technical mentoring\n\n` +
-      `You can apply online at **[/careers](/careers)** or reach our Talent Acquisition Desk directly at **careers@volampelektrikals.com** or **+91 9512365582**!`
-    );
-  }
-
-  // 14. GENERAL KNOWLEDGE, JOKES, POEMS & CHIT-CHAT
+  // 11. GENERAL KNOWLEDGE, JOKES, POEMS & CHIT-CHAT
   const generalResponse = handleGeneralKnowledgeAndChitChat(lastUserMsg);
   if (generalResponse) {
     return generalResponse;
   }
 
-  // 15. SMART OPEN-ENDED TOPIC SYNTHESIZER (Guarantees every question receives an actual answer!)
+  // 12. HIGH-VOLTAGE OPEN-ENDED TOPIC SYNTHESIZER
   return synthesizeOpenEndedResponse(lastUserMsg);
 }

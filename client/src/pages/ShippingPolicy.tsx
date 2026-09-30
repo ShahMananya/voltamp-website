@@ -17,7 +17,8 @@ import {
   Truck,
   AlertTriangle,
   Clock,
-  ExternalLink
+  ExternalLink,
+  Scale,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { toast } from "sonner";
@@ -562,14 +563,10 @@ export default function ShippingPolicy() {
       <header className="policy-navbar">
         <div className="policy-nav-container">
           <div className="policy-nav-left">
-            <Link href="/" className="policy-back-btn">
-              <ArrowLeft className="size-4" />
-              <span>Back to Marketplace</span>
-            </Link>
-            <div className="policy-nav-brand">
+            <Link href="/" className="policy-nav-brand">
               <img src="/volamp-logo.png" alt="VOLAMP" className="policy-brand-img" />
               <span className="policy-brand-badge">LOGISTICS PORTAL</span>
-            </div>
+            </Link>
           </div>
 
           <div className="policy-nav-actions">
@@ -586,6 +583,10 @@ export default function ShippingPolicy() {
               <Link href="/refund-policy" className="policy-switch-pill">
                 <FileCheck className="size-3.5" />
                 <span>Refund Policy</span>
+              </Link>
+              <Link href="/terms-and-conditions" className="policy-switch-pill">
+                <Scale className="size-3.5" />
+                <span>Terms & Conditions</span>
               </Link>
             </div>
 

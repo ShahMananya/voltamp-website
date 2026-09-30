@@ -32,6 +32,9 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useUserLocation } from "@/contexts/LocationContext";
 
+import UniversalHeader from "@/components/layout/UniversalHeader";
+import UniversalFooter from "@/components/layout/UniversalFooter";
+
 const BUSINESS_TYPES = [
   "Distributor / Dealer",
   "EPC / Contractor",
@@ -258,66 +261,24 @@ export default function CollaboratePage() {
       )}`;
 
   return (
-    <div className="min-h-screen bg-[#fcfaf7] text-[#102a40] font-['Inter',sans-serif] flex flex-col">
-      {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#ebd8ca]">
-        <div className="market-container flex items-center justify-between h-16 sm:h-20">
-          <div className="flex items-center gap-3 sm:gap-5">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-[#c46b19] transition-colors py-1.5 px-2.5 rounded-lg hover:bg-stone-100"
-            >
-              <ArrowLeft className="size-4" />
-              <span>Back to Marketplace</span>
-            </Link>
-
-            <div className="h-5 w-px bg-stone-200 hidden sm:block" />
-
-            <Link href="/" className="flex items-center gap-2">
-              <img
-                src="/volamp-logo.png"
-                alt="VOLAMP Elektrikals"
-                className="h-8 sm:h-9 w-auto object-contain"
-              />
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <a
-              href={`tel:+91${supportPhone}`}
-              className="hidden md:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-[#c46b19] text-xs font-bold hover:bg-amber-100 transition-colors"
-            >
-              <PhoneCall className="size-3.5" />
-              <span>Partnership Desk: +91 {supportPhone}</span>
-            </a>
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold hover:bg-emerald-100 transition-colors"
-            >
-              <MessageCircle className="size-3.5" />
-              <span className="hidden sm:inline">WhatsApp</span>
-            </a>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#fdfbf9] text-[#0b1f33] font-['Inter',sans-serif] flex flex-col">
+      {/* Universal Header (Matching Home Page White Theme) */}
+      <UniversalHeader currentPage="collaborate" />
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf4ee] via-[#faf6f2] to-[#fcfaf7] border-b border-[#ebd7c7] py-12 sm:py-16">
+        <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf8f5] to-[#fdfbf9] border-b border-[#ebd7c7] py-12 sm:py-16">
           <div className="market-container max-w-4xl text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#e5d2c2] shadow-sm text-xs font-bold text-[#c46b19] uppercase tracking-wider">
-              <Handshake className="size-3.5 text-[#c46b19]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f7ede6] border border-[#ebd4c2] shadow-xs text-xs font-bold text-[#c25e0a] uppercase tracking-wider">
+              <Handshake className="size-3.5 text-[#c56718]" />
               <span>STRATEGIC PARTNERSHIPS & EXPANSION DESK</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#102a40] font-['Space_Grotesk'] leading-tight">
-              Collaborate With <span className="text-[#c46b19]">VOLAMP</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#4d1217] font-['Space_Grotesk'] leading-tight">
+              Collaborate With <span className="text-[#c56718]">VOLAMP</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-[#4a5f6e] max-w-2xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base text-[#5d4a4b] max-w-2xl mx-auto leading-relaxed">
               Let's build the next opportunity together. Volamp Elektrikals is open to meaningful partnerships across distribution, project execution, exports, OEM manufacturing, technology integration, and strategic ventures.
             </p>
 
@@ -833,29 +794,8 @@ export default function CollaboratePage() {
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="site-footer bg-[#0d2233] text-white">
-        <div className="market-container py-10 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-800 text-xs text-slate-400">
-          <div className="flex items-center gap-3">
-            <img src="/volamp-logo.png" alt="VOLAMP Elektrikals" className="h-6 w-auto brightness-200" />
-            <span>Volamp Elektrikals © 2026. All rights reserved.</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/about-volamp" className="hover:text-amber-400 transition-colors">
-              About Volamp
-            </Link>
-            <Link href="/business-segments" className="hover:text-amber-400 transition-colors">
-              Business Segments
-            </Link>
-            <Link href="/pay-invoice" className="hover:text-amber-400 transition-colors">
-              Billing Desk
-            </Link>
-            <a href={`tel:+91${supportPhone}`} className="hover:text-amber-400 transition-colors">
-              Support: {supportPhone}
-            </a>
-          </div>
-        </div>
-      </footer>
+      {/* Universal Footer (Matching Home Page Theme) */}
+      <UniversalFooter />
     </div>
   );
 }

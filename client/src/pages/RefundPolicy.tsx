@@ -19,7 +19,8 @@ import {
   Search,
   ShieldAlert,
   ShieldCheck,
-  Truck
+  Truck,
+  Scale,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { toast } from "sonner";
@@ -150,14 +151,10 @@ export default function RefundPolicy() {
       <header className="policy-navbar">
         <div className="policy-nav-container">
           <div className="policy-nav-left">
-            <Link href="/" className="policy-back-btn">
-              <ArrowLeft className="size-4" />
-              <span>Back to Marketplace</span>
-            </Link>
-            <div className="policy-nav-brand">
+            <Link href="/" className="policy-nav-brand">
               <img src="/volamp-logo.png" alt="VOLAMP" className="policy-brand-img" />
               <span className="policy-brand-badge">RETURNS & REFUNDS</span>
-            </div>
+            </Link>
           </div>
 
           <div className="policy-nav-actions">
@@ -174,6 +171,10 @@ export default function RefundPolicy() {
               <Link href="/refund-policy" className="policy-switch-pill is-active">
                 <RotateCcw className="size-3.5" />
                 <span>Refund Policy</span>
+              </Link>
+              <Link href="/terms-and-conditions" className="policy-switch-pill">
+                <Scale className="size-3.5" />
+                <span>Terms & Conditions</span>
               </Link>
             </div>
 
@@ -451,6 +452,11 @@ export default function RefundPolicy() {
                   <span>·</span>
                   <span>RMA Required for Authorization</span>
                 </div>
+                <div className="pt-2">
+                  <Link href="/complaints-cases" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#4d1217] text-white text-xs font-semibold hover:bg-[#6e1a21] transition-colors">
+                    File Transit Damage / Defect Case →
+                  </Link>
+                </div>
               </div>
             </div>
           </section>
@@ -474,8 +480,16 @@ export default function RefundPolicy() {
               Shipping Policy
             </Link>
             <span className="footer-dot">·</span>
+            <Link href="/terms-and-conditions" className="footer-link">
+              Terms & Conditions
+            </Link>
+            <span className="footer-dot">·</span>
             <Link href="/privacy-policy" className="footer-link">
               Privacy Policy
+            </Link>
+            <span className="footer-dot">·</span>
+            <Link href="/complaints-cases" className="footer-link">
+              Complaints/Cases
             </Link>
             <span className="footer-dot">·</span>
             <a href="https://wa.me/919512365582" target="_blank" rel="noreferrer" className="footer-link">

@@ -27,13 +27,15 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { useUserLocation } from "@/contexts/LocationContext";
+import UniversalHeader from "@/components/layout/UniversalHeader";
+import UniversalFooter from "@/components/layout/UniversalFooter";
 
 const CATEGORY_OPTIONS = [
   "Wire Cables (LT / HT / Armoured / FRLS)",
   "Switch Gears (MCB / MCCB / ACB / DBs)",
   "Lugs & Cable Accessories",
   "Glands & Cable Management",
-  "PVC Pipe & Heavy Conduits",
+  "Conduits (LMS / MMS / HMS Pipes & Fittings)",
   "Wiring Device & Modular Accessories",
   "Earthing Wires & Chemical Electrodes",
   "Solar DC Cables & Structure Hardware",
@@ -146,50 +148,23 @@ export default function EnquirePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f9fb] text-[#142b40] flex flex-col font-sans">
-      {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-white border-b border-stone-200 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="inline-flex items-center gap-2 group">
-              <img
-                src="/volamp-logo.png"
-                alt="VOLAMP Elektrikals"
-                className="h-9 w-auto object-contain"
-              />
-            </Link>
-            <span className="hidden sm:inline-block text-stone-300">|</span>
-            <span className="hidden sm:inline-block text-xs font-semibold text-stone-600 uppercase tracking-wider">
-              Enquiry & Quotation Desk
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-[#ef7d19] px-3 py-1.5 rounded-lg border border-stone-200 hover:border-orange-300 transition-colors"
-            >
-              <ArrowLeft className="size-3.5" />
-              <span>Back to Home</span>
-            </Link>
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#fdfbf9] text-[#0b1f33] flex flex-col font-sans">
+      {/* Universal Header (Matching Home Page White Palette) */}
+      <UniversalHeader currentPage="enquire" />
 
       {/* Main Content Area */}
       <main className="flex-1 py-10 sm:py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           {/* Breadcrumb & Hero */}
           <div className="mb-8 sm:mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-[#1d73b7] text-xs font-bold uppercase tracking-wider border border-blue-200/80 mb-3">
-              <Headphones className="size-3.5 text-[#1d73b7]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f7ede6] text-[#c25e0a] text-xs font-bold uppercase tracking-wider border border-[#ebd4c2] mb-3">
+              <Headphones className="size-3.5 text-[#c56718]" />
               <span>VOLAMP SUPPLY & EXPORT DESK</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#102a40] font-['Space_Grotesk'] tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#4d1217] font-['Space_Grotesk'] tracking-tight">
               Tell us what you need to source.
             </h1>
-            <p className="mt-3 text-stone-600 text-sm sm:text-base max-w-2xl leading-relaxed">
+            <p className="mt-3 text-[#5d4a4b] text-sm sm:text-base max-w-2xl leading-relaxed">
               Get direct manufacturer pricing, verified mill specifications, and prompt technical quotations for industrial, EPC, and export projects.
             </p>
           </div>
@@ -590,7 +565,7 @@ export default function EnquirePage() {
                       <button
                         type="submit"
                         disabled={submitMutation.isPending}
-                        className="w-full py-3 rounded-xl bg-gradient-to-r from-[#1d73b7] to-[#155b93] hover:from-[#17629c] hover:to-[#124d7d] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 transition-all disabled:opacity-75"
+                        className="w-full py-3 rounded-xl bg-gradient-to-r from-[#c56718] via-[#d97706] to-[#b45309] hover:brightness-105 active:brightness-95 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-amber-900/20 transition-all disabled:opacity-75"
                       >
                         {submitMutation.isPending ? (
                           <>
@@ -612,6 +587,7 @@ export default function EnquirePage() {
           </div>
         </div>
       </main>
+      <UniversalFooter />
     </div>
   );
 }

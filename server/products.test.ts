@@ -20,7 +20,7 @@ describe("Dynamic Product Master Data System", () => {
     expect(catNames).toContain("Wires & Cables");
     expect(catNames).toContain("Switchgear");
     expect(catNames).toContain("Lugs");
-    expect(catNames).toContain("PVC Pipe");
+    expect(catNames).toContain("Conduit");
     expect(catNames).toContain("Glands");
     expect(catNames).toContain("Wiring Devices");
     expect(catNames).toContain("Earthing Wires");
@@ -157,5 +157,47 @@ describe("Dynamic Product Master Data System", () => {
     expect(quoteItem.unitPrice).toBe(96.25);
     expect(liveCatalogProduct.numericPrice).toBe(102);
     expect(quoteItem.unitPrice).not.toBe(liveCatalogProduct.numericPrice);
+  });
+
+  it("filters products accurately by technical specs (voltage, cores, material, armour)", () => {
+    // 1.1 kV & 2 Core
+    const twoCore1100 = queryProducts({
+      category: "Wires & Cables",
+      voltage: "1.1 kV",
+      cores: "2 Core",
+      limit: 10,
+    });
+    expect(twoCore1100.total).toBe(135);
+    expect(twoCore1100.products.length).toBe(10);
+    for (const p of twoCore1100.products) {
+      expect(p.name).toContain("2 CORE");
+    }
+
+    // Copper + 1.1 kV + 2 Core
+    const copperTwoCore = queryProducts({
+      category: "Wires & Cables",
+      voltage: "1.1 kV",
+      cores: "2 Core",
+      material: "Copper",
+    });
+    expect(copperTwoCore.total).toBe(120);
+
+    // Aluminium + 1.1 kV + 2 Core
+    const aluTwoCore = queryProducts({
+      category: "Wires & Cables",
+      voltage: "1.1 kV",
+      cores: "2 Core",
+      material: "Aluminium",
+    });
+    expect(aluTwoCore.total).toBe(15);
+
+    // Armoured + 1.1 kV + 2 Core
+    const armTwoCore = queryProducts({
+      category: "Wires & Cables",
+      voltage: "1.1 kV",
+      cores: "2 Core",
+      armorType: "Armoured",
+    });
+    expect(armTwoCore.total).toBe(72);
   });
 });
