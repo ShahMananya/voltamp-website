@@ -16,6 +16,8 @@ import {
   Sliders,
   CheckCircle2,
   FileSpreadsheet,
+  AlertTriangle,
+  Info,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,139 +27,16 @@ export interface CableCalculatorModalProps {
   onQuote?: (prefilledText?: string) => void;
 }
 
-// 1. Cable Categories & Specifications
-export interface CableTypeOption {
-  id: string;
-  name: string;
-  category: string;
-  conductors: ("Copper" | "Aluminum")[];
-  cores: string[];
-  sizes: { size: string; copperBasePrice: number; aluBasePrice: number; approxWeightKgPerKm: number }[];
-  standard: string;
-  voltage: string;
-}
+import {
+  REAL_CABLE_CATALOG,
+  calculateRealCableSizing,
+  type CableSizePrice,
+  type RealCableCatalogItem,
+  type CableSizingResult,
+} from "@/data/realWireData";
 
-export const CABLE_CATALOG: CableTypeOption[] = [
-  {
-    id: "lt-armored",
-    name: "LT Armored Power Cable (XLPE/PVC)",
-    category: "Power Cables",
-    conductors: ["Aluminum", "Copper"],
-    cores: ["2 Core", "3 Core", "3.5 Core", "4 Core"],
-    sizes: [
-      { size: "1.5 sq.mm", copperBasePrice: 85, aluBasePrice: 38, approxWeightKgPerKm: 280 },
-      { size: "2.5 sq.mm", copperBasePrice: 125, aluBasePrice: 48, approxWeightKgPerKm: 340 },
-      { size: "4.0 sq.mm", copperBasePrice: 175, aluBasePrice: 62, approxWeightKgPerKm: 420 },
-      { size: "6.0 sq.mm", copperBasePrice: 245, aluBasePrice: 78, approxWeightKgPerKm: 510 },
-      { size: "10 sq.mm", copperBasePrice: 390, aluBasePrice: 115, approxWeightKgPerKm: 680 },
-      { size: "16 sq.mm", copperBasePrice: 580, aluBasePrice: 165, approxWeightKgPerKm: 920 },
-      { size: "25 sq.mm", copperBasePrice: 890, aluBasePrice: 235, approxWeightKgPerKm: 1350 },
-      { size: "35 sq.mm", copperBasePrice: 1220, aluBasePrice: 310, approxWeightKgPerKm: 1750 },
-      { size: "50 sq.mm", copperBasePrice: 1680, aluBasePrice: 410, approxWeightKgPerKm: 2300 },
-      { size: "70 sq.mm", copperBasePrice: 2380, aluBasePrice: 560, approxWeightKgPerKm: 3100 },
-      { size: "95 sq.mm", copperBasePrice: 3250, aluBasePrice: 740, approxWeightKgPerKm: 4100 },
-      { size: "120 sq.mm", copperBasePrice: 4100, aluBasePrice: 920, approxWeightKgPerKm: 5050 },
-      { size: "150 sq.mm", copperBasePrice: 5100, aluBasePrice: 1140, approxWeightKgPerKm: 6200 },
-      { size: "185 sq.mm", copperBasePrice: 6350, aluBasePrice: 1410, approxWeightKgPerKm: 7600 },
-      { size: "240 sq.mm", copperBasePrice: 8300, aluBasePrice: 1820, approxWeightKgPerKm: 9750 },
-      { size: "300 sq.mm", copperBasePrice: 10400, aluBasePrice: 2280, approxWeightKgPerKm: 12100 },
-      { size: "400 sq.mm", copperBasePrice: 13800, aluBasePrice: 2950, approxWeightKgPerKm: 15800 },
-    ],
-    standard: "IS: 7098 (Part 1) / IEC 60502-1",
-    voltage: "1.1 kV (1100 Volts)",
-  },
-  {
-    id: "ht-armored-11kv",
-    name: "HT 11kV Grade XLPE Armored Cable",
-    category: "High Tension (HT)",
-    conductors: ["Aluminum", "Copper"],
-    cores: ["1 Core", "3 Core"],
-    sizes: [
-      { size: "35 sq.mm", copperBasePrice: 1850, aluBasePrice: 620, approxWeightKgPerKm: 2800 },
-      { size: "50 sq.mm", copperBasePrice: 2450, aluBasePrice: 790, approxWeightKgPerKm: 3400 },
-      { size: "70 sq.mm", copperBasePrice: 3350, aluBasePrice: 990, approxWeightKgPerKm: 4300 },
-      { size: "95 sq.mm", copperBasePrice: 4450, aluBasePrice: 1280, approxWeightKgPerKm: 5500 },
-      { size: "120 sq.mm", copperBasePrice: 5550, aluBasePrice: 1540, approxWeightKgPerKm: 6600 },
-      { size: "150 sq.mm", copperBasePrice: 6800, aluBasePrice: 1860, approxWeightKgPerKm: 7900 },
-      { size: "185 sq.mm", copperBasePrice: 8350, aluBasePrice: 2240, approxWeightKgPerKm: 9400 },
-      { size: "240 sq.mm", copperBasePrice: 10800, aluBasePrice: 2820, approxWeightKgPerKm: 11800 },
-      { size: "300 sq.mm", copperBasePrice: 13400, aluBasePrice: 3450, approxWeightKgPerKm: 14400 },
-      { size: "400 sq.mm", copperBasePrice: 17600, aluBasePrice: 4450, approxWeightKgPerKm: 18600 },
-    ],
-    standard: "IS: 7098 (Part 2) / IEC 60502-2",
-    voltage: "11 kV Earthed",
-  },
-  {
-    id: "ht-armored-33kv",
-    name: "HT 33kV Grade XLPE Heavy Cable",
-    category: "High Tension (HT)",
-    conductors: ["Aluminum", "Copper"],
-    cores: ["1 Core", "3 Core"],
-    sizes: [
-      { size: "70 sq.mm", copperBasePrice: 5200, aluBasePrice: 1850, approxWeightKgPerKm: 6800 },
-      { size: "95 sq.mm", copperBasePrice: 6600, aluBasePrice: 2280, approxWeightKgPerKm: 8200 },
-      { size: "120 sq.mm", copperBasePrice: 8100, aluBasePrice: 2720, approxWeightKgPerKm: 9700 },
-      { size: "150 sq.mm", copperBasePrice: 9750, aluBasePrice: 3200, approxWeightKgPerKm: 11400 },
-      { size: "185 sq.mm", copperBasePrice: 11800, aluBasePrice: 3780, approxWeightKgPerKm: 13300 },
-      { size: "240 sq.mm", copperBasePrice: 14900, aluBasePrice: 4650, approxWeightKgPerKm: 16500 },
-      { size: "300 sq.mm", copperBasePrice: 18200, aluBasePrice: 5600, approxWeightKgPerKm: 19800 },
-      { size: "400 sq.mm", copperBasePrice: 23600, aluBasePrice: 7100, approxWeightKgPerKm: 25100 },
-    ],
-    standard: "IS: 7098 (Part 2) / IEC 60502-2",
-    voltage: "33 kV Earthed",
-  },
-  {
-    id: "frls-house-wire",
-    name: "FRLS Industrial & House Wire (Single Core)",
-    category: "Building & House Wires",
-    conductors: ["Copper"],
-    cores: ["Single Core (Flexible)"],
-    sizes: [
-      { size: "0.75 sq.mm", copperBasePrice: 14, aluBasePrice: 0, approxWeightKgPerKm: 12 },
-      { size: "1.0 sq.mm", copperBasePrice: 18, aluBasePrice: 0, approxWeightKgPerKm: 15 },
-      { size: "1.5 sq.mm", copperBasePrice: 26, aluBasePrice: 0, approxWeightKgPerKm: 22 },
-      { size: "2.5 sq.mm", copperBasePrice: 42, aluBasePrice: 0, approxWeightKgPerKm: 34 },
-      { size: "4.0 sq.mm", copperBasePrice: 64, aluBasePrice: 0, approxWeightKgPerKm: 52 },
-      { size: "6.0 sq.mm", copperBasePrice: 96, aluBasePrice: 0, approxWeightKgPerKm: 76 },
-      { size: "10 sq.mm", copperBasePrice: 168, aluBasePrice: 0, approxWeightKgPerKm: 128 },
-      { size: "16 sq.mm", copperBasePrice: 268, aluBasePrice: 0, approxWeightKgPerKm: 198 },
-    ],
-    standard: "IS: 694 / IEC 60227 Flame Retardant Low Smoke",
-    voltage: "1100 Volts",
-  },
-  {
-    id: "solar-dc-cable",
-    name: "Solar DC Photovoltaic Cable (Crosslinked Polyolefin)",
-    category: "Solar & Clean Energy",
-    conductors: ["Copper"],
-    cores: ["1 Core (Tinned Copper)"],
-    sizes: [
-      { size: "4.0 sq.mm", copperBasePrice: 52, aluBasePrice: 0, approxWeightKgPerKm: 65 },
-      { size: "6.0 sq.mm", copperBasePrice: 76, aluBasePrice: 0, approxWeightKgPerKm: 88 },
-      { size: "10 sq.mm", copperBasePrice: 128, aluBasePrice: 0, approxWeightKgPerKm: 142 },
-      { size: "16 sq.mm", copperBasePrice: 198, aluBasePrice: 0, approxWeightKgPerKm: 215 },
-    ],
-    standard: "EN 50618 / IEC 62930 / TUV 2PfG 1169",
-    voltage: "1500V DC rated (1800V max)",
-  },
-  {
-    id: "submersible-flat",
-    name: "3-Core Submersible Flat Pump Cable",
-    category: "Agricultural & Submersible",
-    conductors: ["Copper"],
-    cores: ["3 Core Flat"],
-    sizes: [
-      { size: "1.5 sq.mm", copperBasePrice: 88, aluBasePrice: 0, approxWeightKgPerKm: 110 },
-      { size: "2.5 sq.mm", copperBasePrice: 138, aluBasePrice: 0, approxWeightKgPerKm: 165 },
-      { size: "4.0 sq.mm", copperBasePrice: 210, aluBasePrice: 0, approxWeightKgPerKm: 240 },
-      { size: "6.0 sq.mm", copperBasePrice: 310, aluBasePrice: 0, approxWeightKgPerKm: 345 },
-      { size: "10 sq.mm", copperBasePrice: 510, aluBasePrice: 0, approxWeightKgPerKm: 560 },
-      { size: "16 sq.mm", copperBasePrice: 790, aluBasePrice: 0, approxWeightKgPerKm: 860 },
-    ],
-    standard: "IS: 694 Water-Resistant & Heavy Duty",
-    voltage: "1100 Volts",
-  },
-];
+export type CableTypeOption = RealCableCatalogItem;
+export const CABLE_CATALOG: CableTypeOption[] = REAL_CABLE_CATALOG;
 
 export const BRAND_MULTIPLIERS: { name: string; multiplier: number; badge: string }[] = [
   { name: "Polycab", multiplier: 1.0, badge: "Master Distributor" },
@@ -191,6 +70,69 @@ export default function CableCalculatorModal({
   const [voltagePhase, setVoltagePhase] = useState<"415V_3P" | "230V_1P">("415V_3P");
   const [runDistanceMeters, setRunDistanceMeters] = useState<number>(80);
   const [powerFactor, setPowerFactor] = useState<number>(0.85);
+  const [sizingConductor, setSizingConductor] = useState<"Aluminum" | "Copper">("Aluminum");
+  const [installation, setInstallation] = useState<"Air" | "Ground">("Air");
+
+  // Real wire engineering sizing engine (IS 7098 & IS 694)
+  const sizingResult: CableSizingResult = useMemo(() => {
+    return calculateRealCableSizing(
+      loadKw,
+      voltagePhase,
+      runDistanceMeters,
+      powerFactor,
+      installation
+    );
+  }, [loadKw, voltagePhase, runDistanceMeters, powerFactor, installation]);
+
+  const activeRecommendation = useMemo(() => {
+    return sizingConductor === "Aluminum" ? sizingResult.alRecommendation : sizingResult.cuRecommendation;
+  }, [sizingConductor, sizingResult]);
+
+  const alternativeRecommendation = useMemo(() => {
+    return sizingConductor === "Aluminum" ? sizingResult.cuRecommendation : sizingResult.alRecommendation;
+  }, [sizingConductor, sizingResult]);
+
+  const handleApplySizedCable = (useAluminium: boolean = sizingConductor === "Aluminum") => {
+    const rec = useAluminium ? sizingResult.alRecommendation : sizingResult.cuRecommendation;
+    const condName: "Aluminum" | "Copper" = useAluminium ? "Aluminum" : "Copper";
+
+    setSelectedCableId("lt-armored");
+    setConductor(condName);
+    setSelectedCore("3.5 Core");
+
+    const ltItem = REAL_CABLE_CATALOG.find((c) => c.id === "lt-armored");
+    if (ltItem) {
+      const match = ltItem.sizes.find((s) => s.size === rec.sizeLabel);
+      if (match) setSelectedSize(match.size);
+    }
+
+    const totalMeters = runDistanceMeters * rec.runs;
+    setQuantityMeters(totalMeters);
+    setActiveTab("cost");
+
+    toast.success("Engineered Cable Sizing Applied!", {
+      description: `Configured ${rec.runs > 1 ? `${rec.runs} runs × ` : ""}3.5C ${rec.sizeLabel} (${condName}) for total ${totalMeters}m in Cost Estimator.`,
+    });
+  };
+
+  const handleApplyHTFeeder = () => {
+    if (!sizingResult.htFeederAlternative) return;
+    setSelectedCableId("ht-armored-11kv");
+    setConductor("Aluminum");
+    setSelectedCore("3 Core (Strip / Round Wire Armoured)");
+
+    const htItem = REAL_CABLE_CATALOG.find((c) => c.id === "ht-armored-11kv");
+    if (htItem) {
+      const match = htItem.sizes.find((s) => sizingResult.htFeederAlternative?.recommendedCable.includes(s.size));
+      if (match) setSelectedSize(match.size);
+    }
+    setQuantityMeters(runDistanceMeters);
+    setActiveTab("cost");
+
+    toast.success("11kV HT Substation Cable Applied!", {
+      description: `Configured 11kV Substation Feed (${runDistanceMeters}m) with live EPC pricing.`,
+    });
+  };
 
   const activeCableType = useMemo(() => {
     return CABLE_CATALOG.find((c) => c.id === selectedCableId) ?? CABLE_CATALOG[0];
@@ -217,7 +159,6 @@ export default function CableCalculatorModal({
         ? currentSizeObj.copperBasePrice
         : currentSizeObj.aluBasePrice;
 
-    // Core multiplier adjustment for multi-core cables
     let coreFactor = 1.0;
     if (currentCore.includes("2 Core")) coreFactor = 0.65;
     else if (currentCore.includes("3 Core")) coreFactor = 0.9;
@@ -240,35 +181,6 @@ export default function CableCalculatorModal({
       : quantityMeters >= 100
       ? "Compact Wooden Reel / Steel Banded"
       : "Standard Shrink-Wrapped Coils";
-
-  // Sizing calculation
-  const calculatedAmps = useMemo(() => {
-    if (voltagePhase === "415V_3P") {
-      // I = P (kW) * 1000 / (sqrt(3) * V * PF)
-      return Math.round((loadKw * 1000) / (1.732 * 415 * powerFactor) * 10) / 10;
-    } else {
-      // I = P (kW) * 1000 / (V * PF)
-      return Math.round((loadKw * 1000) / (230 * powerFactor) * 10) / 10;
-    }
-  }, [loadKw, voltagePhase, powerFactor]);
-
-  const recommendedCableSize = useMemo(() => {
-    const amps = calculatedAmps;
-    if (amps <= 15) return "2.5 sq.mm Copper / 4 sq.mm Aluminum";
-    if (amps <= 25) return "4 sq.mm Copper / 6 sq.mm Aluminum";
-    if (amps <= 35) return "6 sq.mm Copper / 10 sq.mm Aluminum";
-    if (amps <= 50) return "10 sq.mm Copper / 16 sq.mm Aluminum";
-    if (amps <= 70) return "16 sq.mm Copper / 25 sq.mm Aluminum";
-    if (amps <= 95) return "25 sq.mm Copper / 35 sq.mm Aluminum";
-    if (amps <= 125) return "35 sq.mm Copper / 50 sq.mm Aluminum";
-    if (amps <= 160) return "50 sq.mm Copper / 70 sq.mm Aluminum";
-    if (amps <= 200) return "70 sq.mm Copper / 95 sq.mm Aluminum";
-    if (amps <= 245) return "95 sq.mm Copper / 120 sq.mm Aluminum";
-    if (amps <= 290) return "120 sq.mm Copper / 150 sq.mm Aluminum";
-    if (amps <= 340) return "150 sq.mm Copper / 185 sq.mm Aluminum";
-    if (amps <= 400) return "185 sq.mm Copper / 240 sq.mm Aluminum";
-    return "240 sq.mm+ (Parallel runs recommended)";
-  }, [calculatedAmps]);
 
   // Actions
   const handleCopySummary = () => {
@@ -781,15 +693,15 @@ Shared via Volamp Elektrikals Quick Order Estimator.`;
                 Recommend Cable Size Based on Connected Load
               </h3>
               <p className="text-xs sm:text-sm text-stone-600">
-                Input your electrical machinery or connected building load to determine the safe recommended conductor size and current-carrying capacity.
+                Calculated strictly in accordance with Indian Standards (IS: 7098 Part 1 & 2, IS: 694, IS: 1255) and authentic Volamp product specifications.
               </p>
             </div>
 
-            <div className="max-w-3xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Input Card */}
-              <div className="bg-white rounded-2xl p-6 border border-[#ebd7c7] shadow-sm space-y-4">
+            <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Input Card (5 Cols) */}
+              <div className="lg:col-span-5 bg-white rounded-2xl p-6 border border-[#ebd7c7] shadow-sm space-y-4">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#c25e0a]">
-                  1. Load Parameters
+                  1. Load & Route Parameters
                 </h4>
 
                 <div>
@@ -800,13 +712,13 @@ Shared via Volamp Elektrikals Quick Order Estimator.`;
                     <input
                       type="number"
                       min="1"
-                      max="1000"
+                      max="10000"
                       value={loadKw}
                       onChange={(e) => setLoadKw(Math.max(1, Number(e.target.value)))}
-                      className="w-28 h-10 px-3 rounded-lg border border-stone-300 text-sm font-bold text-stone-900 focus:ring-2 focus:ring-[#ef7d19]"
+                      className="w-32 h-10 px-3 rounded-lg border border-stone-300 text-sm font-bold text-stone-900 focus:ring-2 focus:ring-[#ef7d19]"
                     />
-                    <span className="text-xs text-stone-500">
-                      ≈ {Math.round(loadKw * 1.341)} HP (Horsepower)
+                    <span className="text-xs font-medium text-stone-500">
+                      ≈ {Math.round(loadKw * 1.341).toLocaleString("en-IN")} HP
                     </span>
                   </div>
                 </div>
@@ -821,7 +733,7 @@ Shared via Volamp Elektrikals Quick Order Estimator.`;
                       onClick={() => setVoltagePhase("415V_3P")}
                       className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-center ${
                         voltagePhase === "415V_3P"
-                          ? "border-[#4d1217] bg-[#4d1217] text-white"
+                          ? "border-[#4d1217] bg-[#4d1217] text-white shadow-sm"
                           : "border-stone-200 bg-white text-stone-700 hover:border-stone-300"
                       }`}
                     >
@@ -832,11 +744,71 @@ Shared via Volamp Elektrikals Quick Order Estimator.`;
                       onClick={() => setVoltagePhase("230V_1P")}
                       className={`p-2.5 rounded-xl border text-xs font-bold transition-all text-center ${
                         voltagePhase === "230V_1P"
-                          ? "border-[#4d1217] bg-[#4d1217] text-white"
+                          ? "border-[#4d1217] bg-[#4d1217] text-white shadow-sm"
                           : "border-stone-200 bg-white text-stone-700 hover:border-stone-300"
                       }`}
                     >
                       230V 1-Phase (Commercial)
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">
+                    Conductor Metal Preference:
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSizingConductor("Aluminum")}
+                      className={`p-2 rounded-xl border text-xs font-bold transition-all text-center ${
+                        sizingConductor === "Aluminum"
+                          ? "border-[#ef7d19] bg-orange-50 text-[#ef7d19]"
+                          : "border-stone-200 bg-white text-stone-700 hover:border-stone-300"
+                      }`}
+                    >
+                      Aluminium (EPC Standard)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSizingConductor("Copper")}
+                      className={`p-2 rounded-xl border text-xs font-bold transition-all text-center ${
+                        sizingConductor === "Copper"
+                          ? "border-[#ef7d19] bg-orange-50 text-[#ef7d19]"
+                          : "border-stone-200 bg-white text-stone-700 hover:border-stone-300"
+                      }`}
+                    >
+                      Copper (High Efficiency)
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">
+                    Installation Environment:
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setInstallation("Air")}
+                      className={`p-2 rounded-xl border text-xs font-bold transition-all text-center ${
+                        installation === "Air"
+                          ? "border-stone-800 bg-stone-100 text-stone-900"
+                          : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+                      }`}
+                    >
+                      In Air / Cable Trays
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setInstallation("Ground")}
+                      className={`p-2 rounded-xl border text-xs font-bold transition-all text-center ${
+                        installation === "Ground"
+                          ? "border-stone-800 bg-stone-100 text-stone-900"
+                          : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+                      }`}
+                    >
+                      Underground / Trench
                     </button>
                   </div>
                 </div>
@@ -848,56 +820,167 @@ Shared via Volamp Elektrikals Quick Order Estimator.`;
                   <input
                     type="number"
                     min="5"
-                    max="2000"
+                    max="10000"
                     value={runDistanceMeters}
                     onChange={(e) => setRunDistanceMeters(Math.max(1, Number(e.target.value)))}
                     className="w-full h-10 px-3 rounded-lg border border-stone-300 text-sm font-bold text-stone-900 focus:ring-2 focus:ring-[#ef7d19]"
                   />
+                  <div className="flex justify-between text-[10px] text-stone-400 mt-1">
+                    <span>50m (Factory internal)</span>
+                    <span>200m (Campus)</span>
+                    <span>1,000m+ (Intertie)</span>
+                  </div>
                 </div>
               </div>
 
-              {/* Recommendation Card */}
-              <div className="bg-gradient-to-br from-[#fbf8f5] to-[#f7ede6] rounded-2xl p-6 border border-[#ebd7c7] shadow-sm flex flex-col justify-between space-y-4">
-                <div className="space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#4d1217]">
-                    2. Calculated Result
-                  </h4>
+              {/* Recommendation Card (7 Cols) */}
+              <div className="lg:col-span-7 bg-gradient-to-br from-[#fbf8f5] to-[#f7ede6] rounded-2xl p-6 border border-[#ebd7c7] shadow-sm flex flex-col justify-between space-y-4">
+                <div className="space-y-3.5">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#4d1217]">
+                      2. Engineered Sizing Results
+                    </h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-[#c25e0a] border border-orange-200">
+                      IS: 7098 / IS: 1255
+                    </span>
+                  </div>
 
-                  <div className="p-4 rounded-xl bg-white border border-[#e5d0be] space-y-2">
-                    <span className="text-xs text-stone-500 block">Calculated Full Load Current:</span>
+                  {/* Discom Advisory Alert */}
+                  {sizingResult.discomWarning && (
+                    <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs space-y-1.5">
+                      <div className="flex items-center gap-2 font-bold text-amber-800">
+                        <AlertTriangle className="size-4 shrink-0 text-amber-600" />
+                        <span>Indian Discom Regulatory Notice</span>
+                      </div>
+                      <p className="text-[11px] leading-relaxed text-amber-900">
+                        {sizingResult.discomWarning}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setVoltagePhase("415V_3P")}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] transition-all"
+                      >
+                        <span>Switch to 415V 3-Phase</span>
+                        <ArrowRight className="size-3" />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Current Rating */}
+                  <div className="p-4 rounded-xl bg-white border border-[#e5d0be] space-y-1">
+                    <span className="text-xs text-stone-500 block">Calculated Full Load Continuous Current:</span>
                     <div className="flex items-baseline gap-2">
                       <strong className="text-3xl font-bold text-[#4d1217] font-['Space_Grotesk']">
-                        {calculatedAmps} Amps
+                        {sizingResult.calculatedAmps.toLocaleString("en-IN")} Amps
                       </strong>
-                      <span className="text-xs font-semibold text-stone-600">continuous load</span>
+                      <span className="text-xs font-semibold text-stone-600">
+                        continuous load ({voltagePhase === "415V_3P" ? "415V 3-Phase" : "230V 1-Phase"}, PF {powerFactor})
+                      </span>
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-xl bg-white border border-[#e5d0be] space-y-1.5">
-                    <span className="text-xs text-stone-500 block">Recommended Cable Size:</span>
-                    <strong className="text-base font-bold text-[#ef7d19] block">
-                      {recommendedCableSize}
-                    </strong>
-                    <small className="text-[10px] text-stone-500 block">
-                      Based on 70°C / 90°C thermal rating under standard Indian soil / ambient conditions.
-                    </small>
+                  {/* Primary Recommended Cable */}
+                  <div className="p-4 rounded-xl bg-white border border-[#e5d0be] space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-stone-500 font-medium">Recommended Conductor & Parallel Runs:</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        Thermal Verified
+                      </span>
+                    </div>
+
+                    <div>
+                      <strong className="text-lg font-bold text-[#c25e0a] font-['Space_Grotesk'] block leading-snug">
+                        {activeRecommendation.runs > 1
+                          ? `${activeRecommendation.runs} Parallel Runs × 3.5C ${activeRecommendation.sizeLabel}`
+                          : `1 Run × 3.5C ${activeRecommendation.sizeLabel}`}{" "}
+                        {sizingConductor} Armoured XLPE Cable
+                      </strong>
+                      <span className="text-[11px] text-stone-500">
+                        Combined continuous safe capacity: <strong>{activeRecommendation.safeAmpacityTotal.toLocaleString("en-IN")} A</strong> (derated for {installation.toLowerCase()} bundling)
+                      </span>
+                    </div>
+
+                    {/* Voltage Drop Metric */}
+                    <div className="pt-2 border-t border-stone-100 flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <div>
+                        <span className="text-stone-500 block text-[11px]">Voltage Drop over {runDistanceMeters}m:</span>
+                        <strong className="text-stone-800">
+                          {activeRecommendation.voltageDropVolts} V ({activeRecommendation.voltageDropPct}%)
+                        </strong>
+                      </div>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-1 rounded-md border ${
+                          activeRecommendation.isDropCompliant
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                            : "bg-amber-50 text-amber-800 border-amber-200"
+                        }`}
+                      >
+                        {activeRecommendation.isDropCompliant
+                          ? "✓ Compliant with IS 1255 (< 5% Drop)"
+                          : "⚠️ Voltage Drop Exceeds 5% (Sized Up)"}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Alternative Metal Option Pill */}
+                  <div className="p-3 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between text-xs">
+                    <div>
+                      <span className="text-stone-500 text-[11px] block">
+                        Alternative in {sizingConductor === "Aluminum" ? "Copper" : "Aluminium"}:
+                      </span>
+                      <strong className="text-stone-800">
+                        {alternativeRecommendation.runs > 1 ? `${alternativeRecommendation.runs} Runs × ` : "1 Run × "}
+                        3.5C {alternativeRecommendation.sizeLabel} ({sizingConductor === "Aluminum" ? "Copper" : "Aluminium"})
+                      </strong>
+                      <span className="text-stone-500 text-[10px] ml-1.5">
+                        (Drop: {alternativeRecommendation.voltageDropPct}%)
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSizingConductor(sizingConductor === "Aluminum" ? "Copper" : "Aluminum")}
+                      className="px-2.5 py-1 text-[11px] font-bold text-[#ef7d19] hover:underline"
+                    >
+                      Compare {sizingConductor === "Aluminum" ? "Copper" : "Aluminium"}
+                    </button>
+                  </div>
+
+                  {/* High Tension (11kV Substation Alternative) for Loads >= 150 kW */}
+                  {sizingResult.htFeederAlternative && (
+                    <div className="p-3.5 rounded-xl bg-purple-50/80 border border-purple-200 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-900">
+                          <Zap className="size-3.5 text-purple-600" />
+                          <span>HT 11kV Substation Alternative (Recommended for Mega Loads)</span>
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">
+                          High Efficiency
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-purple-900 leading-relaxed">
+                        At 11kV HT voltage, continuous current drops to just <strong>{sizingResult.htFeederAlternative.amps11kV} A</strong>. A single run of <strong>{sizingResult.htFeederAlternative.recommendedCable}</strong> evacuates the entire {loadKw} kW load with negligible voltage drop ({sizingResult.htFeederAlternative.voltageDropPct}%), saving massive LT trench and busbar costs.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleApplyHTFeeder}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-700 hover:bg-purple-800 text-white font-bold text-[11px] transition-all"
+                      >
+                        <Sliders className="size-3 text-purple-200" />
+                        <span>Configure 11kV HT Substation Cable in Estimator</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => {
-                    setActiveTab("cost");
-                    // Preselect size if matched
-                    const match = recommendedCableSize.split(" ")[0];
-                    const found = activeCableType.sizes.find((s) => s.size.startsWith(match));
-                    if (found) setSelectedSize(found.size);
-                    setQuantityMeters(runDistanceMeters);
-                  }}
-                  className="w-full h-11 rounded-xl bg-[#4d1217] hover:bg-[#3d0e12] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                  onClick={() => handleApplySizedCable()}
+                  className="w-full h-11 rounded-xl bg-[#4d1217] hover:bg-[#3d0e12] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
                 >
                   <Sliders className="size-4 text-[#ef7d19]" />
-                  <span>Configure This Size in Cost Estimator</span>
+                  <span>
+                    Configure This Sized Cable ({activeRecommendation.runs > 1 ? `${activeRecommendation.runs} Runs × ` : ""}{activeRecommendation.sizeLabel}) in Cost Estimator
+                  </span>
                   <ArrowRight className="size-3.5" />
                 </button>
               </div>

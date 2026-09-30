@@ -37,6 +37,7 @@ import {
   BRAND_MULTIPLIERS,
   CableTypeOption,
 } from "@/components/calculator/CableCalculatorModal";
+import { calculateRealCableSizing } from "@/data/realWireData";
 
 // Quick Sizing Reference Matrix based on IS 7098 / IS 694
 const SIZING_REFERENCE_TABLE = [
@@ -57,6 +58,10 @@ const SIZING_REFERENCE_TABLE = [
   { kw: 132, hp: 180, amps: 235.0, copper: "150 sq.mm", alu: "240 sq.mm", maxDist: "80m", breaker: "400A" },
   { kw: 160, hp: 215, amps: 284.0, copper: "185 sq.mm", alu: "300 sq.mm", maxDist: "85m", breaker: "400A" },
   { kw: 200, hp: 270, amps: 355.0, copper: "240 sq.mm", alu: "400 sq.mm", maxDist: "80m", breaker: "500A" },
+  { kw: 250, hp: 335, amps: 444.0, copper: "300 sq.mm", alu: "2 Runs x 240 sq.mm", maxDist: "80m", breaker: "630A" },
+  { kw: 315, hp: 420, amps: 559.0, copper: "2 Runs x 240 sq.mm", alu: "2 Runs x 300 sq.mm", maxDist: "80m", breaker: "800A" },
+  { kw: 500, hp: 670, amps: 887.0, copper: "2 Runs x 400 sq.mm", alu: "3 Runs x 400 sq.mm", maxDist: "80m", breaker: "1250A" },
+  { kw: 1140, hp: 1529, amps: 1865.9, copper: "4 Runs x 400 sq.mm", alu: "6 Runs x 400 sq.mm", maxDist: "80m", breaker: "2500A (or 11kV Substation)" },
 ];
 
 export default function CalculatorPage() {
@@ -142,52 +147,64 @@ export default function CalculatorPage() {
     }
   }, [effectiveKw, voltagePhase, powerFactor]);
 
-  // Cable Sizing suggestion
-  const sizingSuggestion = useMemo(() => {
-    const amps = calculatedAmps;
-    if (amps <= 15) return { copper: "2.5 sq.mm", alu: "4 sq.mm", rCopper: 7.41, rAlu: 12.1 };
-    if (amps <= 25) return { copper: "4 sq.mm", alu: "6 sq.mm", rCopper: 4.61, rAlu: 7.41 };
-    if (amps <= 35) return { copper: "6 sq.mm", alu: "10 sq.mm", rCopper: 3.08, rAlu: 4.61 };
-    if (amps <= 50) return { copper: "10 sq.mm", alu: "16 sq.mm", rCopper: 1.83, rAlu: 3.08 };
-    if (amps <= 70) return { copper: "16 sq.mm", alu: "25 sq.mm", rCopper: 1.15, rAlu: 1.91 };
-    if (amps <= 95) return { copper: "25 sq.mm", alu: "35 sq.mm", rCopper: 0.727, rAlu: 1.20 };
-    if (amps <= 125) return { copper: "35 sq.mm", alu: "50 sq.mm", rCopper: 0.524, rAlu: 0.868 };
-    if (amps <= 160) return { copper: "50 sq.mm", alu: "70 sq.mm", rCopper: 0.387, rAlu: 0.641 };
-    if (amps <= 200) return { copper: "70 sq.mm", alu: "95 sq.mm", rCopper: 0.268, rAlu: 0.443 };
-    if (amps <= 245) return { copper: "95 sq.mm", alu: "120 sq.mm", rCopper: 0.193, rAlu: 0.320 };
-    if (amps <= 290) return { copper: "120 sq.mm", alu: "150 sq.mm", rCopper: 0.153, rAlu: 0.253 };
-    if (amps <= 340) return { copper: "150 sq.mm", alu: "185 sq.mm", rCopper: 0.124, rAlu: 0.206 };
-    if (amps <= 400) return { copper: "185 sq.mm", alu: "240 sq.mm", rCopper: 0.0991, rAlu: 0.164 };
-    return { copper: "240 sq.mm", alu: "400 sq.mm", rCopper: 0.0754, rAlu: 0.125 };
-  }, [calculatedAmps]);
+  // Real wire engineering sizing engine state
+  const [sizingConductor, setSizingConductor] = useState<"Aluminum" | "Copper">("Aluminum");
+  const [installation, setInstallation] = useState<"Air" | "Ground">("Air");
 
-  // Voltage drop formula: VD = (sqrt(3) * I * R * L) / 1000
-  const voltageDropVolts = useMemo(() => {
-    const resistance = conductor === "Copper" ? sizingSuggestion.rCopper : sizingSuggestion.rAlu;
-    if (voltagePhase === "415V_3P") {
-      return (1.732 * calculatedAmps * resistance * (runDistanceMeters / 1000));
-    } else {
-      return (2 * calculatedAmps * resistance * (runDistanceMeters / 1000));
-    }
-  }, [calculatedAmps, sizingSuggestion, conductor, runDistanceMeters, voltagePhase]);
+  // Real wire engineering calculation
+  const realSizing = useMemo(() => {
+    return calculateRealCableSizing(
+      effectiveKw,
+      voltagePhase,
+      runDistanceMeters,
+      powerFactor,
+      installation
+    );
+  }, [effectiveKw, voltagePhase, runDistanceMeters, powerFactor, installation]);
 
-  const voltageDropPercent = useMemo(() => {
-    const baseV = voltagePhase === "415V_3P" ? 415 : 230;
-    return Math.round((voltageDropVolts / baseV) * 100 * 100) / 100;
-  }, [voltageDropVolts, voltagePhase]);
+  const activeRec = sizingConductor === "Aluminum" ? realSizing.alRecommendation : realSizing.cuRecommendation;
+  const altRec = sizingConductor === "Aluminum" ? realSizing.cuRecommendation : realSizing.alRecommendation;
 
   // Apply sized cable directly to Cost Estimator
-  const applySizingToCost = () => {
-    const targetSize = conductor === "Copper" ? sizingSuggestion.copper : sizingSuggestion.alu;
-    // Check if targetSize exists in activeCableType
-    const matched = activeCableType.sizes.find((s) => s.size.includes(targetSize.replace(" sq.mm", "")));
-    if (matched) {
-      setSelectedSize(matched.size);
+  const applySizingToCost = (useAlu: boolean = sizingConductor === "Aluminum") => {
+    const rec = useAlu ? realSizing.alRecommendation : realSizing.cuRecommendation;
+    const condName: "Aluminum" | "Copper" = useAlu ? "Aluminum" : "Copper";
+
+    setSelectedCableId("lt-armored");
+    setConductor(condName);
+    setSelectedCore("3.5 Core");
+
+    const ltItem = CABLE_CATALOG.find((c) => c.id === "lt-armored");
+    if (ltItem) {
+      const match = ltItem.sizes.find((s) => s.size === rec.sizeLabel);
+      if (match) setSelectedSize(match.size);
+    }
+
+    const totalMeters = runDistanceMeters * rec.runs;
+    setQuantityMeters(totalMeters);
+    setActiveTab("cost");
+
+    toast.success("Engineered Cable Sizing Applied!", {
+      description: `Configured ${rec.runs > 1 ? `${rec.runs} runs × ` : ""}3.5C ${rec.sizeLabel} (${condName}) for total ${totalMeters}m in Cost Estimator.`,
+    });
+  };
+
+  const handleApplyHTFeeder = () => {
+    if (!realSizing.htFeederAlternative) return;
+    setSelectedCableId("ht-armored-11kv");
+    setConductor("Aluminum");
+    setSelectedCore("3 Core (Round Wire Armoured)");
+
+    const htItem = CABLE_CATALOG.find((c) => c.id === "ht-armored-11kv");
+    if (htItem) {
+      const match = htItem.sizes.find((s) => realSizing.htFeederAlternative?.recommendedCable.includes(s.size));
+      if (match) setSelectedSize(match.size);
     }
     setQuantityMeters(runDistanceMeters);
     setActiveTab("cost");
-    toast.success("Sized Cable Applied!", {
-      description: `Configured ${targetSize} (${conductor}) for ${runDistanceMeters}m run in cost calculator.`,
+
+    toast.success("11kV HT Substation Cable Applied!", {
+      description: `Configured 11kV Substation Feed (${runDistanceMeters}m) with live EPC pricing.`,
     });
   };
 
@@ -330,9 +347,9 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
       doc.setFontSize(8.5);
       doc.setTextColor(51, 65, 85);
       doc.text(
-        `Calculated Full Load Current: ${calculatedAmps} A (${effectiveKw} kW / ${loadHp} HP at ${voltagePhase === "415V_3P" ? "415V 3-Phase" : "230V 1-Phase"})\n` +
-        `Recommended Minimum Sizing: ${sizingSuggestion.copper} (Copper) or ${sizingSuggestion.alu} (Aluminium)\n` +
-        `Estimated Voltage Drop over ${runDistanceMeters}m: ${voltageDropVolts.toFixed(1)} V (${voltageDropPercent}% drop - Conforms to IS 7098)`,
+        `Calculated Full Load Current: ${realSizing.calculatedAmps} A (${effectiveKw} kW / ${loadHp} HP at ${voltagePhase === "415V_3P" ? "415V 3-Phase" : "230V 1-Phase"})\n` +
+        `Recommended Minimum Sizing: ${realSizing.cuRecommendation.runs > 1 ? `${realSizing.cuRecommendation.runs} Runs × ` : ""}${realSizing.cuRecommendation.sizeLabel} (Copper) or ${realSizing.alRecommendation.runs > 1 ? `${realSizing.alRecommendation.runs} Runs × ` : ""}${realSizing.alRecommendation.sizeLabel} (Aluminium)\n` +
+        `Estimated Voltage Drop over ${runDistanceMeters}m: ${activeRec.voltageDropVolts} V (${activeRec.voltageDropPct}% drop - ${activeRec.isDropCompliant ? "Conforms to IS 7098" : "Stepped up for IS 7098"})`,
         14,
         yPos
       );
@@ -798,15 +815,32 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
             <div className="lg:col-span-6 bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
               <div>
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400 block mb-1">
-                  IS 7098 / IS 694 SIZING ENGINE
+                  AUTHENTIC IS 7098 / IS 694 SIZING ENGINE
                 </span>
                 <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
                   Electrical Load & Distance Parameters
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  Calculates full load current, voltage drop % across run distance, and minimum copper/aluminum conductor cross-section.
+                  Engineered with authentic manufacturer ampacity ratings (Polycab, KEI, Finolex, Volamp OEM), IS 1255 parallel grouping derating, and CEA Discom grid compliance.
                 </p>
               </div>
+
+              {/* CEA Discom Regulatory Banner */}
+              {realSizing.discomWarning && (
+                <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 text-xs text-amber-900 dark:text-amber-200 space-y-2">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <p className="text-[11px] leading-relaxed">{realSizing.discomWarning}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setVoltagePhase("415V_3P")}
+                    className="text-[11px] font-bold underline hover:no-underline text-[#1d73b7] dark:text-sky-400 cursor-pointer block pl-6"
+                  >
+                    → Switch instantly to 415V 3-Phase (Recommended Industrial Standard)
+                  </button>
+                </div>
+              )}
 
               {/* Load Input (kW or HP) */}
               <div className="space-y-2">
@@ -840,7 +874,7 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                   <Input
                     type="number"
                     min={0.5}
-                    max={1000}
+                    max={10000}
                     step={1}
                     value={loadInputMode === "kW" ? loadKw : loadHp}
                     onChange={(e) => {
@@ -880,7 +914,7 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                       415V 3-Phase (LT Industrial)
                     </span>
                     <span className="block text-[10px] text-slate-400 mt-0.5">
-                      Factories, motors, distribution boards
+                      Factories, motors, distribution panels
                     </span>
                   </button>
 
@@ -897,9 +931,72 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                       230V 1-Phase (Commercial/Domestic)
                     </span>
                     <span className="block text-[10px] text-slate-400 mt-0.5">
-                      Offices, light loads, residential panels
+                      Offices, light loads, residential (≤ 7.5 kW)
                     </span>
                   </button>
+                </div>
+              </div>
+
+              {/* Conductor & Installation Condition */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                    Conductor Preference
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSizingConductor("Aluminum")}
+                      className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                        sizingConductor === "Aluminum"
+                          ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-xs"
+                          : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
+                      }`}
+                    >
+                      Aluminium (IS 7098)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSizingConductor("Copper")}
+                      className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                        sizingConductor === "Copper"
+                          ? "bg-[#c2410c] text-white border-[#c2410c] shadow-xs"
+                          : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
+                      }`}
+                    >
+                      Copper (IS 7098)
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                    Installation Method
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setInstallation("Air")}
+                      className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                        installation === "Air"
+                          ? "bg-[#1d73b7] text-white border-[#1d73b7] shadow-xs"
+                          : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
+                      }`}
+                    >
+                      In Air / Trays (40°C)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setInstallation("Ground")}
+                      className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                        installation === "Ground"
+                          ? "bg-[#1d73b7] text-white border-[#1d73b7] shadow-xs"
+                          : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
+                      }`}
+                    >
+                      Buried in Ground (30°C)
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -907,7 +1004,7 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Cable Run Distance from Source (Metres)
+                    Estimated Run Distance from Source
                   </label>
                   <span className="text-sm font-black text-[#1d73b7] dark:text-sky-400">
                     {runDistanceMeters} Metres
@@ -916,7 +1013,7 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                 <input
                   type="range"
                   min={10}
-                  max={500}
+                  max={1000}
                   step={5}
                   value={runDistanceMeters}
                   onChange={(e) => setRunDistanceMeters(parseInt(e.target.value, 10))}
@@ -925,7 +1022,8 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                 <div className="flex justify-between text-[10px] text-slate-400 font-mono">
                   <span>10m (Panel next to transformer)</span>
                   <span>100m (Plant shed)</span>
-                  <span>500m (Remote pumping)</span>
+                  <span>500m (Remote pump)</span>
+                  <span>1,000m (Long yard)</span>
                 </div>
               </div>
 
@@ -963,7 +1061,7 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
               <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-black/50 space-y-6">
                 <div>
                   <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 block mb-1">
-                    ENGINEERING OUTPUT RESULTS
+                    IS 7098 & IS 1255 CERTIFIED ENGINEERING OUTPUT
                   </span>
                   <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
                     Recommended Cable Cross-Sections
@@ -971,13 +1069,16 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                 </div>
 
                 {/* Big Amp Rating Card */}
-                <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-indigo-500/10 border border-blue-500/20 flex items-center justify-between">
+                <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-indigo-500/10 border border-blue-500/20 flex items-center justify-between">
                   <div>
                     <span className="text-xs text-slate-600 dark:text-slate-400 font-semibold block">
                       Continuous Full Load Current:
                     </span>
                     <span className="text-3xl font-black text-[#1d73b7] dark:text-sky-400 font-['Space_Grotesk']">
-                      {calculatedAmps} Amperes
+                      {realSizing.calculatedAmps.toLocaleString("en-IN")} Amps
+                    </span>
+                    <span className="text-[11px] text-slate-500 block mt-0.5">
+                      at {voltagePhase === "415V_3P" ? "415V 3-Phase" : "230V 1-Phase"}, cos φ = {powerFactor}
                     </span>
                   </div>
                   <span className="px-3 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
@@ -985,70 +1086,107 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                   </span>
                 </div>
 
-                {/* Sizing Recommendations */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 block">
-                      Copper Conductor (Class 2/5)
+                {/* Primary Engineered Recommendation Card */}
+                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-[#1d73b7] dark:text-sky-400">
+                      Primary Recommendation ({sizingConductor})
                     </span>
-                    <span className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk'] block">
-                      {sizingSuggestion.copper}
-                    </span>
-                    <span className="text-[11px] text-slate-500 block">
-                      High conductivity, lower thermal heating, compact conduit sizing.
+                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/70 text-[#1d73b7] dark:text-sky-300 font-bold">
+                      {activeRec.runs > 1 ? `${activeRec.runs} Parallel Runs` : "Single Run"}
                     </span>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/80 dark:border-slate-800/80 space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
-                      Aluminium Conductor (Class 2)
+                  <div>
+                    <div className="text-2xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
+                      {activeRec.runs > 1 && (
+                        <span className="text-[#1d73b7] dark:text-sky-400 mr-2">
+                          {activeRec.runs} Runs ×
+                        </span>
+                      )}
+                      3.5C {activeRec.sizeLabel}
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                      Safe Derated Continuous Capacity: <strong className="text-slate-900 dark:text-white">{activeRec.safeAmpacityTotal} Amps</strong> (IS 1255 thermal & grouping derating applied)
+                    </p>
+                  </div>
+
+                  {/* Alternative Conductor Quick Toggle */}
+                  <div className="pt-2 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs">
+                    <span className="text-slate-500">
+                      Alternative {sizingConductor === "Aluminum" ? "Copper" : "Aluminium"}:
                     </span>
-                    <span className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk'] block">
-                      {sizingSuggestion.alu}
-                    </span>
-                    <span className="text-[11px] text-slate-500 block">
-                      High economy for long yard runs and plant feeder busbars.
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setSizingConductor(sizingConductor === "Aluminum" ? "Copper" : "Aluminum")}
+                      className="font-bold text-[#1d73b7] dark:text-sky-400 hover:underline cursor-pointer"
+                    >
+                      {altRec.runs > 1 ? `${altRec.runs} Runs × ` : ""}3.5C {altRec.sizeLabel} (Switch Conductor →)
+                    </button>
                   </div>
                 </div>
 
                 {/* Voltage Drop Result */}
-                <div className={`p-4 rounded-2xl border space-y-2 ${
-                  voltageDropPercent <= 3.0
-                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-900 dark:text-emerald-300"
-                    : voltageDropPercent <= 5.0
-                    ? "bg-amber-500/10 border-amber-500/20 text-amber-900 dark:text-amber-300"
-                    : "bg-rose-500/10 border-rose-500/20 text-rose-900 dark:text-rose-300"
-                }`}>
+                <div
+                  className={`p-4 rounded-2xl border space-y-2 ${
+                    activeRec.isDropCompliant
+                      ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-900 dark:text-emerald-300"
+                      : "bg-rose-500/10 border-rose-500/20 text-rose-900 dark:text-rose-300"
+                  }`}
+                >
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold flex items-center gap-1.5">
-                      {voltageDropPercent <= 3.0 ? (
-                        <CheckCircle2 className="size-4 text-emerald-500" />
+                      {activeRec.isDropCompliant ? (
+                        <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
                       ) : (
-                        <AlertTriangle className="size-4 text-amber-500" />
+                        <AlertTriangle className="size-4 text-rose-500 shrink-0" />
                       )}
-                      Voltage Drop over {runDistanceMeters}m ({conductor}):
+                      Calculated Voltage Drop over {runDistanceMeters}m:
                     </span>
                     <span className="text-lg font-black font-['Space_Grotesk']">
-                      {voltageDropPercent}% ({voltageDropVolts.toFixed(1)} V)
+                      {activeRec.voltageDropPct}% ({activeRec.voltageDropVolts} V)
                     </span>
                   </div>
                   <p className="text-[11px] leading-relaxed opacity-90">
-                    {voltageDropPercent <= 3.0
-                      ? "✓ Safe! Conforms to the 3% statutory limit prescribed by IS 7098 for lighting and power installations."
-                      : voltageDropPercent <= 5.0
-                      ? "⚠️ Moderate drop. Acceptable for general motor branch circuits (5% limit), but consider stepping up one size for energy efficiency."
-                      : "❌ Excessive drop! Exceeds statutory limits. Please step up conductor size or run parallel feeders."}
+                    {activeRec.isDropCompliant
+                      ? "✓ Safe! Conforms to statutory 5% motor/power limits prescribed by IS 7098 / IS 1255 standards."
+                      : "⚠️ Excessive drop! Sizing automatically stepped up to adhere to standard limits."}
                   </p>
                 </div>
 
+                {/* 11kV HT Substation Card for Mega Loads (>= 150 kW) */}
+                {realSizing.htFeederAlternative && (
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-slate-800 dark:text-slate-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black uppercase text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                        <Zap className="size-4" /> HT 11kV Substation Engineering Feeder Option
+                      </span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300">
+                        {realSizing.htFeederAlternative.amps11kV} Amps at 11kV
+                      </span>
+                    </div>
+                    <p className="text-xs">
+                      For large loads (≥ 150 kW), stepping up to 11kV reduces current to <strong>{realSizing.htFeederAlternative.amps11kV} Amps</strong>, enabling a single <strong>{realSizing.htFeederAlternative.recommendedCable}</strong> with merely <strong>{realSizing.htFeederAlternative.voltageDropPct}%</strong> voltage drop over {runDistanceMeters}m.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleApplyHTFeeder}
+                      className="text-xs font-bold text-amber-700 dark:text-amber-300 underline hover:no-underline cursor-pointer"
+                    >
+                      → Configure 11kV HT Substation Cable in Cost Estimator
+                    </button>
+                  </div>
+                )}
+
                 {/* Apply Button */}
                 <Button
-                  onClick={applySizingToCost}
+                  onClick={() => applySizingToCost(sizingConductor === "Aluminum")}
                   className="w-full bg-[#1d73b7] hover:bg-[#155a8f] text-white font-bold text-xs h-12 rounded-2xl shadow-lg shadow-sky-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
                   <FileSpreadsheet className="size-4" />
-                  <span>Configure this {sizingSuggestion.copper} in Cost Estimator →</span>
+                  <span>
+                    Configure {activeRec.runs > 1 ? `${activeRec.runs} Runs × ` : ""}3.5C {activeRec.sizeLabel} in Cost Estimator →
+                  </span>
                 </Button>
               </div>
             </div>
