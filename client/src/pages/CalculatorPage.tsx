@@ -24,6 +24,10 @@ import {
   Phone,
   Search,
   ExternalLink,
+  Cable,
+  PlugZap,
+  Wrench,
+  SunMedium,
 } from "lucide-react";
 import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
@@ -39,6 +43,14 @@ import {
 } from "@/components/calculator/CableCalculatorModal";
 import { calculateRealCableSizing } from "@/data/realWireData";
 import { findRealWireProduct, type RealWireProduct } from "@/data/realWireProductsCatalog";
+import {
+  CALCULATOR_CATEGORIES,
+  CategoryProductItem,
+  getSubcategoriesForCategory,
+  getBrandsForCategory,
+  getProductsForCategory,
+  getCategoryProductById,
+} from "@/data/allCategoriesCalculatorData";
 
 // Quick Sizing Reference Matrix based on IS 7098 / IS 694
 const SIZING_REFERENCE_TABLE = [
@@ -68,21 +80,57 @@ const SIZING_REFERENCE_TABLE = [
 export default function CalculatorPage() {
   const { addItem } = useCart();
 
+  // Active Category (default 'cables')
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("cables");
+  const selectedCategoryMeta = useMemo(() => {
+    return CALCULATOR_CATEGORIES.find((c) => c.id === selectedCategoryId) ?? CALCULATOR_CATEGORIES[0];
+  }, [selectedCategoryId]);
+
+  const isCable = selectedCategoryId === "cables";
+
   // Mode selection: 'cost' or 'sizing' or 'chart'
   const [activeTab, setActiveTab] = useState<"cost" | "sizing" | "chart">("cost");
 
-  // Cost Estimator state
+  // Cost Estimator state - Cables
   const [selectedCableId, setSelectedCableId] = useState<string>("lt-armored");
   const [conductor, setConductor] = useState<"Copper" | "Aluminum">("Copper");
   const [selectedCore, setSelectedCore] = useState<string>("3.5 Core");
   const [selectedSize, setSelectedSize] = useState<string>("50 sq.mm");
   const [selectedBrand, setSelectedBrand] = useState<string>("Polycab");
   const [quantityMeters, setQuantityMeters] = useState<number>(500);
+
+  // Cost Estimator state - Non-Cable Categories
+  const availableSubcats = useMemo(() => {
+    return getSubcategoriesForCategory(selectedCategoryId);
+  }, [selectedCategoryId]);
+
+  const [nonCableSubcat, setNonCableSubcat] = useState<string>("");
+  const activeSubcat = nonCableSubcat && availableSubcats.includes(nonCableSubcat) ? nonCableSubcat : (availableSubcats[0] || "");
+
+  const availableBrands = useMemo(() => {
+    return getBrandsForCategory(selectedCategoryId, activeSubcat);
+  }, [selectedCategoryId, activeSubcat]);
+
+  const [nonCableBrand, setNonCableBrand] = useState<string>("");
+  const activeBrand = nonCableBrand && availableBrands.includes(nonCableBrand) ? nonCableBrand : (availableBrands[0] || "");
+
+  const availableProducts = useMemo(() => {
+    return getProductsForCategory(selectedCategoryId, activeSubcat, activeBrand || undefined);
+  }, [selectedCategoryId, activeSubcat, activeBrand]);
+
+  const [nonCableProductId, setNonCableProductId] = useState<string>("");
+  const activeNonCableProduct = useMemo(() => {
+    return availableProducts.find((p) => p.id === nonCableProductId) ?? availableProducts[0];
+  }, [availableProducts, nonCableProductId]);
+
+  const [nonCableQuantity, setNonCableQuantity] = useState<number>(10);
+
+  // Commercial Common states
   const [contractorDiscount, setContractorDiscount] = useState<number>(12);
   const [includeGst, setIncludeGst] = useState<boolean>(true);
   const [copied, setCopied] = useState<boolean>(false);
 
-  // Sizing Calculator state
+  // Sizing Calculator state (ONLY FOR CABLES)
   const [loadKw, setLoadKw] = useState<number>(30);
   const [loadHp, setLoadHp] = useState<number>(40);
   const [loadInputMode, setLoadInputMode] = useState<"kW" | "HP">("kW");
@@ -103,8 +151,8 @@ export default function CalculatorPage() {
   const currentBrandObj =
     BRAND_MULTIPLIERS.find((b) => b.name === selectedBrand) ?? BRAND_MULTIPLIERS[0];
 
-  // Authentic real product lookup from website catalog (products_db.json)
-  const realProduct: RealWireProduct = useMemo(() => {
+  // Authentic real product lookup for cables
+  const realCableProduct: RealWireProduct = useMemo(() => {
     return findRealWireProduct({
       brand: selectedBrand,
       catId: selectedCableId,
@@ -114,14 +162,48 @@ export default function CalculatorPage() {
     });
   }, [selectedBrand, selectedCableId, currentConductor, currentCore, currentSizeObj]);
 
-  // Unit rate calculations
-  const unitListPrice = realProduct.listPrice;
-  const websiteDiscountPct = realProduct.discountPct; // e.g. 40%
+  // Unified Product Properties
+  const activeProductName = isCable
+    ? realCableProduct.name || `${selectedBrand} ${activeCableType.name}`
+    : activeNonCableProduct?.name || "Product";
+
+  const activeProductSku = isCable
+    ? realCableProduct.sku
+    : activeNonCableProduct?.sku || "SKU-PROD";
+
+  const activeBrandName = isCable ? selectedBrand : (activeNonCableProduct?.brand || "Volamp");
+
+  const activeCategoryName = isCable
+    ? activeCableType.category
+    : activeNonCableProduct?.category || selectedCategoryMeta.name;
+
+  const activeSpecSummary = isCable
+    ? `${currentCore} · ${currentSizeObj.size} (${currentConductor})`
+    : activeNonCableProduct?.spec || activeNonCableProduct?.subcategory || "";
+
+  const activeUnitLabel = isCable
+    ? "Meter"
+    : activeNonCableProduct?.unit || selectedCategoryMeta.unit;
+
+  const activeQuantity = isCable ? quantityMeters : (nonCableQuantity || 1);
+
+  // Unit rate calculations (MRP, Discount, Net Rate)
+  const unitListPrice = isCable
+    ? realCableProduct.listPrice
+    : (activeNonCableProduct?.listPrice || 0);
+
+  const websiteDiscountPct = isCable
+    ? realCableProduct.discountPct
+    : (activeNonCableProduct?.discountPct || 0);
+
   const unitDiscountAmount = Math.round(unitListPrice * (websiteDiscountPct / 100));
-  const unitNetPrice = realProduct.netPrice;
+
+  const unitNetPrice = isCable
+    ? realCableProduct.netPrice
+    : (activeNonCableProduct?.netPrice || 0);
 
   // Project totals
-  const listTotal = unitListPrice * quantityMeters;
+  const listTotal = unitListPrice * activeQuantity;
   const websiteDiscountTotal = Math.round(listTotal * (websiteDiscountPct / 100));
   const websiteNetSubtotal = listTotal - websiteDiscountTotal;
 
@@ -133,25 +215,27 @@ export default function CalculatorPage() {
   const gstAmount = Math.round(taxableSubtotal * 0.18);
   const finalTotal = includeGst ? taxableSubtotal + gstAmount : taxableSubtotal;
 
-  const totalWeightKg = Math.round((currentSizeObj.approxWeightKgPerKm * quantityMeters) / 1000);
-  const drumType =
-    quantityMeters > 500
+  const totalWeightKg = isCable
+    ? Math.round((currentSizeObj.approxWeightKgPerKm * quantityMeters) / 1000)
+    : 0;
+
+  const drumType = isCable
+    ? quantityMeters > 500
       ? "Standard Wooden Cable Drum (1.2m – 1.6m Flange)"
       : quantityMeters >= 100
       ? "Compact Wooden Reel / Steel Banded"
-      : "Standard Shrink-Wrapped Coils";
+      : "Standard Shrink-Wrapped Coils"
+    : "Standard Export Carton / Box";
 
-  // Sizing calculations
+  // Sizing calculations (Wires & Cables only)
   const effectiveKw = useMemo(() => {
     return loadInputMode === "kW" ? loadKw : Math.round(loadHp * 0.7457 * 10) / 10;
   }, [loadInputMode, loadKw, loadHp]);
 
   const calculatedAmps = useMemo(() => {
     if (voltagePhase === "415V_3P") {
-      // I = P (kW) * 1000 / (sqrt(3) * V * PF)
       return Math.round((effectiveKw * 1000) / (1.732 * 415 * powerFactor) * 10) / 10;
     } else {
-      // I = P (kW) * 1000 / (V * PF)
       return Math.round((effectiveKw * 1000) / (230 * powerFactor) * 10) / 10;
     }
   }, [effectiveKw, voltagePhase, powerFactor]);
@@ -179,6 +263,7 @@ export default function CalculatorPage() {
     const rec = useAlu ? realSizing.alRecommendation : realSizing.cuRecommendation;
     const condName: "Aluminum" | "Copper" = useAlu ? "Aluminum" : "Copper";
 
+    setSelectedCategoryId("cables");
     setSelectedCableId("lt-armored");
     setConductor(condName);
     setSelectedCore("3.5 Core");
@@ -200,6 +285,7 @@ export default function CalculatorPage() {
 
   const handleApplyHTFeeder = () => {
     if (!realSizing.htFeederAlternative) return;
+    setSelectedCategoryId("cables");
     setSelectedCableId("ht-armored-11kv");
     setConductor("Aluminum");
     setSelectedCore("3 Core (Round Wire Armoured)");
@@ -220,38 +306,39 @@ export default function CalculatorPage() {
   // Add to Cart
   const handleAddToCart = () => {
     addItem({
-      id: realProduct.productId || `CALC-${selectedCableId}-${currentSizeObj.size}-${conductor}`,
-      name: realProduct.name || `${selectedBrand} ${activeCableType.name}`,
-      category: activeCableType.category,
-      sku: realProduct.sku,
-      detail: `${currentCore} · ${currentSizeObj.size} · ${conductor}`,
-      price: Math.round(taxableSubtotal / quantityMeters),
-      unit: "Meter",
-      quantity: quantityMeters,
-      image: "/products/cables.jpg",
+      id: isCable
+        ? (realCableProduct.productId || `CALC-${selectedCableId}-${currentSizeObj.size}-${conductor}`)
+        : (activeNonCableProduct?.id || `CALC-${activeProductSku}`),
+      name: activeProductName,
+      category: activeCategoryName,
+      sku: activeProductSku,
+      detail: activeSpecSummary,
+      price: Math.round(taxableSubtotal / activeQuantity),
+      unit: activeUnitLabel,
+      quantity: activeQuantity,
+      image: isCable ? "/products/cables.jpg" : undefined,
     });
     toast.success("Added Estimate to Cart", {
-      description: `${quantityMeters}m of ${selectedBrand} ${currentSizeObj.size} (${realProduct.sku}) added to procurement cart.`,
+      description: `${activeQuantity} ${activeUnitLabel}s of ${activeBrandName} (${activeProductSku}) added to procurement cart.`,
     });
   };
 
   // Copy Summary
   const handleCopySummary = () => {
     const summary = `VOLAMP ESTIMATE SUMMARY:
-Brand: ${selectedBrand} (${currentBrandObj.badge})
-Product: ${realProduct.name}
-Catalog SKU: ${realProduct.sku}
-Spec: ${currentCore} x ${currentSizeObj.size} (${currentConductor})
-Standard: ${activeCableType.standard} (${activeCableType.voltage})
-Quantity: ${quantityMeters.toLocaleString("en-IN")} Metres
-Gross List Price (MRP): ₹${unitListPrice.toLocaleString("en-IN")}/m (Gross Total: ₹${listTotal.toLocaleString("en-IN")})
+Category: ${activeCategoryName}
+Brand: ${activeBrandName}
+Product: ${activeProductName}
+Catalog SKU: ${activeProductSku}
+Spec: ${activeSpecSummary}
+Quantity: ${activeQuantity.toLocaleString("en-IN")} ${activeUnitLabel}s
+Gross List Price (MRP): ₹${unitListPrice.toLocaleString("en-IN")}/${activeUnitLabel} (Gross Total: ₹${listTotal.toLocaleString("en-IN")})
 Website Discount (${websiteDiscountPct}% OFF): -₹${websiteDiscountTotal.toLocaleString("en-IN")}
-Net Rate: ₹${unitNetPrice.toLocaleString("en-IN")}/m
+Net Rate: ₹${unitNetPrice.toLocaleString("en-IN")}/${activeUnitLabel}
 ${contractorDiscount > 0 ? `Additional Contractor Slab (${contractorDiscount}%): -₹${contractorDiscountAmount.toLocaleString("en-IN")}\n` : ""}Net Taxable Subtotal: ₹${taxableSubtotal.toLocaleString("en-IN")}
 18% GST: ₹${gstAmount.toLocaleString("en-IN")}
 Final Payable Estimate: ₹${finalTotal.toLocaleString("en-IN")} (Total Savings: ₹${totalSavings.toLocaleString("en-IN")})
-Approx Gross Weight: ~${totalWeightKg.toLocaleString("en-IN")} kg (${drumType})
-Generated on Volamp Online Estimation Desk: https://volampelektrikals.com/calculator`;
+${isCable ? `Approx Gross Weight: ~${totalWeightKg.toLocaleString("en-IN")} kg (${drumType})\n` : ""}Generated on Volamp Online Estimation Desk: https://volampelektrikals.com/calculator`;
 
     navigator.clipboard.writeText(summary);
     setCopied(true);
@@ -262,17 +349,17 @@ Generated on Volamp Online Estimation Desk: https://volampelektrikals.com/calcul
   // WhatsApp Quote
   const handleWhatsAppQuote = () => {
     const text = `Hello Volamp Supply Desk, I generated a project estimation on your calculator:
-*Brand:* ${selectedBrand}
-*Product:* ${realProduct.name}
-*Catalog SKU:* ${realProduct.sku}
-*Specification:* ${currentCore} x ${currentSizeObj.size} (${currentConductor})
-*Quantity:* ${quantityMeters} Metres
-*Gross List (MRP):* ₹${unitListPrice.toLocaleString("en-IN")}/m
+*Category:* ${activeCategoryName}
+*Brand:* ${activeBrandName}
+*Product:* ${activeProductName}
+*Catalog SKU:* ${activeProductSku}
+*Specification:* ${activeSpecSummary}
+*Quantity:* ${activeQuantity} ${activeUnitLabel}s
+*Gross List (MRP):* ₹${unitListPrice.toLocaleString("en-IN")}/${activeUnitLabel}
 *Website Discount:* ${websiteDiscountPct}% OFF
-*Net Rate:* ₹${unitNetPrice.toLocaleString("en-IN")}/m
+*Net Rate:* ₹${unitNetPrice.toLocaleString("en-IN")}/${activeUnitLabel}
 *Estimated Total:* ₹${finalTotal.toLocaleString("en-IN")} (incl. 18% GST)
-*Weight:* ~${totalWeightKg} kg
-Please confirm availability and dispatch schedule from Ahmedabad.`;
+${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability and dispatch schedule from Ahmedabad.`;
 
     window.open(`https://wa.me/919512365582?text=${encodeURIComponent(text)}`, "_blank");
   };
@@ -303,13 +390,13 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
       doc.setTextColor(29, 115, 183);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.text(`${selectedBrand.toUpperCase()} — ${realProduct.name.toUpperCase()}`, 18, 48);
+      doc.text(`${activeBrandName.toUpperCase()} — ${activeProductName.toUpperCase()}`, 18, 48);
 
       doc.setTextColor(15, 23, 42);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9.5);
-      doc.text(`Catalog SKU: ${realProduct.sku} · Spec: ${currentCore} x ${currentSizeObj.size} (${currentConductor})`, 18, 56);
-      doc.text(`Standard: ${activeCableType.standard} · Rated Voltage: ${activeCableType.voltage}`, 18, 64);
+      doc.text(`Catalog SKU: ${activeProductSku} · Category: ${activeCategoryName}`, 18, 56);
+      doc.text(`Specification: ${activeSpecSummary}`, 18, 64);
 
       // Financials
       let yPos = 82;
@@ -318,24 +405,23 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
       doc.text("COMMERCIAL & FINANCIAL BREAKDOWN", 14, yPos);
       yPos += 8;
 
-      const rows = [
-        ["Total Procurement Quantity", `${quantityMeters.toLocaleString("en-IN")} Metres`],
-        ["Gross List Price (Pricelist MRP)", `Rs. ${unitListPrice.toLocaleString("en-IN")} / Metre`],
-        ["Gross List Value", `Rs. ${listTotal.toLocaleString("en-IN")}`],
-        [`Website Discount (${websiteDiscountPct}% OFF)`, `- Rs. ${websiteDiscountTotal.toLocaleString("en-IN")}`],
-        ...(contractorDiscount > 0 ? [[`Contractor Discount (${contractorDiscount}%)`, `- Rs. ${contractorDiscountAmount.toLocaleString("en-IN")}`]] : []),
+      const lines = [
+        ["Product Specification & Model", `${activeProductName} (${activeSpecSummary})`],
+        ["Catalog Manufacturer SKU", activeProductSku],
+        ["Procurement Quantity", `${activeQuantity.toLocaleString("en-IN")} ${activeUnitLabel}s`],
+        ["Gross Unit List Price (Pricelist MRP)", `Rs. ${unitListPrice.toLocaleString("en-IN")}/${activeUnitLabel}`],
+        ["Website Catalog Discount", `${websiteDiscountPct}% OFF (-Rs. ${unitDiscountAmount.toLocaleString("en-IN")}/${activeUnitLabel})`],
+        ["Volamp Online Net Rate", `Rs. ${unitNetPrice.toLocaleString("en-IN")}/${activeUnitLabel}`],
+        ["Gross List Total (Unchecked MRP)", `Rs. ${listTotal.toLocaleString("en-IN")}`],
+        [`Total Website Discount (${websiteDiscountPct}%)`, `- Rs. ${websiteDiscountTotal.toLocaleString("en-IN")}`],
+        [`Contractor Wholesale Rebate (${contractorDiscount}%)`, `- Rs. ${contractorDiscountAmount.toLocaleString("en-IN")}`],
         ["Net Taxable Subtotal", `Rs. ${taxableSubtotal.toLocaleString("en-IN")}`],
-        ["Applicable 18% GST", `Rs. ${gstAmount.toLocaleString("en-IN")}`],
-        ["Total Estimated Project Cost", `Rs. ${finalTotal.toLocaleString("en-IN")}`],
-        ["Approximate Dispatch Weight", `~ ${totalWeightKg.toLocaleString("en-IN")} kg`],
-        ["Packaging Form", drumType],
+        ["Goods & Services Tax (GST 18%)", `Rs. ${gstAmount.toLocaleString("en-IN")}`],
+        ["Total Estimated Procurement Value", `Rs. ${finalTotal.toLocaleString("en-IN")}`],
+        ["Total Project Cost Savings", `Rs. ${totalSavings.toLocaleString("en-IN")} (${websiteDiscountPct + contractorDiscount}% off MRP)`],
       ];
 
-      rows.forEach(([lbl, val], idx) => {
-        if (idx % 2 === 0) {
-          doc.setFillColor(248, 250, 252);
-          doc.rect(14, yPos - 4.5, 182, 7.5, "F");
-        }
+      lines.forEach(([lbl, val]) => {
         doc.setFont("helvetica", "bold");
         doc.setFontSize(9);
         doc.setTextColor(71, 85, 105);
@@ -350,31 +436,33 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
         yPos += 7.5;
       });
 
-      // Engineering Sizing notes
-      yPos += 10;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.setTextColor(3, 105, 161);
-      doc.text("ENGINEERING COMPLIANCE & VOLTAGE DROP SUMMARY", 14, yPos);
-      yPos += 6;
+      // Engineering Sizing notes (if cables)
+      if (isCable) {
+        yPos += 10;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(3, 105, 161);
+        doc.text("ENGINEERING COMPLIANCE & VOLTAGE DROP SUMMARY", 14, yPos);
+        yPos += 6;
 
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8.5);
-      doc.setTextColor(51, 65, 85);
-      doc.text(
-        `Calculated Full Load Current: ${realSizing.calculatedAmps} A (${effectiveKw} kW / ${loadHp} HP at ${voltagePhase === "415V_3P" ? "415V 3-Phase" : "230V 1-Phase"})\n` +
-        `Recommended Minimum Sizing: ${realSizing.cuRecommendation.runs > 1 ? `${realSizing.cuRecommendation.runs} Runs × ` : ""}${realSizing.cuRecommendation.sizeLabel} (Copper) or ${realSizing.alRecommendation.runs > 1 ? `${realSizing.alRecommendation.runs} Runs × ` : ""}${realSizing.alRecommendation.sizeLabel} (Aluminium)\n` +
-        `Estimated Voltage Drop over ${runDistanceMeters}m: ${activeRec.voltageDropVolts} V (${activeRec.voltageDropPct}% drop - ${activeRec.isDropCompliant ? "Conforms to IS 7098" : "Stepped up for IS 7098"})`,
-        14,
-        yPos
-      );
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(51, 65, 85);
+        doc.text(
+          `Calculated Full Load Current: ${realSizing.calculatedAmps} A (${effectiveKw} kW / ${loadHp} HP at ${voltagePhase === "415V_3P" ? "415V 3-Phase" : "230V 1-Phase"})\n` +
+          `Recommended Minimum Sizing: ${realSizing.cuRecommendation.runs > 1 ? `${realSizing.cuRecommendation.runs} Runs × ` : ""}${realSizing.cuRecommendation.sizeLabel} (Copper) or ${realSizing.alRecommendation.runs > 1 ? `${realSizing.alRecommendation.runs} Runs × ` : ""}${realSizing.alRecommendation.sizeLabel} (Aluminium)\n` +
+          `Estimated Voltage Drop over ${runDistanceMeters}m: ${activeRec.voltageDropVolts} V (${activeRec.voltageDropPct}% drop - ${activeRec.isDropCompliant ? "Conforms to IS 7098" : "Stepped up for IS 7098"})`,
+          14,
+          yPos
+        );
+      }
 
       // Footer
       doc.setTextColor(148, 163, 184);
       doc.setFontSize(8);
       doc.text("Volamp Elektrikals · GIDC Estate, Vatva, Ahmedabad, Gujarat · Phone: +91 9512365582 · sales@volampelektrikals.com", 14, 285);
 
-      doc.save(`VOLAMP_Estimation_${selectedBrand}_${currentSizeObj.size.replace(/\s+/g, "_")}.pdf`);
+      doc.save(`VOLAMP_Estimation_${activeBrandName}_${activeProductSku}.pdf`);
       toast.success("PDF Estimation Saved!");
     } catch (e: any) {
       toast.error("Failed to generate PDF", { description: e.message });
@@ -404,15 +492,15 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 text-center space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-[#1d73b7] dark:text-sky-400 tracking-wider uppercase backdrop-blur-sm">
             <Calculator className="size-3.5" />
-            <span>ONLINE ELECTRICAL SIZING & ESTIMATION DESK</span>
+            <span>ONLINE INDUSTRIAL PRODUCTS & SIZING CALCULATOR</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-['Space_Grotesk'] leading-tight">
-            Electrical Cable & Project Cost Estimator
+            Industrial Products & Project Cost Estimator
           </h1>
 
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Engineered for electrical contractors, EPC consultants, and industrial procurement teams. Calculate continuous current ratings, voltage drops, recommended conductor cross-sections, and real manufacturer project costs with 18% GST.
+            Engineered for electrical contractors, EPC consultants, and industrial procurement teams. Configure products across all 8 categories with live manufacturer MRP list prices, website discounts, and dedicated cable load sizing.
           </p>
 
           {/* Quick Stats Pills */}
@@ -421,18 +509,63 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
               <ShieldCheck className="size-4 text-emerald-500" /> IS 7098 & IS 694 Conforming
             </span>
             <span className="flex items-center gap-1.5">
-              <Building2 className="size-4 text-[#1d73b7] dark:text-sky-400" /> 6 Approved Brand Multipliers
+              <Building2 className="size-4 text-[#1d73b7] dark:text-sky-400" /> 8 Full Product Categories
             </span>
             <span className="flex items-center gap-1.5">
-              <Truck className="size-4 text-amber-500" /> Pan-India Drum Dispatch Weights
+              <Truck className="size-4 text-amber-500" /> Pan-India Direct Warehouse Dispatch
             </span>
           </div>
         </div>
       </section>
 
       {/* Main Interactive Calculator Area */}
-      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-8">
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 py-8 flex-1 w-full space-y-6">
         
+        {/* Category Switcher Bar (All 8 Categories) */}
+        <div className="bg-white dark:bg-[#0e1726] rounded-2xl p-4 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <Layers className="size-4 text-[#1d73b7] dark:text-sky-400" />
+              Select Product Category:
+            </span>
+            <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/50">
+              Live Master Catalog Feed
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 pt-1">
+            {CALCULATOR_CATEGORIES.map((cat) => {
+              const isSelected = selectedCategoryId === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategoryId(cat.id);
+                  }}
+                  className={`p-2.5 rounded-xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
+                    isSelected
+                      ? "border-[#1d73b7] bg-blue-50/70 dark:bg-sky-950/50 text-[#1d73b7] dark:text-sky-300 font-bold shadow-xs ring-1 ring-[#1d73b7]/30"
+                      : "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-100/50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold truncate">{cat.shortName}</span>
+                    {cat.hasSizingGuide && (
+                      <span className="text-[9px] px-1 py-0.2 rounded font-extrabold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                        Sizing
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">
+                    {cat.unit}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Mode Selector Tabs */}
         <div className="flex items-center justify-center sm:justify-start gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 overflow-x-auto">
           <button
@@ -445,7 +578,7 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
             }`}
           >
             <FileSpreadsheet className="size-4" />
-            <span>1. Project Cost & Brand Estimator</span>
+            <span>1. {isCable ? "Project Cost & Brand Estimator" : `${selectedCategoryMeta.shortName} Cost Estimator`}</span>
           </button>
 
           <button
@@ -459,6 +592,11 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
           >
             <Zap className="size-4" />
             <span>2. Conductor Load & Voltage Drop</span>
+            {!isCable && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-bold">
+                Cables Only
+              </span>
+            )}
           </button>
 
           <button
@@ -472,11 +610,16 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
           >
             <Layers className="size-4" />
             <span>3. IS Standard Sizing Chart</span>
+            {!isCable && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-bold">
+                Cables Only
+              </span>
+            )}
           </button>
         </div>
 
         {/* ========================================================================= */}
-        {/* TAB 1: PROJECT COST & BRAND ESTIMATOR                                     */}
+        {/* TAB 1: PROJECT COST & BRAND ESTIMATOR (ALL CATEGORIES)                    */}
         {/* ========================================================================= */}
         {activeTab === "cost" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in duration-200">
@@ -484,178 +627,336 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
             {/* Left 7 Cols: Configuration Controls */}
             <div className="lg:col-span-7 bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
               
-              {/* Brand Multiplier Selector */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Select Manufacturer Brand
-                  </label>
-                  <span className="text-[11px] text-[#1d73b7] dark:text-sky-400 font-bold">
-                    Official Discount Index
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                  {BRAND_MULTIPLIERS.map((b) => (
-                    <button
-                      key={b.name}
-                      type="button"
-                      onClick={() => setSelectedBrand(b.name)}
-                      className={`p-3 rounded-2xl text-left border transition-all cursor-pointer ${
-                        selectedBrand === b.name
-                          ? "border-[#1d73b7] bg-blue-50/50 dark:bg-blue-950/40 ring-2 ring-[#1d73b7]/20"
-                          : "border-slate-200 dark:border-slate-800 hover:border-slate-400 bg-white dark:bg-[#0c1522]"
-                      }`}
-                    >
-                      <span className="block text-xs font-black text-slate-900 dark:text-white">
-                        {b.name}
+              {isCable ? (
+                /* WIRES & CABLES CONTROLS */
+                <>
+                  {/* Brand Multiplier Selector */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Select Manufacturer Brand
+                      </label>
+                      <span className="text-[11px] text-[#1d73b7] dark:text-sky-400 font-bold">
+                        Official Discount Index
                       </span>
-                      <span className="block text-[10px] text-slate-400 mt-0.5">
-                        {b.badge}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Cable Type Selector */}
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                  Cable Category & Insulation Type
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {CABLE_CATALOG.map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => setSelectedCableId(c.id)}
-                      className={`p-3 rounded-2xl text-left border transition-all cursor-pointer ${
-                        selectedCableId === c.id
-                          ? "border-[#1d73b7] bg-blue-50/50 dark:bg-blue-950/40 ring-2 ring-[#1d73b7]/20"
-                          : "border-slate-200 dark:border-slate-800 hover:border-slate-400 bg-white dark:bg-[#0c1522]"
-                      }`}
-                    >
-                      <span className="block text-xs font-black text-slate-900 dark:text-white">
-                        {c.name}
-                      </span>
-                      <span className="block text-[10px] text-slate-400 mt-0.5">
-                        {c.voltage} · {c.standard}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Conductor & Core Configuration */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Conductor Metal
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {availableConductors.map((cond) => (
-                      <button
-                        key={cond}
-                        type="button"
-                        onClick={() => setConductor(cond as any)}
-                        className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                          conductor === cond
-                            ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-xs"
-                            : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
-                        }`}
-                      >
-                        {cond}
-                      </button>
-                    ))}
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      {BRAND_MULTIPLIERS.map((b) => (
+                        <button
+                          key={b.name}
+                          type="button"
+                          onClick={() => setSelectedBrand(b.name)}
+                          className={`p-3 rounded-2xl text-left border transition-all cursor-pointer ${
+                            selectedBrand === b.name
+                              ? "border-[#1d73b7] bg-blue-50/50 dark:bg-blue-950/40 ring-2 ring-[#1d73b7]/20"
+                              : "border-slate-200 dark:border-slate-800 hover:border-slate-400 bg-white dark:bg-[#0c1522]"
+                          }`}
+                        >
+                          <span className="block text-xs font-black text-slate-900 dark:text-white">
+                            {b.name}
+                          </span>
+                          <span className="block text-[10px] text-slate-400 mt-0.5">
+                            {b.badge}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Core Configuration
-                  </label>
-                  <select
-                    value={currentCore}
-                    onChange={(e) => setSelectedCore(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1522] text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1d73b7]"
-                  >
-                    {activeCableType.cores.map((core) => (
-                      <option key={core} value={core}>
-                        {core}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+                  {/* Cable Type Selector */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                      Cable Category & Insulation Type
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {CABLE_CATALOG.map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => setSelectedCableId(c.id)}
+                          className={`p-3 rounded-2xl text-left border transition-all cursor-pointer ${
+                            selectedCableId === c.id
+                              ? "border-[#1d73b7] bg-blue-50/50 dark:bg-blue-950/40 ring-2 ring-[#1d73b7]/20"
+                              : "border-slate-200 dark:border-slate-800 hover:border-slate-400 bg-white dark:bg-[#0c1522]"
+                          }`}
+                        >
+                          <span className="block text-xs font-black text-slate-900 dark:text-white">
+                            {c.name}
+                          </span>
+                          <span className="block text-[10px] text-slate-400 mt-0.5">
+                            {c.voltage} · {c.standard}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-              {/* Conductor Cross Section Size */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Conductor Size (sq.mm)
-                  </label>
-                  <span className="text-[11px] text-slate-400 font-mono">
-                    Weight: ~{currentSizeObj.approxWeightKgPerKm} kg/km
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                  {activeCableType.sizes.map((s) => (
-                    <button
-                      key={s.size}
-                      type="button"
-                      onClick={() => setSelectedSize(s.size)}
-                      className={`py-2 px-1 text-center rounded-xl text-xs font-black border transition-all cursor-pointer ${
-                        selectedSize === s.size
-                          ? "bg-[#1d73b7] text-white border-[#1d73b7] shadow-sm"
-                          : "border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400 bg-white dark:bg-[#0c1522]"
-                      }`}
-                    >
-                      {s.size.replace(" sq.mm", "")}
-                    </button>
-                  ))}
-                </div>
-              </div>
+                  {/* Conductor & Core Configuration */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Conductor Metal
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {availableConductors.map((cond) => (
+                          <button
+                            key={cond}
+                            type="button"
+                            onClick={() => setConductor(cond as any)}
+                            className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                              conductor === cond
+                                ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-xs"
+                                : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
+                            }`}
+                          >
+                            {cond}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
 
-              {/* Quantity Slider & Input */}
-              <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Procurement Quantity (Metres)
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      min={10}
-                      max={50000}
+                    <div className="space-y-2">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Core Configuration
+                      </label>
+                      <select
+                        value={currentCore}
+                        onChange={(e) => setSelectedCore(e.target.value)}
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1522] text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1d73b7]"
+                      >
+                        {activeCableType.cores.map((core) => (
+                          <option key={core} value={core}>
+                            {core}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Conductor Cross Section Size */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Conductor Size (sq.mm)
+                      </label>
+                      <span className="text-[11px] text-slate-400 font-mono">
+                        Weight: ~{currentSizeObj.approxWeightKgPerKm} kg/km
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                      {activeCableType.sizes.map((s) => (
+                        <button
+                          key={s.size}
+                          type="button"
+                          onClick={() => setSelectedSize(s.size)}
+                          className={`py-2 px-1 text-center rounded-xl text-xs font-black border transition-all cursor-pointer ${
+                            selectedSize === s.size
+                              ? "bg-[#1d73b7] text-white border-[#1d73b7] shadow-sm"
+                              : "border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400 bg-white dark:bg-[#0c1522]"
+                          }`}
+                        >
+                          {s.size.replace(" sq.mm", "")}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quantity Slider & Input */}
+                  <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Procurement Quantity (Metres)
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          min={10}
+                          max={50000}
+                          step={50}
+                          value={quantityMeters}
+                          onChange={(e) => setQuantityMeters(Math.max(10, parseInt(e.target.value, 10) || 10))}
+                          className="w-24 h-8 text-xs font-bold text-center rounded-xl"
+                        />
+                        <span className="text-xs font-semibold text-slate-400">Mtrs</span>
+                      </div>
+                    </div>
+                    <input
+                      type="range"
+                      min={50}
+                      max={5000}
                       step={50}
                       value={quantityMeters}
-                      onChange={(e) => setQuantityMeters(Math.max(10, parseInt(e.target.value, 10) || 10))}
-                      className="w-24 h-8 text-xs font-bold text-center rounded-xl"
+                      onChange={(e) => setQuantityMeters(parseInt(e.target.value, 10))}
+                      className="w-full accent-[#1d73b7] cursor-pointer"
                     />
-                    <span className="text-xs font-semibold text-slate-400">Mtrs</span>
+                    <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                      <span>50m (Sample)</span>
+                      <span>500m (Std Drum)</span>
+                      <span>1,000m (Reel)</span>
+                      <span>5,000m (Bulk)</span>
+                    </div>
                   </div>
-                </div>
-                <input
-                  type="range"
-                  min={50}
-                  max={5000}
-                  step={50}
-                  value={quantityMeters}
-                  onChange={(e) => setQuantityMeters(parseInt(e.target.value, 10))}
-                  className="w-full accent-[#1d73b7] cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-slate-400 font-mono">
-                  <span>50m (Sample)</span>
-                  <span>500m (Std Drum)</span>
-                  <span>1,000m (Reel)</span>
-                  <span>5,000m (Bulk)</span>
-                </div>
-              </div>
+                </>
+              ) : (
+                /* NON-CABLE CATEGORY CONFIGURATION */
+                <>
+                  {/* Step 1: Subcategory & Brand */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Subcategory & Brand ({selectedCategoryMeta.name})
+                      </label>
+                      <span className="text-[11px] text-[#1d73b7] dark:text-sky-400 font-bold">
+                        {availableSubcats.length} Subcategories
+                      </span>
+                    </div>
+
+                    {/* Subcategory Chips */}
+                    <div>
+                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
+                        Select Subcategory:
+                      </span>
+                      <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto pr-1">
+                        {availableSubcats.map((sub) => (
+                          <button
+                            key={sub}
+                            type="button"
+                            onClick={() => {
+                              setNonCableSubcat(sub);
+                              const prods = getProductsForCategory(selectedCategoryId, sub);
+                              if (prods.length > 0) setNonCableProductId(prods[0].id);
+                            }}
+                            className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                              activeSubcat === sub
+                                ? "bg-[#1d73b7] text-white border-[#1d73b7] shadow-xs"
+                                : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1522] text-slate-700 dark:text-slate-300 hover:border-slate-400"
+                            }`}
+                          >
+                            {sub}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Brand Chips */}
+                    {availableBrands.length > 1 && (
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1.5">
+                          Manufacturer Brand:
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                          {availableBrands.map((b) => (
+                            <button
+                              key={b}
+                              type="button"
+                              onClick={() => {
+                                setNonCableBrand(b);
+                                const prods = getProductsForCategory(selectedCategoryId, activeSubcat, b);
+                                if (prods.length > 0) setNonCableProductId(prods[0].id);
+                              }}
+                              className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                                activeBrand === b
+                                  ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-xs"
+                                  : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1522] text-slate-700 dark:text-slate-300 hover:border-slate-400"
+                              }`}
+                            >
+                              {b}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Step 2: Product Model Selection */}
+                  <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Select Model & Specification
+                      </label>
+                      <span className="text-[11px] text-slate-400 font-mono">
+                        {availableProducts.length} items in catalog
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                      {availableProducts.map((p) => {
+                        const isSelected = activeNonCableProduct?.id === p.id;
+                        return (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => setNonCableProductId(p.id)}
+                            className={`w-full p-3 rounded-2xl text-left border transition-all cursor-pointer flex items-center justify-between gap-3 ${
+                              isSelected
+                                ? "border-[#1d73b7] bg-blue-50/70 dark:bg-sky-950/40 ring-1 ring-[#1d73b7]/30 text-slate-900 dark:text-white"
+                                : "border-slate-200 dark:border-slate-800 hover:border-slate-400 bg-white dark:bg-[#0c1522] text-slate-700 dark:text-slate-300"
+                            }`}
+                          >
+                            <div className="min-w-0">
+                              <span className="block text-xs font-bold truncate">{p.name}</span>
+                              <span className="block text-[10px] text-slate-400 mt-0.5 truncate font-mono">
+                                SKU: {p.sku} {p.spec ? `· ${p.spec}` : ""}
+                              </span>
+                            </div>
+                            <div className="text-right shrink-0">
+                              <span className="text-[11px] text-slate-400 line-through block">
+                                ₹{p.listPrice.toLocaleString("en-IN")}
+                              </span>
+                              <span className="text-xs font-extrabold text-emerald-600 dark:text-emerald-400 block font-mono">
+                                ₹{p.netPrice.toLocaleString("en-IN")}/{p.unit}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Step 3: Quantity */}
+                  <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Procurement Quantity ({activeUnitLabel}s)
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          min={1}
+                          max={50000}
+                          value={nonCableQuantity}
+                          onChange={(e) => setNonCableQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                          className="w-24 h-8 text-xs font-bold text-center rounded-xl"
+                        />
+                        <span className="text-xs font-semibold text-slate-400">{activeUnitLabel}s</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {[5, 10, 25, 50, 100, 250, 500].map((q) => (
+                        <button
+                          key={q}
+                          type="button"
+                          onClick={() => setNonCableQuantity(q)}
+                          className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                            nonCableQuantity === q
+                              ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-xs"
+                              : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1522] text-slate-700 dark:text-slate-300 hover:border-slate-400"
+                          }`}
+                        >
+                          {q} {activeUnitLabel}s
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* Contractor Discount Slider */}
-              <div className="space-y-2">
+              <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <Percent className="size-3.5 text-[#1d73b7]" /> Contractor / Wholesale Discount
+                    <Percent className="size-3.5 text-[#1d73b7]" /> Contractor / Trade Slab Rebate
                   </label>
                   <span className="text-xs font-bold text-[#1d73b7] dark:text-sky-400">
                     {contractorDiscount}% Approved Slab
@@ -701,15 +1002,15 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                   ESTIMATED COMMERCIAL QUOTATION
                 </span>
                 <h3 className="text-lg font-black text-slate-900 dark:text-white font-['Space_Grotesk'] leading-snug">
-                  {selectedBrand} {realProduct.name || activeCableType.name}
+                  {activeBrandName} — {activeProductName}
                 </h3>
                 <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-slate-500">
                   <span className="font-semibold text-slate-700 dark:text-slate-300">
-                    {currentCore} · {currentSizeObj.size} ({currentConductor})
+                    {activeCategoryName} · {activeSpecSummary}
                   </span>
                   <span>·</span>
                   <span className="font-mono text-[11px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded font-bold text-slate-600 dark:text-slate-300">
-                    {realProduct.sku}
+                    {activeProductSku}
                   </span>
                 </div>
               </div>
@@ -719,7 +1020,7 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                 <div className="p-3 flex justify-between items-center">
                   <span className="text-slate-500">List Price (Pricelist MRP)</span>
                   <span className="font-semibold text-slate-400 line-through">
-                    ₹{unitListPrice.toLocaleString("en-IN")}/m
+                    ₹{unitListPrice.toLocaleString("en-IN")}/{activeUnitLabel}
                   </span>
                 </div>
                 <div className="p-3 flex justify-between items-center bg-amber-50/40 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300">
@@ -727,19 +1028,19 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                     Website Discount
                   </span>
                   <span className="font-bold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 text-[11px]">
-                    {websiteDiscountPct}% OFF (-₹{unitDiscountAmount.toLocaleString("en-IN")}/m)
+                    {websiteDiscountPct}% OFF (-₹{unitDiscountAmount.toLocaleString("en-IN")}/{activeUnitLabel})
                   </span>
                 </div>
                 <div className="p-3 flex justify-between items-center bg-emerald-50/30 dark:bg-emerald-950/20">
                   <span className="font-semibold text-slate-700 dark:text-slate-300">Volamp Online Rate</span>
                   <span className="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">
-                    ₹{unitNetPrice.toLocaleString("en-IN")}/m
+                    ₹{unitNetPrice.toLocaleString("en-IN")}/{activeUnitLabel}
                   </span>
                 </div>
                 <div className="p-3 flex justify-between">
                   <span className="text-slate-500">Procurement Quantity</span>
                   <span className="font-bold text-slate-900 dark:text-white">
-                    {quantityMeters.toLocaleString("en-IN")} Metres
+                    {activeQuantity.toLocaleString("en-IN")} {activeUnitLabel}s
                   </span>
                 </div>
                 <div className="p-3 flex justify-between">
@@ -789,17 +1090,19 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                 </div>
               </div>
 
-              {/* Packaging & Weight Details */}
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800/60 text-xs space-y-1">
-                <div className="flex justify-between font-medium text-slate-600 dark:text-slate-400">
-                  <span>Approx Gross Weight:</span>
-                  <strong className="text-slate-900 dark:text-white">~{totalWeightKg.toLocaleString("en-IN")} kg</strong>
+              {/* Packaging Details */}
+              {isCable && (
+                <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200/60 dark:border-slate-800/60 text-xs space-y-1">
+                  <div className="flex justify-between font-medium text-slate-600 dark:text-slate-400">
+                    <span>Approx Gross Weight:</span>
+                    <strong className="text-slate-900 dark:text-white">~{totalWeightKg.toLocaleString("en-IN")} kg</strong>
+                  </div>
+                  <div className="flex justify-between font-medium text-slate-600 dark:text-slate-400">
+                    <span>Drum Packaging:</span>
+                    <span className="text-slate-900 dark:text-white text-right max-w-xs">{drumType}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between font-medium text-slate-600 dark:text-slate-400">
-                  <span>Drum Packaging:</span>
-                  <span className="text-slate-900 dark:text-white text-right max-w-xs">{drumType}</span>
-                </div>
-              </div>
+              )}
 
               {/* Actions Grid */}
               <div className="space-y-2.5">
@@ -808,7 +1111,7 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
                   className="w-full bg-[#1d73b7] hover:bg-[#155a8f] text-white font-black text-xs h-12 rounded-2xl shadow-lg shadow-sky-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
                   <ShoppingCart className="size-4" />
-                  <span>Add Sized Cable to Cart (₹{finalTotal.toLocaleString("en-IN")})</span>
+                  <span>Add Sized Product to Cart (₹{finalTotal.toLocaleString("en-IN")})</span>
                 </Button>
 
                 <div className="grid grid-cols-2 gap-2">
@@ -844,10 +1147,10 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
               {/* Direct Link to Category Catalog */}
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
                 <Link
-                  href="/category/wires-cables"
+                  href={isCable ? "/category/wires-cables" : `/category/${selectedCategoryMeta.id}`}
                   className="inline-flex items-center gap-1 text-xs font-bold text-[#1d73b7] dark:text-sky-400 hover:underline"
                 >
-                  <span>Browse 1,200+ Wires & Cables in Catalog</span>
+                  <span>Explore full {selectedCategoryMeta.name} catalog</span>
                   <ArrowRight className="size-3" />
                 </Link>
               </div>
@@ -859,470 +1162,520 @@ Please confirm availability and dispatch schedule from Ahmedabad.`;
         {/* TAB 2: CONDUCTOR SIZING & VOLTAGE DROP CALCULATOR                         */}
         {/* ========================================================================= */}
         {activeTab === "sizing" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-in fade-in duration-200">
-            
-            {/* Input Controls */}
-            <div className="lg:col-span-6 bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400 block mb-1">
-                  AUTHENTIC IS 7098 / IS 694 SIZING ENGINE
-                </span>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
-                  Electrical Load & Distance Parameters
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  Engineered with authentic manufacturer ampacity ratings (Polycab, KEI, Finolex, Volamp OEM), IS 1255 parallel grouping derating, and CEA Discom grid compliance.
-                </p>
-              </div>
-
-              {/* CEA Discom Regulatory Banner */}
-              {realSizing.discomWarning && (
-                <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 text-xs text-amber-900 dark:text-amber-200 space-y-2">
-                  <div className="flex items-start gap-2">
-                    <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                    <p className="text-[11px] leading-relaxed">{realSizing.discomWarning}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setVoltagePhase("415V_3P")}
-                    className="text-[11px] font-bold underline hover:no-underline text-[#1d73b7] dark:text-sky-400 cursor-pointer block pl-6"
-                  >
-                    → Switch instantly to 415V 3-Phase (Recommended Industrial Standard)
-                  </button>
-                </div>
-              )}
-
-              {/* Load Input (kW or HP) */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Connected Load
-                  </label>
-                  <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-50 dark:bg-slate-900 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => setLoadInputMode("kW")}
-                      className={`px-3 py-1 rounded-md font-bold transition-all ${
-                        loadInputMode === "kW" ? "bg-[#1d73b7] text-white shadow-xs" : "text-slate-500"
-                      }`}
-                    >
-                      kW
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setLoadInputMode("HP")}
-                      className={`px-3 py-1 rounded-md font-bold transition-all ${
-                        loadInputMode === "HP" ? "bg-[#1d73b7] text-white shadow-xs" : "text-slate-500"
-                      }`}
-                    >
-                      HP
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <Input
-                    type="number"
-                    min={0.5}
-                    max={10000}
-                    step={1}
-                    value={loadInputMode === "kW" ? loadKw : loadHp}
-                    onChange={(e) => {
-                      const val = Math.max(0.5, parseFloat(e.target.value) || 1);
-                      if (loadInputMode === "kW") {
-                        setLoadKw(val);
-                        setLoadHp(Math.round((val / 0.7457) * 10) / 10);
-                      } else {
-                        setLoadHp(val);
-                        setLoadKw(Math.round(val * 0.7457 * 10) / 10);
-                      }
-                    }}
-                    className="h-11 text-base font-black rounded-xl"
-                  />
-                  <span className="text-sm font-bold text-slate-500 shrink-0">
-                    {loadInputMode === "kW" ? `(${loadHp} HP equivalent)` : `(${loadKw} kW equivalent)`}
-                  </span>
-                </div>
-              </div>
-
-              {/* Voltage & Phase */}
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                  Operating Potential & Phase
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setVoltagePhase("415V_3P")}
-                    className={`p-3.5 rounded-2xl text-left border transition-all cursor-pointer ${
-                      voltagePhase === "415V_3P"
-                        ? "border-[#1d73b7] bg-blue-50/50 dark:bg-blue-950/40 ring-2 ring-[#1d73b7]/20"
-                        : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
-                    }`}
-                  >
-                    <span className="block text-xs font-black text-slate-900 dark:text-white">
-                      415V 3-Phase (LT Industrial)
-                    </span>
-                    <span className="block text-[10px] text-slate-400 mt-0.5">
-                      Factories, motors, distribution panels
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setVoltagePhase("230V_1P")}
-                    className={`p-3.5 rounded-2xl text-left border transition-all cursor-pointer ${
-                      voltagePhase === "230V_1P"
-                        ? "border-[#1d73b7] bg-blue-50/50 dark:bg-blue-950/40 ring-2 ring-[#1d73b7]/20"
-                        : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
-                    }`}
-                  >
-                    <span className="block text-xs font-black text-slate-900 dark:text-white">
-                      230V 1-Phase (Commercial/Domestic)
-                    </span>
-                    <span className="block text-[10px] text-slate-400 mt-0.5">
-                      Offices, light loads, residential (≤ 7.5 kW)
-                    </span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Conductor & Installation Condition */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Conductor Preference
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setSizingConductor("Aluminum")}
-                      className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                        sizingConductor === "Aluminum"
-                          ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent shadow-xs"
-                          : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
-                      }`}
-                    >
-                      Aluminium (IS 7098)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSizingConductor("Copper")}
-                      className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                        sizingConductor === "Copper"
-                          ? "bg-[#c2410c] text-white border-[#c2410c] shadow-xs"
-                          : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
-                      }`}
-                    >
-                      Copper (IS 7098)
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Installation Method
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setInstallation("Air")}
-                      className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                        installation === "Air"
-                          ? "bg-[#1d73b7] text-white border-[#1d73b7] shadow-xs"
-                          : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
-                      }`}
-                    >
-                      In Air / Trays (40°C)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setInstallation("Ground")}
-                      className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                        installation === "Ground"
-                          ? "bg-[#1d73b7] text-white border-[#1d73b7] shadow-xs"
-                          : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
-                      }`}
-                    >
-                      Buried in Ground (30°C)
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Cable Run Distance */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Estimated Run Distance from Source
-                  </label>
-                  <span className="text-sm font-black text-[#1d73b7] dark:text-sky-400">
-                    {runDistanceMeters} Metres
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={10}
-                  max={1000}
-                  step={5}
-                  value={runDistanceMeters}
-                  onChange={(e) => setRunDistanceMeters(parseInt(e.target.value, 10))}
-                  className="w-full accent-[#1d73b7] cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-slate-400 font-mono">
-                  <span>10m (Panel next to transformer)</span>
-                  <span>100m (Plant shed)</span>
-                  <span>500m (Remote pump)</span>
-                  <span>1,000m (Long yard)</span>
-                </div>
-              </div>
-
-              {/* Power Factor */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                    Assumed Load Power Factor (cos φ)
-                  </label>
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                    {powerFactor}
-                  </span>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                  {[0.8, 0.85, 0.9, 0.95].map((pf) => (
-                    <button
-                      key={pf}
-                      type="button"
-                      onClick={() => setPowerFactor(pf)}
-                      className={`py-1.5 rounded-lg text-xs font-bold border transition-colors ${
-                        powerFactor === pf
-                          ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 border-transparent"
-                          : "border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400"
-                      }`}
-                    >
-                      {pf}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Results Docket */}
-            <div className="lg:col-span-6 space-y-6">
-              <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-black/50 space-y-6">
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400 block mb-1">
-                    IS 7098 & IS 1255 CERTIFIED ENGINEERING OUTPUT
-                  </span>
-                  <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
-                    Recommended Cable Cross-Sections
-                  </h3>
-                </div>
-
-                {/* Big Amp Rating Card */}
-                <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-500/10 via-sky-500/10 to-indigo-500/10 border border-blue-500/20 flex items-center justify-between">
+          <div className="animate-in fade-in duration-200">
+            {isCable ? (
+              /* WIRES & CABLES ELECTRICAL LOAD SIZING ENGINE */
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                {/* Input Controls */}
+                <div className="lg:col-span-6 bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
                   <div>
-                    <span className="text-xs text-slate-600 dark:text-slate-400 font-semibold block">
-                      Continuous Full Load Current:
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400 block mb-1">
+                      AUTHENTIC IS 7098 / IS 694 SIZING ENGINE
                     </span>
-                    <span className="text-3xl font-black text-[#1d73b7] dark:text-sky-400 font-['Space_Grotesk']">
-                      {realSizing.calculatedAmps.toLocaleString("en-IN")} Amps
-                    </span>
-                    <span className="text-[11px] text-slate-500 block mt-0.5">
-                      at {voltagePhase === "415V_3P" ? "415V 3-Phase" : "230V 1-Phase"}, cos φ = {powerFactor}
-                    </span>
-                  </div>
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
-                    {effectiveKw} kW ({loadHp} HP)
-                  </span>
-                </div>
-
-                {/* Primary Engineered Recommendation Card */}
-                <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-black uppercase tracking-wider text-[#1d73b7] dark:text-sky-400">
-                      Primary Recommendation ({sizingConductor})
-                    </span>
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/70 text-[#1d73b7] dark:text-sky-300 font-bold">
-                      {activeRec.runs > 1 ? `${activeRec.runs} Parallel Runs` : "Single Run"}
-                    </span>
-                  </div>
-
-                  <div>
-                    <div className="text-2xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
-                      {activeRec.runs > 1 && (
-                        <span className="text-[#1d73b7] dark:text-sky-400 mr-2">
-                          {activeRec.runs} Runs ×
-                        </span>
-                      )}
-                      3.5C {activeRec.sizeLabel}
-                    </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-                      Safe Derated Continuous Capacity: <strong className="text-slate-900 dark:text-white">{activeRec.safeAmpacityTotal} Amps</strong> (IS 1255 thermal & grouping derating applied)
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
+                      Electrical Load & Distance Parameters
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Engineered with authentic manufacturer ampacity ratings (Polycab, KEI, Finolex, Volamp OEM), IS 1255 parallel grouping derating, and CEA Discom grid compliance.
                     </p>
                   </div>
 
-                  {/* Alternative Conductor Quick Toggle */}
-                  <div className="pt-2 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs">
-                    <span className="text-slate-500">
-                      Alternative {sizingConductor === "Aluminum" ? "Copper" : "Aluminium"}:
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setSizingConductor(sizingConductor === "Aluminum" ? "Copper" : "Aluminum")}
-                      className="font-bold text-[#1d73b7] dark:text-sky-400 hover:underline cursor-pointer"
-                    >
-                      {altRec.runs > 1 ? `${altRec.runs} Runs × ` : ""}3.5C {altRec.sizeLabel} (Switch Conductor →)
-                    </button>
+                  {/* CEA Discom Regulatory Banner */}
+                  {realSizing.discomWarning && (
+                    <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 text-xs text-amber-900 dark:text-amber-200 space-y-2">
+                      <div className="flex items-start gap-2">
+                        <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                        <p className="text-[11px] leading-relaxed">{realSizing.discomWarning}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setVoltagePhase("415V_3P")}
+                        className="text-[11px] font-bold underline hover:no-underline text-[#1d73b7] dark:text-sky-400 cursor-pointer block pl-6"
+                      >
+                        → Switch instantly to 415V 3-Phase (Recommended Industrial Standard)
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Load Input (kW or HP) */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Connected Load
+                      </label>
+                      <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-800 p-0.5 bg-slate-50 dark:bg-slate-900 text-xs">
+                        <button
+                          type="button"
+                          onClick={() => setLoadInputMode("kW")}
+                          className={`px-3 py-1 rounded-md font-bold transition-all ${
+                            loadInputMode === "kW" ? "bg-[#1d73b7] text-white shadow-xs" : "text-slate-500"
+                          }`}
+                        >
+                          kW
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setLoadInputMode("HP")}
+                          className={`px-3 py-1 rounded-md font-bold transition-all ${
+                            loadInputMode === "HP" ? "bg-[#1d73b7] text-white shadow-xs" : "text-slate-500"
+                          }`}
+                        >
+                          HP
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <Input
+                        type="number"
+                        min={0.5}
+                        max={10000}
+                        step={1}
+                        value={loadInputMode === "kW" ? loadKw : loadHp}
+                        onChange={(e) => {
+                          const val = Math.max(0.5, parseFloat(e.target.value) || 1);
+                          if (loadInputMode === "kW") {
+                            setLoadKw(val);
+                            setLoadHp(Math.round((val / 0.7457) * 10) / 10);
+                          } else {
+                            setLoadHp(val);
+                            setLoadKw(Math.round(val * 0.7457 * 10) / 10);
+                          }
+                        }}
+                        className="h-11 text-base font-black rounded-xl"
+                      />
+                      <span className="text-sm font-bold text-slate-500 shrink-0">
+                        {loadInputMode === "kW" ? `(${loadHp} HP equivalent)` : `(${loadKw} kW equivalent)`}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Voltage & Phase */}
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                      Supply System & Voltage
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setVoltagePhase("415V_3P")}
+                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                          voltagePhase === "415V_3P"
+                            ? "border-[#1d73b7] bg-blue-50/50 dark:bg-blue-950/40 ring-2 ring-[#1d73b7]/20"
+                            : "border-slate-200 dark:border-slate-800 hover:border-slate-400 bg-white dark:bg-[#0c1522]"
+                        }`}
+                      >
+                        <span className="block text-xs font-black text-slate-900 dark:text-white">
+                          415V 3-Phase AC
+                        </span>
+                        <span className="block text-[10px] text-slate-400 mt-0.5">
+                          Industrial / Commercial Motors
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setVoltagePhase("230V_1P")}
+                        className={`p-3 rounded-2xl border text-left transition-all cursor-pointer ${
+                          voltagePhase === "230V_1P"
+                            ? "border-[#1d73b7] bg-blue-50/50 dark:bg-blue-950/40 ring-2 ring-[#1d73b7]/20"
+                            : "border-slate-200 dark:border-slate-800 hover:border-slate-400 bg-white dark:bg-[#0c1522]"
+                        }`}
+                      >
+                        <span className="block text-xs font-black text-slate-900 dark:text-white">
+                          230V 1-Phase AC
+                        </span>
+                        <span className="block text-[10px] text-slate-400 mt-0.5">
+                          Residential / Light Commercial
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Run Distance (Metres) */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Cable Route Distance (One-Way)
+                      </label>
+                      <span className="text-xs font-bold text-[#1d73b7] dark:text-sky-400">
+                        {runDistanceMeters} Metres
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min={10}
+                      max={1000}
+                      step={5}
+                      value={runDistanceMeters}
+                      onChange={(e) => setRunDistanceMeters(parseInt(e.target.value, 10))}
+                      className="w-full accent-[#1d73b7] cursor-pointer"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-400 font-mono">
+                      <span>10m</span>
+                      <span>80m (Avg Plant)</span>
+                      <span>250m</span>
+                      <span>500m</span>
+                      <span>1,000m</span>
+                    </div>
+                  </div>
+
+                  {/* Installation Medium & Power Factor */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Installation Laying
+                      </label>
+                      <select
+                        value={installation}
+                        onChange={(e) => setInstallation(e.target.value as "Air" | "Ground")}
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1522] text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1d73b7]"
+                      >
+                        <option value="Air">In Air / Perforated Cable Tray</option>
+                        <option value="Ground">Direct Buried in Ground / Trench</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-black uppercase tracking-wider text-slate-500">
+                        Power Factor (cos φ)
+                      </label>
+                      <select
+                        value={powerFactor}
+                        onChange={(e) => setPowerFactor(parseFloat(e.target.value))}
+                        className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1522] text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#1d73b7]"
+                      >
+                        <option value={0.8}>0.80 (Standard Induction Motors)</option>
+                        <option value={0.85}>0.85 (Industrial Factory Average)</option>
+                        <option value={0.9}>0.90 (High Efficiency Plant)</option>
+                        <option value={0.95}>0.95 (APFC Panel Corrected)</option>
+                        <option value={1.0}>1.00 (Pure Resistive / Heating)</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
-                {/* Voltage Drop Result */}
-                <div
-                  className={`p-4 rounded-2xl border space-y-2 ${
-                    activeRec.isDropCompliant
-                      ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-900 dark:text-emerald-300"
-                      : "bg-rose-500/10 border-rose-500/20 text-rose-900 dark:text-rose-300"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold flex items-center gap-1.5">
-                      {activeRec.isDropCompliant ? (
-                        <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
-                      ) : (
-                        <AlertTriangle className="size-4 text-rose-500 shrink-0" />
-                      )}
-                      Calculated Voltage Drop over {runDistanceMeters}m:
-                    </span>
-                    <span className="text-lg font-black font-['Space_Grotesk']">
-                      {activeRec.voltageDropPct}% ({activeRec.voltageDropVolts} V)
-                    </span>
+                {/* Right 6 Cols: Engineered Recommendation */}
+                <div className="lg:col-span-6 space-y-6">
+                  
+                  {/* Conductor Toggle for Sizing */}
+                  <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-4 shadow-sm flex items-center justify-between">
+                    <div>
+                      <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white block">
+                        Target Sizing Conductor
+                      </span>
+                      <span className="text-[11px] text-slate-500">
+                        Compare Aluminium vs Copper continuous performance
+                      </span>
+                    </div>
+                    <div className="flex gap-1.5 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => setSizingConductor("Aluminum")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          sizingConductor === "Aluminum"
+                            ? "bg-[#1d73b7] text-white shadow-xs"
+                            : "text-slate-600 dark:text-slate-400"
+                        }`}
+                      >
+                        Aluminium
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSizingConductor("Copper")}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          sizingConductor === "Copper"
+                            ? "bg-[#1d73b7] text-white shadow-xs"
+                            : "text-slate-600 dark:text-slate-400"
+                        }`}
+                      >
+                        Copper
+                      </button>
+                    </div>
                   </div>
-                  <p className="text-[11px] leading-relaxed opacity-90">
-                    {activeRec.isDropCompliant
-                      ? "✓ Safe! Conforms to statutory 5% motor/power limits prescribed by IS 7098 / IS 1255 standards."
-                      : "⚠️ Excessive drop! Sizing automatically stepped up to adhere to standard limits."}
+
+                  {/* Primary Recommendation Card */}
+                  <div className="bg-gradient-to-br from-blue-50/80 via-white to-sky-50/50 dark:from-[#0c1c30] dark:via-[#0e1726] dark:to-[#0e1726] border-2 border-[#1d73b7] dark:border-sky-500/60 rounded-3xl p-6 sm:p-8 shadow-xl shadow-blue-500/10 space-y-6">
+                    <div className="flex items-start justify-between border-b border-blue-100 dark:border-slate-800 pb-4">
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400 block mb-1">
+                          RECOMMENDED CONTINUOUS SIZING (IS 7098)
+                        </span>
+                        <h3 className="text-2xl font-black text-slate-900 dark:text-white font-['Space_Grotesk'] leading-tight">
+                          {activeRec.runs > 1 ? `${activeRec.runs} Runs × ` : ""}
+                          {activeRec.sizeLabel} ({sizingConductor})
+                        </h3>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                          3.5 Core XLPE Insulated Heavy Duty Armoured Cable ({sizingConductor})
+                        </p>
+                      </div>
+                      <div className="size-12 rounded-2xl bg-[#1d73b7] text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/30">
+                        <CheckCircle2 className="size-6" />
+                      </div>
+                    </div>
+
+                    {/* Technical KPIs */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                      <div className="p-3 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800">
+                        <span className="text-slate-400 text-[10px] block">Calculated FLC:</span>
+                        <strong className="text-slate-900 dark:text-white text-base font-black">
+                          {realSizing.calculatedAmps} A
+                        </strong>
+                      </div>
+                      <div className="p-3 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800">
+                        <span className="text-slate-400 text-[10px] block">Ampacity Limit:</span>
+                        <strong className="text-emerald-600 dark:text-emerald-400 text-base font-black">
+                          {activeRec.safeAmpacityTotal} A
+                        </strong>
+                      </div>
+                      <div className="p-3 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800">
+                        <span className="text-slate-400 text-[10px] block">Voltage Drop:</span>
+                        <strong className="text-slate-900 dark:text-white text-base font-black">
+                          {activeRec.voltageDropPct}%
+                        </strong>
+                      </div>
+                      <div className="p-3 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800">
+                        <span className="text-slate-400 text-[10px] block">Volts Drop:</span>
+                        <strong className="text-slate-900 dark:text-white text-base font-black">
+                          {activeRec.voltageDropVolts} V
+                        </strong>
+                      </div>
+                    </div>
+
+                    {/* Sizing Compliance Banner */}
+                    <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-900 dark:text-emerald-300 space-y-1">
+                      <div className="flex items-center gap-2 font-bold">
+                        <ShieldCheck className="size-4 text-emerald-500" />
+                        <span>IS 7098 Part 1 & IS 1255 Voltage Drop Compliant</span>
+                      </div>
+                      <p className="text-[11px] text-emerald-800/90 dark:text-emerald-300/80 leading-relaxed">
+                        Continuous ampacity derated for {installation === "Air" ? "tray ambient air dissipation" : "direct trench burial"}. Recommended breaker rating: <strong>{realSizing.calculatedAmps > 0 ? `${Math.ceil(realSizing.calculatedAmps * 1.25 / 10) * 10}A` : "Standard Breaker"}</strong>.
+                      </p>
+                    </div>
+
+                    {/* Action: Apply directly to Cost Estimator */}
+                    <Button
+                      onClick={() => applySizingToCost(sizingConductor === "Aluminum")}
+                      className="w-full bg-[#1d73b7] hover:bg-[#155a8f] text-white font-black text-xs h-12 rounded-2xl shadow-lg shadow-sky-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <Sliders className="size-4" />
+                      <span>Configure Cable in Cost Estimator ({activeRec.runs > 1 ? `${activeRec.runs}x` : ""}{activeRec.sizeLabel})</span>
+                    </Button>
+                  </div>
+
+                  {/* Alternative Material Card */}
+                  <div className="p-4 rounded-3xl bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 shadow-sm flex items-center justify-between text-xs">
+                    <div>
+                      <span className="text-slate-400 text-[10px] block uppercase font-bold">
+                        Alternative Material Solution:
+                      </span>
+                      <strong className="text-slate-900 dark:text-white text-sm">
+                        {altRec.runs > 1 ? `${altRec.runs} Runs × ` : ""}{altRec.sizeLabel} ({sizingConductor === "Aluminum" ? "Copper" : "Aluminium"})
+                      </strong>
+                      <span className="text-slate-500 block text-[11px]">
+                        Ampacity: {altRec.safeAmpacityTotal} A · Voltage Drop: {altRec.voltageDropPct}%
+                      </span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => applySizingToCost(sizingConductor !== "Aluminum")}
+                      className="border-[#1d73b7] text-[#1d73b7] dark:text-sky-400 font-bold text-xs rounded-xl"
+                    >
+                      Use {sizingConductor === "Aluminum" ? "Copper" : "Aluminium"}
+                    </Button>
+                  </div>
+
+                  {/* 11kV Feeder Alert for Large Industrial Loads */}
+                  {realSizing.htFeederAlternative && (
+                    <div className="p-5 rounded-3xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 text-xs text-amber-900 dark:text-amber-200 space-y-3">
+                      <div className="flex items-center gap-2 font-bold text-amber-800 dark:text-amber-300">
+                        <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" />
+                        <span>High Power Feeder Warning (Mega Industrial Load)</span>
+                      </div>
+                      <p className="text-[11px] leading-relaxed">
+                        {realSizing.htFeederAlternative.rationale}
+                      </p>
+                      <Button
+                        onClick={handleApplyHTFeeder}
+                        className="w-full bg-amber-600 hover:bg-amber-700 text-white font-black text-xs rounded-xl"
+                      >
+                        Switch to 11kV Substation XLPE Armoured Feeder
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* DEDICATED GUIDANCE CARD WHEN USER SELECTS SIZING ON A NON-CABLE CATEGORY */
+              <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-10 sm:p-14 text-center max-w-2xl mx-auto space-y-5 shadow-sm">
+                <div className="size-16 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex items-center justify-center mx-auto shadow-sm">
+                  <Zap className="size-8" />
+                </div>
+                <div className="space-y-2">
+                  <span className="text-xs font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400">
+                    ELECTRICAL ENGINEERING NOTICE
+                  </span>
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
+                    Load & Cable Sizing Guide is Exclusively for Wires & Cables
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Ampacity, full load continuous current (FLC), voltage drop percentage, and conductor cross-section calculations (per IS 7098 & IS 694) are specifically calibrated for electrical power transmission cables.
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    You have selected <strong className="text-slate-800 dark:text-slate-200">{selectedCategoryMeta.name}</strong>. Use the Cost Estimator tab to configure product models, manufacturer list prices (MRP), website discounts, and complete procurement bills of materials.
                   </p>
                 </div>
-
-                {/* 11kV HT Substation Card for Mega Loads (>= 150 kW) */}
-                {realSizing.htFeederAlternative && (
-                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-slate-800 dark:text-slate-200 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-black uppercase text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                        <Zap className="size-4" /> HT 11kV Substation Engineering Feeder Option
-                      </span>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300">
-                        {realSizing.htFeederAlternative.amps11kV} Amps at 11kV
-                      </span>
-                    </div>
-                    <p className="text-xs">
-                      For large loads (≥ 150 kW), stepping up to 11kV reduces current to <strong>{realSizing.htFeederAlternative.amps11kV} Amps</strong>, enabling a single <strong>{realSizing.htFeederAlternative.recommendedCable}</strong> with merely <strong>{realSizing.htFeederAlternative.voltageDropPct}%</strong> voltage drop over {runDistanceMeters}m.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleApplyHTFeeder}
-                      className="text-xs font-bold text-amber-700 dark:text-amber-300 underline hover:no-underline cursor-pointer"
-                    >
-                      → Configure 11kV HT Substation Cable in Cost Estimator
-                    </button>
-                  </div>
-                )}
-
-                {/* Apply Button */}
-                <Button
-                  onClick={() => applySizingToCost(sizingConductor === "Aluminum")}
-                  className="w-full bg-[#1d73b7] hover:bg-[#155a8f] text-white font-bold text-xs h-12 rounded-2xl shadow-lg shadow-sky-500/25 transition-all cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <FileSpreadsheet className="size-4" />
-                  <span>
-                    Configure {activeRec.runs > 1 ? `${activeRec.runs} Runs × ` : ""}3.5C {activeRec.sizeLabel} in Cost Estimator →
-                  </span>
-                </Button>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setSelectedCategoryId("cables");
+                    }}
+                    className="bg-[#1d73b7] hover:bg-[#155a8f] text-white font-bold text-xs"
+                  >
+                    <Cable className="size-3.5 mr-1.5" />
+                    Switch to Wires & Cables for Sizing
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setActiveTab("cost")}
+                    className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 text-xs font-bold"
+                  >
+                    Go to {selectedCategoryMeta.shortName} Estimator &rarr;
+                  </Button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 3: IS STANDARD SIZING & AMPACITY REFERENCE MATRIX                     */}
+        {/* TAB 3: IS STANDARD CABLE SIZING REFERENCE MATRIX                          */}
         {/* ========================================================================= */}
         {activeTab === "chart" && (
-          <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-200">
-            
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400 block mb-1">
-                  IS: 7098 (PART 1/2) & IS: 694 STANDARD MATRIX
-                </span>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
-                  Quick Load to Cable Sizing Reference Chart
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">
-                  415V 3-Phase 50Hz standard Indian industrial continuous full load ampacity table.
-                </p>
-              </div>
+          <div className="animate-in fade-in duration-200">
+            {isCable ? (
+              <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400 block mb-1">
+                      QUICK SELECTION MATRIX (IS 7098 / IS 694)
+                    </span>
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
+                      Motor kW & HP vs Recommended Conductor Cross-Section
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Reference standards for 415V 3-Phase continuous industrial duties up to 3% voltage drop.
+                    </p>
+                  </div>
 
-              {/* Search in chart */}
-              <div className="relative max-w-xs w-full">
-                <Search className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <Input
-                  type="text"
-                  placeholder="Filter by kW, HP, or size..."
-                  value={chartSearch}
-                  onChange={(e) => setChartSearch(e.target.value)}
-                  className="h-9 text-xs pl-8 rounded-xl bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800"
-                />
-              </div>
-            </div>
+                  <div className="w-full sm:w-64">
+                    <Input
+                      type="text"
+                      placeholder="Search kW, HP or cable size..."
+                      value={chartSearch}
+                      onChange={(e) => setChartSearch(e.target.value)}
+                      className="h-10 text-xs rounded-xl"
+                    />
+                  </div>
+                </div>
 
-            {/* Table */}
-            <div className="border border-slate-200/80 dark:border-slate-800/80 rounded-2xl overflow-hidden overflow-x-auto text-xs">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-100/80 dark:bg-slate-900/60 border-b border-slate-200/80 dark:border-slate-800/80 text-[11px] font-black text-slate-700 dark:text-slate-300">
-                    <th className="p-3.5">Motor / Load (kW)</th>
-                    <th className="p-3.5">Horsepower (HP)</th>
-                    <th className="p-3.5">Full Load Amps (A)</th>
-                    <th className="p-3.5">Rec. Copper Size</th>
-                    <th className="p-3.5">Rec. Aluminium Size</th>
-                    <th className="p-3.5">Max Dist (&lt;3% Drop)</th>
-                    <th className="p-3.5">Rec. Breaker (MCB/MCCB)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
-                  {filteredReferenceTable.map((row, idx) => (
-                    <tr
-                      key={idx}
-                      className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
-                    >
-                      <td className="p-3.5 font-black text-slate-900 dark:text-white">
-                        {row.kw} kW
-                      </td>
-                      <td className="p-3.5 text-slate-600 dark:text-slate-400 font-semibold">
-                        {row.hp} HP
-                      </td>
-                      <td className="p-3.5 font-bold text-[#1d73b7] dark:text-sky-400">
-                        {row.amps} A
-                      </td>
-                      <td className="p-3.5 font-bold text-amber-700 dark:text-amber-400">
-                        {row.copper}
-                      </td>
-                      <td className="p-3.5 font-bold text-slate-700 dark:text-slate-300">
-                        {row.alu}
-                      </td>
-                      <td className="p-3.5 text-slate-500 font-mono">
-                        {row.maxDist}
-                      </td>
-                      <td className="p-3.5">
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 font-mono font-bold text-slate-700 dark:text-slate-300">
-                          {row.breaker}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800">
+                  <table className="w-full text-xs text-left border-collapse">
+                    <thead>
+                      <tr className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                        <th className="p-3.5">Motor Load</th>
+                        <th className="p-3.5">Rated FLC (415V)</th>
+                        <th className="p-3.5">Copper Recommended</th>
+                        <th className="p-3.5">Aluminium Recommended</th>
+                        <th className="p-3.5">Max Run Distance</th>
+                        <th className="p-3.5">Breaker Rating</th>
+                        <th className="p-3.5 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium text-slate-700 dark:text-slate-300">
+                      {filteredReferenceTable.map((row, idx) => (
+                        <tr
+                          key={idx}
+                          className="hover:bg-blue-50/40 dark:hover:bg-sky-950/20 transition-colors"
+                        >
+                          <td className="p-3.5 font-bold text-slate-900 dark:text-white">
+                            {row.kw} kW ({row.hp} HP)
+                          </td>
+                          <td className="p-3.5 font-mono">{row.amps} A</td>
+                          <td className="p-3.5">
+                            <span className="font-bold text-amber-700 dark:text-amber-400">
+                              {row.copper}
+                            </span>
+                          </td>
+                          <td className="p-3.5">
+                            <span className="font-bold text-slate-900 dark:text-white">
+                              {row.alu}
+                            </span>
+                          </td>
+                          <td className="p-3.5 text-slate-500">{row.maxDist}</td>
+                          <td className="p-3.5">
+                            <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 font-mono text-[10px] font-bold">
+                              {row.breaker}
+                            </span>
+                          </td>
+                          <td className="p-3.5 text-right">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLoadKw(row.kw);
+                                setLoadHp(row.hp);
+                                setActiveTab("sizing");
+                              }}
+                              className="text-xs font-bold text-[#1d73b7] dark:text-sky-400 hover:underline cursor-pointer"
+                            >
+                              Size in Engine →
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              /* NOTICE WHEN NON-CABLE IS SELECTED IN TAB 3 */
+              <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-10 sm:p-14 text-center max-w-2xl mx-auto space-y-5 shadow-sm">
+                <div className="size-16 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex items-center justify-center mx-auto shadow-sm">
+                  <Layers className="size-8" />
+                </div>
+                <div className="space-y-2">
+                  <span className="text-xs font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400">
+                    CABLE REFERENCE MATRIX
+                  </span>
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
+                    IS 7098 / IS 694 Sizing Matrix is for Wires & Cables
+                  </h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    The quick sizing matrix provides standard conductor cross-sections for electric motor drives up to 500 kW. To view this matrix, switch to the <strong>Wires & Cables</strong> category.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
+                  <Button
+                    type="button"
+                    onClick={() => setSelectedCategoryId("cables")}
+                    className="bg-[#1d73b7] hover:bg-[#155a8f] text-white font-bold text-xs"
+                  >
+                    <Cable className="size-3.5 mr-1.5" />
+                    Switch to Wires & Cables Matrix
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveTab("cost")}
+                    className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 text-xs font-bold"
+                  >
+                    Go to {selectedCategoryMeta.shortName} Estimator &rarr;
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </main>
