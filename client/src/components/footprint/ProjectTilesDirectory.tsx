@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import type { FootprintProject, FootprintState } from "./GlobeProjectsExperience";
+import { STATIC_FOOTPRINT_PROJECTS } from "@/data/footprintData";
 
 const STATE_NAMES: Record<string, string> = {
   AP: "Andhra Pradesh",
@@ -155,7 +156,10 @@ export default function ProjectTilesDirectory({
   const [activeModalProject, setActiveModalProject] = useState<FootprintProject | null>(null);
 
   const projects: FootprintProject[] = useMemo(() => {
-    return (allProjectsData as unknown as FootprintProject[]) || [];
+    if (allProjectsData && Array.isArray(allProjectsData) && allProjectsData.length > 0) {
+      return allProjectsData as unknown as FootprintProject[];
+    }
+    return STATIC_FOOTPRINT_PROJECTS;
   }, [allProjectsData]);
 
   // Extract unique categories

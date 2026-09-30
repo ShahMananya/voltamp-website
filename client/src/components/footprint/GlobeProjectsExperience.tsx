@@ -30,6 +30,7 @@ import {
   Zap,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { STATIC_FOOTPRINT_STATES, STATIC_FOOTPRINT_PROJECTS } from "@/data/footprintData";
 
 // Lazy-load Globe component so Three.js is not loaded into memory unless WebGL is confirmed available
 const LazyGlobe = React.lazy(() => import("react-globe.gl"));
@@ -477,64 +478,15 @@ export default function GlobeProjectsExperience() {
 
   // Master states list with verified fallback
   const states: FootprintState[] = useMemo(() => {
-    if (dbStates && dbStates.length > 0) return dbStates as unknown as FootprintState[];
-    return [
-      {
-        id: 1,
-        code: "GJ",
-        name: "Gujarat",
-        territory: "West India",
-        lat: "22.25",
-        lng: "71.19",
-        projectsCompleted: 100,
-        majorProjectsCount: 18,
-        industry: "Statue of Unity, GIFT City, Petrochemicals & Solar Parks",
-        yearsOfPresence: "20+",
-        heritage: "Originating in Ahmedabad, Gujarat represents Volamp's foundational manufacturing and engineering corridor with 100+ installations.",
-        customerQuote: "Volamp supplied verified HT cables and specialized flame-retardant power feeds across landmark national infrastructure projects in Gujarat.",
-        customerAuthor: "Rajesh Varma",
-        customerCompany: "Gujarat Industrial Power Infra",
-        variant: "craft",
-      },
-      {
-        id: 2,
-        code: "MH",
-        name: "Maharashtra",
-        territory: "West India",
-        lat: "19.75",
-        lng: "75.71",
-        projectsCompleted: 20,
-        majorProjectsCount: 3,
-        industry: "Nuclear Research (BARC), Asian Highway & Aviation",
-        yearsOfPresence: "16+",
-        heritage: "Powering India's premier nuclear research facility (BARC Mumbai), Asian Highway expressways, and Kolhapur Airport.",
-        customerQuote: "Stringent compliance with atomic research safety standards and flawless project execution under demanding deadlines.",
-        customerAuthor: "Amit Deshmukh",
-        customerCompany: "Consortium Electrical Lead",
-        variant: "industry",
-      },
-      {
-        id: 3,
-        code: "RJ",
-        name: "Rajasthan",
-        territory: "North-West India",
-        lat: "27.02",
-        lng: "74.21",
-        projectsCompleted: 50,
-        majorProjectsCount: 50,
-        industry: "50+ Multi-Site Solar Parks, Industrial Transmissions & Mining",
-        yearsOfPresence: "15+",
-        heritage: "Engineered for high desert thermal extremes, Volamp has delivered across 50+ project sites in Rajasthan.",
-        customerQuote: "Over 50 successful project deliveries across Rajasthan with flawless cable performance under high ambient heat.",
-        customerAuthor: "Vikram Rathore",
-        customerCompany: "Surya Urja Rajasthan Consortium",
-        variant: "desert",
-      },
-    ];
+    if (dbStates && Array.isArray(dbStates) && dbStates.length > 0) return dbStates as unknown as FootprintState[];
+    return STATIC_FOOTPRINT_STATES;
   }, [dbStates]);
 
   const allProjectsList: FootprintProject[] = useMemo(() => {
-    return (dbProjects ?? []) as unknown as FootprintProject[];
+    if (dbProjects && Array.isArray(dbProjects) && dbProjects.length > 0) {
+      return dbProjects as unknown as FootprintProject[];
+    }
+    return STATIC_FOOTPRINT_PROJECTS;
   }, [dbProjects]);
 
   // Construct Data-Driven Cinematic Itinerary (Requirement 10 & 16)
