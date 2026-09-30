@@ -40,6 +40,9 @@ import {
   CABLE_CATALOG,
   BRAND_MULTIPLIERS,
   CableTypeOption,
+  formatQuantityWithUnit,
+  formatRateUnit,
+  formatChipUnit,
 } from "@/components/calculator/CableCalculatorModal";
 import { calculateRealCableSizing } from "@/data/realWireData";
 import { findRealWireProduct, type RealWireProduct } from "@/data/realWireProductsCatalog";
@@ -126,7 +129,6 @@ export default function CalculatorPage() {
   const [nonCableQuantity, setNonCableQuantity] = useState<number>(10);
 
   // Commercial Common states
-  const [contractorDiscount, setContractorDiscount] = useState<number>(12);
   const [includeGst, setIncludeGst] = useState<boolean>(true);
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -207,10 +209,9 @@ export default function CalculatorPage() {
   const websiteDiscountTotal = Math.round(listTotal * (websiteDiscountPct / 100));
   const websiteNetSubtotal = listTotal - websiteDiscountTotal;
 
-  // Optional contractor / volume slab discount
-  const contractorDiscountAmount = Math.round(websiteNetSubtotal * (contractorDiscount / 100));
-  const taxableSubtotal = websiteNetSubtotal - contractorDiscountAmount;
-  const totalSavings = websiteDiscountTotal + contractorDiscountAmount;
+  // Authentic catalog pricing (no additional volume slab discounts)
+  const taxableSubtotal = websiteNetSubtotal;
+  const totalSavings = websiteDiscountTotal;
 
   const gstAmount = Math.round(taxableSubtotal * 0.18);
   const finalTotal = includeGst ? taxableSubtotal + gstAmount : taxableSubtotal;
@@ -314,12 +315,12 @@ export default function CalculatorPage() {
       sku: activeProductSku,
       detail: activeSpecSummary,
       price: Math.round(taxableSubtotal / activeQuantity),
-      unit: activeUnitLabel,
+      unit: formatRateUnit(activeUnitLabel),
       quantity: activeQuantity,
       image: isCable ? "/products/cables.jpg" : undefined,
     });
     toast.success("Added Estimate to Cart", {
-      description: `${activeQuantity} ${activeUnitLabel}s of ${activeBrandName} (${activeProductSku}) added to procurement cart.`,
+      description: `${formatQuantityWithUnit(activeQuantity, activeUnitLabel)} of ${activeBrandName} (${activeProductSku}) added to procurement cart.`,
     });
   };
 
@@ -331,11 +332,11 @@ Brand: ${activeBrandName}
 Product: ${activeProductName}
 Catalog SKU: ${activeProductSku}
 Spec: ${activeSpecSummary}
-Quantity: ${activeQuantity.toLocaleString("en-IN")} ${activeUnitLabel}s
-Gross List Price (MRP): ₹${unitListPrice.toLocaleString("en-IN")}/${activeUnitLabel} (Gross Total: ₹${listTotal.toLocaleString("en-IN")})
-Website Discount (${websiteDiscountPct}% OFF): -₹${websiteDiscountTotal.toLocaleString("en-IN")}
-Net Rate: ₹${unitNetPrice.toLocaleString("en-IN")}/${activeUnitLabel}
-${contractorDiscount > 0 ? `Additional Contractor Slab (${contractorDiscount}%): -₹${contractorDiscountAmount.toLocaleString("en-IN")}\n` : ""}Net Taxable Subtotal: ₹${taxableSubtotal.toLocaleString("en-IN")}
+Quantity: ${formatQuantityWithUnit(activeQuantity, activeUnitLabel)}
+Gross List Price (MRP): ₹${unitListPrice.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)} (Gross Total: ₹${listTotal.toLocaleString("en-IN")})
+Website Discount (${websiteDiscountPct}% OFF MRP): -₹${websiteDiscountTotal.toLocaleString("en-IN")}
+Net Rate: ₹${unitNetPrice.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)}
+Net Taxable Subtotal: ₹${taxableSubtotal.toLocaleString("en-IN")}
 18% GST: ₹${gstAmount.toLocaleString("en-IN")}
 Final Payable Estimate: ₹${finalTotal.toLocaleString("en-IN")} (Total Savings: ₹${totalSavings.toLocaleString("en-IN")})
 ${isCable ? `Approx Gross Weight: ~${totalWeightKg.toLocaleString("en-IN")} kg (${drumType})\n` : ""}Generated on Volamp Online Estimation Desk: https://volampelektrikals.com/calculator`;
@@ -354,10 +355,10 @@ ${isCable ? `Approx Gross Weight: ~${totalWeightKg.toLocaleString("en-IN")} kg (
 *Product:* ${activeProductName}
 *Catalog SKU:* ${activeProductSku}
 *Specification:* ${activeSpecSummary}
-*Quantity:* ${activeQuantity} ${activeUnitLabel}s
-*Gross List (MRP):* ₹${unitListPrice.toLocaleString("en-IN")}/${activeUnitLabel}
-*Website Discount:* ${websiteDiscountPct}% OFF
-*Net Rate:* ₹${unitNetPrice.toLocaleString("en-IN")}/${activeUnitLabel}
+*Quantity:* ${formatQuantityWithUnit(activeQuantity, activeUnitLabel)}
+*Gross List (MRP):* ₹${unitListPrice.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)}
+*Website Discount:* ${websiteDiscountPct}% OFF MRP
+*Net Rate:* ₹${unitNetPrice.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)}
 *Estimated Total:* ₹${finalTotal.toLocaleString("en-IN")} (incl. 18% GST)
 ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability and dispatch schedule from Ahmedabad.`;
 
@@ -408,17 +409,16 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
       const lines = [
         ["Product Specification & Model", `${activeProductName} (${activeSpecSummary})`],
         ["Catalog Manufacturer SKU", activeProductSku],
-        ["Procurement Quantity", `${activeQuantity.toLocaleString("en-IN")} ${activeUnitLabel}s`],
-        ["Gross Unit List Price (Pricelist MRP)", `Rs. ${unitListPrice.toLocaleString("en-IN")}/${activeUnitLabel}`],
-        ["Website Catalog Discount", `${websiteDiscountPct}% OFF (-Rs. ${unitDiscountAmount.toLocaleString("en-IN")}/${activeUnitLabel})`],
-        ["Volamp Online Net Rate", `Rs. ${unitNetPrice.toLocaleString("en-IN")}/${activeUnitLabel}`],
+        ["Procurement Quantity", formatQuantityWithUnit(activeQuantity, activeUnitLabel)],
+        ["Gross Unit List Price (Pricelist MRP)", `Rs. ${unitListPrice.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)}`],
+        ["Website Catalog Discount", `${websiteDiscountPct}% OFF (-Rs. ${unitDiscountAmount.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)})`],
+        ["Volamp Online Net Rate", `Rs. ${unitNetPrice.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)}`],
         ["Gross List Total (Unchecked MRP)", `Rs. ${listTotal.toLocaleString("en-IN")}`],
         [`Total Website Discount (${websiteDiscountPct}%)`, `- Rs. ${websiteDiscountTotal.toLocaleString("en-IN")}`],
-        [`Contractor Wholesale Rebate (${contractorDiscount}%)`, `- Rs. ${contractorDiscountAmount.toLocaleString("en-IN")}`],
         ["Net Taxable Subtotal", `Rs. ${taxableSubtotal.toLocaleString("en-IN")}`],
         ["Goods & Services Tax (GST 18%)", `Rs. ${gstAmount.toLocaleString("en-IN")}`],
         ["Total Estimated Procurement Value", `Rs. ${finalTotal.toLocaleString("en-IN")}`],
-        ["Total Project Cost Savings", `Rs. ${totalSavings.toLocaleString("en-IN")} (${websiteDiscountPct + contractorDiscount}% off MRP)`],
+        ["Total Project Cost Savings", `Rs. ${totalSavings.toLocaleString("en-IN")} (${websiteDiscountPct}% off MRP)`],
       ];
 
       lines.forEach(([lbl, val]) => {
@@ -917,7 +917,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                   <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800">
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-black uppercase tracking-wider text-slate-500">
-                        Procurement Quantity ({activeUnitLabel}s)
+                        Procurement Quantity
                       </label>
                       <div className="flex items-center gap-2">
                         <Input
@@ -928,7 +928,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                           onChange={(e) => setNonCableQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
                           className="w-24 h-8 text-xs font-bold text-center rounded-xl"
                         />
-                        <span className="text-xs font-semibold text-slate-400">{activeUnitLabel}s</span>
+                        <span className="text-xs font-semibold text-slate-400">{formatRateUnit(activeUnitLabel)}</span>
                       </div>
                     </div>
 
@@ -944,34 +944,13 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                               : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1522] text-slate-700 dark:text-slate-300 hover:border-slate-400"
                           }`}
                         >
-                          {q} {activeUnitLabel}s
+                          {formatChipUnit(q, activeUnitLabel)}
                         </button>
                       ))}
                     </div>
                   </div>
                 </>
               )}
-
-              {/* Contractor Discount Slider */}
-              <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <Percent className="size-3.5 text-[#1d73b7]" /> Contractor / Trade Slab Rebate
-                  </label>
-                  <span className="text-xs font-bold text-[#1d73b7] dark:text-sky-400">
-                    {contractorDiscount}% Approved Slab
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={25}
-                  step={1}
-                  value={contractorDiscount}
-                  onChange={(e) => setContractorDiscount(parseInt(e.target.value, 10))}
-                  className="w-full accent-[#1d73b7] cursor-pointer"
-                />
-              </div>
 
               {/* GST Toggle */}
               <div className="flex items-center justify-between pt-2">
@@ -1020,7 +999,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                 <div className="p-3 flex justify-between items-center">
                   <span className="text-slate-500">List Price (Pricelist MRP)</span>
                   <span className="font-semibold text-slate-400 line-through">
-                    ₹{unitListPrice.toLocaleString("en-IN")}/{activeUnitLabel}
+                    ₹{unitListPrice.toLocaleString("en-IN")}/{formatRateUnit(activeUnitLabel)}
                   </span>
                 </div>
                 <div className="p-3 flex justify-between items-center bg-amber-50/40 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300">
@@ -1028,19 +1007,19 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                     Website Discount
                   </span>
                   <span className="font-bold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 text-[11px]">
-                    {websiteDiscountPct}% OFF (-₹{unitDiscountAmount.toLocaleString("en-IN")}/{activeUnitLabel})
+                    {websiteDiscountPct}% OFF (-₹{unitDiscountAmount.toLocaleString("en-IN")}/{formatRateUnit(activeUnitLabel)})
                   </span>
                 </div>
                 <div className="p-3 flex justify-between items-center bg-emerald-50/30 dark:bg-emerald-950/20">
                   <span className="font-semibold text-slate-700 dark:text-slate-300">Volamp Online Rate</span>
                   <span className="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">
-                    ₹{unitNetPrice.toLocaleString("en-IN")}/{activeUnitLabel}
+                    ₹{unitNetPrice.toLocaleString("en-IN")}/{formatRateUnit(activeUnitLabel)}
                   </span>
                 </div>
                 <div className="p-3 flex justify-between">
                   <span className="text-slate-500">Procurement Quantity</span>
                   <span className="font-bold text-slate-900 dark:text-white">
-                    {activeQuantity.toLocaleString("en-IN")} {activeUnitLabel}s
+                    {formatQuantityWithUnit(activeQuantity, activeUnitLabel)}
                   </span>
                 </div>
                 <div className="p-3 flex justify-between">
@@ -1053,12 +1032,6 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                   <span>Total Website Discount ({websiteDiscountPct}%)</span>
                   <span>-₹{websiteDiscountTotal.toLocaleString("en-IN")}</span>
                 </div>
-                {contractorDiscount > 0 && (
-                  <div className="p-3 flex justify-between text-emerald-600 dark:text-emerald-400">
-                    <span>Additional Contractor Slab ({contractorDiscount}%)</span>
-                    <span className="font-bold">-₹{contractorDiscountAmount.toLocaleString("en-IN")}</span>
-                  </div>
-                )}
                 <div className="p-3 flex justify-between">
                   <span className="text-slate-500">Net Taxable Subtotal</span>
                   <span className="font-bold text-slate-900 dark:text-white">
@@ -1077,7 +1050,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                     <CheckCircle2 className="size-3.5 text-emerald-500" /> Total Discount Savings:
                   </span>
                   <span className="font-extrabold text-sm">
-                    ₹{totalSavings.toLocaleString("en-IN")} ({websiteDiscountPct + (contractorDiscount > 0 ? contractorDiscount : 0)}% off MRP)
+                    ₹{totalSavings.toLocaleString("en-IN")} ({websiteDiscountPct}% off MRP)
                   </span>
                 </div>
                 <div className="p-4 flex items-baseline justify-between bg-blue-500/10 border-t border-blue-500/20">
