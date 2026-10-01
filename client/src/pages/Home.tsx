@@ -158,7 +158,6 @@ export default function Home() {
       eyebrow: "SOLUTIONS",
       heading: "Business Segments",
       pill: "CONTRACTORS · EPC · INFRA",
-      description: "Direct manufacturer pricing, custom drum lengths, and priority dispatch networks for turnkey industrial & infrastructure ventures.",
       cta: "Explore Segments",
       image: "/business-segments-hero.png?v=2",
       themeClass: "campaign-slide-segments",
@@ -169,9 +168,9 @@ export default function Home() {
       eyebrow: "FINANCING",
       heading: "Order & Pay Later",
       pill: "PRE-APPROVED BANK CREDIT",
-      description: "Institutional credit limits, up to 90 days revolving lines, and zero collateral procurement backed by premier banking partners.",
       cta: "Apply Credit",
-      image: "/order-pay-later-bank.jpg",
+      image: "/order-pay-later-slide.jpg",
+      isFullBanner: true,
       themeClass: "campaign-slide-financing",
       onClick: () => setCreditOpen(true),
     },
@@ -180,22 +179,10 @@ export default function Home() {
       eyebrow: "PORTAL",
       heading: "Project Workspace",
       pill: "LIVE TRACKING & QUOTES",
-      description: "Manage real-time dispatch milestones, download verified Mill Test Certificates (MTC), review quotes, and coordinate deliveries.",
       cta: "Open Portal",
       image: "/workspace-portal-hero.jpg",
       themeClass: "campaign-slide-portal",
       onClick: () => setAccountOpen(true),
-    },
-    {
-      id: "news",
-      eyebrow: "IN THE NEWS",
-      heading: "Ahmedabad Mirror Feature",
-      pill: "TOP 10 INSPIRING ENTREPRENEURS 2026",
-      description: "VOLAMP spotlighted for revolutionizing India's industrial wire & cable supply ecosystem with verified transparency and EPC reliability.",
-      cta: "Read Feature",
-      image: "/ahmedabad-mirror-top-10-entrepreneurs-2026.jpg",
-      themeClass: "campaign-slide-news",
-      onClick: () => navigate("/in-the-news"),
     },
   ], [navigate]);
 
@@ -252,7 +239,7 @@ export default function Home() {
           {campaignSlides.map((slide, idx) => (
             <div
               key={slide.id}
-              className={`market-hero-slide ${slide.themeClass}`}
+              className={`market-hero-slide ${slide.themeClass} ${slide.isFullBanner ? "is-full-banner" : ""}`}
               onClick={slide.onClick}
               role="button"
               tabIndex={0}
@@ -263,26 +250,38 @@ export default function Home() {
                 }
               }}
             >
-              <div className="market-hero-slide-content">
-                <span className="market-hero-slide-eyebrow">
-                  <span className="market-hero-pulse-dot" />
-                  {slide.eyebrow}
-                </span>
-                <h2 className="market-hero-slide-heading">{slide.heading}</h2>
-                <div className="market-hero-slide-pill">{slide.pill}</div>
-                <p className="market-hero-slide-desc">{slide.description}</p>
-                <div className="market-hero-slide-cta">
-                  <span>{slide.cta}</span>
-                  <ArrowRight className="size-4 market-hero-slide-arrow" />
+              {slide.isFullBanner ? (
+                <div className="market-hero-slide-full">
+                  <img
+                    src={slide.image}
+                    alt={`${slide.heading} - ${slide.pill}`}
+                    className="market-hero-slide-full-img"
+                    loading={idx === 0 ? "eager" : "lazy"}
+                  />
                 </div>
-              </div>
-              <div className="market-hero-slide-visual">
-                <img
-                  src={slide.image}
-                  alt={slide.heading}
-                  loading={idx === 0 ? "eager" : "lazy"}
-                />
-              </div>
+              ) : (
+                <div className="market-hero-slide-split">
+                  <div className="market-hero-slide-content">
+                    <span className="market-hero-slide-eyebrow">
+                      <span className="market-hero-pulse-dot" />
+                      {slide.eyebrow}
+                    </span>
+                    <h2 className="market-hero-slide-heading">{slide.heading}</h2>
+                    <div className="market-hero-slide-pill">{slide.pill}</div>
+                    <div className="market-hero-slide-cta">
+                      <span>{slide.cta}</span>
+                      <ArrowRight className="size-4 market-hero-slide-arrow" />
+                    </div>
+                  </div>
+                  <div className="market-hero-slide-visual">
+                    <img
+                      src={slide.image}
+                      alt={slide.heading}
+                      loading={idx === 0 ? "eager" : "lazy"}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
