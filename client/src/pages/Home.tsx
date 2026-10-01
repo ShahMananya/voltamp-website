@@ -165,7 +165,6 @@ export default function Home() {
       eyebrow: "SOLUTIONS",
       heading: "Business Segments",
       pill: "CONTRACTORS · EPC · INFRA",
-      subline: "Tailored HT/LT cable supply engineered for large-scale infrastructure & industrial projects.",
       cta: "Explore Segments",
       image: "/business-segments-hero.png?v=2",
       themeClass: "campaign-slide-segments",
@@ -176,7 +175,6 @@ export default function Home() {
       eyebrow: "FINANCING",
       heading: "Order & Pay Later",
       pill: "PRE-APPROVED BANK CREDIT",
-      subline: "Access 30 to 90 days institutional credit to keep site operations moving uninterrupted.",
       cta: "Apply for Credit",
       image: "/order-pay-later-3d.jpg",
       themeClass: "campaign-slide-financing",
@@ -187,7 +185,6 @@ export default function Home() {
       eyebrow: "PORTAL",
       heading: "Project Workspace",
       pill: "LIVE TRACKING & QUOTES",
-      subline: "Real-time consignment tracking, LR dockets, mill test certificates & rapid re-orders.",
       cta: "Open Workspace",
       image: "/workspace-portal-hero.jpg",
       themeClass: "campaign-slide-portal",
@@ -546,8 +543,6 @@ export default function Home() {
                   <h2 className="market-hero-slide-heading">{slide.heading}</h2>
 
                   <div className="market-hero-slide-pill">{slide.pill}</div>
-
-                  <p className="market-hero-slide-subline">{slide.subline}</p>
 
                   <div className="market-hero-slide-actions">
                     <button
