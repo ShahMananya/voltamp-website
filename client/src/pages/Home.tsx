@@ -25,15 +25,16 @@ import { CATEGORIES, ICON_MAP } from "@/data/categories";
 
 type Product = { name: string; sku: string; category: string; detail: string; accent: "orange" | "brown" | "yellow"; icon: typeof Cable; price: number; unit: string; use: string };
 const products: Product[] = [
-  { name: "LV Power Cable", sku: "VLP-LV-001", category: "Wires & Cables", detail: "Low-voltage cable options for dependable building and plant distribution.", accent: "brown", icon: Cable, price: 118, unit: "per metre", use: "Buildings, plants and distribution panels" },
-  { name: "Instrumentation Cable", sku: "VLP-IN-014", category: "Industrial Systems", detail: "Shielded signal cabling for control rooms and process environments.", accent: "orange", icon: Factory, price: 142, unit: "per metre", use: "Instrumentation and industrial automation" },
-  { name: "Solar Cable", sku: "VLP-SL-022", category: "Renewable Energy", detail: "Purpose-built cable for solar installations and renewable-energy systems.", accent: "yellow", icon: Zap, price: 76, unit: "per metre", use: "Solar plants and rooftop installations" },
-  { name: "Building Wire", sku: "VLP-BW-031", category: "Wires & Cables", detail: "Everyday wiring for residential, commercial and contractor requirements.", accent: "orange", icon: PlugZap, price: 42, unit: "per metre", use: "Homes, offices and general wiring" },
-  { name: "Control & Data Cable", sku: "VLP-CD-048", category: "Automation & Control", detail: "Clear connections for CCTV, LAN, telephone and smart systems.", accent: "brown", icon: PlugZap, price: 68, unit: "per metre", use: "Communication and control networks" },
+  { name: "1.1kV XLPE Aluminium Armoured Cable", sku: "VLP-AL-001", category: "Wires & Cables", detail: "Heavy-duty cross-linked underground power feeder cable for industrial and plant distribution.", accent: "brown", icon: Cable, price: 118, unit: "per metre", use: "Industrial plants, substations and LT distribution" },
+  { name: "Screened Instrumentation Cable (Pair/Triad)", sku: "VLP-IN-014", category: "Wires & Cables", detail: "Individually and overall shielded signal cabling for control rooms and DCS automation.", accent: "orange", icon: Factory, price: 142, unit: "per metre", use: "Process instrumentation and factory automation" },
+  { name: "Solar DC Cable 1C x 4 sqmm (H1Z2Z2-K)", sku: "VLP-SL-022", category: "Solar", detail: "UV, ozone and weather-resistant crosslinked halogen-free photovoltaic cable.", accent: "yellow", icon: Zap, price: 76, unit: "per metre", use: "Rooftop and ground-mount utility solar plants" },
+  { name: "Flexible FRLS Single Core Building Wire", sku: "VLP-BW-031", category: "Wires & Cables", detail: "Flame retardant low smoke 100% electrolytic copper conductor wire.", accent: "orange", icon: PlugZap, price: 42, unit: "per metre", use: "Commercial buildings, panels and residential wiring" },
+  { name: "10kA C-Curve Miniature Circuit Breaker (MCB)", sku: "VLP-SG-048", category: "Switchgear", detail: "IS/IEC 60898-1 certified final distribution protection device with bi-connect terminals.", accent: "brown", icon: PlugZap, price: 185, unit: "per piece", use: "Distribution boards and motor control centers" },
 ];
 const categoryNavigation = CATEGORIES.map((category) => {
   const Icon = ICON_MAP[category.iconName] || Cable;
   return {
+    id: category.id,
     name: category.name,
     shortName: category.shortName,
     code: category.code,
@@ -41,6 +42,8 @@ const categoryNavigation = CATEGORIES.map((category) => {
     detail: category.detail,
     image: category.image,
     icon: Icon,
+    productCount: category.productCount,
+    featuredPills: category.featuredPills,
     subcategories: category.subcategories,
     items: category.subcategories.map((s) => s.name),
   };
@@ -224,7 +227,291 @@ export default function Home() {
 
   return <div className="volamp-marketplace">
     <div className="market-utility"><div className="market-container utility-inner"><button onClick={openLocationPicker} className="flex items-center gap-2 text-left text-[#c56718] dark:text-amber-300 hover:text-[#b45309] dark:hover:text-amber-400 transition-colors group cursor-pointer" title="Click to view or change your detected project location (Global & Domestic)"><span className={`status-dot ${isDetecting ? "animate-ping" : ""}`} /><Globe2 className="size-3.5 text-[#c56718] dark:text-amber-400 shrink-0" /><span className="font-semibold text-[#4d1217] dark:text-white group-hover:underline">{isDetecting && !location ? "Detecting location..." : location}</span><ChevronDown className="inline size-3 text-[#c56718] dark:text-amber-400 opacity-80 group-hover:translate-y-0.5 transition-transform" /></button><div><span className="desktop-only text-[#5d4a4b] dark:text-slate-300">Global electrical supply & export desk</span><button onClick={() => navigate("/collaborate")} className="utility-collaborate">Collaborate with us <ArrowRight className="inline size-3" /></button><button onClick={handleQuote}>Talk to supply desk <ArrowRight className="inline size-3" /></button></div></div></div>
-    <header className="market-header"><div className="market-container market-header-top"><a href="#top"><BrandMark /></a><nav className="market-nav"><button onClick={() => jump("categories")}>Categories</button><button onClick={() => jump("solutions")}>Solutions</button><button onClick={() => navigate("/about-volamp")}>About Volamp</button><button onClick={() => navigate("/careers")} className="market-nav-link">Careers</button><button onClick={() => navigate("/collaborate")} className="market-nav-link">Collaborate with us</button></nav><div className="market-header-actions"><ThemeToggle /><button onClick={() => { if (user) { navigate(user.accountType === "employee" ? "/employee-portal" : "/portal"); } else { setAccountOpen(true); } }}><UserRound className="size-4" /> {user ? (user.accountType === "employee" ? "Employee portal" : "My portal") : "Login / Register"}</button><Button onClick={handleQuote} className="market-quote">Request a quote <ArrowRight className="ml-2 size-4" /></Button><Button variant="ghost" size="icon" className="market-menu" onClick={() => setMobileOpen(true)} aria-label="Open navigation"><Menu /></Button></div></div><div className="market-search-row market-container"><div className="category-menu-wrap" onMouseLeave={() => setActiveMegaCategory(null)}><button className="category-menu" onMouseEnter={() => { if (!activeMegaCategory) { setActiveMegaCategory("WIRE CABLES"); setActiveMegaSubcategory(CATEGORIES[0]?.subcategories[0]?.name ?? null); } }} onFocus={() => { if (!activeMegaCategory) { setActiveMegaCategory("WIRE CABLES"); setActiveMegaSubcategory(CATEGORIES[0]?.subcategories[0]?.name ?? null); } }} onClick={() => { setActiveMegaCategory(activeMegaCategory ? null : "WIRE CABLES"); jump("categories"); }}><Menu className="size-4" /> Categories <ChevronDown className="ml-auto size-4" /></button>{activeMegaCategory && <div className="mega-menu mega-menu-cascading" onMouseEnter={() => { if (!activeMegaCategory) setActiveMegaCategory("WIRE CABLES"); }}><div className="mega-menu-main-list">{megaMenuGroups.map((group) => { const Icon = group.icon; return <button key={group.name} className={`mega-menu-main-item ${activeMegaCategory === group.name ? "is-active" : ""}`} onMouseEnter={() => { setActiveMegaCategory(group.name); setActiveMegaSubcategory(group.subcategories[0]?.name ?? null); }} onFocus={() => { setActiveMegaCategory(group.name); setActiveMegaSubcategory(group.subcategories[0]?.name ?? null); }} onClick={() => { navigate(`/category/${group.slug}`); setActiveMegaCategory(null); }}><span className="mega-menu-cat-num">{group.code}</span><Icon className="size-4 shrink-0" /><span className="mega-menu-cat-name">{group.name}</span><ArrowRight className="ml-auto size-3.5 opacity-60" /></button>; })}</div><div className="mega-menu-sub-list"><div className="mega-menu-sub-list-head"><span className="market-kicker">{activeCategoryObj.shortName} · SUBCATEGORIES ({activeCategoryObj.subcategories.length})</span><h4>{activeCategoryObj.name}</h4></div><div className="mega-menu-sub-items">{activeCategoryObj.subcategories.map((sub) => <button key={sub.name} className={`mega-menu-sub-item ${activeSubcategoryObj?.name === sub.name ? "is-active" : ""}`} onMouseEnter={() => setActiveMegaSubcategory(sub.name)} onFocus={() => setActiveMegaSubcategory(sub.name)} onClick={() => { navigate(`/category/${sub.slug}`); setActiveMegaCategory(null); }}><span className="mega-menu-sub-name">{sub.name}</span><span className="mega-menu-sub-count">{sub.items.length}</span><ArrowRight className="size-3 shrink-0 opacity-40 ml-1" /></button>)}</div></div><div className="mega-menu-sub-sub-panel"><div><div className="mega-menu-sub-sub-header"><div className="flex items-center justify-between gap-2"><span className="market-kicker">{activeCategoryObj.name} · {activeSubcategoryObj?.name}</span><span className="mega-menu-badge">VERIFIED SPEC</span></div><h3>{activeSubcategoryObj?.name ?? activeCategoryObj.name}</h3><p>{activeSubcategoryObj?.detail ?? activeCategoryObj.detail}</p></div><div className="mega-menu-specs-strip"><div className="mega-menu-spec-item"><ShieldCheck className="size-3.5 text-amber-500 shrink-0" /><div><small>STANDARDS</small><strong>IS / IEC / CE Certified</strong></div></div><div className="mega-menu-spec-item"><Zap className="size-3.5 text-amber-500 shrink-0" /><div><small>CONDUCTOR</small><strong>100% Electrolytic Copper/Al</strong></div></div><div className="mega-menu-spec-item"><PackageSearch className="size-3.5 text-amber-500 shrink-0" /><div><small>SUPPLY</small><strong>Coils & Custom Drums</strong></div></div></div><div className="mega-menu-sub-sub-body"><div className="flex items-center justify-between mb-2"><span className="mega-menu-sub-sub-title">Available Types / Sizes ({activeSubcategoryObj?.items.length ?? 0}):</span><small className="text-[11px] text-slate-400">Click to discover or quote</small></div><div className="mega-menu-sub-sub-grid">{activeSubcategoryObj?.items.map((item) => <button key={item} className="mega-menu-variant-card" onClick={() => { if (activeSubcategoryObj) { navigate(`/category/${activeSubcategoryObj.slug}`); } setActiveMegaCategory(null); }} title={`Browse ${item}`}><div className="mega-menu-variant-icon"><Check className="size-3.5 text-amber-500" /></div><div className="mega-menu-variant-text"><strong>{item}</strong><small>Industrial & project grade</small></div><ArrowRight className="size-3.5 text-slate-400 shrink-0 ml-auto" /></button>)}</div></div><div className="mega-menu-procure-box"><div className="flex items-center gap-2"><Sparkles className="size-4 text-amber-500 shrink-0" /><div><strong>Wholesale & EPC Supply Support</strong><p>Direct manufacturer pricing, Mill Test Certificates (MTC), and pan-India project dispatch.</p></div></div></div></div><div className="mega-menu-actions"><button className="mega-menu-btn-primary" onClick={() => { if (activeSubcategoryObj) { navigate(`/category/${activeSubcategoryObj.slug}`); } else { navigate(`/category/${activeCategoryObj.slug}`); } setActiveMegaCategory(null); }}>Explore Full Category <ArrowRight className="size-3.5 ml-1" /></button><button className="mega-menu-btn-secondary" onClick={() => { setActiveMegaCategory(null); handleQuote(); }}>Request Project RFQ</button><button className="mega-menu-btn-ghost" onClick={() => { setActiveMegaCategory(null); setQuickOrderOpen(true); }}>Quick Order (WhatsApp)</button></div></div></div>}</div><div className="market-search"><Search className="size-5" /><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Enter product name, category or SKU" aria-label="Search products" />{search && <button onClick={() => setSearch("")} aria-label="Clear search"><X className="size-4" /></button>}{search && <div className="search-results">{searchResults.length ? searchResults.map((product) => <button key={product.name} onClick={() => { setSelectedDetail(product); setSearch(""); }}><ProductIllustration product={product} /><span><strong>{product.name}</strong><small>{product.sku} · {product.category} · indicative from ₹{product.price}/m</small></span><ArrowRight className="ml-auto size-4" /></button>) : <p>No matching published category. Ask Vola or contact the supply desk.</p>}</div>}</div><div className="quick-actions"><button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}><PackageSearch /><span>Track order</span></button><button onClick={openCalculator} aria-label="Open calculator"><Calculator /><span>Calculator</span></button><button onClick={handleQuote}><FileText /><span>PO / enquiry</span></button><button onClick={() => setQuickOrderOpen(true)}><Zap /><span>Quick order</span></button><button onClick={handleQuote}><Quote /><span>Quote desk</span></button><button onClick={openCart} className="relative cursor-pointer" aria-label="Open supply cart"><div className="relative flex items-center justify-center"><ShoppingCart className="size-5" />{totalCount > 0 && <span className="absolute -top-1.5 -right-2 size-4 bg-[#c56718] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-xs">{totalCount}</span>}</div><span>Cart</span></button></div></div>{mobileOpen && <div className="market-mobile-nav"><button onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X /></button><button onClick={() => jump("categories")}>Categories</button><button onClick={() => jump("solutions")}>Solutions</button><button onClick={() => navigate("/about-volamp")}>About Volamp</button><button onClick={() => { setMobileOpen(false); navigate("/careers"); }} className="market-mobile-link">Careers</button><button onClick={() => { setMobileOpen(false); openCart(); }} className="market-mobile-link flex items-center gap-2"><ShoppingCart className="size-4" /> Cart ({totalCount})</button><button onClick={() => { setMobileOpen(false); setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button><button onClick={() => { setMobileOpen(false); navigate("/collaborate"); }} className="market-mobile-link">Collaborate with us</button><ThemeToggle /><button onClick={() => { setMobileOpen(false); if (user) { navigate(user.accountType === "employee" ? "/employee-portal" : "/portal"); } else { setAccountOpen(true); } }}>{user ? (user.accountType === "employee" ? "Open employee portal" : "Open my portal") : "Login / Register"}</button></div>}</header>
+    <header className="market-header">
+      <div className="market-container market-header-top">
+        <a href="#top"><BrandMark /></a>
+        <nav className="market-nav">
+          <button onClick={() => jump("categories")}>Categories</button>
+          <button onClick={() => jump("solutions")}>Solutions</button>
+          <button onClick={() => navigate("/about-volamp")}>About Volamp</button>
+          <button onClick={() => navigate("/careers")} className="market-nav-link">Careers</button>
+          <button onClick={() => navigate("/collaborate")} className="market-nav-link">Collaborate with us</button>
+        </nav>
+        <div className="market-header-actions">
+          <ThemeToggle />
+          <button onClick={() => { if (user) { navigate(user.accountType === "employee" ? "/employee-portal" : "/portal"); } else { setAccountOpen(true); } }}>
+            <UserRound className="size-4" /> {user ? (user.accountType === "employee" ? "Employee portal" : "My portal") : "Login / Register"}
+          </button>
+          <Button onClick={handleQuote} className="market-quote">
+            Request a quote <ArrowRight className="ml-2 size-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="market-menu" onClick={() => setMobileOpen(true)} aria-label="Open navigation">
+            <Menu />
+          </Button>
+        </div>
+      </div>
+      <div className="market-search-row market-container">
+        <div className="category-menu-wrap" onMouseLeave={() => setActiveMegaCategory(null)}>
+          <button
+            className="category-menu"
+            onMouseEnter={() => {
+              if (!activeMegaCategory) {
+                setActiveMegaCategory("WIRE CABLES");
+                setActiveMegaSubcategory(CATEGORIES[0]?.subcategories[0]?.name ?? null);
+              }
+            }}
+            onFocus={() => {
+              if (!activeMegaCategory) {
+                setActiveMegaCategory("WIRE CABLES");
+                setActiveMegaSubcategory(CATEGORIES[0]?.subcategories[0]?.name ?? null);
+              }
+            }}
+            onClick={() => {
+              setActiveMegaCategory(activeMegaCategory ? null : "WIRE CABLES");
+            }}
+          >
+            <Menu className="size-4" /> Categories <ChevronDown className="ml-auto size-4" />
+          </button>
+          {activeMegaCategory && (
+            <div
+              className="mega-menu mega-menu-cascading"
+              onMouseEnter={() => {
+                if (!activeMegaCategory) setActiveMegaCategory("WIRE CABLES");
+              }}
+            >
+              <div className="mega-menu-main-list">
+                {megaMenuGroups.map((group) => {
+                  const Icon = group.icon;
+                  return (
+                    <button
+                      key={group.name}
+                      className={`mega-menu-main-item ${activeMegaCategory === group.name ? "is-active" : ""}`}
+                      onMouseEnter={() => {
+                        setActiveMegaCategory(group.name);
+                        setActiveMegaSubcategory(group.subcategories[0]?.name ?? null);
+                      }}
+                      onFocus={() => {
+                        setActiveMegaCategory(group.name);
+                        setActiveMegaSubcategory(group.subcategories[0]?.name ?? null);
+                      }}
+                      onClick={() => {
+                        navigate(`/category/${group.slug}`);
+                        setActiveMegaCategory(null);
+                      }}
+                    >
+                      <span className="mega-menu-cat-num">{group.code}</span>
+                      <Icon className="size-4 shrink-0" />
+                      <span className="mega-menu-cat-name">{group.name}</span>
+                      <span className="mega-menu-item-count">{group.productCount.toLocaleString("en-IN")}</span>
+                      <ArrowRight className="ml-auto size-3.5 opacity-60" />
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mega-menu-sub-list">
+                <div className="mega-menu-sub-list-head">
+                  <span className="market-kicker">
+                    {activeCategoryObj.shortName} · {activeCategoryObj.productCount.toLocaleString("en-IN")}+ ITEMS · SUBCATEGORIES ({activeCategoryObj.subcategories.length})
+                  </span>
+                  <h4>{activeCategoryObj.name}</h4>
+                </div>
+                <div className="mega-menu-sub-items">
+                  {activeCategoryObj.subcategories.map((sub) => (
+                    <button
+                      key={sub.name}
+                      className={`mega-menu-sub-item ${activeSubcategoryObj?.name === sub.name ? "is-active" : ""}`}
+                      onMouseEnter={() => setActiveMegaSubcategory(sub.name)}
+                      onFocus={() => setActiveMegaSubcategory(sub.name)}
+                      onClick={() => {
+                        navigate(`/category/${sub.slug}`);
+                        setActiveMegaCategory(null);
+                      }}
+                    >
+                      <span className="mega-menu-sub-name">{sub.name}</span>
+                      <span className="mega-menu-sub-count">{sub.items.length}</span>
+                      <ArrowRight className="size-3 shrink-0 opacity-40 ml-1" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="mega-menu-sub-sub-panel">
+                <div>
+                  <div className="mega-menu-sub-sub-header">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="market-kicker">{activeCategoryObj.name} · {activeSubcategoryObj?.name}</span>
+                      <span className="mega-menu-badge">VERIFIED SPEC</span>
+                    </div>
+                    <h3>{activeSubcategoryObj?.name ?? activeCategoryObj.name}</h3>
+                    <p>{activeSubcategoryObj?.detail ?? activeCategoryObj.detail}</p>
+                  </div>
+                  <div className="mega-menu-specs-strip">
+                    <div className="mega-menu-spec-item">
+                      <ShieldCheck className="size-3.5 text-amber-500 shrink-0" />
+                      <div>
+                        <small>STANDARDS</small>
+                        <strong>IS / IEC / CE Certified</strong>
+                      </div>
+                    </div>
+                    <div className="mega-menu-spec-item">
+                      <Zap className="size-3.5 text-amber-500 shrink-0" />
+                      <div>
+                        <small>CONDUCTOR</small>
+                        <strong>100% Electrolytic Copper/Al</strong>
+                      </div>
+                    </div>
+                    <div className="mega-menu-spec-item">
+                      <PackageSearch className="size-3.5 text-amber-500 shrink-0" />
+                      <div>
+                        <small>SUPPLY</small>
+                        <strong>Coils & Custom Drums</strong>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mega-menu-sub-sub-body">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="mega-menu-sub-sub-title">Available Types / Sizes ({activeSubcategoryObj?.items.length ?? 0}):</span>
+                      <small className="text-[11px] text-slate-400">Click to discover or quote</small>
+                    </div>
+                    <div className="mega-menu-sub-sub-grid">
+                      {activeSubcategoryObj?.items.map((item) => (
+                        <button
+                          key={item}
+                          className="mega-menu-variant-card"
+                          onClick={() => {
+                            if (activeSubcategoryObj) {
+                              navigate(`/category/${activeSubcategoryObj.slug}`);
+                            }
+                            setActiveMegaCategory(null);
+                          }}
+                          title={`Browse ${item}`}
+                        >
+                          <div className="mega-menu-variant-icon">
+                            <Check className="size-3.5 text-amber-500" />
+                          </div>
+                          <div className="mega-menu-variant-text">
+                            <strong>{item}</strong>
+                            <small>Industrial & project grade</small>
+                          </div>
+                          <ArrowRight className="size-3.5 text-slate-400 shrink-0 ml-auto" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mega-menu-procure-box">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="size-4 text-amber-500 shrink-0" />
+                      <div>
+                        <strong>Wholesale & EPC Supply Support</strong>
+                        <p>Direct manufacturer pricing, Mill Test Certificates (MTC), and pan-India project dispatch.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mega-menu-actions">
+                  <button
+                    className="mega-menu-btn-primary"
+                    onClick={() => {
+                      if (activeSubcategoryObj) {
+                        navigate(`/category/${activeSubcategoryObj.slug}`);
+                      } else {
+                        navigate(`/category/${activeCategoryObj.slug}`);
+                      }
+                      setActiveMegaCategory(null);
+                    }}
+                  >
+                    Explore Full Category <ArrowRight className="size-3.5 ml-1" />
+                  </button>
+                  <button
+                    className="mega-menu-btn-secondary"
+                    onClick={() => {
+                      setActiveMegaCategory(null);
+                      handleQuote();
+                    }}
+                  >
+                    Request Project RFQ
+                  </button>
+                  <button
+                    className="mega-menu-btn-ghost"
+                    onClick={() => {
+                      setActiveMegaCategory(null);
+                      setQuickOrderOpen(true);
+                    }}
+                  >
+                    Quick Order (WhatsApp)
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="market-search">
+          <Search className="size-5" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Enter product name, category or SKU" aria-label="Search products" />
+          {search && <button onClick={() => setSearch("")} aria-label="Clear search"><X className="size-4" /></button>}
+          {search && (
+            <div className="search-results">
+              {searchResults.length ? searchResults.map((product) => (
+                <button key={product.name} onClick={() => { setSelectedDetail(product); setSearch(""); }}>
+                  <ProductIllustration product={product} />
+                  <span>
+                    <strong>{product.name}</strong>
+                    <small>{product.sku} · {product.category} · indicative from ₹{product.price}/m</small>
+                  </span>
+                  <ArrowRight className="ml-auto size-4" />
+                </button>
+              )) : <p>No matching published category. Ask Vola or contact the supply desk.</p>}
+            </div>
+          )}
+        </div>
+        <div className="quick-actions">
+          <button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>
+            <PackageSearch />
+            <span>Track order</span>
+          </button>
+          <button onClick={openCalculator} aria-label="Open calculator">
+            <Calculator />
+            <span>Calculator</span>
+          </button>
+          <button onClick={handleQuote}>
+            <FileText />
+            <span>PO / enquiry</span>
+          </button>
+          <button onClick={() => setQuickOrderOpen(true)}>
+            <Zap />
+            <span>Quick order</span>
+          </button>
+          <button onClick={handleQuote}>
+            <Quote />
+            <span>Quote desk</span>
+          </button>
+          <button onClick={openCart} className="relative cursor-pointer" aria-label="Open supply cart">
+            <div className="relative flex items-center justify-center">
+              <ShoppingCart className="size-5" />
+              {totalCount > 0 && <span className="absolute -top-1.5 -right-2 size-4 bg-[#c56718] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-xs">{totalCount}</span>}
+            </div>
+            <span>Cart</span>
+          </button>
+        </div>
+      </div>
+      {mobileOpen && (
+        <div className="market-mobile-nav">
+          <button onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X /></button>
+          <button onClick={() => jump("categories")}>Categories</button>
+          <button onClick={() => jump("solutions")}>Solutions</button>
+          <button onClick={() => navigate("/about-volamp")}>About Volamp</button>
+          <button onClick={() => { setMobileOpen(false); navigate("/careers"); }} className="market-mobile-link">Careers</button>
+          <button onClick={() => { setMobileOpen(false); openCart(); }} className="market-mobile-link flex items-center gap-2">
+            <ShoppingCart className="size-4" /> Cart ({totalCount})
+          </button>
+          <button onClick={() => { setMobileOpen(false); setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button>
+          <button onClick={() => { setMobileOpen(false); navigate("/collaborate"); }} className="market-mobile-link">Collaborate with us</button>
+          <ThemeToggle />
+          <button onClick={() => { setMobileOpen(false); if (user) { navigate(user.accountType === "employee" ? "/employee-portal" : "/portal"); } else { setAccountOpen(true); } }}>
+            {user ? (user.accountType === "employee" ? "Open employee portal" : "Open my portal") : "Login / Register"}
+          </button>
+        </div>
+      )}
+    </header>
 
     <main id="top"><div className="market-container market-breadcrumb">Home <ChevronDown className="size-3 -rotate-90" /> <span>Let's Build {country} Together</span></div>
       <section
@@ -332,29 +619,55 @@ export default function Home() {
         <div className="market-container">
           <div className="market-section-head">
             <div>
-              <span className="market-kicker">BROWSE THE SUPPLY SYSTEM</span>
+              <span className="market-kicker">BROWSE THE SUPPLY SYSTEM · 8 MASTER CATEGORIES · 3,385+ PRODUCTS</span>
               <h1>Explore categories</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
+                Direct manufacturer pricing, IS/IEC/CE certifications, Mill Test Certificates (MTC), and 48-hour pan-India project dispatch across our complete electrical portfolio.
+              </p>
+            </div>
+            <div className="hidden sm:flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs font-semibold cursor-pointer"
+                onClick={() => navigate("/products")}
+              >
+                View Full Catalog ({CATEGORIES.reduce((acc, c) => acc + c.productCount, 0).toLocaleString("en-IN")}+) <ArrowRight className="ml-1.5 size-3.5" />
+              </Button>
             </div>
           </div>
           <div className="category-grid">
-            {categoryTiles.map(({ name, code, image }) => (
+            {categoryTiles.map((cat) => (
               <button
-                key={name}
+                key={cat.name}
                 className="category-tile group"
-                onClick={() => { navigate(categoryPath(name)); }}
+                onClick={() => { navigate(`/category/${cat.slug}`); }}
               >
                 <div className="category-tile-photo-wrap">
+                  <span className="category-tile-code-tag">CAT {cat.code}</span>
+                  <span className="category-tile-count-badge">
+                    <PackageSearch className="size-3 text-[#c56718]" />
+                    {cat.productCount.toLocaleString("en-IN")}+ items
+                  </span>
                   <img
-                    src={image || "/products/cables.jpg"}
-                    alt={name}
+                    src={cat.image || "/products/cables.jpg"}
+                    alt={cat.name}
                     className="category-tile-photo"
                     loading="lazy"
                   />
                 </div>
-                <div className="category-tile-footer">
-                  <strong className="category-tile-name">{name}</strong>
-                  <div className="category-tile-arrow-circle">
-                    <ArrowRight className="size-3.5" />
+                <div className="category-tile-info">
+                  <div className="flex items-center justify-between gap-1">
+                    <strong className="category-tile-name">{cat.name}</strong>
+                    <div className="category-tile-arrow-circle">
+                      <ArrowRight className="size-3.5" />
+                    </div>
+                  </div>
+                  <p className="category-tile-desc">{cat.detail}</p>
+                  <div className="category-tile-pills">
+                    {cat.featuredPills.slice(0, 3).map((pill) => (
+                      <span key={pill} className="category-tile-pill">{pill}</span>
+                    ))}
                   </div>
                 </div>
               </button>

@@ -16,6 +16,8 @@ export interface Category {
   detail: string;
   iconName: "Cable" | "ShieldCheck" | "Zap" | "PlugZap" | "Wrench" | "SunMedium" | "Layers" | "Radio";
   image?: string;
+  productCount: number;
+  featuredPills: string[];
   subcategories: SubCategory[];
 }
 
@@ -29,6 +31,8 @@ export const CATEGORIES: Category[] = [
     detail: "Industrial, building, power, control, communication & HT armoured cables",
     iconName: "Cable",
     image: "/products/cables.jpg?v=4",
+    productCount: 2856,
+    featuredPills: ["LT / HT Armoured", "Flexible (FRLS)", "Submersible", "LAN Cat-6", "Screened Instrumentation"],
     subcategories: [
       {
         name: "Industrial Flexible (FRLS) Insulated Cable",
@@ -175,6 +179,8 @@ export const CATEGORIES: Category[] = [
     detail: "Switching & control, powergear and final distribution protection",
     iconName: "ShieldCheck",
     image: "/products/switchgear.jpg",
+    productCount: 221,
+    featuredPills: ["MCB & RCCB", "Distribution Boards", "MCCBs", "Power Contactors", "Changeover Switches"],
     subcategories: [
       {
         name: "Switching & Control",
@@ -218,6 +224,8 @@ export const CATEGORIES: Category[] = [
     detail: "Ring, pin and tubular heavy-duty cable terminations",
     iconName: "PlugZap",
     image: "/products/cable-lugs.jpg?v=3",
+    productCount: 14,
+    featuredPills: ["Tubular Long Barrel", "Short Barrel Ring", "Pin Terminals", "Heavy Duty Copper"],
     subcategories: [
       {
         name: "Ring",
@@ -253,6 +261,8 @@ export const CATEGORIES: Category[] = [
     detail: "LMS, MMS, HMS conduits, casing capping & corrugated pipes",
     iconName: "Layers",
     image: "/products/pvc-pipe.jpg?v=3",
+    productCount: 93,
+    featuredPills: ["LMS / MMS / HMS", "PP Corrugated Flexible", "Casing & Capping", "ISI Rigid Conduit"],
     subcategories: [
       {
         name: "LMS (Light Mechanical Stress)",
@@ -325,6 +335,8 @@ export const CATEGORIES: Category[] = [
     detail: "Single, double compression, weatherproof & flameproof cable glands",
     iconName: "Wrench",
     image: "/products/cable-gland.jpg?v=3",
+    productCount: 90,
+    featuredPills: ["Flameproof HMI-F", "Weatherproof HMI-W", "Double Compression MD", "Single Compression"],
     subcategories: [
       {
         name: "Single Compression",
@@ -361,6 +373,8 @@ export const CATEGORIES: Category[] = [
     detail: "Switches, plugs, junction boxes, accessories, tools & safety gear",
     iconName: "PlugZap",
     image: "/products/wiring-devices.jpg?v=4",
+    productCount: 14,
+    featuredPills: ["Modular Switches", "Industrial Plugs", "Insulation Tapes", "Junction Boxes", "Safety Gear"],
     subcategories: [
       {
         name: "Insulation Tape",
@@ -469,6 +483,8 @@ export const CATEGORIES: Category[] = [
     detail: "Electrodes, pit covers, chemicals, copper, GI & aluminium materials",
     iconName: "ShieldCheck",
     image: "/products/earthing-rods.png?v=3",
+    productCount: 37,
+    featuredPills: ["Copper Bonded Electrodes", "Chemical Backfill", "RCC / FRP Pit Covers", "GI Earthing Strips"],
     subcategories: [
       {
         name: "Earthing Electrodes",
@@ -540,6 +556,8 @@ export const CATEGORIES: Category[] = [
     detail: "Solar cables, TOPCon/bifacial solar panels & inverters",
     iconName: "SunMedium",
     image: "/products/solar-panel.jpg?v=3",
+    productCount: 60,
+    featuredPills: ["TOPCon Bifacial Panels", "Solar DC Cable (PV1-F)", "Grid-Tie Inverters", "UV Resistant"],
     subcategories: [
       {
         name: "Solar Cable",
