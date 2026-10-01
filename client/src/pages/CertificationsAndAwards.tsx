@@ -559,7 +559,7 @@ export default function CertificationsAndAwards() {
               Mandatory Testing Standards & Statutory Compliance
             </h2>
             <p className="text-xs sm:text-sm text-[#5d4a4b] dark:text-slate-300 max-w-2xl">
-              Strict statutory compliance under BIS/ISI benchmarks, independent CPRI & ERDA type-tested laboratory reports, and factory-verified Mill Test Certificates (MTC) supplied with every consignment.
+              Strict statutory compliance under BIS/ISI benchmarks, independent CPRI & ERDA type-tested laboratory reports, and factory-verified Material Test Certificates ( MTC ) supplied with every consignment.
             </p>
           </div>
 
@@ -637,7 +637,7 @@ export default function CertificationsAndAwards() {
         <section className="rounded-2xl bg-gradient-to-r from-[#4d1217] via-[#5e1920] to-[#3a0d12] text-white p-6 sm:p-8 shadow-md">
           <div className="max-w-2xl space-y-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block">
-              MILL TEST CERTIFICATE (MTC) GUARANTEE
+              MATERIAL TEST CERTIFICATE ( MTC ) GUARANTEE
             </span>
             <h2 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] text-white">
               Every Consignment Supplied with Factory-Stamped Quality Certificates

@@ -396,7 +396,7 @@ export default function BranchLocations() {
                 We work with manufacturing units that can supply products at any location.
               </strong>
               <p className="text-xs text-[#5d4a4b] dark:text-slate-300 max-w-2xl leading-relaxed font-['DM_Sans']">
-                Need material delivered straight to your job site or remote industrial project? Our manufacturing partner network dispatches directly to any destination with factory Mill Test Certificates (MTC).
+                Need material delivered straight to your job site or remote industrial project? Our manufacturing partner network dispatches directly to any destination with factory Material Test Certificates ( MTC ).
               </p>
             </div>
           </div>

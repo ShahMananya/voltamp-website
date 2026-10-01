@@ -1584,7 +1584,7 @@ const initialFootprintProjects: FootprintProjectRecord[] = [
     category: "Nuclear Research & National Defense",
     shortDescription: "Critical safety-grade power distribution and high-reliability instrumentation cabling for India's premier nuclear research facility.",
     overview: "Stringent regulatory compliance, radiation resistance, and ultra-high continuous uptime requirements.",
-    volampContribution: "Supplied specialized radiation-tolerant, halogen-free, and fire-survival power lines with full Mill Test Certification.",
+    volampContribution: "Supplied specialized radiation-tolerant, halogen-free, and fire-survival power lines with full Material Test Certification.",
     heritage: "A crowning milestone of trust by India's apex nuclear science institution.",
     customerTestimonial: "Strict compliance with nuclear safety protocols and comprehensive MTC test documentation.",
     customerName: "Scientific Engineering Desk",
@@ -2541,7 +2541,7 @@ export async function trackConsignmentOrder(query: string): Promise<ConsignmentT
       },
       {
         title: "Quality Check & MTC Stamping",
-        description: "Drum coiling, spark testing, and Mill Test Certificate (MTC) generation.",
+        description: "Drum coiling, spark testing, and Material Test Certificate ( MTC ) generation.",
         time: isDispatched ? "MTC Approved" : isProcessing ? "In Progress" : "Pending",
         completed: isDispatched,
         current: isProcessing,
@@ -2658,7 +2658,7 @@ export async function trackConsignmentOrder(query: string): Promise<ConsignmentT
       },
       {
         title: "Quality Check & MTC Stamping",
-        description: "Coil inspection, packaging, and Mill Test Certificate preparation.",
+        description: "Coil inspection, packaging, and Material Test Certificate ( MTC ) preparation.",
         time: isPriced ? "MTC Ready" : "Scheduled next",
         completed: isPriced,
         current: qStatus === "priced",

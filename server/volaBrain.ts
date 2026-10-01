@@ -347,7 +347,7 @@ function handleBusinessSegments(query: string): string | null {
       `  - Heavy-Duty Hot-Dip Galvanized (GI) Perforated & Ladder Cable Trays and Raceways.\n` +
       `  - High-Fault Trefoil Cable Cleats for mechanical short-circuit containment.\n` +
       `  - Maintenance-Free Chemical Earthing Electrodes & ESE Lightning Arresters.\n` +
-      `• **Engineering Standards**: IS 7098, CPRI / ERDA Type Tested, Original Manufacturer Test Certificate (MTC) accompanying every wooden drum.\n` +
+      `• **Engineering Standards**: IS 7098, CPRI / ERDA Type Tested, Original Material Test Certificate ( MTC ) accompanying every wooden drum.\n` +
       `• **Logistics**: Direct site dispatch across India from our Ahmedabad central fulfillment depot.`
     );
   }
@@ -783,7 +783,7 @@ function handleProductAndCatalogQuery(query: string): string | null {
         const productList = prods.products.map(formatProductCard).join("\n\n");
         return (
           `### ⚡ Authorized ${prods.products[0].brand} Products at Volamp (${prods.total} items available)\n\n` +
-          `Volamp is a primary distributor for **${prods.products[0].brand}**, supplying factory-direct materials with original Manufacturer Test Certificates (MTC):\n\n` +
+          `Volamp is a primary distributor for **${prods.products[0].brand}**, supplying factory-direct materials with original Material Test Certificates ( MTC ):\n\n` +
           `${productList}\n\n` +
           `Looking for a specific gauge or rating in ${prods.products[0].brand}? Tell me what size or coil length you need!`
         );

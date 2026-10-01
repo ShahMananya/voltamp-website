@@ -86,12 +86,12 @@ const SECTIONS: TermSection[] = [
     content: [
       "Volamp operates two official physical facilities in Ahmedabad: our Corporate Main Office in Khadia (380001) for commercial contracting and billing, and our Central Fulfillment Center in Aslali (382427) on the NH-48 junction for high-tonnage storage and precision drum cutting.",
       "Direct Manufacturing Units: In addition to warehouse inventory, Volamp works directly with premier certified manufacturing units that can supply and dispatch products directly to any job site, project location, or regional depot across India.",
-      "Every project dispatch is accompanied by official dispatch challans, e-Way bills, and manufacturer Mill Test Certificates (MTC) certifying adherence to IS/IEC standards.",
+      "Every project dispatch is accompanied by official dispatch challans, e-Way bills, and manufacturer Material Test Certificates ( MTC ) certifying adherence to IS/IEC standards.",
     ],
     keyPoints: [
       "Main Office (Khadia) + Central Warehouse (Aslali)",
       "Direct factory-to-site supply to any location pan-India",
-      "Factory Mill Test Certificates (MTC) and routine test reports",
+      "Factory Material Test Certificates ( MTC ) and routine test reports",
     ],
   },
   {

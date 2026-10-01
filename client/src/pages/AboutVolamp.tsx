@@ -670,7 +670,7 @@ export default function AboutVolamp() {
                 <span>02</span>
                 <h3>Reliability in the handoff</h3>
                 <p>
-                  Dependable follow-through from enquiry to quotation, dispatch, and Mill Test Certificates (MTC).
+                  Dependable follow-through from enquiry to quotation, dispatch, and Material Test Certificates ( MTC ).
                 </p>
               </article>
               <article>
@@ -931,7 +931,7 @@ export default function AboutVolamp() {
             <div className="prebar-text">
               <span className="prebar-eyebrow">ENGINEERING & PROJECT SUPPLY DESK</span>
               <h3>Powering High-Voltage Infrastructure Across India & Overseas.</h3>
-              <p>Direct manufacturer supply, Mill Test Certificates (MTC), and specialized technical guidance from Ahmedabad HQ.</p>
+              <p>Direct manufacturer supply, Material Test Certificates ( MTC ), and specialized technical guidance from Ahmedabad HQ.</p>
             </div>
             <div className="prebar-actions">
               <a

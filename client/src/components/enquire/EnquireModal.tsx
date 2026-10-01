@@ -495,7 +495,7 @@ export function EnquireModal({
             <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-stone-500">
               <div className="flex items-center gap-1.5">
                 <ShieldCheck className="size-3.5 text-emerald-600 shrink-0" />
-                <span>Confidential RFQ · Factory Mill Test Certificates (MTC) Guaranteed</span>
+                <span>Confidential RFQ · Factory Material Test Certificates ( MTC ) Guaranteed</span>
               </div>
               <span>Supply Desk: +91 95123 65582</span>
             </div>

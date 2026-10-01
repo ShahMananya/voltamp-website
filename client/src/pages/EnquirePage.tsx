@@ -256,7 +256,7 @@ export default function EnquirePage() {
                   </div>
                   <div className="flex items-start gap-2.5">
                     <FileCheck2 className="size-4 text-amber-400 shrink-0 mt-0.5" />
-                    <span><strong>Mill Test Certificates (MTC):</strong> Original factory test reports supplied with every cable drum and consignment.</span>
+                    <span><strong>Material Test Certificates ( MTC ):</strong> Original factory test reports supplied with every cable drum and consignment.</span>
                   </div>
                   <div className="flex items-start gap-2.5">
                     <Globe2 className="size-4 text-sky-400 shrink-0 mt-0.5" />

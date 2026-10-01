@@ -569,7 +569,7 @@ export default function ProductDetailPage() {
         yPos += 7.5;
       });
 
-      // Quality & Mill Test Notice
+      // Quality & Material Test Notice
       yPos += 8;
       doc.setDrawColor(186, 230, 253);
       doc.setFillColor(240, 249, 255);
@@ -578,7 +578,7 @@ export default function ProductDetailPage() {
       doc.setTextColor(3, 105, 161);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
-      doc.text("OFFICIAL MILL TEST CERTIFICATE (MTC) & DISPATCH POLICY", 18, yPos + 6);
+      doc.text("OFFICIAL MATERIAL TEST CERTIFICATE ( MTC ) & DISPATCH POLICY", 18, yPos + 6);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(12, 74, 110);
       doc.text(
@@ -1067,7 +1067,7 @@ export default function ProductDetailPage() {
                   <FileCheck className="size-4" />
                 </div>
                 <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">
-                  Mill Test Report
+                  Material Test Report
                 </span>
                 <span className="text-[9px] text-slate-400">Official MTC</span>
               </div>
@@ -1541,7 +1541,7 @@ export default function ProductDetailPage() {
                   </div>
                   <div>
                     <strong className="text-xs text-slate-900 dark:text-white block font-bold">
-                      Official Mill Test Certificate (MTC)
+                      Official Material Test Certificate ( MTC )
                     </strong>
                     <span className="text-[11px] text-slate-400">
                       Standard factory material inspection and batch quality certificate

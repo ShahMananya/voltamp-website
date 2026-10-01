@@ -109,7 +109,7 @@ export default function LogisticsDashboardView({
               )}
             </div>
             <p className="text-xs text-amber-100/80">
-              Real-time transit updates, transporter LR, and Mill Test Certificate (MTC) clearance.
+              Real-time transit updates, transporter LR, and Material Test Certificate ( MTC ) clearance.
             </p>
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function LogisticsDashboardView({
               Track Your VOLAMP Consignment
             </h3>
             <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
-              Enter your <strong>Order ID</strong> (from your invoice or confirmation email) or registered <strong>Phone Number</strong> above to view real-time transit status, transporter docket, and Mill Test Certificate (MTC).
+              Enter your <strong>Order ID</strong> (from your invoice or confirmation email) or registered <strong>Phone Number</strong> above to view real-time transit status, transporter docket, and Material Test Certificate ( MTC ).
             </p>
           </div>
 
@@ -216,7 +216,7 @@ export default function LogisticsDashboardView({
                 <span>MTC Clearance</span>
               </div>
               <p className="text-[11px] text-[#5d4a4b] leading-normal">
-                Verified Mill Test Certificate and batch test reports stamped before transit.
+                Verified Material Test Certificate ( MTC ) and batch test reports stamped before transit.
               </p>
             </div>
 

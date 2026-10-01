@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { ArrowRight, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Linkedin, Menu, MessageCircle, MessageSquare, PackageSearch, PlugZap, Quote, Search, ShieldCheck, ShoppingCart, Sparkles, Truck, UserRound, X, Youtube, Zap } from "lucide-react";
+import { ArrowRight, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Linkedin, Menu, MessageCircle, MessageSquare, PlugZap, Quote, Search, ShieldCheck, ShoppingCart, Sparkles, Truck, UserRound, X, Youtube, Zap } from "lucide-react";
 import { CATEGORIES, ICON_MAP } from "@/data/categories";
 
 type Product = { name: string; sku: string; category: string; detail: string; accent: "orange" | "brown" | "yellow"; icon: typeof Cable; price: number; unit: string; use: string };
@@ -399,7 +399,7 @@ export default function Home() {
                       <Sparkles className="size-4 text-amber-500 shrink-0" />
                       <div>
                         <strong>Wholesale & EPC Supply Support</strong>
-                        <p>Direct manufacturer pricing, Mill Test Certificates (MTC), and pan-India project dispatch.</p>
+                        <p>Direct manufacturer pricing, Material Test Certificates ( MTC ), and pan-India project dispatch.</p>
                       </div>
                     </div>
                   </div>
@@ -617,7 +617,7 @@ export default function Home() {
               <span className="market-kicker">BROWSE THE SUPPLY SYSTEM · 8 MASTER CATEGORIES · 3,385+ PRODUCTS</span>
               <h1>Explore categories</h1>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-                Direct manufacturer pricing, IS/IEC/CE certifications, Mill Test Certificates (MTC), and 48-hour pan-India project dispatch across our complete electrical portfolio.
+                Direct manufacturer pricing, IS/IEC/CE certifications, Material Test Certificates ( MTC ), and 48-hour pan-India project dispatch across our complete electrical portfolio.
               </p>
             </div>
             <div className="hidden sm:flex items-center gap-2">
@@ -639,11 +639,6 @@ export default function Home() {
                 onClick={() => { navigate(`/category/${cat.slug}`); }}
               >
                 <div className="category-tile-photo-wrap">
-                  <span className="category-tile-code-tag">CAT {cat.code}</span>
-                  <span className="category-tile-count-badge">
-                    <PackageSearch className="size-3 text-[#c56718]" />
-                    {cat.productCount.toLocaleString("en-IN")}+ items
-                  </span>
                   <img
                     src={cat.image || "/products/cables.jpg"}
                     alt={cat.name}
@@ -671,7 +666,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="solutions" className="market-section market-section-muted"><div className="market-container"><div className="market-section-head"><div><span className="market-kicker">BUILT FOR REAL PROCUREMENT</span><h2>Electrical supply & project procurement</h2></div></div><div className="market-trust-grid"><div><ShieldCheck /><strong>Specification Clarity</strong><span>IS, IEC & CE certified cables with authentic Mill Test Certificates (MTC).</span></div><div><Truck /><strong>Global & Pan-India Fulfilment</strong><span>48-hour dispatch corridors across 28 states and international export ports.</span></div><div><Headphones /><strong>Technical Sourcing Desk</strong><span>Direct assistance from electrical engineers and commercial specialists.</span></div></div></div></section>
+      <section id="solutions" className="market-section market-section-muted"><div className="market-container"><div className="market-section-head"><div><span className="market-kicker">BUILT FOR REAL PROCUREMENT</span><h2>Electrical supply & project procurement</h2></div></div><div className="market-trust-grid"><div><ShieldCheck /><strong>Specification Clarity</strong><span>IS, IEC & CE certified cables with authentic Material Test Certificates ( MTC ).</span></div><div><Truck /><strong>Global & Pan-India Fulfilment</strong><span>48-hour dispatch corridors across 28 states and international export ports.</span></div><div><Headphones /><strong>Technical Sourcing Desk</strong><span>Direct assistance from electrical engineers and commercial specialists.</span></div></div></div></section>
 
 
       {compareList.length > 0 && <section className="compare-section"><div className="market-container"><div className="compare-head"><div><div className="market-kicker">PROJECT SHORTLIST</div><h2>Compare before you request.</h2></div><button className="clear-link" onClick={() => setCompareList([])}>Clear shortlist</button></div><div className="compare-table"><div className="compare-labels"><strong>Product</strong><span>Application</span><span>Unit price</span><span>Estimate at {quantity} m</span></div>{products.filter((product) => compareList.includes(product.name)).map((product) => <div className="compare-product" key={product.name}><div className="compare-product-name"><strong>{product.name}</strong><span>{product.category}</span></div><span>{product.use}</span><span>₹{product.price} / m</span><strong className="estimate-accent">₹{Math.round(quantity * product.price * (1 - discount / 100)).toLocaleString("en-IN")}</strong></div>)}</div></div></section>}

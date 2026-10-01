@@ -44,7 +44,7 @@ export default function TrackPage() {
           </h1>
 
           <p className="text-xs sm:text-sm text-[#5d4a4b] max-w-xl mx-auto leading-relaxed">
-            Real-time GPS transit monitoring, carrier LR dockets, and verified Mill Test Certificate (MTC) clearance direct from Ahmedabad Central Depot.
+            Real-time GPS transit monitoring, carrier LR dockets, and verified Material Test Certificate ( MTC ) clearance direct from Ahmedabad Central Depot.
           </p>
         </div>
       </section>

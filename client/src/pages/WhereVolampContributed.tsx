@@ -146,7 +146,7 @@ export default function WhereVolampContributed() {
                 <strong className="text-xs font-bold text-[#4d1217] dark:text-white block mt-0.5">
                   MTC Certified
                 </strong>
-                <small className="text-[11px] text-slate-500">Mill Test Traceability</small>
+                <small className="text-[11px] text-slate-500">Material Test Traceability</small>
               </div>
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function WhereVolampContributed() {
                 Authentic MTC & Specification Clarity
               </h3>
               <p className="text-xs text-[#5d4a4b] dark:text-slate-300 leading-relaxed">
-                Authentic Mill Test Certificates (MTC), CPRI / ERDA type test reports, and complete metallurgical analysis provided for every reel and panel.
+                Authentic Material Test Certificates ( MTC ), CPRI / ERDA type test reports, and complete metallurgical analysis provided for every reel and panel.
               </p>
             </div>
 

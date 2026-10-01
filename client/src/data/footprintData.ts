@@ -989,7 +989,7 @@ export const STATIC_FOOTPRINT_PROJECTS: FootprintProject[] = [
     "category": "Nuclear Research & National Defense",
     "shortDescription": "Critical safety-grade power distribution and high-reliability instrumentation cabling for India's premier nuclear research facility.",
     "overview": "Stringent regulatory compliance, radiation resistance, and ultra-high continuous uptime requirements.",
-    "volampContribution": "Supplied specialized radiation-tolerant, halogen-free, and fire-survival power lines with full Mill Test Certification.",
+    "volampContribution": "Supplied specialized radiation-tolerant, halogen-free, and fire-survival power lines with full Material Test Certification.",
     "heritage": "A crowning milestone of trust by India's apex nuclear science institution.",
     "customerTestimonial": "Strict compliance with nuclear safety protocols and comprehensive MTC test documentation.",
     "customerName": "Scientific Engineering Desk",

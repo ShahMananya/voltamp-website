@@ -350,11 +350,11 @@ export default function InTheNews() {
           </div>
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <a
-              href="mailto:press@volampelektrikals.com"
+              href="mailto:pr@volampelektrikals.com"
               className="px-5 py-2.5 rounded-xl bg-white border border-[#ebd7c7] text-xs font-bold text-[#3d2b2d] hover:bg-[#faf7f3] flex items-center gap-2 transition-colors shadow-xs"
             >
               <Mail className="size-4 text-[#c56718]" />
-              <span>press@volampelektrikals.com</span>
+              <span>pr@volampelektrikals.com</span>
             </a>
             <a
               href="tel:+919512365582"

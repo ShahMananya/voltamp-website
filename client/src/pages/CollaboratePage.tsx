@@ -99,7 +99,7 @@ const FAQS = [
     a: "We evaluate distributors based on active regional territory presence, existing contractor or retail relationships, working capital capacity, and commitment to maintaining stock of certified electrical cables. We provide competitive trade discounts, marketing collateral, and exclusive territory protections.",
   },
   {
-    q: "Can Volamp provide Mill Test Certificates (MTC) and CPRI / ERDA test reports for EPC tenders?",
+    q: "Can Volamp provide Material Test Certificates ( MTC ) and CPRI / ERDA test reports for EPC tenders?",
     a: "Yes. Every industrial cable consignment dispatched from our Ahmedabad manufacturing and distribution hub is accompanied by Type Test reports, MTCs, and routine factory inspection certificates compliant with IS 694, IS 1554, and IS 7098 standards.",
   },
   {
@@ -337,7 +337,7 @@ export default function CollaboratePage() {
                 EPC & Tender Supply
               </h3>
               <p className="text-xs text-[#5d4a4b] leading-relaxed">
-                Tender-grade specifications, Mill Test Certificates (MTC), CPRI/ERDA compliance, and on-time site dispatches.
+                Tender-grade specifications, Material Test Certificates ( MTC ), CPRI/ERDA compliance, and on-time site dispatches.
               </p>
             </div>
 

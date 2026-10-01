@@ -2085,7 +2085,7 @@ export default function CategoryPage() {
               Supplying a Project or Large Commercial BOQ?
             </strong>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Get bulk contract pricing, factory Mill Test Certificates (MTC), and direct site delivery across India.
+              Get bulk contract pricing, factory Material Test Certificates ( MTC ), and direct site delivery across India.
             </p>
           </div>
           <div className="flex items-center gap-3 shrink-0">

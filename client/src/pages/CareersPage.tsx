@@ -107,11 +107,11 @@ const FALLBACK_ROLES: JobRole[] = [
     openingsCount: 1,
     isFeatured: true,
     overview:
-      "Oversee the central High-Voltage test laboratory, type-testing protocols, and routine factory acceptance tests (FAT) ensuring 0-defect dispatches with Mill Test Certificates (MTC).",
+      "Oversee the central High-Voltage test laboratory, type-testing protocols, and routine factory acceptance tests (FAT) ensuring 0-defect dispatches with Material Test Certificates ( MTC ).",
     responsibilities: [
       "Conduct and supervise high-voltage withstand testing, spark testing, insulation resistance (IR), and partial discharge (PD) measurements.",
       "Inspect raw copper cathode, EC-grade aluminum wire rods, and polymer pellets for electrical conductivity and tensile elongation.",
-      "Issue official Mill Test Certificates (MTC) for EPC contractors, railway authorities, and GeM supplies.",
+      "Issue official Material Test Certificates ( MTC ) for EPC contractors, railway authorities, and GeM supplies.",
       "Maintain lab instrument calibration compliant with ISO 9001 and ISO/IEC 17025 testing norms.",
     ],
     requirements: [

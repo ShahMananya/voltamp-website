@@ -404,7 +404,7 @@ export default function BusinessSegments() {
               Send Your Bill of Quantities (BOQ)
             </h2>
             <p className="text-xs text-amber-100/80 font-['DM_Sans']">
-              Get consolidated pricing, manufacturer test certificates (MTC), and scheduled site delivery across India.
+              Get consolidated pricing, Material Test Certificates ( MTC ), and scheduled site delivery across India.
             </p>
           </div>
 
