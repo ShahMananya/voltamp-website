@@ -487,12 +487,12 @@ export default function CareersPage() {
   };
 
   return (
-    <div className="careers-page min-h-screen bg-[#fdfbf9] text-[#0b1f33] transition-colors">
+    <div className="careers-page min-h-screen bg-[#faf7f3] text-[#3d2b2d] transition-colors">
       {/* Universal Header (Matching Home Page White Palette) */}
       <UniversalHeader currentPage="careers" />
 
       {/* Hero Section (Matching Main Page Warm Light Theme) */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf8f5] to-[#fdfbf9] text-[#0b1f33] py-16 sm:py-24 border-b border-[#ebd7c7]">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf8f5] to-[#faf7f3] text-[#3d2b2d] py-16 sm:py-24 border-b border-[#ebd7c7]">
         {/* Subtle dot pattern background matching Home */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#4d1217_1px,transparent_1px)] [background-size:24px_24px]" />
 
@@ -699,7 +699,7 @@ export default function CareersPage() {
                   placeholder="Search role, keyword, or standard (e.g. XLPE, CPRI)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 rounded-lg border-[#ebd7c7] bg-[#fdfbf9] text-xs h-10 text-[#0b1f33] placeholder:text-stone-400"
+                  className="pl-9 rounded-lg border-[#ebd7c7] bg-[#fdfbf9] text-xs h-10 text-[#3d2b2d] placeholder:text-stone-400"
                 />
                 {searchQuery && (
                   <button
@@ -716,7 +716,7 @@ export default function CareersPage() {
                 <select
                   value={selectedDept}
                   onChange={(e) => setSelectedDept(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#0b1f33] font-medium outline-none focus:border-[#c56718]"
+                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#3d2b2d] font-medium outline-none focus:border-[#c56718]"
                 >
                   {DEPARTMENTS.map((dept) => (
                     <option key={dept} value={dept}>
@@ -731,7 +731,7 @@ export default function CareersPage() {
                 <select
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#0b1f33] font-medium outline-none focus:border-[#c56718]"
+                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#3d2b2d] font-medium outline-none focus:border-[#c56718]"
                 >
                   {LOCATIONS.map((loc) => (
                     <option key={loc} value={loc}>
@@ -746,7 +746,7 @@ export default function CareersPage() {
                 <select
                   value={selectedExp}
                   onChange={(e) => setSelectedExp(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#0b1f33] font-medium outline-none focus:border-[#c56718]"
+                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#3d2b2d] font-medium outline-none focus:border-[#c56718]"
                 >
                   {EXPERIENCES.map((exp) => (
                     <option key={exp} value={exp}>
@@ -927,7 +927,7 @@ export default function CareersPage() {
 
       {/* Early Careers & GET Spotlight Banner (Matching Home Callout Banner Styling) */}
       <section className="py-14 market-container">
-        <div className="p-8 sm:p-10 rounded-2xl bg-[#fdfbf9] text-[#0b1f33] shadow-xs border-2 border-[#ef7d19]/40 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="p-8 sm:p-10 rounded-2xl bg-white text-[#3d2b2d] shadow-xs border-2 border-[#ef7d19]/40 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-4 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f7ede6] text-[#c25e0a] text-xs font-bold uppercase tracking-wider border border-[#ebd4c2]">
               <GraduationCap className="size-4 text-[#ef7d19]" />
@@ -1123,7 +1123,7 @@ export default function CareersPage() {
       {/* Role Details Modal */}
       {selectedRoleDetail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl border border-[#ebd7c7] max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl relative text-[#0b1f33]">
+          <div className="bg-white rounded-2xl border border-[#ebd7c7] max-w-2xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl relative text-[#3d2b2d]">
             <button
               onClick={() => setSelectedRoleDetail(null)}
               className="absolute top-6 right-6 p-2 rounded-full hover:bg-[#f7ede6] text-stone-400 hover:text-[#4d1217] cursor-pointer"
@@ -1216,7 +1216,7 @@ export default function CareersPage() {
       {/* Application Form Modal */}
       {applicationModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl border border-[#ebd7c7] max-w-xl w-full p-6 sm:p-8 max-h-[92vh] overflow-y-auto space-y-6 shadow-2xl relative text-[#0b1f33]">
+          <div className="bg-white rounded-2xl border border-[#ebd7c7] max-w-xl w-full p-6 sm:p-8 max-h-[92vh] overflow-y-auto space-y-6 shadow-2xl relative text-[#3d2b2d]">
             <button
               onClick={() => {
                 setApplicationModalOpen(false);
@@ -1307,7 +1307,7 @@ export default function CareersPage() {
                       const matchingRole = roles.find((r) => r.title === e.target.value);
                       if (matchingRole) setApplicantDept(matchingRole.department);
                     }}
-                    className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#0b1f33] outline-none focus:border-[#c56718]"
+                    className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#3d2b2d] outline-none focus:border-[#c56718]"
                     required
                   >
                     <option value="General Application (Talent Pool)">
@@ -1331,7 +1331,7 @@ export default function CareersPage() {
                       placeholder="e.g. Rahul Sharma"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
                       required
                     />
                   </div>
@@ -1345,7 +1345,7 @@ export default function CareersPage() {
                       placeholder="rahul.sharma@gmail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
                       required
                     />
                   </div>
@@ -1361,7 +1361,7 @@ export default function CareersPage() {
                       placeholder="e.g. 9876543210"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
                       required
                     />
                   </div>
@@ -1374,7 +1374,7 @@ export default function CareersPage() {
                       placeholder="e.g. Ahmedabad"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
                       required
                     />
                   </div>
@@ -1387,7 +1387,7 @@ export default function CareersPage() {
                       placeholder="e.g. Gujarat"
                       value={state}
                       onChange={(e) => setState(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
                       required
                     />
                   </div>
@@ -1402,7 +1402,7 @@ export default function CareersPage() {
                     <select
                       value={experienceYears}
                       onChange={(e) => setExperienceYears(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#0b1f33] outline-none focus:border-[#c56718]"
+                      className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#3d2b2d] outline-none focus:border-[#c56718]"
                       required
                     >
                       <option value="Fresh Graduate (0-1 Yrs)">Fresh Graduate (0-1 Yrs)</option>
@@ -1420,7 +1420,7 @@ export default function CareersPage() {
                     <select
                       value={highestQualification}
                       onChange={(e) => setHighestQualification(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#0b1f33] outline-none focus:border-[#c56718]"
+                      className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#3d2b2d] outline-none focus:border-[#c56718]"
                       required
                     >
                       <option value="B.E. / B.Tech (Electrical)">B.E. / B.Tech (Electrical)</option>
@@ -1444,7 +1444,7 @@ export default function CareersPage() {
                       placeholder="e.g. Current Employer"
                       value={currentCompany}
                       onChange={(e) => setCurrentCompany(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
                     />
                   </div>
 
@@ -1456,7 +1456,7 @@ export default function CareersPage() {
                       placeholder="e.g. ₹8.5 LPA"
                       value={expectedCtc}
                       onChange={(e) => setExpectedCtc(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
                     />
                   </div>
 
@@ -1467,7 +1467,7 @@ export default function CareersPage() {
                     <select
                       value={noticePeriod}
                       onChange={(e) => setNoticePeriod(e.target.value)}
-                      className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#0b1f33] outline-none focus:border-[#c56718]"
+                      className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#3d2b2d] outline-none focus:border-[#c56718]"
                       required
                     >
                       <option value="Immediate">Immediate</option>
@@ -1489,7 +1489,7 @@ export default function CareersPage() {
                       placeholder="https://linkedin.com/in/..."
                       value={linkedInUrl}
                       onChange={(e) => setLinkedInUrl(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
                     />
                   </div>
 
@@ -1501,7 +1501,7 @@ export default function CareersPage() {
                       placeholder="https://drive.google.com/..."
                       value={resumeUrl}
                       onChange={(e) => setResumeUrl(e.target.value)}
-                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
+                      className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
                     />
                   </div>
                 </div>
@@ -1516,7 +1516,7 @@ export default function CareersPage() {
                     value={coverNote}
                     onChange={(e) => setCoverNote(e.target.value)}
                     rows={2}
-                    className="rounded-lg text-xs border-[#ebd7c7] bg-[#fdfbf9] text-[#0b1f33]"
+                    className="rounded-lg text-xs border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
                   />
                 </div>
 

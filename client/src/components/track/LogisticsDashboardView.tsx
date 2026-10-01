@@ -90,25 +90,25 @@ export default function LogisticsDashboardView({
     activeOrder?.status === "delivered";
 
   return (
-    <div className="w-full bg-white dark:bg-[#0b1f33] text-slate-900 dark:text-slate-100 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
-      {/* 1. TOP HEADER & SEARCH STRIP */}
-      <div className="p-4 sm:p-6 bg-gradient-to-r from-[#0b1f33] via-[#102e48] to-[#143d60] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 relative">
+    <div className="w-full bg-white text-[#3d2b2d] rounded-2xl shadow-sm border border-[#ebd7c7] flex flex-col overflow-hidden">
+      {/* 1. TOP HEADER & SEARCH STRIP (Deep Warm Burgundy with Amber Accent) */}
+      <div className="p-4 sm:p-6 bg-gradient-to-r from-[#2a080b] via-[#4d1217] to-[#731920] text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#ebd7c7] relative">
         <div className="flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white shadow-md shadow-amber-500/20 shrink-0">
+          <div className="size-10 rounded-xl bg-gradient-to-br from-[#c56718] to-[#ef7d19] flex items-center justify-center text-white shadow-md shadow-amber-950/30 shrink-0">
             <Package className="size-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base sm:text-lg font-bold tracking-tight">
+              <h2 className="text-base sm:text-lg font-bold font-['Space_Grotesk'] tracking-tight text-white">
                 Consignment & Order Tracking
               </h2>
               {activeOrder?.found && (
-                <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30">
+                <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/30">
                   {isDispatched ? "LIVE GPS" : "DEPOT QUEUE"}
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-amber-100/80">
               Real-time transit updates, transporter LR, and Mill Test Certificate (MTC) clearance.
             </p>
           </div>
@@ -117,17 +117,17 @@ export default function LogisticsDashboardView({
         {/* Search Bar + Close Button */}
         <div className="flex items-center gap-2">
           <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-            <Search className="absolute left-3 size-3.5 text-slate-400 pointer-events-none" />
+            <Search className="absolute left-3 size-3.5 text-amber-200/70 pointer-events-none" />
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Order ID / Phone (e.g. QO-2026-10492)"
-              className="w-56 sm:w-72 pl-8 pr-16 py-1.5 text-xs bg-white/10 hover:bg-white/15 focus:bg-white text-white focus:text-slate-900 placeholder-slate-300 focus:placeholder-slate-400 rounded-xl border border-white/20 focus:border-white focus:outline-none transition-all font-mono"
+              className="w-56 sm:w-72 pl-8 pr-16 py-1.5 text-xs bg-white/10 hover:bg-white/15 focus:bg-white text-white focus:text-[#4d1217] placeholder-amber-100/70 focus:placeholder-stone-400 rounded-xl border border-white/20 focus:border-[#c56718] focus:outline-none transition-all font-mono"
             />
             <button
               type="submit"
-              className="absolute right-1 px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-[11px] rounded-lg transition-colors shadow-sm"
+              className="absolute right-1 px-2.5 py-1 bg-[#c56718] hover:bg-[#b45309] text-white font-bold text-[11px] rounded-lg transition-colors shadow-sm cursor-pointer"
             >
               Track
             </button>
@@ -136,7 +136,7 @@ export default function LogisticsDashboardView({
           {isModal && onClose && (
             <button
               onClick={onClose}
-              className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors ml-1"
+              className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors ml-1 cursor-pointer"
               aria-label="Close"
             >
               <X className="size-4" />
@@ -147,9 +147,9 @@ export default function LogisticsDashboardView({
 
       {/* Real Logged-in Customer Orders Bar (if user has orders) */}
       {myOrders.length > 0 && (
-        <div className="px-4 sm:px-6 py-2 bg-slate-50 dark:bg-[#081726] border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="px-4 sm:px-6 py-2 bg-[#fcfaf7] border-b border-[#ebd7c7] flex flex-wrap items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-slate-400 font-medium text-[11px]">Your Orders:</span>
+            <span className="text-[#71818c] font-medium text-[11px]">Your Orders:</span>
             {myOrders.map((o: any) => (
               <button
                 key={o.id}
@@ -157,10 +157,10 @@ export default function LogisticsDashboardView({
                   setSearchInput(o.orderNumber);
                   setActiveOrderId(o.orderNumber);
                 }}
-                className={`px-2.5 py-0.5 rounded-md font-mono text-[11px] transition-colors flex items-center gap-1.5 ${
+                className={`px-2.5 py-0.5 rounded-md font-mono text-[11px] transition-colors flex items-center gap-1.5 cursor-pointer ${
                   activeOrderId === o.orderNumber
-                    ? "bg-[#1d73b7] text-white font-bold"
-                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-400"
+                    ? "bg-[#4d1217] text-white font-bold"
+                    : "bg-white text-[#5d4a4b] border border-[#ebd7c7] hover:border-[#c56718]"
                 }`}
               >
                 <span>{o.orderNumber}</span>
@@ -170,9 +170,9 @@ export default function LogisticsDashboardView({
           </div>
 
           {activeOrder?.found && (
-            <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-2 text-[11px] text-[#5d4a4b]">
               <span>Consignee:</span>
-              <strong className="text-slate-800 dark:text-slate-200 font-semibold">
+              <strong className="text-[#4d1217] font-semibold">
                 {activeOrder.companyName || activeOrder.customerName}
               </strong>
             </div>
@@ -185,47 +185,47 @@ export default function LogisticsDashboardView({
       {/* STATE 1: NO ORDER SEARCHED YET */}
       {!activeOrderId.trim() && (
         <div className="p-8 sm:p-12 flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-6">
-          <div className="size-16 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-600 dark:text-amber-400 flex items-center justify-center shadow-sm">
+          <div className="size-16 rounded-2xl bg-[#f7ede6] border border-[#ebd4c2] text-[#c56718] flex items-center justify-center shadow-xs">
             <Search className="size-8" />
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
+            <h3 className="text-lg sm:text-xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
               Track Your VOLAMP Consignment
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
               Enter your <strong>Order ID</strong> (from your invoice or confirmation email) or registered <strong>Phone Number</strong> above to view real-time transit status, transporter docket, and Mill Test Certificate (MTC).
             </p>
           </div>
 
           {/* Quick Info Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full text-left pt-2">
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800 space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-white">
-                <Truck className="size-4 text-[#1d73b7]" />
+            <div className="p-3.5 rounded-xl bg-[#faf7f3] border border-[#ebd7c7] space-y-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#4d1217]">
+                <Truck className="size-4 text-[#c56718]" />
                 <span>Highway Transit</span>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
+              <p className="text-[11px] text-[#5d4a4b] leading-normal">
                 Direct dispatch from VOLAMP Central Depot, Sanand GIDC, Ahmedabad.
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800 space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-white">
+            <div className="p-3.5 rounded-xl bg-[#faf7f3] border border-[#ebd7c7] space-y-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#4d1217]">
                 <ShieldCheck className="size-4 text-emerald-600" />
                 <span>MTC Clearance</span>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
+              <p className="text-[11px] text-[#5d4a4b] leading-normal">
                 Verified Mill Test Certificate and batch test reports stamped before transit.
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800 space-y-1">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-white">
+            <div className="p-3.5 rounded-xl bg-[#faf7f3] border border-[#ebd7c7] space-y-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#4d1217]">
                 <MessageSquare className="size-4 text-emerald-600" />
                 <span>Dispatch Support</span>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-normal">
+              <p className="text-[11px] text-[#5d4a4b] leading-normal">
                 Direct WhatsApp line to our logistics desk (+91 95123 65582) for instant updates.
               </p>
             </div>
@@ -309,40 +309,40 @@ export default function LogisticsDashboardView({
           {/* =================================================================== */}
           <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
             {/* Order Header Card */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800 space-y-3">
+            <div className="p-4 rounded-2xl bg-[#faf7f3] border border-[#ebd7c7] space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold font-mono text-slate-900 dark:text-white">
+                  <span className="text-sm font-bold font-mono text-[#4d1217]">
                     {activeOrder.orderNumber}
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold uppercase tracking-wider border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider border border-emerald-300 flex items-center gap-1">
                     <span className="size-1.5 rounded-full bg-emerald-500 animate-ping" />
                     {activeOrder.statusLabel}
                   </span>
                 </div>
 
                 {activeOrder.totalWeight && (
-                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 font-mono">
+                  <span className="text-[11px] font-bold text-[#5d4a4b] font-mono">
                     {activeOrder.totalWeight}
                   </span>
                 )}
               </div>
 
               {/* Estimated Arrival Banner */}
-              <div className="p-3 rounded-xl bg-white dark:bg-[#122c42] border border-slate-200 dark:border-slate-700/80 flex items-center justify-between">
+              <div className="p-3 rounded-xl bg-white border border-[#ebd7c7] flex items-center justify-between shadow-2xs">
                 <div>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                  <span className="text-[10px] font-bold text-[#c25e0a] uppercase tracking-wider block">
                     ESTIMATED SITE ARRIVAL
                   </span>
-                  <strong className="text-xs font-bold text-slate-900 dark:text-white">
+                  <strong className="text-xs font-bold text-[#4d1217]">
                     {activeOrder.estimatedDelivery}
                   </strong>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                  <span className="text-[10px] font-bold text-[#71818c] uppercase tracking-wider block">
                     DISPATCH DEPOT
                   </span>
-                  <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-xs font-medium text-[#5d4a4b]">
                     {activeOrder.origin?.split(",")[0] || "Ahmedabad, Gujarat"}
                   </span>
                 </div>
@@ -351,22 +351,22 @@ export default function LogisticsDashboardView({
               {/* Transporter & LR Number */}
               <div className="flex items-center justify-between text-xs pt-1">
                 <div>
-                  <span className="text-[10px] text-slate-400 block">Transporter:</span>
-                  <strong className="text-slate-800 dark:text-slate-200 font-medium">
+                  <span className="text-[10px] text-[#71818c] block">Transporter:</span>
+                  <strong className="text-[#4d1217] font-semibold">
                     {activeOrder.transporter || "VOLAMP Logistics Desk"}
                   </strong>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-slate-400 block">Docket / LR Number:</span>
-                  <div className="flex items-center gap-1 font-mono font-bold text-slate-900 dark:text-white">
+                  <span className="text-[10px] text-[#71818c] block">Docket / LR Number:</span>
+                  <div className="flex items-center gap-1 font-mono font-bold text-[#4d1217]">
                     <span>{activeOrder.lrNumber || "SCHEDULED"}</span>
                     {activeOrder.lrNumber && (
                       <button
                         onClick={() => handleCopy(activeOrder.lrNumber!)}
-                        className="text-slate-400 hover:text-amber-500 transition-colors"
+                        className="text-[#c56718] hover:text-[#b45309] transition-colors cursor-pointer"
                         title="Copy LR"
                       >
-                        {copied ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
+                        {copied ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
                       </button>
                     )}
                   </div>
@@ -375,8 +375,8 @@ export default function LogisticsDashboardView({
             </div>
 
             {/* Consignment Milestones Stepper */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800 space-y-3">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 block">
+            <div className="p-4 rounded-2xl bg-white border border-[#ebd7c7] space-y-3 shadow-2xs">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#c25e0a] block">
                 CONSIGNMENT MILESTONES
               </span>
 
@@ -387,7 +387,7 @@ export default function LogisticsDashboardView({
                     {idx < activeOrder.milestones.length - 1 && (
                       <div
                         className={`absolute left-3 top-6 bottom-0 w-0.5 -ml-px ${
-                          m.completed ? "bg-emerald-500" : "bg-slate-200 dark:bg-slate-700"
+                          m.completed ? "bg-emerald-500" : "bg-[#ebd7c7]"
                         }`}
                       />
                     )}
@@ -395,15 +395,15 @@ export default function LogisticsDashboardView({
                     {/* Icon Indicator */}
                     <div className="shrink-0 mt-0.5">
                       {m.completed && !m.current ? (
-                        <div className="size-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm">
+                        <div className="size-6 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs">
                           <Check className="size-3 stroke-[3]" />
                         </div>
                       ) : m.current ? (
-                        <div className="size-6 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center animate-pulse shadow-md shadow-amber-500/30">
+                        <div className="size-6 rounded-full bg-[#c56718] text-white flex items-center justify-center animate-pulse shadow-xs">
                           <Truck className="size-3" />
                         </div>
                       ) : (
-                        <div className="size-6 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-300 dark:border-slate-700 flex items-center justify-center text-[10px] font-mono">
+                        <div className="size-6 rounded-full bg-[#faf7f3] text-[#71818c] border border-[#ebd7c7] flex items-center justify-center text-[10px] font-mono">
                           {`0${idx + 1}`}
                         </div>
                       )}
@@ -415,20 +415,20 @@ export default function LogisticsDashboardView({
                         <strong
                           className={`text-xs ${
                             m.current
-                              ? "text-amber-600 dark:text-amber-400 font-bold"
+                              ? "text-[#c56718] font-bold"
                               : m.completed
-                              ? "text-slate-900 dark:text-white font-semibold"
-                              : "text-slate-400 font-normal"
+                              ? "text-[#4d1217] font-semibold"
+                              : "text-[#71818c] font-normal"
                           }`}
                         >
                           {m.title}
                         </strong>
-                        <span className="text-[10px] text-slate-400 font-mono shrink-0">
+                        <span className="text-[10px] text-[#71818c] font-mono shrink-0">
                           {m.time}
                         </span>
                       </div>
                       {m.description && (
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-tight">
+                        <p className="text-[11px] text-[#5d4a4b] mt-0.5 leading-tight">
                           {m.description}
                         </p>
                       )}
@@ -439,13 +439,13 @@ export default function LogisticsDashboardView({
             </div>
 
             {/* Shipment Items Manifest */}
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800 space-y-2.5">
+            <div className="p-4 rounded-2xl bg-[#faf7f3] border border-[#ebd7c7] space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#c25e0a]">
                   SHIPMENT ITEMS ({activeOrder.items.length})
                 </span>
                 {activeOrder.mtcNumber && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700">
                     <FileCheck className="size-3.5" /> MTC Certified: {activeOrder.mtcNumber}
                   </span>
                 )}
@@ -455,19 +455,19 @@ export default function LogisticsDashboardView({
                 {activeOrder.items.map((item: any, i: number) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-lg bg-white dark:bg-[#122c42] border border-slate-200/80 dark:border-slate-700/80"
+                    className="flex items-center justify-between text-xs py-1.5 px-2.5 rounded-lg bg-white border border-[#ebd7c7]"
                   >
                     <div className="truncate mr-2">
-                      <span className="font-semibold text-slate-800 dark:text-slate-200 block truncate">
+                      <span className="font-semibold text-[#4d1217] block truncate">
                         {item.name}
                       </span>
                       {item.spec && (
-                        <span className="text-[10px] text-slate-400 block truncate">
+                        <span className="text-[10px] text-[#5d4a4b] block truncate">
                           {item.spec}
                         </span>
                       )}
                     </div>
-                    <span className="font-mono font-bold text-slate-700 dark:text-slate-300 shrink-0">
+                    <span className="font-mono font-bold text-[#c56718] shrink-0">
                       {item.quantity} {item.unit || "units"}
                     </span>
                   </div>
@@ -481,7 +481,7 @@ export default function LogisticsDashboardView({
                 href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:flex-1 h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors"
+                className="w-full sm:flex-1 h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-xs transition-colors"
               >
                 <MessageSquare className="size-3.5" />
                 <span>Live Update on WhatsApp</span>
@@ -489,9 +489,9 @@ export default function LogisticsDashboardView({
 
               <a
                 href="tel:+919512365582"
-                className="w-full sm:w-auto h-10 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium text-xs flex items-center justify-center gap-1.5 transition-colors border border-slate-200 dark:border-slate-700"
+                className="w-full sm:w-auto h-10 px-4 rounded-xl bg-white hover:bg-[#f7ede6] text-[#4d1217] font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors border border-[#ebd7c7] shadow-2xs"
               >
-                <Phone className="size-3.5" />
+                <Phone className="size-3.5 text-[#c56718]" />
                 <span>Call Dispatch Desk</span>
               </a>
             </div>
@@ -503,45 +503,45 @@ export default function LogisticsDashboardView({
           <div className="lg:col-span-7 flex flex-col space-y-4">
             {/* Top Operational Status Strip */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+              <div className="p-3 rounded-xl bg-[#faf7f3] border border-[#ebd7c7]">
+                <span className="text-[10px] font-bold text-[#c25e0a] uppercase tracking-wider block">
                   ORIGIN DEPOT
                 </span>
-                <strong className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate mt-0.5">
+                <strong className="text-xs font-bold text-[#4d1217] block truncate mt-0.5">
                   Sanand GIDC, Ahmedabad
                 </strong>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+              <div className="p-3 rounded-xl bg-[#faf7f3] border border-[#ebd7c7]">
+                <span className="text-[10px] font-bold text-[#c25e0a] uppercase tracking-wider block">
                   DELIVERY SITE
                 </span>
-                <strong className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate mt-0.5">
+                <strong className="text-xs font-bold text-[#4d1217] block truncate mt-0.5">
                   {activeOrder.destination}
                 </strong>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+              <div className="p-3 rounded-xl bg-[#faf7f3] border border-[#ebd7c7]">
+                <span className="text-[10px] font-bold text-[#c25e0a] uppercase tracking-wider block">
                   ORDER STATUS
                 </span>
-                <strong className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate mt-0.5">
+                <strong className="text-xs font-bold text-[#4d1217] block truncate mt-0.5">
                   {activeOrder.statusLabel}
                 </strong>
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+              <div className="p-3 rounded-xl bg-[#faf7f3] border border-[#ebd7c7]">
+                <span className="text-[10px] font-bold text-[#c25e0a] uppercase tracking-wider block">
                   ESTIMATED ARRIVAL
                 </span>
-                <strong className="text-xs font-bold text-slate-800 dark:text-slate-200 block truncate mt-0.5">
+                <strong className="text-xs font-bold text-[#4d1217] block truncate mt-0.5">
                   {activeOrder.estimatedDelivery}
                 </strong>
               </div>
             </div>
 
             {/* Genuine Google Maps Route & Live GPS Canvas */}
-            <div className="flex-1 min-h-[440px] flex flex-col">
+            <div className="flex-1 min-h-[440px] flex flex-col rounded-2xl overflow-hidden border border-[#ebd7c7] shadow-2xs">
               <GoogleMapsTrackingView
                 origin={activeOrder.origin || "Sanand GIDC, Ahmedabad, Gujarat, India"}
                 destination={activeOrder.destination || "Gujarat, India"}
@@ -551,18 +551,18 @@ export default function LogisticsDashboardView({
             </div>
 
             {/* Carrier / Depot Operational Card */}
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-[#0e2438] border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="p-3.5 rounded-xl bg-[#faf7f3] border border-[#ebd7c7] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-3">
-                <div className="size-9 rounded-full bg-[#1d73b7]/15 text-[#1d73b7] flex items-center justify-center font-bold text-xs">
+                <div className="size-9 rounded-full bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2] flex items-center justify-center font-bold text-xs shrink-0">
                   {isDispatched ? <Truck className="size-4" /> : <Building2 className="size-4" />}
                 </div>
                 <div>
-                  <strong className="text-xs font-bold text-slate-900 dark:text-white block leading-tight">
+                  <strong className="text-xs font-bold text-[#4d1217] block leading-tight">
                     {isDispatched
                       ? activeOrder.transporter || "VOLAMP Logistics Desk"
                       : "VOLAMP Central Sourcing & Quality Clearance Desk"}
                   </strong>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
+                  <span className="text-[11px] text-[#5d4a4b] leading-tight">
                     {isDispatched
                       ? `Consignment en route to ${activeOrder.destination}`
                       : "Goods verified and prepared at Sanand GIDC Depot, Ahmedabad"}
@@ -572,7 +572,7 @@ export default function LogisticsDashboardView({
 
               <div className="flex items-center gap-2">
                 {activeOrder.lrNumber && isDispatched && (
-                  <div className="px-3 py-1 rounded-lg bg-white dark:bg-[#122c42] border border-slate-200 dark:border-slate-700 font-mono text-[11px] font-bold text-slate-800 dark:text-slate-200">
+                  <div className="px-3 py-1 rounded-lg bg-white border border-[#ebd7c7] font-mono text-[11px] font-bold text-[#4d1217]">
                     LR: {activeOrder.lrNumber}
                   </div>
                 )}
@@ -581,7 +581,7 @@ export default function LogisticsDashboardView({
                   href="https://wa.me/919512365582"
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1 rounded-lg bg-[#1d73b7] hover:bg-[#155a90] text-white font-semibold text-[11px] transition-colors flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-lg bg-[#4d1217] hover:bg-[#681920] text-white font-semibold text-[11px] transition-colors flex items-center gap-1 shadow-xs"
                 >
                   <MessageSquare className="size-3" />
                   <span>Logistics Help</span>

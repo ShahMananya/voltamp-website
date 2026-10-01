@@ -261,13 +261,22 @@ export default function CollaboratePage() {
       )}`;
 
   return (
-    <div className="min-h-screen bg-[#fdfbf9] text-[#0b1f33] font-['Inter',sans-serif] flex flex-col">
-      {/* Universal Header (Matching Home Page White Theme) */}
+    <div className="min-h-screen bg-[#faf7f3] text-[#3d2b2d] font-['Inter',sans-serif] flex flex-col">
+      {/* Universal Header (Matching Home Page Warm Cream Theme) */}
       <UniversalHeader currentPage="collaborate" />
+
+      {/* Breadcrumb Bar */}
+      <div className="market-container py-3 text-xs text-[#71818c] flex items-center gap-1.5 border-b border-[#ebd7c7]">
+        <Link href="/" className="hover:text-[#4d1217]">
+          Home
+        </Link>
+        <span className="text-stone-400">/</span>
+        <span className="font-semibold text-[#4d1217]">Collaborate</span>
+      </div>
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf8f5] to-[#fdfbf9] border-b border-[#ebd7c7] py-12 sm:py-16">
+        <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf8f5] to-[#faf7f3] border-b border-[#ebd7c7] py-12 sm:py-16">
           <div className="market-container max-w-4xl text-center space-y-4">
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <div className="inline-flex items-center justify-center bg-white px-3 py-1.5 rounded-xl border border-[#ebd7c7] shadow-xs">
@@ -288,17 +297,17 @@ export default function CollaboratePage() {
             </p>
 
             {/* Value Badges Strip */}
-            <div className="pt-3 flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-xs font-medium text-[#2d4353]">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 border border-[#e2d6ca] shadow-2xs">
-                <Factory className="size-3.5 text-[#c46b19]" /> 60-Year Electrical Heritage
+            <div className="pt-3 flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 text-xs font-medium text-[#4d1217]">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#ebd7c7] shadow-2xs">
+                <Factory className="size-3.5 text-[#c56718]" /> 60-Year Electrical Heritage
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 border border-[#e2d6ca] shadow-2xs">
-                <Globe2 className="size-3.5 text-[#1d73b7]" /> Pan-India & Global Supply
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#ebd7c7] shadow-2xs">
+                <Globe2 className="size-3.5 text-[#c56718]" /> Pan-India & Global Supply
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 border border-[#e2d6ca] shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#ebd7c7] shadow-2xs">
                 <ShieldCheck className="size-3.5 text-emerald-600" /> IS / IEC / CE Certified Cables
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 border border-[#e2d6ca] shadow-2xs">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#ebd7c7] shadow-2xs">
                 <Clock className="size-3.5 text-amber-600" /> 24–48h Review SLA
               </span>
             </div>
@@ -308,50 +317,50 @@ export default function CollaboratePage() {
         {/* 4 Strategic Pillars */}
         <section className="market-container max-w-5xl py-8 sm:py-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-5 rounded-2xl bg-white border border-[#e8dcd0] shadow-sm hover:border-amber-300 hover:shadow-md transition-all">
-              <div className="size-10 rounded-xl bg-amber-50 text-[#c46b19] border border-amber-200 flex items-center justify-center mb-3">
+            <div className="p-5 rounded-2xl bg-white border border-[#ebd7c7] shadow-2xs hover:border-[#c56718] hover:shadow-xs transition-all">
+              <div className="size-10 rounded-xl bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2] flex items-center justify-center mb-3">
                 <Building2 className="size-5" />
               </div>
-              <h3 className="font-bold text-sm text-[#102a40] mb-1 font-['Space_Grotesk']">
+              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Space_Grotesk']">
                 Distribution & Dealership
               </h3>
-              <p className="text-xs text-[#5a6e7c] leading-relaxed">
+              <p className="text-xs text-[#5d4a4b] leading-relaxed">
                 Exclusive territory rights, factory-direct margins, and ready inventories across House Wires & Industrial Cables.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white border border-[#e8dcd0] shadow-sm hover:border-blue-300 hover:shadow-md transition-all">
-              <div className="size-10 rounded-xl bg-blue-50 text-[#1d73b7] border border-blue-200 flex items-center justify-center mb-3">
+            <div className="p-5 rounded-2xl bg-white border border-[#ebd7c7] shadow-2xs hover:border-[#c56718] hover:shadow-xs transition-all">
+              <div className="size-10 rounded-xl bg-[#f7ede6] text-[#4d1217] border border-[#ebd4c2] flex items-center justify-center mb-3">
                 <FileCheck2 className="size-5" />
               </div>
-              <h3 className="font-bold text-sm text-[#102a40] mb-1 font-['Space_Grotesk']">
+              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Space_Grotesk']">
                 EPC & Tender Supply
               </h3>
-              <p className="text-xs text-[#5a6e7c] leading-relaxed">
+              <p className="text-xs text-[#5d4a4b] leading-relaxed">
                 Tender-grade specifications, Mill Test Certificates (MTC), CPRI/ERDA compliance, and on-time site dispatches.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white border border-[#e8dcd0] shadow-sm hover:border-emerald-300 hover:shadow-md transition-all">
-              <div className="size-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center mb-3">
+            <div className="p-5 rounded-2xl bg-white border border-[#ebd7c7] shadow-2xs hover:border-[#c56718] hover:shadow-xs transition-all">
+              <div className="size-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center mb-3">
                 <Layers className="size-5" />
               </div>
-              <h3 className="font-bold text-sm text-[#102a40] mb-1 font-['Space_Grotesk']">
+              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Space_Grotesk']">
                 OEM & Custom Label
               </h3>
-              <p className="text-xs text-[#5a6e7c] leading-relaxed">
+              <p className="text-xs text-[#5d4a4b] leading-relaxed">
                 Tailored conductor geometries, specialized polymers (FRLS, ZHFR, XLPE), and private label extrusion.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl bg-white border border-[#e8dcd0] shadow-sm hover:border-purple-300 hover:shadow-md transition-all">
-              <div className="size-10 rounded-xl bg-purple-50 text-purple-600 border border-purple-200 flex items-center justify-center mb-3">
+            <div className="p-5 rounded-2xl bg-white border border-[#ebd7c7] shadow-2xs hover:border-[#c56718] hover:shadow-xs transition-all">
+              <div className="size-10 rounded-xl bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2] flex items-center justify-center mb-3">
                 <Globe2 className="size-5" />
               </div>
-              <h3 className="font-bold text-sm text-[#102a40] mb-1 font-['Space_Grotesk']">
+              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Space_Grotesk']">
                 Global Export Desk
               </h3>
-              <p className="text-xs text-[#5a6e7c] leading-relaxed">
+              <p className="text-xs text-[#5d4a4b] leading-relaxed">
                 Cross-border supply to UAE, Middle East, Africa & Southeast Asia with sea/air freight CIF/FOB terms.
               </p>
             </div>
@@ -362,7 +371,7 @@ export default function CollaboratePage() {
         <section className="market-container max-w-4xl pb-16">
           {submittedData ? (
             /* SUCCESS CONFIRMATION STATE */
-            <div className="bg-white rounded-3xl p-8 sm:p-12 border border-[#dfd4c7] shadow-xl text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
+            <div className="bg-white rounded-3xl p-8 sm:p-12 border border-[#ebd7c7] shadow-xl text-center space-y-6 animate-in fade-in zoom-in-95 duration-300">
               <div className="size-18 sm:size-20 rounded-full bg-emerald-100 text-emerald-600 border-4 border-emerald-50 flex items-center justify-center mx-auto shadow-inner">
                 <CheckCircle2 className="size-10 sm:size-12" />
               </div>
@@ -371,31 +380,31 @@ export default function CollaboratePage() {
                 <span className="text-xs uppercase font-extrabold tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                   Application Received
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#102a40] font-['Space_Grotesk']">
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Space_Grotesk']">
                   Thank You, {submittedData.contactName}!
                 </h2>
-                <p className="text-sm text-[#5a6e7c] max-w-lg mx-auto">
+                <p className="text-sm text-[#5d4a4b] max-w-lg mx-auto">
                   Your collaboration proposal for <strong>{submittedData.companyName}</strong> has been logged into our executive review queue.
                 </p>
               </div>
 
               {/* Application Details Card */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-[#faf7f3] border border-[#e5dcd1] max-w-md mx-auto text-left space-y-3">
-                <div className="flex items-center justify-between text-xs pb-3 border-b border-[#e5dcd1]">
-                  <span className="text-[#6d7e8b]">Application Reference:</span>
-                  <span className="font-mono font-bold text-[#c46b19] bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+              <div className="p-5 sm:p-6 rounded-2xl bg-[#faf7f3] border border-[#ebd7c7] max-w-md mx-auto text-left space-y-3">
+                <div className="flex items-center justify-between text-xs pb-3 border-b border-[#ebd7c7]">
+                  <span className="text-[#5d4a4b]">Application Reference:</span>
+                  <span className="font-mono font-bold text-[#c56718] bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
                     {submittedData.applicationId}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#6d7e8b]">Review Status:</span>
+                  <span className="text-[#5d4a4b]">Review Status:</span>
                   <span className="font-semibold text-emerald-700 flex items-center gap-1">
                     <span className="size-2 rounded-full bg-emerald-500 animate-pulse" /> Under Executive Review
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#6d7e8b]">Expected SLA:</span>
-                  <span className="font-medium text-[#102a40]">24 to 48 business hours</span>
+                  <span className="text-[#5d4a4b]">Expected SLA:</span>
+                  <span className="font-medium text-[#3d2b2d]">24 to 48 business hours</span>
                 </div>
               </div>
 
@@ -413,7 +422,7 @@ export default function CollaboratePage() {
 
                 <a
                   href={`tel:+91${supportPhone}`}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#102a40] hover:bg-[#1a3d5a] text-white font-bold text-sm transition-all"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#4d1217] hover:bg-[#681820] text-white font-bold text-sm shadow-md shadow-[#4d1217]/20 transition-all"
                 >
                   <PhoneCall className="size-4" />
                   <span>Call Partnerships Lead</span>
@@ -422,7 +431,7 @@ export default function CollaboratePage() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-50 font-semibold text-sm transition-colors"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[#ebd7c7] text-[#4d1217] hover:bg-[#faf7f3] font-semibold text-sm transition-colors"
                 >
                   Submit Another Proposal
                 </button>
@@ -432,32 +441,32 @@ export default function CollaboratePage() {
             /* THE CODED FORM */
             <form
               onSubmit={handleSubmit}
-              className="bg-white rounded-3xl p-6 sm:p-10 border border-[#dfd4c7] shadow-xl space-y-8"
+              className="bg-white rounded-3xl p-6 sm:p-10 border border-[#ebd7c7] shadow-xl space-y-8"
             >
-              <div className="border-b border-[#eee3d7] pb-4 flex items-center justify-between">
+              <div className="border-b border-[#ebd7c7] pb-4 flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#102a40] font-['Space_Grotesk']">
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Space_Grotesk']">
                     Partnership Discovery Form
                   </h2>
-                  <p className="text-xs sm:text-sm text-[#617482] mt-0.5">
+                  <p className="text-xs sm:text-sm text-[#5d4a4b] mt-0.5">
                     Tell us about your organization and the opportunity you envision with Volamp Elektrikals. (Approx. 2 mins)
                   </p>
                 </div>
-                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-[#c46b19] border border-amber-200 text-xs font-bold">
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-[#c56718] border border-amber-200 text-xs font-bold">
                   <Sparkles className="size-3.5" /> Direct to Leadership
                 </span>
               </div>
 
               {/* Section 1: Organization & Contact Info */}
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#c46b19] uppercase tracking-wider">
-                  <span className="size-5 rounded-full bg-amber-100 text-[#c46b19] flex items-center justify-center text-[11px]">1</span>
+                <div className="flex items-center gap-2 text-xs font-bold text-[#c56718] uppercase tracking-wider">
+                  <span className="size-5 rounded-full bg-amber-100 text-[#c56718] flex items-center justify-center text-[11px]">1</span>
                   <span>Company & Contact Details</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#102a40] block">
+                    <label className="text-xs font-semibold text-[#3d2b2d] block">
                       Company / Organization Name <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -465,12 +474,12 @@ export default function CollaboratePage() {
                       placeholder="e.g. Acme Infra & Power Solutions Pvt Ltd"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
-                      className="rounded-xl border-[#dcd0c4] bg-[#fbf9f6] focus:bg-white text-sm"
+                      className="rounded-xl border-[#ebd7c7] bg-[#fdfbf9] focus:bg-white text-sm"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#102a40] block">
+                    <label className="text-xs font-semibold text-[#3d2b2d] block">
                       Your Full Name <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -478,14 +487,14 @@ export default function CollaboratePage() {
                       placeholder="e.g. Rajesh Sharma"
                       value={contactName}
                       onChange={(e) => setContactName(e.target.value)}
-                      className="rounded-xl border-[#dcd0c4] bg-[#fbf9f6] focus:bg-white text-sm"
+                      className="rounded-xl border-[#ebd7c7] bg-[#fdfbf9] focus:bg-white text-sm"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#102a40] block">
+                    <label className="text-xs font-semibold text-[#3d2b2d] block">
                       Designation / Role <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -493,12 +502,12 @@ export default function CollaboratePage() {
                       placeholder="e.g. Managing Director / Procurement Head"
                       value={designation}
                       onChange={(e) => setDesignation(e.target.value)}
-                      className="rounded-xl border-[#dcd0c4] bg-[#fbf9f6] focus:bg-white text-sm"
+                      className="rounded-xl border-[#ebd7c7] bg-[#fdfbf9] focus:bg-white text-sm"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#102a40] block">
+                    <label className="text-xs font-semibold text-[#3d2b2d] block">
                       City, State & Country <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -506,14 +515,14 @@ export default function CollaboratePage() {
                       placeholder="e.g. Ahmedabad, Gujarat, India"
                       value={cityCountry}
                       onChange={(e) => setCityCountry(e.target.value)}
-                      className="rounded-xl border-[#dcd0c4] bg-[#fbf9f6] focus:bg-white text-sm"
+                      className="rounded-xl border-[#ebd7c7] bg-[#fdfbf9] focus:bg-white text-sm"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#102a40] block">
+                    <label className="text-xs font-semibold text-[#3d2b2d] block">
                       Mobile / WhatsApp Number <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -522,12 +531,12 @@ export default function CollaboratePage() {
                       placeholder="e.g. +91 98765 43210"
                       value={mobile}
                       onChange={(e) => setMobile(e.target.value)}
-                      className="rounded-xl border-[#dcd0c4] bg-[#fbf9f6] focus:bg-white text-sm"
+                      className="rounded-xl border-[#ebd7c7] bg-[#fdfbf9] focus:bg-white text-sm"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[#102a40] block">
+                    <label className="text-xs font-semibold text-[#3d2b2d] block">
                       Work Email Address <span className="text-red-500">*</span>
                     </label>
                     <Input
@@ -536,21 +545,21 @@ export default function CollaboratePage() {
                       placeholder="e.g. rajesh@acmeinfra.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="rounded-xl border-[#dcd0c4] bg-[#fbf9f6] focus:bg-white text-sm"
+                      className="rounded-xl border-[#ebd7c7] bg-[#fdfbf9] focus:bg-white text-sm"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Section 2: Business Profile */}
-              <div className="space-y-4 pt-2 border-t border-[#eee3d7]">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#c46b19] uppercase tracking-wider">
-                  <span className="size-5 rounded-full bg-amber-100 text-[#c46b19] flex items-center justify-center text-[11px]">2</span>
+              <div className="space-y-4 pt-2 border-t border-[#ebd7c7]">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#c56718] uppercase tracking-wider">
+                  <span className="size-5 rounded-full bg-amber-100 text-[#c56718] flex items-center justify-center text-[11px]">2</span>
                   <span>Business Profile & Collaboration Track</span>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-[#102a40] block">
+                  <label className="text-xs font-semibold text-[#3d2b2d] block">
                     Select Your Primary Business Type <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -563,13 +572,13 @@ export default function CollaboratePage() {
                           onClick={() => setBusinessType(type)}
                           className={`p-2.5 rounded-xl text-left border text-xs font-semibold transition-all ${
                             selected
-                              ? "bg-amber-500/10 border-amber-600 text-amber-900 shadow-2xs font-bold ring-1 ring-amber-500"
-                              : "bg-[#fbf9f6] border-[#e2d6ca] text-[#3e5361] hover:bg-white hover:border-amber-300"
+                              ? "bg-[#c56718]/10 border-[#c56718] text-[#4d1217] shadow-2xs font-bold ring-1 ring-[#c56718]"
+                              : "bg-[#fdfbf9] border-[#ebd7c7] text-[#3d2b2d] hover:bg-white hover:border-[#c56718]"
                           }`}
                         >
                           <div className="flex items-center justify-between">
                             <span className="truncate">{type}</span>
-                            {selected && <Check className="size-3.5 text-amber-600 shrink-0 ml-1" />}
+                            {selected && <Check className="size-3.5 text-[#c56718] shrink-0 ml-1" />}
                           </div>
                         </button>
                       );
@@ -578,7 +587,7 @@ export default function CollaboratePage() {
                 </div>
 
                 <div className="space-y-2 pt-2">
-                  <label className="text-xs font-semibold text-[#102a40] block">
+                  <label className="text-xs font-semibold text-[#3d2b2d] block">
                     How would you like to collaborate with Volamp? (Select all that apply) <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -591,24 +600,24 @@ export default function CollaboratePage() {
                           onClick={() => toggleCollabType(collab.label)}
                           className={`p-3 rounded-xl text-left border transition-all ${
                             selected
-                              ? "bg-amber-50 border-amber-500 text-amber-950 ring-1 ring-amber-400 shadow-2xs"
-                              : "bg-[#fbf9f6] border-[#e2d6ca] text-[#3e5361] hover:bg-white hover:border-stone-400"
+                              ? "bg-amber-50 border-[#c56718] text-[#4d1217] ring-1 ring-[#c56718] shadow-2xs"
+                              : "bg-[#fdfbf9] border-[#ebd7c7] text-[#3d2b2d] hover:bg-white hover:border-[#c56718]"
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <strong className="text-xs font-bold block text-[#102a40]">
+                              <strong className="text-xs font-bold block text-[#4d1217]">
                                 {collab.label}
                               </strong>
-                              <span className="text-[11px] text-[#6d7e8b] block mt-0.5">
+                              <span className="text-[11px] text-[#5d4a4b] block mt-0.5">
                                 {collab.desc}
                               </span>
                             </div>
                             <div
                               className={`size-4.5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 ${
                                 selected
-                                  ? "bg-[#c46b19] border-[#c46b19] text-white"
-                                  : "border-stone-300 bg-white"
+                                  ? "bg-[#c56718] border-[#c56718] text-white"
+                                  : "border-[#ebd7c7] bg-white"
                               }`}
                             >
                               {selected && <Check className="size-3" />}
@@ -622,14 +631,14 @@ export default function CollaboratePage() {
               </div>
 
               {/* Section 3: Capabilities & Value Brought */}
-              <div className="space-y-4 pt-2 border-t border-[#eee3d7]">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#c46b19] uppercase tracking-wider">
-                  <span className="size-5 rounded-full bg-amber-100 text-[#c46b19] flex items-center justify-center text-[11px]">3</span>
+              <div className="space-y-4 pt-2 border-t border-[#ebd7c7]">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#c56718] uppercase tracking-wider">
+                  <span className="size-5 rounded-full bg-amber-100 text-[#c56718] flex items-center justify-center text-[11px]">3</span>
                   <span>Capabilities You Bring to the Partnership</span>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold text-[#102a40] block">
+                  <label className="text-xs font-semibold text-[#3d2b2d] block">
                     What can you bring to the partnership? (Select all that apply) <span className="text-red-500">*</span>
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -642,8 +651,8 @@ export default function CollaboratePage() {
                           onClick={() => toggleStrength(strength)}
                           className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                             selected
-                              ? "bg-[#102a40] border-[#102a40] text-white font-semibold shadow-xs"
-                              : "bg-[#fbf9f6] border-[#dcd0c4] text-[#3e5361] hover:bg-white hover:border-stone-400"
+                              ? "bg-[#4d1217] border-[#4d1217] text-white font-semibold shadow-xs"
+                              : "bg-[#fdfbf9] border-[#ebd7c7] text-[#3d2b2d] hover:bg-white hover:border-[#c56718]"
                           }`}
                         >
                           {selected ? `✓ ${strength}` : `+ ${strength}`}
@@ -655,14 +664,14 @@ export default function CollaboratePage() {
               </div>
 
               {/* Section 4: Opportunity Details & Scale */}
-              <div className="space-y-4 pt-2 border-t border-[#eee3d7]">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#c46b19] uppercase tracking-wider">
-                  <span className="size-5 rounded-full bg-amber-100 text-[#c46b19] flex items-center justify-center text-[11px]">4</span>
+              <div className="space-y-4 pt-2 border-t border-[#ebd7c7]">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#c56718] uppercase tracking-wider">
+                  <span className="size-5 rounded-full bg-amber-100 text-[#c56718] flex items-center justify-center text-[11px]">4</span>
                   <span>Opportunity Scale & Timeline</span>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#102a40] block">
+                  <label className="text-xs font-semibold text-[#3d2b2d] block">
                     What opportunity do you see for Volamp? <span className="text-red-500">*</span>
                   </label>
                   <Textarea
@@ -671,19 +680,19 @@ export default function CollaboratePage() {
                     placeholder="Tell us about the project, target territory, tender requirement, estimated demand, or how our combined capabilities can win in your market..."
                     value={opportunityDetails}
                     onChange={(e) => setOpportunityDetails(e.target.value)}
-                    className="rounded-xl border-[#dcd0c4] bg-[#fbf9f6] focus:bg-white text-sm resize-y"
+                    className="rounded-xl border-[#ebd7c7] bg-[#fdfbf9] focus:bg-white text-sm resize-y"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold text-[#102a40] block">
+                    <label className="text-xs font-semibold text-[#3d2b2d] block">
                       Expected Annual / Project Business Potential <span className="text-red-500">*</span>
                     </label>
                     <select
                       value={expectedBusinessPotential}
                       onChange={(e) => setExpectedBusinessPotential(e.target.value)}
-                      className="w-full rounded-xl border border-[#dcd0c4] bg-[#fbf9f6] px-3 py-2.5 text-xs sm:text-sm font-medium text-[#102a40] focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full rounded-xl border border-[#ebd7c7] bg-[#fdfbf9] px-3 py-2.5 text-xs sm:text-sm font-medium text-[#3d2b2d] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#c56718]"
                     >
                       {BUSINESS_POTENTIALS.map((pot) => (
                         <option key={pot} value={pot}>
@@ -694,13 +703,13 @@ export default function CollaboratePage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs font-semibold text-[#102a40] block">
+                    <label className="text-xs font-semibold text-[#3d2b2d] block">
                       Expected Timeline <span className="text-red-500">*</span>
                     </label>
                     <select
                       value={expectedTimeline}
                       onChange={(e) => setExpectedTimeline(e.target.value)}
-                      className="w-full rounded-xl border border-[#dcd0c4] bg-[#fbf9f6] px-3 py-2.5 text-xs sm:text-sm font-medium text-[#102a40] focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full rounded-xl border border-[#ebd7c7] bg-[#fdfbf9] px-3 py-2.5 text-xs sm:text-sm font-medium text-[#3d2b2d] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#c56718]"
                     >
                       {TIMELINES.map((time) => (
                         <option key={time} value={time}>
@@ -712,24 +721,24 @@ export default function CollaboratePage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#102a40] block">
+                  <label className="text-xs font-semibold text-[#3d2b2d] block">
                     Additional Comments or Links (Optional)
                   </label>
                   <Input
                     placeholder="Website link, tender ref number, or specific technical notes"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className="rounded-xl border-[#dcd0c4] bg-[#fbf9f6] focus:bg-white text-sm"
+                    className="rounded-xl border-[#ebd7c7] bg-[#fdfbf9] focus:bg-white text-sm"
                   />
                 </div>
               </div>
 
               {/* Submit CTA */}
-              <div className="pt-4 border-t border-[#eee3d7] space-y-3">
+              <div className="pt-4 border-t border-[#ebd7c7] space-y-3">
                 <Button
                   type="submit"
                   disabled={submitMutation.isPending}
-                  className="w-full py-4 text-base font-bold bg-[#c46b19] hover:bg-[#b05d12] text-white rounded-xl shadow-lg shadow-amber-600/20 flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  className="w-full py-4 text-base font-bold bg-[#c56718] hover:bg-[#a85410] text-white rounded-xl shadow-lg shadow-[#c56718]/20 flex items-center justify-center gap-2 cursor-pointer transition-all"
                 >
                   {submitMutation.isPending ? (
                     <>
@@ -745,7 +754,7 @@ export default function CollaboratePage() {
                   )}
                 </Button>
 
-                <div className="flex items-center justify-center gap-2 text-[11px] text-[#788a97]">
+                <div className="flex items-center justify-center gap-2 text-[11px] text-[#71818c]">
                   <ShieldCheck className="size-3.5 text-emerald-600" />
                   <span>Confidential proposal. Handled directly by Volamp executive leadership.</span>
                 </div>
@@ -755,13 +764,13 @@ export default function CollaboratePage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="bg-white border-t border-[#e8ded3] py-12 sm:py-16">
+        <section className="bg-[#fbf8f5] border-t border-[#ebd7c7] py-12 sm:py-16">
           <div className="market-container max-w-3xl space-y-6">
             <div className="text-center space-y-2">
-              <span className="text-xs font-bold text-[#c46b19] uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#c56718] uppercase tracking-wider">
                 COMMON QUESTIONS
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#102a40] font-['Space_Grotesk']">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Space_Grotesk']">
                 Frequently Asked Partnership Questions
               </h2>
             </div>
@@ -772,22 +781,22 @@ export default function CollaboratePage() {
                 return (
                   <div
                     key={faq.q}
-                    className="rounded-2xl border border-[#ebdcd0] bg-[#faf7f3] overflow-hidden transition-colors"
+                    className="rounded-2xl border border-[#ebd7c7] bg-white overflow-hidden transition-colors"
                   >
                     <button
                       type="button"
                       onClick={() => setActiveFaq(isOpen ? null : idx)}
-                      className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#102a40] hover:text-[#c46b19]"
+                      className="w-full p-4 sm:p-5 text-left flex items-center justify-between gap-4 font-semibold text-sm text-[#4d1217] hover:text-[#c56718]"
                     >
                       <span>{faq.q}</span>
                       <ChevronDown
                         className={`size-4 shrink-0 transition-transform ${
-                          isOpen ? "rotate-180 text-[#c46b19]" : "text-stone-400"
+                          isOpen ? "rotate-180 text-[#c56718]" : "text-stone-400"
                         }`}
                       />
                     </button>
                     {isOpen && (
-                      <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-[#5a6e7c] leading-relaxed border-t border-[#f0e6dd] bg-white">
+                      <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-[#5d4a4b] leading-relaxed border-t border-[#ebd7c7] bg-[#fdfbf9]">
                         {faq.a}
                       </div>
                     )}

@@ -54,8 +54,8 @@ export default function UniversalHeader({
         </div>
       )}
 
-      {/* Main Crisp White Navbar (Matching Home Page Market Header) */}
-      <header className="sticky top-0 z-40 bg-white border-b border-[#dce4ea] text-[#334858] shadow-xs transition-colors">
+      {/* Main Warm Sand & Cream Navbar (Matching Screenshot 5) */}
+      <header className="sticky top-0 z-40 bg-[#fdfbf9] border-b border-[#ebd7c7] text-[#4d1217] shadow-2xs transition-colors">
         <div className="market-container flex items-center justify-between h-16 sm:h-20">
           <div className="flex items-center gap-4 sm:gap-6">
             <Link href="/" className="flex items-center group" aria-label="VOLAMP home">
@@ -70,7 +70,7 @@ export default function UniversalHeader({
           </div>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold text-[#334858]">
+          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold text-[#4d1217]">
             <Link
               href="/"
               className={`hover:text-[#c56718] transition-colors ${
@@ -120,6 +120,14 @@ export default function UniversalHeader({
               In the News
             </Link>
             <Link
+              href="/track"
+              className={`hover:text-[#c56718] transition-colors ${
+                currentPage === "track" ? "text-[#c56718] border-b-2 border-[#c56718] pb-1" : ""
+              }`}
+            >
+              Track Order
+            </Link>
+            <Link
               href="/blog"
               className={`hover:text-[#c56718] transition-colors ${
                 currentPage === "blog" ? "text-[#c56718] border-b-2 border-[#c56718] pb-1" : ""
@@ -137,7 +145,7 @@ export default function UniversalHeader({
                 variant="outline"
                 size="sm"
                 onClick={() => navigate("/portal")}
-                className="text-xs font-bold border-slate-300 dark:border-slate-700 flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-bold border-[#ebd7c7] bg-white text-[#4d1217] hover:bg-[#f7ede6] flex items-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 <User className="size-3.5 text-[#c56718]" />
                 <span className="hidden sm:inline">My Account</span>
@@ -151,7 +159,7 @@ export default function UniversalHeader({
                     new CustomEvent("volamp:open-auth", { detail: { accountType: "customer" } })
                   );
                 }}
-                className="text-xs font-bold border-slate-300 dark:border-slate-700 flex items-center gap-1.5 cursor-pointer"
+                className="text-xs font-bold border-[#ebd7c7] bg-white text-[#4d1217] hover:bg-[#f7ede6] flex items-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 <LogIn className="size-3.5 text-[#c56718]" />
                 <span className="hidden sm:inline">Sign In</span>
@@ -178,12 +186,12 @@ export default function UniversalHeader({
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-[#dce4ea] bg-white p-4 space-y-3 text-sm font-semibold">
+          <div className="lg:hidden border-t border-[#ebd7c7] bg-[#fdfbf9] p-4 space-y-3 text-sm font-semibold text-[#4d1217]">
             {user ? (
               <Link
                 href="/portal"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-[#c56718] font-bold border-b border-slate-100"
+                className="block py-2 text-[#c56718] font-bold border-b border-[#ebd7c7]"
               >
                 My Account ({user.name || user.email})
               </Link>
@@ -196,7 +204,7 @@ export default function UniversalHeader({
                     new CustomEvent("volamp:open-auth", { detail: { accountType: "customer" } })
                   );
                 }}
-                className="w-full text-left py-2 text-[#c56718] font-bold border-b border-slate-100 cursor-pointer flex items-center gap-2"
+                className="w-full text-left py-2 text-[#c56718] font-bold border-b border-[#ebd7c7] cursor-pointer flex items-center gap-2"
               >
                 <LogIn className="size-4" />
                 <span>Sign In / Create Account</span>
@@ -205,58 +213,58 @@ export default function UniversalHeader({
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-slate-700 hover:text-[#c56718]"
+              className="block py-2 text-[#4d1217] hover:text-[#c56718]"
             >
               Categories
             </Link>
             <Link
               href="/business-segments"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-slate-700 hover:text-[#c56718]"
+              className="block py-2 text-[#4d1217] hover:text-[#c56718]"
             >
               Solutions / 10 Business Segments
             </Link>
             <Link
               href="/about-volamp"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-slate-700 hover:text-[#c56718]"
+              className="block py-2 text-[#4d1217] hover:text-[#c56718]"
             >
               About Volamp
             </Link>
             <Link
               href="/careers"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-slate-700 hover:text-[#c56718]"
+              className="block py-2 text-[#4d1217] hover:text-[#c56718]"
             >
               Careers & Openings
             </Link>
             <Link
               href="/collaborate"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-slate-700 hover:text-[#c56718]"
+              className="block py-2 text-[#4d1217] hover:text-[#c56718]"
             >
               Collaborate with Us
             </Link>
             <Link
               href="/in-the-news"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-slate-700 hover:text-[#c56718]"
+              className="block py-2 text-[#4d1217] hover:text-[#c56718]"
             >
               In the News & Press
             </Link>
             <Link
-              href="/blog"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-slate-700 hover:text-[#c56718]"
-            >
-              Volamp Journal & Insights
-            </Link>
-            <Link
               href="/track"
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-slate-700 hover:text-[#c56718]"
+              className="block py-2 text-[#4d1217] hover:text-[#c56718]"
             >
               Track My Order
+            </Link>
+            <Link
+              href="/blog"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-[#4d1217] hover:text-[#c56718]"
+            >
+              Volamp Journal & Insights
             </Link>
           </div>
         )}
