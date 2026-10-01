@@ -159,54 +159,36 @@ export default function Home() {
   const campaignSlides = useMemo(() => [
     {
       id: "segments",
-      eyebrow: "SOLUTIONS FOR INDUSTRY",
-      tagline: "CONTRACTORS · EPC · INFRA",
-      heading: "Heavy-Duty Cable Distribution for Industrial EPCs",
-      description: "Direct factory dispatches of certified HT/LT power cables, control cables, and switchgears with complete Mill Test Certificates (MTC) and consolidated project billing.",
-      badges: ["Pan-India Site Delivery", "GeM Registered Supplier", "IS / IEC Certified"],
-      cta: "Explore Business Segments",
-      secondaryCta: "Request Project BOQ",
+      eyebrow: "SOLUTIONS",
+      heading: "Business Segments",
+      pill: "CONTRACTORS · EPC · INFRA",
+      subline: "Tailored HT/LT cable supply engineered for large-scale infrastructure & industrial projects.",
+      cta: "Explore Segments",
       image: "/business-segments-hero.png?v=2",
       themeClass: "campaign-slide-segments",
       onClick: () => navigate("/business-segments"),
-      onSecondaryClick: (e: React.MouseEvent) => {
-        e.stopPropagation();
-        handleQuote();
-      },
     },
     {
       id: "credit",
-      eyebrow: "INSTITUTIONAL FINANCING",
-      tagline: "PRE-APPROVED WORKING CAPITAL",
-      heading: "Order & Pay Later on Approved Bank Credit",
-      description: "Keep site operations moving without cash flow bottlenecks. Access 30 to 90 days institutional credit backed by premier banking partners for registered contractors.",
-      badges: ["30–90 Days Terms", "Zero Hidden Charges", "Fast Digital Clearance"],
-      cta: "Apply for Bank Credit",
-      secondaryCta: "Pay an Invoice",
+      eyebrow: "FINANCING",
+      heading: "Order & Pay Later",
+      pill: "PRE-APPROVED BANK CREDIT",
+      subline: "Access 30 to 90 days institutional credit to keep site operations moving uninterrupted.",
+      cta: "Apply for Credit",
       image: "/order-pay-later-3d.jpg",
       themeClass: "campaign-slide-financing",
       onClick: () => setCreditOpen(true),
-      onSecondaryClick: (e: React.MouseEvent) => {
-        e.stopPropagation();
-        navigate("/pay-invoice");
-      },
     },
     {
       id: "workspace",
-      eyebrow: "LOGISTICS COMMAND DESK",
-      tagline: "REAL-TIME TELEMETRY & TRACKING",
-      heading: "Project Workspace & Live Consignment Tracking",
-      description: "Real-time GPS transit monitoring, carrier LR docket downloads, approved test certificates, and one-click repeat ordering from Ahmedabad Central Depot.",
-      badges: ["Live GPS Dockets", "Verified Mill MTCs", "Dedicated Export Desk"],
-      cta: "Open Project Workspace",
-      secondaryCta: "Track My Consignment",
+      eyebrow: "PORTAL",
+      heading: "Project Workspace",
+      pill: "LIVE TRACKING & QUOTES",
+      subline: "Real-time consignment tracking, LR dockets, mill test certificates & rapid re-orders.",
+      cta: "Open Workspace",
       image: "/workspace-portal-hero.jpg",
       themeClass: "campaign-slide-portal",
       onClick: () => setAccountOpen(true),
-      onSecondaryClick: (e: React.MouseEvent) => {
-        e.stopPropagation();
-        navigate("/track");
-      },
     },
   ], [navigate]);
 
@@ -269,25 +251,16 @@ export default function Home() {
             >
               <div className="market-hero-slide-split">
                 <div className="market-hero-slide-content">
-                  <div className="market-hero-slide-meta">
-                    <span className="market-hero-slide-eyebrow">
-                      <span className="market-hero-pulse-dot" />
-                      {slide.eyebrow}
-                    </span>
-                    <span className="market-hero-slide-tagline">{slide.tagline}</span>
+                  <div className="market-hero-slide-eyebrow">
+                    <span className="market-hero-pulse-dot" />
+                    <span>{slide.eyebrow}</span>
                   </div>
 
                   <h2 className="market-hero-slide-heading">{slide.heading}</h2>
-                  <p className="market-hero-slide-description">{slide.description}</p>
 
-                  <div className="market-hero-slide-badges">
-                    {slide.badges.map((badge, bIdx) => (
-                      <span key={bIdx} className="market-hero-slide-badge">
-                        <Check className="size-3 text-amber-400 shrink-0" />
-                        <span>{badge}</span>
-                      </span>
-                    ))}
-                  </div>
+                  <div className="market-hero-slide-pill">{slide.pill}</div>
+
+                  <p className="market-hero-slide-subline">{slide.subline}</p>
 
                   <div className="market-hero-slide-actions">
                     <button
@@ -301,16 +274,6 @@ export default function Home() {
                       <span>{slide.cta}</span>
                       <ArrowRight className="size-4 market-hero-slide-arrow" />
                     </button>
-                    {slide.secondaryCta && (
-                      <button
-                        type="button"
-                        className="market-hero-slide-secondary"
-                        onClick={slide.onSecondaryClick}
-                      >
-                        <span>{slide.secondaryCta}</span>
-                        <ArrowRight className="size-3.5 opacity-70" />
-                      </button>
-                    )}
                   </div>
                 </div>
 

@@ -3854,7 +3854,7 @@ body {
 }
 
 .market-container {
-  width: min(100% - 2rem, 1440px);
+  width: min(100% - 2rem, 1240px);
   margin-inline: auto;
 }
 
@@ -4231,7 +4231,7 @@ body {
   box-shadow: 0 16px 40px -6px rgba(11, 31, 51, 0.22), 0 4px 14px rgba(11, 31, 51, 0.1);
   background: #081422;
   width: 100%;
-  height: 360px;
+  height: 320px;
 }
 
 .market-hero-slider-track {
@@ -4256,12 +4256,12 @@ body {
   height: 100%;
   display: flex;
   align-items: stretch;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 /* Gradients for slides - Deep, rich, cohesive with ambient glow */
 .campaign-slide-segments {
-  background: radial-gradient(circle at 75% 50%, rgba(217, 119, 6, 0.22) 0%, transparent 60%),
+  background: radial-gradient(circle at 55% 50%, rgba(217, 119, 6, 0.16) 0%, transparent 60%),
               linear-gradient(135deg, #071320 0%, #0d1e33 50%, #152d4c 100%);
 }
 
@@ -4270,11 +4270,11 @@ body {
 }
 
 .campaign-slide-segments .market-hero-slide-visual::before {
-  background: linear-gradient(to right, #0d1e33 0%, rgba(13, 30, 51, 0.5) 25%, transparent 65%);
+  background: linear-gradient(to right, #0d1e33 0%, rgba(13, 30, 51, 0.6) 22%, transparent 60%);
 }
 
 .campaign-slide-financing {
-  background: radial-gradient(circle at 75% 50%, rgba(245, 158, 11, 0.24) 0%, transparent 60%),
+  background: radial-gradient(circle at 55% 50%, rgba(245, 158, 11, 0.18) 0%, transparent 60%),
               linear-gradient(135deg, #130e08 0%, #24160a 50%, #3a200c 100%);
 }
 
@@ -4283,11 +4283,11 @@ body {
 }
 
 .campaign-slide-financing .market-hero-slide-visual::before {
-  background: linear-gradient(to right, #24160a 0%, rgba(36, 22, 10, 0.5) 25%, transparent 65%);
+  background: linear-gradient(to right, #24160a 0%, rgba(36, 22, 10, 0.6) 22%, transparent 60%);
 }
 
 .campaign-slide-portal {
-  background: radial-gradient(circle at 75% 50%, rgba(14, 165, 233, 0.22) 0%, transparent 60%),
+  background: radial-gradient(circle at 55% 50%, rgba(14, 165, 233, 0.16) 0%, transparent 60%),
               linear-gradient(135deg, #05101a 0%, #091a2e 50%, #0f2742 100%);
 }
 
@@ -4296,46 +4296,40 @@ body {
 }
 
 .campaign-slide-portal .market-hero-slide-visual::before {
-  background: linear-gradient(to right, #091a2e 0%, rgba(9, 26, 46, 0.5) 25%, transparent 65%);
+  background: linear-gradient(to right, #091a2e 0%, rgba(9, 26, 46, 0.6) 22%, transparent 60%);
 }
 
 .market-hero-slide-content {
   display: flex;
-  flex: 1;
-  max-width: 60%;
+  width: 52%;
+  max-width: 52%;
+  min-width: 0;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 2.2rem 2.75rem 3.4rem;
+  padding: 2rem 2.8rem 3.2rem;
   z-index: 2;
   position: relative;
-}
-
-.market-hero-slide-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  flex-wrap: wrap;
-  margin-bottom: 0.5rem;
 }
 
 .market-hero-slide-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.68rem;
-  font-weight: 900;
+  font-size: 0.7rem;
+  font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.95);
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 0.35rem;
 }
 
 .market-hero-pulse-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: #fbd38d;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.9);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.9);
   display: inline-block;
   animation: pulseDot 2s infinite ease-in-out;
 }
@@ -4345,111 +4339,77 @@ body {
   50% { opacity: 0.4; transform: scale(0.8); }
 }
 
-.market-hero-slide-tagline {
-  font-size: 0.62rem;
+.market-hero-slide-heading {
+  margin: 0 0 0.4rem;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(1.85rem, 3vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.12;
+  color: #fff;
+  letter-spacing: -0.025em;
+}
+
+.market-hero-slide-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #fbd38d;
-  background: rgba(245, 158, 11, 0.14);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  padding: 0.15rem 0.55rem;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 0.22rem 0.75rem;
   border-radius: 9999px;
+  backdrop-filter: blur(8px);
+  margin-bottom: 0.45rem;
 }
 
-.market-hero-slide-heading {
-  margin: 0;
-  font-family: "Space Grotesk", sans-serif;
-  font-size: clamp(1.45rem, 2.2vw, 1.95rem);
-  font-weight: 850;
-  line-height: 1.2;
-  color: #fff;
-  letter-spacing: -0.02em;
-}
-
-.market-hero-slide-description {
-  margin: 0.45rem 0 0.85rem;
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: rgba(226, 232, 240, 0.88);
-  max-width: 580px;
-}
-
-.market-hero-slide-badges {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.15rem;
-}
-
-.market-hero-slide-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.68rem;
-  font-weight: 700;
-  color: #f1f5f9;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  padding: 0.25rem 0.6rem;
-  border-radius: 6px;
-  backdrop-filter: blur(4px);
+.market-hero-slide-subline {
+  margin: 0 0 0.95rem;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: rgba(226, 232, 240, 0.85);
+  max-width: 480px;
 }
 
 .market-hero-slide-actions {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
-  flex-wrap: wrap;
 }
 
 .market-hero-slide-cta {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.58rem 1.35rem;
-  border-radius: 8px;
-  background: #fff;
-  color: #0b1f33;
-  font-size: 0.82rem;
-  font-weight: 850;
+  gap: 0.5rem;
+  padding: 0.62rem 1.45rem;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #081422;
+  font-size: 0.84rem;
+  font-weight: 800;
+  border: none;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
   cursor: pointer;
 }
 
 .market-hero-slide-cta:hover {
   background: #f8fafc;
-  transform: translateX(4px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.32);
 }
 
-.market-hero-slide-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.76rem;
-  font-weight: 750;
-  color: #fbd38d;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.market-hero-slide-secondary:hover {
-  color: #fff;
-  text-decoration: underline;
-  text-underline-offset: 4px;
+.market-hero-slide-cta:hover .market-hero-slide-arrow {
+  transform: translateX(3px);
 }
 
 .market-hero-slide-visual {
-  width: 44%;
-  min-width: 44%;
+  width: 48%;
+  min-width: 48%;
   position: relative;
   overflow: hidden;
+  height: 100%;
 }
 
 .market-hero-slide-visual::before {
@@ -4457,7 +4417,7 @@ body {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.1) 35%, transparent 70%);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.15) 25%, transparent 65%);
   pointer-events: none;
 }
 
@@ -5063,7 +5023,7 @@ body {
   }
 
   .market-container {
-    width: min(100% - 1.25rem, 1440px);
+    width: min(100% - 1.25rem, 1240px);
   }
 
   .market-header-top {

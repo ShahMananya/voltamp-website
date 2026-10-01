@@ -168,12 +168,9 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Automatically show welcome location popup when anybody opens the website
+  // Silently detect visitor location in the background without intrusive popup
   useEffect(() => {
     let isMounted = true;
-
-    // Show welcome popup immediately on open
-    setWelcomeLocation(location || DEFAULT_LOCATION);
 
     detectVisitorLocation()
       .then((detected) => {
@@ -181,7 +178,6 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         setIsDetecting(false);
         if (detected) {
           setLocation(detected);
-          setWelcomeLocation((prev) => (prev ? detected : null));
         }
       })
       .catch((err) => {
