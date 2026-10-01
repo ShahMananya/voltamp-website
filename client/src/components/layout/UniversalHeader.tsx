@@ -6,7 +6,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 interface UniversalHeaderProps {
-  currentPage?: "home" | "about" | "segments" | "careers" | "collaborate" | "blog" | "enquire" | "calculator" | "pay" | "track";
+  currentPage?: "home" | "about" | "segments" | "careers" | "collaborate" | "blog" | "enquire" | "calculator" | "pay" | "track" | "news";
   backUrl?: string;
   backText?: string;
   showUtilityBar?: boolean;
@@ -58,12 +58,14 @@ export default function UniversalHeader({
       <header className="sticky top-0 z-40 bg-white border-b border-[#dce4ea] text-[#334858] shadow-xs transition-colors">
         <div className="market-container flex items-center justify-between h-16 sm:h-20">
           <div className="flex items-center gap-4 sm:gap-6">
-            <Link href="/" className="flex items-center">
-              <img
-                src="/volamp-logo.png"
-                alt="VOLAMP Elektrikals"
-                className="h-8 sm:h-9 w-auto object-contain"
-              />
+            <Link href="/" className="flex items-center group" aria-label="VOLAMP home">
+              <div className="brand-mark bg-white px-2.5 py-1.5 rounded-lg border border-[#ebd7c7] shadow-xs group-hover:border-[#c56718] transition-all flex items-center justify-center">
+                <img
+                  src="/volamp-logo.png"
+                  alt="VOLAMP Elektrikals - Powering Growth"
+                  className="h-7 sm:h-8 w-auto object-contain"
+                />
+              </div>
             </Link>
           </div>
 
@@ -108,6 +110,14 @@ export default function UniversalHeader({
               }`}
             >
               Collaborate
+            </Link>
+            <Link
+              href="/in-the-news"
+              className={`hover:text-[#c56718] transition-colors ${
+                currentPage === "news" ? "text-[#c56718] border-b-2 border-[#c56718] pb-1" : ""
+              }`}
+            >
+              In the News
             </Link>
             <Link
               href="/blog"
@@ -226,6 +236,13 @@ export default function UniversalHeader({
               className="block py-2 text-slate-700 hover:text-[#c56718]"
             >
               Collaborate with Us
+            </Link>
+            <Link
+              href="/in-the-news"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-slate-700 hover:text-[#c56718]"
+            >
+              In the News & Press
             </Link>
             <Link
               href="/blog"

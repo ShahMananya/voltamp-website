@@ -61,7 +61,7 @@ const calculatorTree = CATEGORIES.map((category) => ({
   })),
 }));
 
-function BrandMark() { return <div className="brand-mark" aria-label="VOLAMP home"><img src="/volamp-logo.png" alt="VOLAMP Powering Growth" /><span className="sr-only">VOLAMP Powering Growth</span></div>; }
+function BrandMark() { return <div className="brand-mark bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-[#ebd7c7] shadow-xs flex items-center justify-center" aria-label="VOLAMP home"><img src="/volamp-logo.png" alt="VOLAMP Powering Growth" className="h-7 sm:h-8 w-auto object-contain" /><span className="sr-only">VOLAMP Powering Growth</span></div>; }
 function ProductIllustration({ product }: { product: Product }) { const Icon = product.icon; return <div className={`product-art art-${product.accent}`}><div className="wire-orbit" /><Icon className="relative z-10 size-12 stroke-[1.25]" /><span className="product-art-code">{product.category.slice(0, 3).toUpperCase()}</span></div>; }
 
 export default function Home() {

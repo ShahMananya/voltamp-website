@@ -269,9 +269,14 @@ export default function CollaboratePage() {
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf8f5] to-[#fdfbf9] border-b border-[#ebd7c7] py-12 sm:py-16">
           <div className="market-container max-w-4xl text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f7ede6] border border-[#ebd4c2] shadow-xs text-xs font-bold text-[#c25e0a] uppercase tracking-wider">
-              <Handshake className="size-3.5 text-[#c56718]" />
-              <span>STRATEGIC PARTNERSHIPS & EXPANSION DESK</span>
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <div className="inline-flex items-center justify-center bg-white px-3 py-1.5 rounded-xl border border-[#ebd7c7] shadow-xs">
+                <img src="/volamp-logo.png" alt="VOLAMP Elektrikals" className="h-7 sm:h-8 w-auto object-contain" />
+              </div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f7ede6] border border-[#ebd4c2] shadow-xs text-xs font-bold text-[#c25e0a] uppercase tracking-wider">
+                <Handshake className="size-3.5 text-[#c56718]" />
+                <span>STRATEGIC PARTNERSHIPS & EXPANSION DESK</span>
+              </div>
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#4d1217] font-['Space_Grotesk'] leading-tight">

@@ -497,9 +497,14 @@ export default function CareersPage() {
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#4d1217_1px,transparent_1px)] [background-size:24px_24px]" />
 
         <div className="market-container relative z-10 max-w-5xl text-center space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f7ede6] border border-[#ebd4c2] text-[#c56718] text-xs font-extrabold tracking-wider uppercase shadow-xs">
-            <Sparkles className="size-3.5 text-[#ef7d19]" />
-            <span>WE ARE HIRING · 2026 INFRASTRUCTURE EXPANSION</span>
+          <div className="flex items-center justify-center gap-3 flex-wrap">
+            <div className="inline-flex items-center justify-center bg-white px-3 py-1.5 rounded-xl border border-[#ebd7c7] shadow-xs">
+              <img src="/volamp-logo.png" alt="VOLAMP Elektrikals" className="h-7 sm:h-8 w-auto object-contain" />
+            </div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f7ede6] border border-[#ebd4c2] text-[#c56718] text-xs font-extrabold tracking-wider uppercase shadow-xs">
+              <Sparkles className="size-3.5 text-[#ef7d19]" />
+              <span>WE ARE HIRING · 2026 INFRASTRUCTURE EXPANSION</span>
+            </div>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] text-[#4d1217] tracking-tight leading-tight">

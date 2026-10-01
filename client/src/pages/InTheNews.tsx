@@ -89,8 +89,11 @@ export default function InTheNews() {
       <header className="market-header">
         <div className="market-container market-header-top">
           <Link href="/">
-            <div className="brand-mark cursor-pointer" aria-label="VOLAMP home">
-              <img src="/volamp-logo.png" alt="VOLAMP Powering Growth" />
+            <div
+              className="brand-mark bg-white px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg border border-[#ebd7c7] shadow-xs hover:border-[#c56718] transition-all flex items-center justify-center cursor-pointer"
+              aria-label="VOLAMP home"
+            >
+              <img src="/volamp-logo.png" alt="VOLAMP Powering Growth" className="h-7 sm:h-8 w-auto object-contain" />
             </div>
           </Link>
           <nav className="market-nav">
@@ -100,6 +103,7 @@ export default function InTheNews() {
             <button onClick={() => navigate("/business-segments")}>Business Segments</button>
             <button onClick={() => navigate("/careers")} className="market-nav-link">Careers</button>
             <button onClick={() => navigate("/collaborate")} className="market-nav-link">Collaborate</button>
+            <button onClick={() => navigate("/in-the-news")} className="market-nav-link text-[#c56718] font-bold">In the News</button>
           </nav>
           <div className="market-header-actions">
             <ThemeToggle />
@@ -130,9 +134,14 @@ export default function InTheNews() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[#fff6ed] via-[#fffaf5] to-[#fcfaf7] dark:from-[#0f1f30] dark:via-[#0b1723] dark:to-[#081018] py-12 sm:py-16 border-b border-[#ebd7c7] dark:border-slate-800">
         <div className="market-container relative z-10">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/10 border border-red-600/30 text-red-700 dark:text-red-300 text-xs font-bold tracking-wider uppercase">
-              <Newspaper className="size-3.5 text-red-600 dark:text-red-400" />
-              <span>VERIFIED EDITORIAL COVERAGE · 100% AUTHENTIC PRESS</span>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="inline-flex items-center justify-center bg-white px-3 py-1.5 rounded-xl border border-[#ebd7c7] shadow-xs">
+                <img src="/volamp-logo.png" alt="VOLAMP Elektrikals" className="h-7 sm:h-8 w-auto object-contain" />
+              </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-600/10 border border-red-600/30 text-red-700 dark:text-red-300 text-xs font-bold tracking-wider uppercase">
+                <Newspaper className="size-3.5 text-red-600 dark:text-red-400" />
+                <span>VERIFIED EDITORIAL COVERAGE · 100% AUTHENTIC PRESS</span>
+              </div>
             </div>
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white tracking-tight leading-[1.1]">

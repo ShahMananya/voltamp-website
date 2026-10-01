@@ -1948,13 +1948,18 @@ body {
   gap: 1.2rem;
 }
 
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .brand-mark img {
   display: block;
-  height: 44px;
-  width: 96px;
+  height: 36px;
+  width: auto;
+  max-width: 140px;
   object-fit: contain;
-  object-position: left;
-  mix-blend-mode: multiply;
 }
 
 .desktop-nav {
@@ -5320,8 +5325,24 @@ html.dark .employee-portal-cta {
   }
 }
 
-html.dark .brand-mark img {
+html.dark .brand-mark:not(.bg-white) img {
   filter: brightness(0) invert(1);
+}
+
+.brand-mark.bg-white,
+.footer-company .brand-mark {
+  background: #ffffff !important;
+  border: 1px solid #ebd7c7 !important;
+  border-radius: 8px !important;
+}
+
+.brand-mark.bg-white img,
+.footer-company .brand-mark img,
+html.dark .brand-mark.bg-white img,
+html.dark .footer-company .brand-mark img {
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  opacity: 1 !important;
 }
 
 html.dark .chat-drawer {
