@@ -13,7 +13,7 @@ export default function TrackPage() {
     "";
 
   return (
-    <div className="min-h-screen bg-[#faf7f3] text-[#3d2b2d] flex flex-col font-sans">
+    <div className="volamp-marketplace min-h-screen bg-[#faf7f3] text-[#3d2b2d] flex flex-col font-sans">
       {/* Universal Clean Header */}
       <UniversalHeader currentPage="track" />
 

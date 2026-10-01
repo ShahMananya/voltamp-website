@@ -2985,10 +2985,10 @@ body {
 }
 
 .site-footer {
-  border-top: 1px solid #3d0e14;
-  background: #1c0608;
-  color: #f5f7f9;
-  padding-block: 3rem 1.5rem;
+  border-top: 1px solid #ebd7c7;
+  background: #faf7f3;
+  color: #3d2b2d;
+  padding-block: 0;
 }
 
 .footer-grid {
@@ -3014,13 +3014,13 @@ body {
 
 .footer-grid button,
 .footer-grid a {
-  color: #aebdc8;
+  color: #5d4a4b;
   font-size: .74rem;
 }
 
 .footer-grid button:hover,
 .footer-grid a:hover {
-  color: #f2b84b;
+  color: #c25e0a;
 }
 
 .footer-bottom {
@@ -3028,9 +3028,9 @@ body {
   justify-content: space-between;
   gap: 1rem;
   margin-top: 3rem;
-  border-top: 1px solid #223b51;
+  border-top: 1px solid #ebd7c7;
   padding-top: 1rem;
-  color: #7f95a5;
+  color: #736061;
   font-size: .62rem;
 }
 
@@ -4903,7 +4903,8 @@ body {
 }
 
 .volamp-marketplace .site-footer {
-  background: #1c0608;
+  background: #faf7f3;
+  color: #3d2b2d;
 }
 
 .volamp-marketplace .footer-grid {
@@ -5267,8 +5268,8 @@ html.dark .market-calculator {
   background: #061827;
 }
 
-html.dark .site-footer {
-  background: #140406 !important;
+html.dark .site-footer:not(.force-light) {
+  background: #140406;
 }
 
 html.dark .theme-toggle {

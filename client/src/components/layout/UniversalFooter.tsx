@@ -7,17 +7,22 @@ import NewsletterSection from "@/components/home/NewsletterSection";
 interface UniversalFooterProps {
   showNewsletter?: boolean;
   showJournalBar?: boolean;
+  forceLight?: boolean;
 }
 
 export default function UniversalFooter({
   showNewsletter = true,
   showJournalBar = true,
+  forceLight = true,
 }: UniversalFooterProps) {
   const [, navigate] = useLocation();
   const supportPhone = "9512365582";
 
   return (
-    <footer className="site-footer w-full bg-[#fbf8f5] dark:bg-[#160406] text-[#3d2b2d] dark:text-[#f0e4e6] border-t border-[#ebd7c7] dark:border-[#3a1014] transition-colors">
+    <footer
+      className={`site-footer ${forceLight ? "force-light" : ""} w-full !bg-[#faf7f3] !text-[#3d2b2d] !border-t !border-[#ebd7c7] transition-colors`}
+      style={{ backgroundColor: "#faf7f3", color: "#3d2b2d" }}
+    >
       {/* 1. Optional Newsletter Section (Matching Home Page) */}
       {showNewsletter && <NewsletterSection />}
 
@@ -250,9 +255,9 @@ export default function UniversalFooter({
       </div>
 
       {/* 4. Bottom Copyright Bar (Matching Shared Screenshot) */}
-      <div className="market-container footer-bottom py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#736061] dark:text-[#9e8b8d]">
-        <span>VOLAMP ELEKTRIKALS PVT. LTD. © 2026. (GST: 24AAICV0754B1ZO · CIN: U31900GJ2021PTC122730)</span>
-        <span>Office: Khadia · Warehouse: Aslali · Factory supply to any location across India.</span>
+      <div className="market-container footer-bottom py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#736061]">
+        <span>Volamp Elektrikals © 2026. All rights reserved.</span>
+        <span>Global &amp; Domestic electrical supply and export network.</span>
       </div>
     </footer>
   );

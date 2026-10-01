@@ -40,7 +40,7 @@ export default function InTheNews() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf7f3] text-[#3d2b2d] transition-colors">
+    <div className="volamp-marketplace min-h-screen bg-[#faf7f3] text-[#3d2b2d] transition-colors">
       {/* Universal Header (Consistent Warm Sand & Cream Theme) */}
       <UniversalHeader currentPage="news" />
 
@@ -368,7 +368,7 @@ export default function InTheNews() {
       </section>
 
       {/* Universal Footer (Matching Shared Screenshot Layout) */}
-      <UniversalFooter showNewsletter={false} showJournalBar={false} />
+      <UniversalFooter showNewsletter={false} showJournalBar={false} forceLight={true} />
     </div>
   );
 }

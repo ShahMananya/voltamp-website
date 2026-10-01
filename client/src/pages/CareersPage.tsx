@@ -487,7 +487,7 @@ export default function CareersPage() {
   };
 
   return (
-    <div className="careers-page min-h-screen bg-[#faf7f3] text-[#3d2b2d] transition-colors">
+    <div className="volamp-marketplace careers-page min-h-screen bg-[#faf7f3] text-[#3d2b2d] transition-colors">
       {/* Universal Header (Matching Home Page White Palette) */}
       <UniversalHeader currentPage="careers" />
 

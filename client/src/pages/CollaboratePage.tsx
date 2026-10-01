@@ -261,7 +261,7 @@ export default function CollaboratePage() {
       )}`;
 
   return (
-    <div className="min-h-screen bg-[#faf7f3] text-[#3d2b2d] font-['Inter',sans-serif] flex flex-col">
+    <div className="volamp-marketplace min-h-screen bg-[#faf7f3] text-[#3d2b2d] font-['Inter',sans-serif] flex flex-col">
       {/* Universal Header (Matching Home Page Warm Cream Theme) */}
       <UniversalHeader currentPage="collaborate" />
 
