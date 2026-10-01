@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import { Link, useLocation } from "wouter";
 import { startLogin } from "@/const";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -148,74 +149,95 @@ export default function Home() {
 
   const toggleCompare = (name: string) => setCompareList((current) => current.includes(name) ? current.filter((item) => item !== name) : current.length < 3 ? [...current, name] : current);
 
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: true,
+    duration: 32,
+  });
   const [currentCampaignSlide, setCurrentCampaignSlide] = useState(0);
   const [isSliderHovered, setIsSliderHovered] = useState(false);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   const campaignSlides = useMemo(() => [
     {
       id: "segments",
-      eyebrow: "SOLUTIONS",
-      heading: "Business Segments",
-      pill: "CONTRACTORS · EPC · INFRA",
-      cta: "Explore Segments",
+      eyebrow: "SOLUTIONS FOR INDUSTRY",
+      tagline: "CONTRACTORS · EPC · INFRA",
+      heading: "Heavy-Duty Cable Distribution for Industrial EPCs",
+      description: "Direct factory dispatches of certified HT/LT power cables, control cables, and switchgears with complete Mill Test Certificates (MTC) and consolidated project billing.",
+      badges: ["Pan-India Site Delivery", "GeM Registered Supplier", "IS / IEC Certified"],
+      cta: "Explore Business Segments",
+      secondaryCta: "Request Project BOQ",
       image: "/business-segments-hero.png?v=2",
       themeClass: "campaign-slide-segments",
       onClick: () => navigate("/business-segments"),
+      onSecondaryClick: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        handleQuote();
+      },
     },
     {
       id: "credit",
-      eyebrow: "FINANCING",
-      heading: "Order & Pay Later",
-      pill: "PRE-APPROVED BANK CREDIT",
-      cta: "Apply Credit",
+      eyebrow: "INSTITUTIONAL FINANCING",
+      tagline: "PRE-APPROVED WORKING CAPITAL",
+      heading: "Order & Pay Later on Approved Bank Credit",
+      description: "Keep site operations moving without cash flow bottlenecks. Access 30 to 90 days institutional credit backed by premier banking partners for registered contractors.",
+      badges: ["30–90 Days Terms", "Zero Hidden Charges", "Fast Digital Clearance"],
+      cta: "Apply for Bank Credit",
+      secondaryCta: "Pay an Invoice",
       image: "/order-pay-later-3d.jpg",
       themeClass: "campaign-slide-financing",
       onClick: () => setCreditOpen(true),
+      onSecondaryClick: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        navigate("/pay-invoice");
+      },
     },
     {
       id: "workspace",
-      eyebrow: "PORTAL",
-      heading: "Project Workspace",
-      pill: "LIVE TRACKING & QUOTES",
-      cta: "Open Portal",
+      eyebrow: "LOGISTICS COMMAND DESK",
+      tagline: "REAL-TIME TELEMETRY & TRACKING",
+      heading: "Project Workspace & Live Consignment Tracking",
+      description: "Real-time GPS transit monitoring, carrier LR docket downloads, approved test certificates, and one-click repeat ordering from Ahmedabad Central Depot.",
+      badges: ["Live GPS Dockets", "Verified Mill MTCs", "Dedicated Export Desk"],
+      cta: "Open Project Workspace",
+      secondaryCta: "Track My Consignment",
       image: "/workspace-portal-hero.jpg",
       themeClass: "campaign-slide-portal",
       onClick: () => setAccountOpen(true),
+      onSecondaryClick: (e: React.MouseEvent) => {
+        e.stopPropagation();
+        navigate("/track");
+      },
     },
   ], [navigate]);
 
   useEffect(() => {
-    if (isSliderHovered) return;
+    if (!emblaApi) return;
+    const onSelect = () => {
+      setCurrentCampaignSlide(emblaApi.selectedScrollSnap());
+    };
+    emblaApi.on("select", onSelect);
+    onSelect();
+    return () => {
+      emblaApi.off("select", onSelect);
+    };
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi || isSliderHovered) return;
     const timer = setInterval(() => {
-      setCurrentCampaignSlide((prev) => (prev + 1) % campaignSlides.length);
-    }, 4500);
+      emblaApi.scrollNext();
+    }, 5500);
     return () => clearInterval(timer);
-  }, [isSliderHovered, campaignSlides.length]);
+  }, [emblaApi, isSliderHovered]);
 
   const handlePrevSlide = (e?: React.MouseEvent) => {
     e?.stopPropagation();
-    setCurrentCampaignSlide((prev) => (prev - 1 + campaignSlides.length) % campaignSlides.length);
+    emblaApi?.scrollPrev();
   };
 
   const handleNextSlide = (e?: React.MouseEvent) => {
     e?.stopPropagation();
-    setCurrentCampaignSlide((prev) => (prev + 1) % campaignSlides.length);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStartX(e.touches[0].clientX);
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartX === null) return;
-    const diff = touchStartX - e.changedTouches[0].clientX;
-    if (diff > 45) {
-      handleNextSlide();
-    } else if (diff < -45) {
-      handlePrevSlide();
-    }
-    setTouchStartX(null);
+    emblaApi?.scrollNext();
   };
 
   return <div className="volamp-marketplace">
@@ -225,16 +247,12 @@ export default function Home() {
     <main id="top"><div className="market-container market-breadcrumb">Home <ChevronDown className="size-3 -rotate-90" /> <span>Let's Build {country} Together</span></div>
       <section
         className="market-hero-slider market-container"
+        ref={emblaRef}
         aria-label="Key Solutions and Portals Rotating Showcase"
         onMouseEnter={() => setIsSliderHovered(true)}
         onMouseLeave={() => setIsSliderHovered(false)}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
       >
-        <div
-          className="market-hero-slider-track"
-          style={{ transform: `translateX(-${currentCampaignSlide * 100}%)` }}
-        >
+        <div className="market-hero-slider-track">
           {campaignSlides.map((slide, idx) => (
             <div
               key={slide.id}
@@ -251,18 +269,53 @@ export default function Home() {
             >
               <div className="market-hero-slide-split">
                 <div className="market-hero-slide-content">
-                  <span className="market-hero-slide-eyebrow">
-                    <span className="market-hero-pulse-dot" />
-                    {slide.eyebrow}
-                  </span>
+                  <div className="market-hero-slide-meta">
+                    <span className="market-hero-slide-eyebrow">
+                      <span className="market-hero-pulse-dot" />
+                      {slide.eyebrow}
+                    </span>
+                    <span className="market-hero-slide-tagline">{slide.tagline}</span>
+                  </div>
+
                   <h2 className="market-hero-slide-heading">{slide.heading}</h2>
-                  <div className="market-hero-slide-pill">{slide.pill}</div>
-                  <div className="market-hero-slide-cta">
-                    <span>{slide.cta}</span>
-                    <ArrowRight className="size-4 market-hero-slide-arrow" />
+                  <p className="market-hero-slide-description">{slide.description}</p>
+
+                  <div className="market-hero-slide-badges">
+                    {slide.badges.map((badge, bIdx) => (
+                      <span key={bIdx} className="market-hero-slide-badge">
+                        <Check className="size-3 text-amber-400 shrink-0" />
+                        <span>{badge}</span>
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="market-hero-slide-actions">
+                    <button
+                      type="button"
+                      className="market-hero-slide-cta"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        slide.onClick();
+                      }}
+                    >
+                      <span>{slide.cta}</span>
+                      <ArrowRight className="size-4 market-hero-slide-arrow" />
+                    </button>
+                    {slide.secondaryCta && (
+                      <button
+                        type="button"
+                        className="market-hero-slide-secondary"
+                        onClick={slide.onSecondaryClick}
+                      >
+                        <span>{slide.secondaryCta}</span>
+                        <ArrowRight className="size-3.5 opacity-70" />
+                      </button>
+                    )}
                   </div>
                 </div>
+
                 <div className="market-hero-slide-visual">
+                  <div className="market-hero-visual-glow" />
                   <img
                     src={slide.image}
                     alt={slide.heading}
@@ -301,11 +354,11 @@ export default function Home() {
               className={`market-hero-dot ${idx === currentCampaignSlide ? "is-active" : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
-                setCurrentCampaignSlide(idx);
+                emblaApi?.scrollTo(idx);
               }}
               aria-label={`Go to slide ${idx + 1}: ${slide.heading}`}
             >
-              <span className="dot-label">{slide.heading}</span>
+              <span className="dot-label">{slide.id === "segments" ? "Business Segments" : slide.id === "credit" ? "Order & Pay Later" : "Project Workspace"}</span>
               <span className="dot-bar" />
             </button>
           ))}
