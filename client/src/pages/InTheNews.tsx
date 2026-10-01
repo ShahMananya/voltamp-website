@@ -367,8 +367,8 @@ export default function InTheNews() {
         </div>
       </section>
 
-      {/* Universal Footer */}
-      <UniversalFooter />
+      {/* Universal Footer (Matching Shared Screenshot Layout) */}
+      <UniversalFooter showNewsletter={false} showJournalBar={false} />
     </div>
   );
 }
