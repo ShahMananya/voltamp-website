@@ -169,8 +169,7 @@ export default function Home() {
       heading: "Order & Pay Later",
       pill: "PRE-APPROVED BANK CREDIT",
       cta: "Apply Credit",
-      image: "/order-pay-later-slide.jpg",
-      isFullBanner: true,
+      image: "/order-pay-later-3d.jpg",
       themeClass: "campaign-slide-financing",
       onClick: () => setCreditOpen(true),
     },
@@ -239,7 +238,7 @@ export default function Home() {
           {campaignSlides.map((slide, idx) => (
             <div
               key={slide.id}
-              className={`market-hero-slide ${slide.themeClass} ${slide.isFullBanner ? "is-full-banner" : ""}`}
+              className={`market-hero-slide ${slide.themeClass}`}
               onClick={slide.onClick}
               role="button"
               tabIndex={0}
@@ -250,38 +249,27 @@ export default function Home() {
                 }
               }}
             >
-              {slide.isFullBanner ? (
-                <div className="market-hero-slide-full">
+              <div className="market-hero-slide-split">
+                <div className="market-hero-slide-content">
+                  <span className="market-hero-slide-eyebrow">
+                    <span className="market-hero-pulse-dot" />
+                    {slide.eyebrow}
+                  </span>
+                  <h2 className="market-hero-slide-heading">{slide.heading}</h2>
+                  <div className="market-hero-slide-pill">{slide.pill}</div>
+                  <div className="market-hero-slide-cta">
+                    <span>{slide.cta}</span>
+                    <ArrowRight className="size-4 market-hero-slide-arrow" />
+                  </div>
+                </div>
+                <div className="market-hero-slide-visual">
                   <img
                     src={slide.image}
-                    alt={`${slide.heading} - ${slide.pill}`}
-                    className="market-hero-slide-full-img"
+                    alt={slide.heading}
                     loading={idx === 0 ? "eager" : "lazy"}
                   />
                 </div>
-              ) : (
-                <div className="market-hero-slide-split">
-                  <div className="market-hero-slide-content">
-                    <span className="market-hero-slide-eyebrow">
-                      <span className="market-hero-pulse-dot" />
-                      {slide.eyebrow}
-                    </span>
-                    <h2 className="market-hero-slide-heading">{slide.heading}</h2>
-                    <div className="market-hero-slide-pill">{slide.pill}</div>
-                    <div className="market-hero-slide-cta">
-                      <span>{slide.cta}</span>
-                      <ArrowRight className="size-4 market-hero-slide-arrow" />
-                    </div>
-                  </div>
-                  <div className="market-hero-slide-visual">
-                    <img
-                      src={slide.image}
-                      alt={slide.heading}
-                      loading={idx === 0 ? "eager" : "lazy"}
-                    />
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
           ))}
         </div>

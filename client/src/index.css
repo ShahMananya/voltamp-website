@@ -4231,8 +4231,7 @@ body {
   box-shadow: 0 12px 36px -4px rgba(11, 31, 51, 0.15), 0 4px 14px rgba(11, 31, 51, 0.08);
   background: #0b1f33;
   width: 100%;
-  aspect-ratio: 1024 / 408;
-  max-height: 420px;
+  height: 340px;
 }
 
 .market-hero-slider-track {
@@ -4299,7 +4298,15 @@ body {
 }
 
 .campaign-slide-financing {
-  background: linear-gradient(135deg, #cc721c 0%, #c36815 100%);
+  background: linear-gradient(125deg, #b85a0e 0%, #873d06 45%, #4a1e03 100%);
+}
+
+.campaign-slide-financing .market-hero-slide-visual {
+  background: #4a1e03;
+}
+
+.campaign-slide-financing .market-hero-slide-visual::before {
+  background: linear-gradient(to right, #6b2e04 0%, rgba(107, 46, 4, 0.4) 30%, transparent 70%);
 }
 
 .campaign-slide-portal {
@@ -4520,8 +4527,9 @@ body {
 /* Mobile responsive */
 @media (max-width: 768px) {
   .market-hero-slider {
-    aspect-ratio: 1024 / 408;
-    max-height: none;
+    height: auto;
+    min-height: 380px;
+    aspect-ratio: auto;
   }
 
   .market-hero-slide-split {
