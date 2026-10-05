@@ -79,7 +79,7 @@ export default function GlobalVolaChat() {
               </span>
               <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </div>
-            <strong className="text-xs font-semibold text-white font-['Space_Grotesk'] block leading-tight">
+            <strong className="text-xs font-semibold text-white font-['Plus_Jakarta_Sans',sans-serif] block leading-tight">
               VOLA · Orders, Pricing & Engineering Lead
             </strong>
           </div>

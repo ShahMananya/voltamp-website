@@ -83,7 +83,7 @@ export function BankCreditModal({ isOpen, onClose }: BankCreditModalProps) {
                 <span className="text-[10px] font-black tracking-widest text-[#c46b19] uppercase block">
                   BANK TIE-UP · PROJECT CREDIT PROGRAM
                 </span>
-                <h2 className="text-xl sm:text-2xl font-bold text-[#102a40] font-['Space_Grotesk'] leading-tight">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
                   Order Now, Pay Later
                 </h2>
                 <p className="text-xs text-[#5a6b78] mt-1">
@@ -250,7 +250,7 @@ export function BankCreditModal({ isOpen, onClose }: BankCreditModalProps) {
             <div className="size-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="size-10" />
             </div>
-            <h3 className="text-xl font-bold text-[#102a40] font-['Space_Grotesk']">
+            <h3 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
               Application Received
             </h3>
             <p className="text-xs text-[#5a6b78] mt-2 max-w-[420px] mx-auto leading-relaxed">

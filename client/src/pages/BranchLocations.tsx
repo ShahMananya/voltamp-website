@@ -207,11 +207,11 @@ export default function BranchLocations() {
               OFFICIAL PREMISES & DIRECT SUPPLY
             </span>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white tracking-tight leading-tight">
               Branch Locations & <span className="text-[#c56718] dark:text-amber-400">Supply Network</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['DM_Sans'] leading-relaxed max-w-2xl">
+            <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['Plus_Jakarta_Sans',sans-serif] leading-relaxed max-w-2xl">
               Main Office & Warehouse based in Ahmedabad, Gujarat. We also work with manufacturing units that can supply products directly to any location across India.
             </p>
 
@@ -266,7 +266,7 @@ export default function BranchLocations() {
                     </span>
                   </div>
 
-                  <h2 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white flex items-center gap-2">
+                  <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white flex items-center gap-2">
                     {isOffice ? (
                       <Building2 className="size-5 text-[#c56718] shrink-0" />
                     ) : (
@@ -275,13 +275,13 @@ export default function BranchLocations() {
                     <span>{loc.name}</span>
                   </h2>
 
-                  <p className="text-xs text-[#5d4a4b] dark:text-slate-300 font-['DM_Sans']">
+                  <p className="text-xs text-[#5d4a4b] dark:text-slate-300 font-['Plus_Jakarta_Sans',sans-serif]">
                     {loc.purpose}
                   </p>
                 </div>
 
                 {/* Card Details */}
-                <div className="p-6 space-y-4 text-xs font-['DM_Sans']">
+                <div className="p-6 space-y-4 text-xs font-['Plus_Jakarta_Sans',sans-serif]">
                   {/* Address */}
                   <div className="flex items-start gap-2.5">
                     <MapPin className="size-4 text-[#c56718] shrink-0 mt-0.5" />
@@ -392,10 +392,10 @@ export default function BranchLocations() {
                 <span className="size-1.5 rounded-full bg-emerald-500" />
                 <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Pan-India Reach</span>
               </div>
-              <strong className="text-base sm:text-lg font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white block">
+              <strong className="text-base sm:text-lg font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white block">
                 We work with manufacturing units that can supply products at any location.
               </strong>
-              <p className="text-xs text-[#5d4a4b] dark:text-slate-300 max-w-2xl leading-relaxed font-['DM_Sans']">
+              <p className="text-xs text-[#5d4a4b] dark:text-slate-300 max-w-2xl leading-relaxed font-['Plus_Jakarta_Sans',sans-serif]">
                 Need material delivered straight to your job site or remote industrial project? Our manufacturing partner network dispatches directly to any destination with factory Material Test Certificates ( MTC ).
               </p>
             </div>

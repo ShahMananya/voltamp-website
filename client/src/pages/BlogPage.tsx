@@ -61,7 +61,7 @@ export default function BlogPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fdfbf9] text-[#0b1f33] font-['Inter',sans-serif] flex flex-col">
+    <div className="min-h-screen bg-[#fdfbf9] text-[#0b1f33] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
       {/* Universal Header */}
       <UniversalHeader currentPage="blog" />
 
@@ -74,7 +74,7 @@ export default function BlogPage() {
               <span>VOLAMP JOURNAL & EDITORIAL DESK</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#4d1217] font-['Space_Grotesk'] leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
               Volamp <span className="text-[#c56718]">Journal</span>
             </h1>
 
@@ -102,7 +102,7 @@ export default function BlogPage() {
                   <span>Articles In Preparation</span>
                 </span>
 
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Space_Grotesk']">
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                   New Articles Coming Soon
                 </h2>
 

@@ -307,7 +307,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
               <UserRound className="size-7" />
             </div>
 
-            <h2 className="text-2xl font-bold tracking-tight text-[#102a40] font-['Space_Grotesk']">
+            <h2 className="text-2xl font-bold tracking-tight text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
               Welcome to <span className="text-[#c46b19]">VOLAMP</span>
             </h2>
             <p className="text-xs text-[#5a6b78] mt-1 mb-6 max-w-[340px]">
@@ -384,7 +384,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
                 OFFICIAL WORKSPACE
               </span>
             </div>
-            <h2 className="text-xl font-bold text-[#102a40] font-['Space_Grotesk']">
+            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
               Employee Login
             </h2>
             <p className="text-xs text-[#5a6b78] mt-0.5 mb-5">
@@ -496,7 +496,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
                 OFFICIAL ONBOARDING
               </span>
             </div>
-            <h2 className="text-xl font-bold text-[#102a40] font-['Space_Grotesk']">
+            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
               Employee Registration
             </h2>
             <p className="text-xs text-[#5a6b78] mt-0.5 mb-4">
@@ -620,7 +620,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
                 CUSTOMER PORTAL
               </span>
             </div>
-            <h2 className="text-xl font-bold text-[#102a40] font-['Space_Grotesk']">
+            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
               Customer Login
             </h2>
             <p className="text-xs text-[#5a6b78] mt-0.5 mb-5">
@@ -729,7 +729,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
                 CUSTOMER ACCOUNT
               </span>
             </div>
-            <h2 className="text-xl font-bold text-[#102a40] font-['Space_Grotesk']">
+            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
               Create Customer Account
             </h2>
             <p className="text-xs text-[#5a6b78] mt-0.5 mb-4">
@@ -834,7 +834,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
             <span className="text-[10px] font-black tracking-widest text-[#c46b19] uppercase">
               TWO-STEP VERIFICATION
             </span>
-            <h2 className="text-xl font-bold text-[#102a40] font-['Space_Grotesk'] mt-0.5">
+            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] mt-0.5">
               Enter Verification Code
             </h2>
             <p className="text-xs text-[#5a6b78] mt-1 mb-4">
@@ -907,7 +907,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
             <span className="text-[10px] font-black tracking-widest text-[#1d73b7] uppercase">
               CONFIRM REGISTRATION
             </span>
-            <h2 className="text-xl font-bold text-[#102a40] font-['Space_Grotesk'] mt-0.5">
+            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] mt-0.5">
               Verify Email Address
             </h2>
             <p className="text-xs text-[#5a6b78] mt-1 mb-4">
@@ -961,7 +961,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
               <CheckCircle2 className="size-3.5" /> Official Email Verified
             </div>
 
-            <h2 className="text-xl font-bold text-[#102a40] font-['Space_Grotesk'] mt-1">
+            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] mt-1">
               Pending Admin Approval
             </h2>
             <p className="text-xs text-[#5a6b78] mt-2 mb-6 leading-relaxed max-w-[360px] mx-auto">
@@ -991,7 +991,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
               <ArrowLeft className="size-3.5" /> Back to Login
             </button>
 
-            <h2 className="text-xl font-bold text-[#102a40] font-['Space_Grotesk']">
+            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
               Reset Password
             </h2>
             <p className="text-xs text-[#5a6b78] mt-0.5 mb-5">

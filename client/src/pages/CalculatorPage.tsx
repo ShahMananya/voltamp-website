@@ -495,7 +495,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
             <span>ONLINE INDUSTRIAL PRODUCTS & SIZING CALCULATOR</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-['Space_Grotesk'] leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
             Industrial Products & Project Cost Estimator
           </h1>
 
@@ -980,7 +980,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400 block mb-1">
                   ESTIMATED COMMERCIAL QUOTATION
                 </span>
-                <h3 className="text-lg font-black text-slate-900 dark:text-white font-['Space_Grotesk'] leading-snug">
+                <h3 className="text-lg font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] leading-snug">
                   {activeBrandName} — {activeProductName}
                 </h3>
                 <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs text-slate-500">
@@ -1057,7 +1057,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                   <span className="text-xs font-black text-slate-900 dark:text-white">
                     {includeGst ? "Total Project Estimate (incl. GST):" : "Net Taxable Estimate:"}
                   </span>
-                  <span className="text-2xl font-black text-[#1d73b7] dark:text-sky-400 font-['Space_Grotesk']">
+                  <span className="text-2xl font-black text-[#1d73b7] dark:text-sky-400 font-['Plus_Jakarta_Sans',sans-serif]">
                     ₹{finalTotal.toLocaleString("en-IN")}
                   </span>
                 </div>
@@ -1146,7 +1146,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                     <span className="text-[10px] font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400 block mb-1">
                       AUTHENTIC IS 7098 / IS 694 SIZING ENGINE
                     </span>
-                    <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
                       Electrical Load & Distance Parameters
                     </h3>
                     <p className="text-xs text-slate-500 mt-1">
@@ -1375,7 +1375,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                         <span className="text-[10px] font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400 block mb-1">
                           RECOMMENDED CONTINUOUS SIZING (IS 7098)
                         </span>
-                        <h3 className="text-2xl font-black text-slate-900 dark:text-white font-['Space_Grotesk'] leading-tight">
+                        <h3 className="text-2xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
                           {activeRec.runs > 1 ? `${activeRec.runs} Runs × ` : ""}
                           {activeRec.sizeLabel} ({sizingConductor})
                         </h3>
@@ -1489,7 +1489,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                   <span className="text-xs font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400">
                     ELECTRICAL ENGINEERING NOTICE
                   </span>
-                  <h3 className="text-2xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
                     Load & Cable Sizing Guide is Exclusively for Wires & Cables
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -1536,7 +1536,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                     <span className="text-[10px] font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400 block mb-1">
                       QUICK SELECTION MATRIX (IS 7098 / IS 694)
                     </span>
-                    <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
                       Motor kW & HP vs Recommended Conductor Cross-Section
                     </h3>
                     <p className="text-xs text-slate-500 mt-1">
@@ -1623,7 +1623,7 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                   <span className="text-xs font-black uppercase tracking-widest text-[#1d73b7] dark:text-sky-400">
                     CABLE REFERENCE MATRIX
                   </span>
-                  <h3 className="text-2xl font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
                     IS 7098 / IS 694 Sizing Matrix is for Wires & Cables
                   </h3>
                   <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">

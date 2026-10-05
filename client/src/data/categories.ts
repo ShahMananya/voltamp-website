@@ -475,11 +475,11 @@ export const CATEGORIES: Category[] = [
     ],
   },
   {
-    id: "earthing-wires",
-    name: "EARTHING WIRES",
-    shortName: "EW",
+    id: "earthing-material",
+    name: "EARTHING MATERIAL",
+    shortName: "EM",
     code: "07",
-    slug: "earthing-wires",
+    slug: "earthing-material",
     detail: "Electrodes, pit covers, chemicals, copper, GI & aluminium materials",
     iconName: "ShieldCheck",
     image: "/products/earthing-rods.png?v=3",
@@ -609,6 +609,9 @@ export function getCategoryBySlug(slug: string): Category | undefined {
   const normalized = slug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   if (normalized === "pvc-pipe" || normalized === "pvc-pipes" || normalized === "pvc") {
     return CATEGORIES.find((c) => c.slug === "conduit");
+  }
+  if (normalized === "earthing-wires" || normalized === "earthing-wire" || normalized === "earthing") {
+    return CATEGORIES.find((c) => c.slug === "earthing-material");
   }
   return CATEGORIES.find(
     (c) =>

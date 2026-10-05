@@ -39,7 +39,7 @@ export default function TrackPage() {
             </div>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#4d1217] tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] tracking-tight">
             Track Your <span className="text-[#c56718]">VOLAMP</span> Consignment
           </h1>
 

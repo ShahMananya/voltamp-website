@@ -904,7 +904,7 @@ export default function AboutVolamp() {
                 <div className="inline-flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">
                   <Sparkles className="size-3.5" /> Pan-India Project Directory · 28 States
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white font-['Space_Grotesk']">
+                <h3 className="text-xl sm:text-2xl font-bold text-white font-['Plus_Jakarta_Sans',sans-serif]">
                   Explore Where Volamp Contributed
                 </h3>
                 <p className="text-slate-300 text-sm mt-1 max-w-xl">

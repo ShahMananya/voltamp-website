@@ -124,7 +124,7 @@ export default function EmployeePortal() {
           <div className="size-14 rounded-2xl bg-red-50 dark:bg-red-950/40 text-red-600 flex items-center justify-center mx-auto mb-4">
             <Briefcase className="size-7" />
           </div>
-          <h1 className="text-xl font-bold text-[#102a40] dark:text-white font-['Space_Grotesk']">
+          <h1 className="text-xl font-bold text-[#102a40] dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
             Employee Portal Restricted
           </h1>
           <p className="text-xs text-[#6e808b] dark:text-[#b6c8d3] mt-2 mb-6 leading-relaxed">
@@ -197,7 +197,7 @@ export default function EmployeePortal() {
                 VOLAMP OPERATIONS DESK
               </span>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold font-['Space_Grotesk']">
+            <h1 className="text-2xl md:text-3xl font-bold font-['Plus_Jakarta_Sans',sans-serif]">
               Employee Control Center
             </h1>
             <p className="text-xs text-[#6e808b] dark:text-[#b6c8d3] mt-1 max-w-xl">
@@ -239,7 +239,7 @@ export default function EmployeePortal() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Users className="size-5 text-[#1d73b7]" />
-              <h2 className="text-base font-bold font-['Space_Grotesk']">
+              <h2 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif]">
                 Pending Employee Registrations
               </h2>
             </div>
@@ -304,7 +304,7 @@ export default function EmployeePortal() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <FileText className="size-5 text-[#d97818]" />
-                <h2 className="text-base font-bold font-['Space_Grotesk']">
+                <h2 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif]">
                   Customer Quotations Queue
                 </h2>
               </div>
@@ -361,7 +361,7 @@ export default function EmployeePortal() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <PackageSearch className="size-5 text-[#1d73b7]" />
-                <h2 className="text-base font-bold font-['Space_Grotesk']">
+                <h2 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif]">
                   Order Dispatch & Tracking
                 </h2>
               </div>
@@ -405,7 +405,7 @@ export default function EmployeePortal() {
                 <Zap className="size-4" />
               </div>
               <div>
-                <h2 className="text-base font-bold font-['Space_Grotesk']">
+                <h2 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif]">
                   Quick Orders & Direct Requisitions
                 </h2>
                 <p className="text-xs text-[#6e808b] dark:text-[#b6c8d3]">
@@ -563,7 +563,7 @@ export default function EmployeePortal() {
                 <Database className="size-4" />
               </div>
               <div>
-                <h2 className="text-base font-bold font-['Space_Grotesk']">
+                <h2 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif]">
                   VOLAMP Product Master Data & Live Synchronization
                 </h2>
                 <p className="text-xs text-[#6e808b] dark:text-[#b6c8d3]">

@@ -365,7 +365,7 @@ Generated via Volamp Online Estimation Desk: https://volampelektrikals.com/calcu
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl bg-[#fdfbf9] text-[#2c1d1f] shadow-2xl border border-[#ebd8ca] flex flex-col font-['Inter',sans-serif]"
+        className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl bg-[#fdfbf9] text-[#2c1d1f] shadow-2xl border border-[#ebd8ca] flex flex-col font-['Plus_Jakarta_Sans',sans-serif]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -383,7 +383,7 @@ Generated via Volamp Online Estimation Desk: https://volampelektrikals.com/calcu
                   Live Master Catalog Feed
                 </span>
               </div>
-              <h2 className="text-lg sm:text-xl font-bold text-[#4d1217] font-['Space_Grotesk'] leading-tight">
+              <h2 className="text-lg sm:text-xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
                 Industrial Products & Project Cost Calculator
               </h2>
             </div>
@@ -851,7 +851,7 @@ Generated via Volamp Online Estimation Desk: https://volampelektrikals.com/calcu
                     <span className="text-[10px] font-bold text-[#c25e0a] uppercase tracking-wider">
                       SPECIFICATION SUMMARY
                     </span>
-                    <h3 className="text-base font-bold text-[#4d1217] font-['Space_Grotesk'] leading-tight">
+                    <h3 className="text-base font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
                       {activeBrandName} — {activeProductName}
                     </h3>
                   </div>
@@ -972,7 +972,7 @@ Generated via Volamp Online Estimation Desk: https://volampelektrikals.com/calcu
                       <span className="text-[10px] text-stone-400">Incl. 18% GST & Online Pricing</span>
                     </div>
                     <div className="text-right">
-                      <span className="text-2xl font-black text-white font-['Space_Grotesk']">
+                      <span className="text-2xl font-black text-white font-['Plus_Jakarta_Sans',sans-serif]">
                         ₹{finalTotal.toLocaleString("en-IN")}
                       </span>
                     </div>
@@ -1171,7 +1171,7 @@ Generated via Volamp Online Estimation Desk: https://volampelektrikals.com/calcu
                     </div>
                     <div className="flex items-baseline justify-between">
                       <span className="text-stone-600">Rated Design Current (FLC):</span>
-                      <strong className="text-2xl font-black text-[#4d1217] font-['Space_Grotesk']">
+                      <strong className="text-2xl font-black text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                         {sizingResult.calculatedAmps} A
                       </strong>
                     </div>
@@ -1222,7 +1222,7 @@ Generated via Volamp Online Estimation Desk: https://volampelektrikals.com/calcu
                         <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 uppercase tracking-wider">
                           ENGINEERED IS 7098 RECOMMENDATION
                         </span>
-                        <h3 className="text-xl font-bold text-[#4d1217] font-['Space_Grotesk'] mt-1">
+                        <h3 className="text-xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif] mt-1">
                           {activeRecommendation.runs > 1 ? `${activeRecommendation.runs} Runs × ` : ""}
                           {activeRecommendation.sizeLabel} ({sizingConductor})
                         </h3>
@@ -1331,7 +1331,7 @@ Generated via Volamp Online Estimation Desk: https://volampelektrikals.com/calcu
                   <span className="text-xs font-bold uppercase tracking-widest text-[#ef7d19]">
                     ELECTRICAL ENGINEERING NOTICE
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Space_Grotesk']">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                     Load & Cable Sizing Guide is Exclusively for Wires & Cables
                   </h3>
                   <p className="text-sm text-stone-600 leading-relaxed">

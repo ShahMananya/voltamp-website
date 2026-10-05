@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { ArrowRight, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Linkedin, Menu, MessageCircle, MessageSquare, PackageSearch, PlugZap, Quote, Search, ShieldCheck, ShoppingCart, Sparkles, Truck, UserRound, X, Youtube, Zap } from "lucide-react";
+import { ArrowRight, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Linkedin, Lock, Menu, MessageCircle, MessageSquare, PackageSearch, PlugZap, Quote, Search, Shield, ShieldCheck, ShoppingCart, Sparkles, Truck, UserRound, X, Youtube, Zap } from "lucide-react";
 import { CATEGORIES, ICON_MAP } from "@/data/categories";
 
 type Product = { name: string; sku: string; category: string; detail: string; accent: "orange" | "brown" | "yellow"; icon: typeof Cable; price: number; unit: string; use: string };
@@ -307,16 +307,21 @@ export default function Home() {
               </div>
               <div className="mega-menu-sub-list">
                 <div className="mega-menu-sub-list-head">
-                  <span className="market-kicker">
-                    {activeCategoryObj.shortName} · {activeCategoryObj.productCount.toLocaleString("en-IN")}+ ITEMS · SUBCATEGORIES ({activeCategoryObj.subcategories.length})
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold tracking-wider text-[#c56718] dark:text-amber-400 uppercase">
+                      {activeCategoryObj.shortName} · {activeCategoryObj.productCount.toLocaleString("en-IN")}+ Items
+                    </span>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-300">
+                      {activeCategoryObj.subcategories.length} Types
+                    </span>
+                  </div>
                   <h4>{activeCategoryObj.name}</h4>
                 </div>
                 <div className="mega-menu-sub-items">
                   {activeCategoryObj.subcategories.map((sub) => (
                     <button
                       key={sub.name}
-                      className={`mega-menu-sub-item ${activeSubcategoryObj?.name === sub.name ? "is-active" : ""}`}
+                      className={`mega-menu-sub-item group ${activeSubcategoryObj?.name === sub.name ? "is-active" : ""}`}
                       onMouseEnter={() => setActiveMegaSubcategory(sub.name)}
                       onFocus={() => setActiveMegaSubcategory(sub.name)}
                       onClick={() => {
@@ -326,7 +331,7 @@ export default function Home() {
                     >
                       <span className="mega-menu-sub-name">{sub.name}</span>
                       <span className="mega-menu-sub-count">{sub.items.length}</span>
-                      <ArrowRight className="size-3 shrink-0 opacity-40 ml-1" />
+                      <ArrowRight className="size-3 shrink-0 opacity-30 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all ml-1" />
                     </button>
                   ))}
                 </div>
@@ -335,29 +340,35 @@ export default function Home() {
                 <div>
                   <div className="mega-menu-sub-sub-header">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="market-kicker">{activeCategoryObj.name} · {activeSubcategoryObj?.name}</span>
-                      <span className="mega-menu-badge">VERIFIED SPEC</span>
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                        <span>{activeCategoryObj.name}</span>
+                        <ChevronRight className="size-3 text-slate-400" />
+                        <span className="text-[#c56718] dark:text-amber-400 font-bold">{activeSubcategoryObj?.name}</span>
+                      </div>
+                      <span className="mega-menu-badge">
+                        <Check className="size-3 text-emerald-600 dark:text-emerald-400" /> VERIFIED SPEC
+                      </span>
                     </div>
                     <h3>{activeSubcategoryObj?.name ?? activeCategoryObj.name}</h3>
                     <p>{activeSubcategoryObj?.detail ?? activeCategoryObj.detail}</p>
                   </div>
                   <div className="mega-menu-specs-strip">
                     <div className="mega-menu-spec-item">
-                      <ShieldCheck className="size-3.5 text-amber-500 shrink-0" />
+                      <ShieldCheck className="size-4 text-amber-500 shrink-0" />
                       <div>
                         <small>STANDARDS</small>
                         <strong>IS / IEC / CE Certified</strong>
                       </div>
                     </div>
                     <div className="mega-menu-spec-item">
-                      <Zap className="size-3.5 text-amber-500 shrink-0" />
+                      <Zap className="size-4 text-amber-500 shrink-0" />
                       <div>
                         <small>CONDUCTOR</small>
                         <strong>100% Electrolytic Copper/Al</strong>
                       </div>
                     </div>
                     <div className="mega-menu-spec-item">
-                      <PackageSearch className="size-3.5 text-amber-500 shrink-0" />
+                      <PackageSearch className="size-4 text-amber-500 shrink-0" />
                       <div>
                         <small>SUPPLY</small>
                         <strong>Coils & Custom Drums</strong>
@@ -366,14 +377,14 @@ export default function Home() {
                   </div>
                   <div className="mega-menu-sub-sub-body">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="mega-menu-sub-sub-title">Available Types / Sizes ({activeSubcategoryObj?.items.length ?? 0}):</span>
+                      <span className="mega-menu-sub-sub-title">Available Types & Sizes ({activeSubcategoryObj?.items.length ?? 0}):</span>
                       <small className="text-[11px] text-slate-400">Click to discover or quote</small>
                     </div>
                     <div className="mega-menu-sub-sub-grid">
                       {activeSubcategoryObj?.items.map((item) => (
                         <button
                           key={item}
-                          className="mega-menu-variant-card"
+                          className="mega-menu-variant-card group"
                           onClick={() => {
                             if (activeSubcategoryObj) {
                               navigate(`/category/${activeSubcategoryObj.slug}`);
@@ -383,23 +394,25 @@ export default function Home() {
                           title={`Browse ${item}`}
                         >
                           <div className="mega-menu-variant-icon">
-                            <Check className="size-3.5 text-amber-500" />
+                            <Check className="size-3.5" />
                           </div>
                           <div className="mega-menu-variant-text">
                             <strong>{item}</strong>
                             <small>Industrial & project grade</small>
                           </div>
-                          <ArrowRight className="size-3.5 text-slate-400 shrink-0 ml-auto" />
+                          <ArrowRight className="size-3.5 text-slate-400 shrink-0 ml-auto opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                         </button>
                       ))}
                     </div>
                   </div>
                   <div className="mega-menu-procure-box">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="size-4 text-amber-500 shrink-0" />
+                    <div className="flex items-start gap-2.5">
+                      <div className="p-1 rounded-md bg-amber-400/20 text-amber-300 shrink-0 mt-0.5">
+                        <Sparkles className="size-3.5" />
+                      </div>
                       <div>
                         <strong>Wholesale & EPC Supply Support</strong>
-                        <p>Direct manufacturer pricing, Material Test Certificates ( MTC ), and pan-India project dispatch.</p>
+                        <p>Direct manufacturer pricing, Material Test Certificates (MTC), and pan-India project dispatch.</p>
                       </div>
                     </div>
                   </div>
@@ -617,7 +630,7 @@ export default function Home() {
               <span className="market-kicker">BROWSE THE SUPPLY SYSTEM · 8 MASTER CATEGORIES · 3,385+ PRODUCTS</span>
               <h1>Explore categories</h1>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-                Direct manufacturer pricing, IS/IEC/CE certifications, Material Test Certificates ( MTC ), and 48-hour pan-India project dispatch across our complete electrical portfolio.
+                Direct manufacturer pricing, IS/IEC/CE certifications, Material Test Certificates ( MTC ), and 12-hour pan-India project dispatch across our complete electrical portfolio.
               </p>
             </div>
             <div className="hidden sm:flex items-center gap-2">
@@ -666,12 +679,266 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="solutions" className="market-section market-section-muted"><div className="market-container"><div className="market-section-head"><div><span className="market-kicker">BUILT FOR REAL PROCUREMENT</span><h2>Electrical supply & project procurement</h2></div></div><div className="market-trust-grid"><div><ShieldCheck /><strong>Specification Clarity</strong><span>IS, IEC & CE certified cables with authentic Material Test Certificates ( MTC ).</span></div><div><Truck /><strong>Global & Pan-India Fulfilment</strong><span>48-hour dispatch corridors across 28 states and international export ports.</span></div><div><Headphones /><strong>Technical Sourcing Desk</strong><span>Direct assistance from electrical engineers and commercial specialists.</span></div></div></div></section>
+      <section id="solutions" className="py-20 bg-slate-50/70 dark:bg-[#071421] border-t border-slate-200/80 dark:border-slate-800">
+        <div className="market-container">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-[#c56718] dark:text-amber-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <Sparkles className="size-3" /> Built For Real Infrastructure Procurement
+              </div>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0b1f33] dark:text-white tracking-tight">
+                Enterprise Electrical Supply & Fulfilment
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md">
+              Engineered for EPCs, government contractors, solar developers, and commercial builders with strict test compliance.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="group relative p-7 rounded-2xl bg-white dark:bg-[#0c2235] border border-slate-200/80 dark:border-slate-700/80 shadow-md hover:shadow-xl hover:border-amber-400/50 hover:-translate-y-1 transition-all duration-300">
+              <div className="size-12 rounded-xl bg-amber-500/10 text-[#c56718] dark:text-amber-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <ShieldCheck className="size-6" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Specification Clarity</h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                IS, IEC & CE certified cables with original manufacturer Material Test Certificates (MTC) and routine testing reports.
+              </p>
+            </div>
+
+            <div className="group relative p-7 rounded-2xl bg-white dark:bg-[#0c2235] border border-slate-200/80 dark:border-slate-700/80 shadow-md hover:shadow-xl hover:border-sky-400/50 hover:-translate-y-1 transition-all duration-300">
+              <div className="size-12 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <Truck className="size-6" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Pan-India & Export Corridors</h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                Dedicated 12-hour dispatch corridors across 28 states, major transit hubs, and international maritime export ports.
+              </p>
+            </div>
+
+            <div className="group relative p-7 rounded-2xl bg-white dark:bg-[#0c2235] border border-slate-200/80 dark:border-slate-700/80 shadow-md hover:shadow-xl hover:border-emerald-400/50 hover:-translate-y-1 transition-all duration-300">
+              <div className="size-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+                <Headphones className="size-6" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Technical Sourcing Desk</h3>
+              <p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                Direct BOM breakdown and assistance from electrical engineers to optimize conductor sizing and schedule-of-rates.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
 
       {compareList.length > 0 && <section className="compare-section"><div className="market-container"><div className="compare-head"><div><div className="market-kicker">PROJECT SHORTLIST</div><h2>Compare before you request.</h2></div><button className="clear-link" onClick={() => setCompareList([])}>Clear shortlist</button></div><div className="compare-table"><div className="compare-labels"><strong>Product</strong><span>Application</span><span>Unit price</span><span>Estimate at {quantity} m</span></div>{products.filter((product) => compareList.includes(product.name)).map((product) => <div className="compare-product" key={product.name}><div className="compare-product-name"><strong>{product.name}</strong><span>{product.category}</span></div><span>{product.use}</span><span>₹{product.price} / m</span><strong className="estimate-accent">₹{Math.round(quantity * product.price * (1 - discount / 100)).toLocaleString("en-IN")}</strong></div>)}</div></div></section>}
 
-      <section id="quote" className="market-section contact-block"><div className="market-container contact-grid"><div><span className="market-kicker">ENQUIRE WITH THE SUPPLY DESK</span><h2>Tell us what<br /><em>you need to source.</em></h2><div className="contact-facts"><span><Factory /> Manufacturing HQ: Ahmedabad</span><span><Globe2 className="size-3.5 inline text-amber-500" /> Global & Domestic Supply</span><span><Headphones /> Dedicated Export Desk</span><span><Handshake className="size-3.5 inline text-amber-500" /> Looking to partner? <button onClick={() => navigate("/collaborate")} className="underline font-bold text-amber-600 hover:text-amber-700 ml-1">Collaborate with us</button></span></div></div><form onSubmit={(e) => { e.preventDefault(); if (!inlineName.trim()) { toast.error("Please enter your name."); return; } if (!inlineContact.trim()) { toast.error("Please enter your work email or phone."); return; } if (!inlineRequirement.trim()) { toast.error("Please tell us what you are sourcing."); return; } const isEmail = inlineContact.includes("@"); inlineEnquiryMutation.mutate({ fullName: inlineName.trim(), email: isEmail ? inlineContact.trim().toLowerCase() : `${inlineName.toLowerCase().replace(/[^a-z0-9]/g, "") || "user"}@volamp-inquiry.com`, phone: isEmail ? "+91 95123 65582" : inlineContact.trim(), details: inlineRequirement.trim() }); }} className="inquiry-panel"><div className="flex items-center justify-between mb-2"><span className="panel-label">START AN INQUIRY</span><button type="button" onClick={() => handleQuote()} className="text-[11px] font-bold text-[#1d73b7] hover:underline">Open Full RFQ Form →</button></div><Input placeholder="Your name *" value={inlineName} onChange={(e) => setInlineName(e.target.value)} aria-label="Your name" required /><Input placeholder="Work email or mobile number *" value={inlineContact} onChange={(e) => setInlineContact(e.target.value)} aria-label="Work email or phone" required /><Input placeholder="What are you sourcing? (e.g. 1.1kV 4C x 240 sqmm Cable) *" value={inlineRequirement} onChange={(e) => setInlineRequirement(e.target.value)} aria-label="What are you sourcing" required /><Button type="submit" disabled={inlineEnquiryMutation.isPending} className="primary-cta wide">{inlineEnquiryMutation.isPending ? "Submitting..." : "Send inquiry"} <ArrowRight className="ml-2 size-4" /></Button></form></div></section>
+      <section id="quote" className="relative overflow-hidden py-20 lg:py-24 bg-gradient-to-b from-[#f8fafc] via-[#f1f5f9] to-[#ffffff] dark:from-[#07131e] dark:via-[#091a29] dark:to-[#061019] border-t border-slate-200/80 dark:border-slate-800">
+        {/* Ambient background glow & engineering accents */}
+        <div className="absolute top-0 right-1/4 -translate-y-1/2 w-96 h-96 bg-amber-500/10 dark:bg-amber-400/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-10 translate-y-1/2 w-80 h-80 bg-blue-600/10 dark:bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="market-container relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+            
+            {/* Left Column: Heading, Value Props & Credibility Cards */}
+            <div className="lg:col-span-6 space-y-7">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-[#c56718] dark:text-amber-400 text-xs font-bold mb-4 backdrop-blur-xs shadow-xs">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <span>Direct Supply & Project Procurement Desk</span>
+                </div>
+                
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0b1f33] dark:text-white tracking-tight leading-[1.12]">
+                  Tell us what <br />
+                  <span className="bg-gradient-to-r from-[#c56718] via-[#e67e22] to-[#d97706] bg-clip-text text-transparent">
+                    you need to source.
+                  </span>
+                </h2>
+
+                <p className="mt-3.5 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl">
+                  Get verified factory-direct pricing, official Material Test Certificates (MTC), and pan-India project dispatch directly from our central Ahmedabad manufacturing hub.
+                </p>
+              </div>
+
+              {/* 4 Interactive Feature / Credibility Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                <div className="group p-4 rounded-2xl bg-white/90 dark:bg-[#0c2235]/90 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-amber-400/50 hover:-translate-y-0.5 transition-all duration-200 cursor-default">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-xl bg-amber-500/10 text-[#c56718] dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <Factory className="size-5" />
+                    </div>
+                    <div>
+                      <strong className="block text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Manufacturing HQ</strong>
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">Ahmedabad, Gujarat</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group p-4 rounded-2xl bg-white/90 dark:bg-[#0c2235]/90 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-amber-400/50 hover:-translate-y-0.5 transition-all duration-200 cursor-default">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <Globe2 className="size-5" />
+                    </div>
+                    <div>
+                      <strong className="block text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Global & Domestic</strong>
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">28 States & Export Corridors</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group p-4 rounded-2xl bg-white/90 dark:bg-[#0c2235]/90 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-amber-400/50 hover:-translate-y-0.5 transition-all duration-200 cursor-default">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <ShieldCheck className="size-5" />
+                    </div>
+                    <div>
+                      <strong className="block text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Spec Assured</strong>
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">IS / IEC / CE & Original MTCs</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="group p-4 rounded-2xl bg-white/90 dark:bg-[#0c2235]/90 border border-slate-200/80 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-amber-400/50 hover:-translate-y-0.5 transition-all duration-200 cursor-default">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-xl bg-orange-500/10 text-[#c56718] dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <Handshake className="size-5" />
+                    </div>
+                    <div>
+                      <strong className="block text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Looking to Partner?</strong>
+                      <button onClick={() => navigate("/collaborate")} className="text-[11px] font-bold text-[#c56718] dark:text-amber-400 hover:underline cursor-pointer">
+                        Collaborate with us →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Turnaround Badge */}
+              <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-200/60 dark:border-slate-800">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="size-3.5 text-[#c56718] dark:text-amber-400" /> Avg. Response &lt; 2 Hours
+                </span>
+                <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
+                <span className="flex items-center gap-1.5">
+                  <Lock className="size-3.5 text-emerald-600 dark:text-emerald-400" /> B2B Commercial Confidentiality Guaranteed
+                </span>
+              </div>
+            </div>
+
+            {/* Right Column: Modern High-Converting Procurement Form */}
+            <div className="lg:col-span-6">
+              <div className="relative rounded-3xl bg-white dark:bg-[#0c2235] p-7 sm:p-9 shadow-2xl shadow-slate-900/10 dark:shadow-black/50 border border-slate-200/90 dark:border-slate-700/80 backdrop-blur-xl transition-all duration-300 hover:shadow-orange-500/5">
+                {/* Top ambient brand highlight line */}
+                <div className="absolute top-0 inset-x-8 h-1 bg-gradient-to-r from-transparent via-[#c56718] to-transparent rounded-t-3xl" />
+
+                <div className="flex items-center justify-between pb-5 border-b border-slate-100 dark:border-slate-800/80 mb-6">
+                  <div>
+                    <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#c56718] dark:text-amber-400 block">
+                      Rapid Sourcing Request
+                    </span>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-0.5">
+                      Request Instant Project Pricing
+                    </h3>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => handleQuote()} 
+                    className="inline-flex items-center gap-1 text-xs font-bold text-[#c56718] hover:text-[#b45309] dark:text-amber-400 hover:underline cursor-pointer transition-colors bg-amber-500/10 px-3 py-1.5 rounded-lg"
+                  >
+                    Full RFQ <ArrowRight className="size-3" />
+                  </button>
+                </div>
+
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!inlineName.trim()) { toast.error("Please enter your name."); return; }
+                    if (!inlineContact.trim()) { toast.error("Please enter your work email or phone."); return; }
+                    if (!inlineRequirement.trim()) { toast.error("Please tell us what you are sourcing."); return; }
+                    const isEmail = inlineContact.includes("@");
+                    inlineEnquiryMutation.mutate({
+                      fullName: inlineName.trim(),
+                      email: isEmail ? inlineContact.trim().toLowerCase() : `${inlineName.toLowerCase().replace(/[^a-z0-9]/g, "") || "user"}@volamp-inquiry.com`,
+                      phone: isEmail ? "+91 95123 65582" : inlineContact.trim(),
+                      details: inlineRequirement.trim()
+                    });
+                  }} 
+                  className="space-y-4"
+                >
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Your Name / Designation <span className="text-amber-600">*</span>
+                    </label>
+                    <div className="relative">
+                      <UserRound className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
+                      <input 
+                        type="text"
+                        placeholder="e.g. Rajesh Sharma, Project Manager"
+                        value={inlineName}
+                        onChange={(e) => setInlineName(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c56718]/30 focus:border-[#c56718] transition-all"
+                        required 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Work Email or Mobile (WhatsApp) <span className="text-amber-600">*</span>
+                    </label>
+                    <div className="relative">
+                      <Headphones className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 pointer-events-none" />
+                      <input 
+                        type="text"
+                        placeholder="e.g. rajesh@infrastructure.com or +91 98765 43210"
+                        value={inlineContact}
+                        onChange={(e) => setInlineContact(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c56718]/30 focus:border-[#c56718] transition-all"
+                        required 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Products, Sizes & Estimated Quantity <span className="text-amber-600">*</span>
+                    </label>
+                    <div className="relative">
+                      <PackageSearch className="absolute left-3.5 top-3.5 size-4 text-slate-400 pointer-events-none" />
+                      <textarea 
+                        rows={3}
+                        placeholder="e.g. 1.1kV 4C x 240 sqmm XLPE Al Armoured Cable (800m), 63A 4P MCB (10 pcs)"
+                        value={inlineRequirement}
+                        onChange={(e) => setInlineRequirement(e.target.value)}
+                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c56718]/30 focus:border-[#c56718] transition-all resize-none"
+                        required 
+                      />
+                    </div>
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    disabled={inlineEnquiryMutation.isPending} 
+                    className="group relative w-full mt-2 py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#c56718] via-[#d97706] to-[#b45309] text-white font-bold text-sm tracking-wide shadow-lg shadow-orange-600/25 hover:shadow-orange-600/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                  >
+                    <span>{inlineEnquiryMutation.isPending ? "Submitting Inquiry..." : "Submit Sourcing Inquiry"}</span>
+                    <ArrowRight className="size-4 group-hover:translate-x-1.5 transition-transform duration-200" />
+                  </button>
+
+                  <div className="flex items-center justify-center gap-2 pt-2 text-[11px] text-slate-400 dark:text-slate-500">
+                    <Shield className="size-3 text-emerald-600 dark:text-emerald-400" />
+                    <span>Authorized B2B quotation · Pan-India delivery available</span>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer className="site-footer"><NewsletterSection /><div className="footer-blog-bar"><div className="market-container footer-blog-inner"><div><span className="footer-eyebrow">VOLAMP JOURNAL</span><strong>Read the latest from our supply desk.</strong></div><button onClick={() => navigate("/blog")}>Visit the blog <ArrowRight className="size-4" /></button></div></div><div className="market-container footer-columns"><div className="footer-column footer-company"><BrandMark /><span className="footer-column-title">ABOUT VOLAMP</span><button onClick={() => navigate("/about-volamp")}>About Us</button><button onClick={() => navigate("/where-volamp-contributed")}>Where Volamp Contributed</button><button onClick={() => navigate("/business-segments")}>Business Segments</button><button onClick={() => navigate("/careers")}>Careers</button><button onClick={() => navigate("/collaborate")} className="footer-collaborate-link">Collaborate with Us</button><button onClick={() => navigate("/certifications-and-awards")}>Certifications & Quality</button><button onClick={() => navigate("/in-the-news")}>In the News</button></div><div className="footer-column"><span className="footer-column-title">SHOP CATEGORIES</span>{categoryNavigation.map((category) => <button key={category.name} onClick={() => navigate(categoryPath(category.slug || category.name))}>{category.name}<ArrowRight className="footer-link-arrow" /></button>)}</div><div className="footer-column"><span className="footer-column-title">HELP</span><button onClick={handleQuote}>Contact Us</button><button onClick={() => navigate("/branch-locations")}>Branch Location</button><button onClick={() => navigate("/refund-policy")}>Return & Refund Policy</button><button onClick={() => navigate("/shipping-policy")}>Shipping Policy</button><button onClick={() => navigate("/terms-and-conditions")}>Terms & Conditions</button><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></div><div className="footer-column footer-order-support"><span className="footer-column-title">ORDER SUPPORT</span><div className="footer-support-phone"><span>SUPPORT PHONE</span><a className="footer-support-phone-link" href="tel:+919512365582" aria-label="Call VOLAMP support at 9512365582"><strong>9512365582</strong></a><small>Call Volamp support</small></div><button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button><button onClick={() => setQuickOrderOpen(true)}>Quick Order (WhatsApp Invoice)</button><a href="https://www.google.com/shopping?q=VOLAMP+ELEKTRIKALS" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Shopping Store</a><a href="/api/google-merchant-feed.xml" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Merchant Feed (XML)</a><button onClick={() => navigate("/pay-invoice")}>Pay an Invoice Online</button><button onClick={() => toast.info("Price List", { description: "The latest approved price list will be shared by the supply desk." })}>Price List</button><button onClick={() => navigate("/complaints-cases")}>Complaints/Cases</button></div><div className="footer-column footer-social-column"><span className="footer-column-title">SOCIAL MEDIA LINKS</span><div className="footer-social-links"><a href="https://www.linkedin.com/company/volampelektrikals/" target="_blank" rel="noreferrer" aria-label="VOLAMP on LinkedIn"><Linkedin /></a><a href="https://www.facebook.com/profile.php?id=61587485305483#" target="_blank" rel="noreferrer" aria-label="VOLAMP on Facebook"><Facebook /></a><a href="https://www.instagram.com/volampp?stkn=dGtjZDA1enF5OWN6" target="_blank" rel="noreferrer" aria-label="VOLAMP on Instagram"><Instagram /></a><a href="https://m.youtube.com/%40cablezone?fbclid=PAb21jcAULDaJwZG9mAmV4dG4DYWVtAjExAHNydGMGYXBwX2lkDzU2NzA2NzM0MzM1MjQyNwABp_5WEnDviGukN9mL21-2fjF4DbFkf5y0n9RRUsyelrQ99hNGnJuhAHjQu3rn_aem_D1TnOePIE0SqTZXUbdcebg" target="_blank" rel="noreferrer" aria-label="VOLAMP on YouTube"><Youtube /></a></div><a className="footer-gem-mark" href="https://gem.gov.in/" target="_blank" rel="noreferrer" aria-label="VOLAMP on Government e Marketplace"><img src="/gem-marketplace-logo.png?v=2" alt="Government e Marketplace GeM" /></a></div></div><div className="market-container footer-bottom"><span>Volamp Elektrikals © 2026. All rights reserved.</span><span>Global & Domestic electrical supply and export network.</span></div></footer>

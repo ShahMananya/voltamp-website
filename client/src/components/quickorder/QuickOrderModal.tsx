@@ -483,7 +483,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
                 <span className="text-[10px] font-black tracking-widest text-[#c46b19] uppercase block">
                   VOLAMP QUICK ORDER & INVOICE DESK · WHATSAPP +91 9512365582
                 </span>
-                <h2 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] leading-tight">
+                <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
                   Quick Order — Create WhatsApp Invoice
                 </h2>
                 <p className="text-xs text-[#5a6b78] mt-1">
@@ -500,7 +500,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
                     <Lock className="size-4" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-amber-950 font-['Space_Grotesk']">
+                    <h4 className="text-xs font-bold text-amber-950 font-['Plus_Jakarta_Sans',sans-serif]">
                       Account Login Required to Place Orders
                     </h4>
                     <p className="text-[11px] text-amber-800 leading-relaxed mt-0.5">
@@ -540,7 +540,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
             <div className="mb-6 rounded-xl border border-[#dce5eb] bg-[#f8fafc] p-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <h3 className="text-xs font-bold font-['Space_Grotesk'] text-[#102a40] uppercase tracking-wider">
+                  <h3 className="text-xs font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#102a40] uppercase tracking-wider">
                     Requisition Product List
                   </h3>
                   <p className="text-[11px] text-[#6b7c88]">
@@ -668,7 +668,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
 
             {/* CUSTOMER INFORMATION SECTION */}
             <div className="space-y-3 mb-6">
-              <h3 className="text-xs font-bold font-['Space_Grotesk'] text-[#102a40] uppercase tracking-wider flex items-center gap-1.5">
+              <h3 className="text-xs font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#102a40] uppercase tracking-wider flex items-center gap-1.5">
                 <Building2 className="size-3.5 text-[#d97818]" />
                 Customer & Delivery Information
               </h3>
@@ -843,7 +843,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
             <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
               Quick Order PDF Invoice Created
             </span>
-            <h3 className="text-2xl font-bold text-[#102a40] font-['Space_Grotesk'] mt-2">
+            <h3 className="text-2xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] mt-2">
               {submittedOrderId}
             </h3>
             <p className="text-xs text-[#5a6b78] mt-2 max-w-[500px] mx-auto leading-relaxed">

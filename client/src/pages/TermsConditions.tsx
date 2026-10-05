@@ -372,11 +372,11 @@ export default function TermsConditions() {
                   </button>
                 </div>
 
-                <h2 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white">
+                <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white">
                   {sec.title}
                 </h2>
 
-                <div className="space-y-3 text-xs sm:text-sm text-[#5d4a4b] dark:text-slate-300 leading-relaxed font-['DM_Sans']">
+                <div className="space-y-3 text-xs sm:text-sm text-[#5d4a4b] dark:text-slate-300 leading-relaxed font-['Plus_Jakarta_Sans',sans-serif]">
                   {sec.content.map((p, idx) => (
                     <p key={idx}>{p}</p>
                   ))}
@@ -403,7 +403,7 @@ export default function TermsConditions() {
             {/* Bottom Support Banner */}
             <div className="p-6 rounded-2xl bg-gradient-to-r from-[#4d1217] to-[#3a0d12] text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-md">
               <div className="space-y-1">
-                <strong className="text-base font-bold font-['Space_Grotesk'] block">
+                <strong className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif] block">
                   Have Questions Regarding Enterprise Contract Terms?
                 </strong>
                 <p className="text-xs text-amber-100/80">

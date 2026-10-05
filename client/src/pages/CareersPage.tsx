@@ -507,7 +507,7 @@ export default function CareersPage() {
             </div>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] text-[#4d1217] tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] tracking-tight leading-tight">
             Power Your Career With an <br />
             <span className="text-[#c56718]">Engineering Legacy</span> That Powers India.
           </h1>
@@ -539,25 +539,25 @@ export default function CareersPage() {
           {/* Metric Highlights Strip */}
           <div className="pt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-[#ebd7c7] mt-12 text-left">
             <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Space_Grotesk'] block">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Plus_Jakarta_Sans',sans-serif] block">
                 60+ Years
               </span>
               <span className="text-xs text-[#5d4a4b] font-semibold">Engineering Heritage (Est. 1964)</span>
             </div>
             <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Space_Grotesk'] block">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Plus_Jakarta_Sans',sans-serif] block">
                 28 States
               </span>
               <span className="text-xs text-[#5d4a4b] font-semibold">Pan-India Dispatches & 14+ Export Nations</span>
             </div>
             <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Space_Grotesk'] block">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Plus_Jakarta_Sans',sans-serif] block">
                 100% In-House
               </span>
               <span className="text-xs text-[#5d4a4b] font-semibold">CPRI & ERDA Certified Test Laboratories</span>
             </div>
             <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Space_Grotesk'] block">
+              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Plus_Jakarta_Sans',sans-serif] block">
                 4.8 / 5.0
               </span>
               <span className="text-xs text-[#5d4a4b] font-semibold">Team Growth & Job Security Index</span>
@@ -572,7 +572,7 @@ export default function CareersPage() {
           <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
             THE VOLAMP WORK CULTURE
           </span>
-          <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+          <h2 className="text-2xl sm:text-4xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
             Why Electrical Engineers & Leaders Choose Volamp
           </h2>
           <p className="text-sm text-[#5d4a4b]">
@@ -586,7 +586,7 @@ export default function CareersPage() {
             <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <Zap className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               Nation-Building Impact
             </h3>
             <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
@@ -599,7 +599,7 @@ export default function CareersPage() {
             <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <Factory className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               World-Class Manufacturing Tech
             </h3>
             <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
@@ -612,7 +612,7 @@ export default function CareersPage() {
             <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <Award className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               Competitive CTC & Performance Bonuses
             </h3>
             <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
@@ -625,7 +625,7 @@ export default function CareersPage() {
             <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <ShieldCheck className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               Comprehensive Health & Safety
             </h3>
             <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
@@ -638,7 +638,7 @@ export default function CareersPage() {
             <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <TrendingUp className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               Accelerated Career Progression
             </h3>
             <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
@@ -651,7 +651,7 @@ export default function CareersPage() {
             <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
               <BookOpen className="size-6" />
             </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               Continuous Technical Mentorship
             </h3>
             <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
@@ -670,7 +670,7 @@ export default function CareersPage() {
               <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
                 CURRENT OPPORTUNITIES
               </span>
-              <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+              <h2 className="text-2xl sm:text-4xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
                 Explore Open Positions at Volamp
               </h2>
               <p className="text-sm text-[#5d4a4b] mt-1">
@@ -842,7 +842,7 @@ export default function CareersPage() {
 
                     {/* Role Title */}
                     <div>
-                      <h3 className="text-xl font-bold font-['Space_Grotesk'] text-[#4d1217] group-hover:text-[#c56718] transition-colors">
+                      <h3 className="text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] group-hover:text-[#c56718] transition-colors">
                         {role.title}
                       </h3>
                       <div className="flex flex-wrap items-center gap-3 text-xs text-[#5d4a4b] mt-2">
@@ -933,7 +933,7 @@ export default function CareersPage() {
               <GraduationCap className="size-4 text-[#ef7d19]" />
               <span>COLLEGE GRADUATES · 2026 BATCH</span>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] leading-tight text-[#4d1217]">
+            <h3 className="text-2xl sm:text-3xl font-bold font-['Plus_Jakarta_Sans',sans-serif] leading-tight text-[#4d1217]">
               Graduate Engineer Trainee (GET) Program
             </h3>
             <p className="text-sm text-[#5d4a4b] leading-relaxed">
@@ -978,7 +978,7 @@ export default function CareersPage() {
           <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
             CLEAR, RESPECTFUL & FAST
           </span>
-          <h2 className="text-2xl sm:text-4xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+          <h2 className="text-2xl sm:text-4xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
             Our 4-Step Candidate Journey
           </h2>
           <p className="text-sm text-[#5d4a4b]">
@@ -988,13 +988,13 @@ export default function CareersPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] relative space-y-3 shadow-xs hover:border-[#c56718] transition-all">
-            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Space_Grotesk'] absolute top-4 right-4">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Plus_Jakarta_Sans',sans-serif] absolute top-4 right-4">
               01
             </span>
             <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718] font-bold text-sm">
               <FileCheck2 className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               Application & Review
             </h4>
             <p className="text-xs text-[#5d4a4b] leading-relaxed">
@@ -1004,13 +1004,13 @@ export default function CareersPage() {
           </div>
 
           <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] relative space-y-3 shadow-xs hover:border-[#c56718] transition-all">
-            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Space_Grotesk'] absolute top-4 right-4">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Plus_Jakarta_Sans',sans-serif] absolute top-4 right-4">
               02
             </span>
             <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718] font-bold text-sm">
               <Headphones className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               Technical Discussion
             </h4>
             <p className="text-xs text-[#5d4a4b] leading-relaxed">
@@ -1020,13 +1020,13 @@ export default function CareersPage() {
           </div>
 
           <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] relative space-y-3 shadow-xs hover:border-[#c56718] transition-all">
-            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Space_Grotesk'] absolute top-4 right-4">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Plus_Jakarta_Sans',sans-serif] absolute top-4 right-4">
               03
             </span>
             <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718] font-bold text-sm">
               <Building2 className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               Plant / Office Walkthrough
             </h4>
             <p className="text-xs text-[#5d4a4b] leading-relaxed">
@@ -1036,13 +1036,13 @@ export default function CareersPage() {
           </div>
 
           <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] relative space-y-3 shadow-xs hover:border-[#c56718] transition-all">
-            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Space_Grotesk'] absolute top-4 right-4">
+            <span className="text-4xl font-extrabold text-[#c56718]/15 font-['Plus_Jakarta_Sans',sans-serif] absolute top-4 right-4">
               04
             </span>
             <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718] font-bold text-sm">
               <Award className="size-5" />
             </div>
-            <h4 className="text-base font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h4 className="text-base font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               Fast-Track Offer
             </h4>
             <p className="text-xs text-[#5d4a4b] leading-relaxed">
@@ -1060,7 +1060,7 @@ export default function CareersPage() {
             <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
               FREQUENTLY ASKED QUESTIONS
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+            <h2 className="text-2xl sm:text-3xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
               Questions About Working at Volamp
             </h2>
           </div>
@@ -1101,7 +1101,7 @@ export default function CareersPage() {
       <section className="py-14 market-container">
         <div className="p-8 sm:p-12 rounded-2xl bg-white border border-[#ebd7c7] text-center space-y-4 max-w-4xl mx-auto shadow-xs">
           <HeartHandshake className="size-10 text-[#c56718] mx-auto" />
-          <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+          <h3 className="text-2xl sm:text-3xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
             Don't see your specific expertise listed?
           </h3>
           <p className="text-xs sm:text-sm text-[#5d4a4b] max-w-xl mx-auto leading-relaxed">
@@ -1135,7 +1135,7 @@ export default function CareersPage() {
               <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2]">
                 {selectedRoleDetail.department}
               </span>
-              <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+              <h3 className="text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
                 {selectedRoleDetail.title}
               </h3>
               <div className="flex flex-wrap items-center gap-3 text-xs text-[#5d4a4b]">
@@ -1237,7 +1237,7 @@ export default function CareersPage() {
                   <span className="text-xs font-bold text-emerald-600 uppercase tracking-widest">
                     APPLICATION RECEIVED
                   </span>
-                  <h3 className="text-2xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+                  <h3 className="text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
                     Thank You, {fullName}!
                   </h3>
                   <p className="text-xs sm:text-sm text-[#5d4a4b] max-w-md mx-auto">
@@ -1287,7 +1287,7 @@ export default function CareersPage() {
                   <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
                     VOLAMP TALENT APPLICATION
                   </span>
-                  <h3 className="text-xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+                  <h3 className="text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
                     Submit Your Application
                   </h3>
                   <p className="text-xs text-[#5d4a4b]">

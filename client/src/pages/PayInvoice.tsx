@@ -29,7 +29,7 @@ export default function PayInvoice() {
     "https://wa.me/919512365582?text=Hello%20VOLAMP%20Billing%20Desk%2C%20I%20would%20like%20to%20make%20a%20payment%20for%20my%20invoice.%20Please%20guide%20me%20with%20verified%20bank%20transfer%20details.";
 
   return (
-    <div className="min-h-screen bg-[#fdfbf9] text-[#0b1f33] font-['Inter',sans-serif] flex flex-col">
+    <div className="min-h-screen bg-[#fdfbf9] text-[#0b1f33] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
       {/* Universal Header (Matching Home Page White Palette) */}
       <UniversalHeader currentPage="pay" />
 
@@ -42,7 +42,7 @@ export default function PayInvoice() {
               <span>OFFICIAL BILLING & PAYMENT DESK</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#4d1217] font-['Space_Grotesk'] leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
               Pay Your Volamp Invoice Over Call & Direct Bank Transfer
             </h1>
 
@@ -73,7 +73,7 @@ export default function PayInvoice() {
                   <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider block">
                     Option 1: Call Us Directly (Recommended)
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Space_Grotesk']">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                     Speak with our Billing Officer
                   </h3>
                 </div>
@@ -110,7 +110,7 @@ export default function PayInvoice() {
                   <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider block">
                     Option 2: Instant WhatsApp Support
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Space_Grotesk']">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                     Chat on WhatsApp with Accounts
                   </h3>
                 </div>
@@ -147,7 +147,7 @@ export default function PayInvoice() {
                 <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">
                   Option 3: Prefer We Call You?
                 </span>
-                <h3 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Space_Grotesk']">
+                <h3 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                   Request a Priority Billing Callback
                 </h3>
                 <p className="text-xs sm:text-sm text-[#5d4a4b]">
@@ -241,7 +241,7 @@ export default function PayInvoice() {
             <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">
               HOW IT WORKS
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Space_Grotesk']">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
               Simple 4-Step Payment & Dispatch Process
             </h2>
             <p className="text-xs sm:text-sm text-[#5d4a4b] max-w-xl mx-auto">
@@ -252,7 +252,7 @@ export default function PayInvoice() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Step 1 */}
             <div className="bg-white rounded-xl p-5 border border-[#ebd7c7] shadow-xs relative space-y-3">
-              <div className="size-9 rounded-lg bg-[#f7ede6] text-[#c56718] font-bold font-['Space_Grotesk'] flex items-center justify-center text-sm border border-[#ebd4c2]">
+              <div className="size-9 rounded-lg bg-[#f7ede6] text-[#c56718] font-bold font-['Plus_Jakarta_Sans',sans-serif] flex items-center justify-center text-sm border border-[#ebd4c2]">
                 01
               </div>
               <h4 className="font-bold text-[#4d1217] text-sm">Have Invoice Ready</h4>
@@ -263,7 +263,7 @@ export default function PayInvoice() {
 
             {/* Step 2 */}
             <div className="bg-white rounded-xl p-5 border border-[#ebd7c7] shadow-xs relative space-y-3">
-              <div className="size-9 rounded-lg bg-[#c56718] text-white font-bold font-['Space_Grotesk'] flex items-center justify-center text-sm">
+              <div className="size-9 rounded-lg bg-[#c56718] text-white font-bold font-['Plus_Jakarta_Sans',sans-serif] flex items-center justify-center text-sm">
                 02
               </div>
               <h4 className="font-bold text-[#4d1217] text-sm">Call or WhatsApp</h4>
@@ -274,7 +274,7 @@ export default function PayInvoice() {
 
             {/* Step 3 */}
             <div className="bg-white rounded-xl p-5 border border-[#ebd7c7] shadow-xs relative space-y-3">
-              <div className="size-9 rounded-lg bg-emerald-600 text-white font-bold font-['Space_Grotesk'] flex items-center justify-center text-sm">
+              <div className="size-9 rounded-lg bg-emerald-600 text-white font-bold font-['Plus_Jakarta_Sans',sans-serif] flex items-center justify-center text-sm">
                 03
               </div>
               <h4 className="font-bold text-[#4d1217] text-sm">Execute Transfer</h4>
@@ -285,7 +285,7 @@ export default function PayInvoice() {
 
             {/* Step 4 */}
             <div className="bg-white rounded-xl p-5 border border-[#ebd7c7] shadow-xs relative space-y-3">
-              <div className="size-9 rounded-lg bg-[#c56718] text-white font-bold font-['Space_Grotesk'] flex items-center justify-center text-sm">
+              <div className="size-9 rounded-lg bg-[#c56718] text-white font-bold font-['Plus_Jakarta_Sans',sans-serif] flex items-center justify-center text-sm">
                 04
               </div>
               <h4 className="font-bold text-[#4d1217] text-sm">Share UTR for Dispatch</h4>
@@ -302,7 +302,7 @@ export default function PayInvoice() {
             <div className="flex items-start gap-3">
               <AlertTriangle className="size-6 text-[#c56718] flex-none mt-0.5" />
               <div className="space-y-1">
-                <h3 className="text-base sm:text-lg font-bold text-[#4d1217] font-['Space_Grotesk']">
+                <h3 className="text-base sm:text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                   Important Security & Anti-Fraud Advisory
                 </h3>
                 <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
@@ -341,7 +341,7 @@ export default function PayInvoice() {
               <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">
                 COMMON QUESTIONS
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Space_Grotesk']">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                 Frequently Asked Questions Regarding Invoice Payments
               </h2>
             </div>

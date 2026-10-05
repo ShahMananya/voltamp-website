@@ -99,7 +99,7 @@ export default function LogisticsDashboardView({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-base sm:text-lg font-bold font-['Space_Grotesk'] tracking-tight text-white">
+              <h2 className="text-base sm:text-lg font-bold font-['Plus_Jakarta_Sans',sans-serif] tracking-tight text-white">
                 Consignment & Order Tracking
               </h2>
               {activeOrder?.found && (
@@ -190,7 +190,7 @@ export default function LogisticsDashboardView({
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-lg sm:text-xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+            <h3 className="text-lg sm:text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
               Track Your VOLAMP Consignment
             </h3>
             <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">

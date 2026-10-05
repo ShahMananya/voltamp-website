@@ -37,7 +37,7 @@ const CATEGORY_OPTIONS = [
   "Glands & Cable Management",
   "Conduits (LMS / MMS / HMS Pipes & Fittings)",
   "Wiring Device & Modular Accessories",
-  "Earthing Wires & Chemical Electrodes",
+  "Earthing Material & Chemical Electrodes",
   "Solar DC Cables & Structure Hardware",
   "Complete Project Bill of Materials (BOM)",
   "Custom Specification / Other",
@@ -161,7 +161,7 @@ export default function EnquirePage() {
               <Headphones className="size-3.5 text-[#c56718]" />
               <span>VOLAMP SUPPLY & EXPORT DESK</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#4d1217] font-['Space_Grotesk'] tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif] tracking-tight">
               Tell us what you need to source.
             </h1>
             <p className="mt-3 text-[#5d4a4b] text-sm sm:text-base max-w-2xl leading-relaxed">
@@ -175,7 +175,7 @@ export default function EnquirePage() {
             <div className="lg:col-span-5 space-y-6">
               {/* Contact Card */}
               <div className="p-6 rounded-2xl bg-white border border-stone-200 shadow-xs space-y-5">
-                <h2 className="text-base font-bold text-[#102a40] font-['Space_Grotesk'] flex items-center gap-2">
+                <h2 className="text-base font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] flex items-center gap-2">
                   <Factory className="size-4 text-[#ef7d19]" />
                   <span>Central Supply & Export Desk</span>
                 </h2>
@@ -246,7 +246,7 @@ export default function EnquirePage() {
                 <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/30">
                   VOLAMP ASSURANCE
                 </span>
-                <h3 className="text-lg font-bold font-['Space_Grotesk'] text-white">
+                <h3 className="text-lg font-bold font-['Plus_Jakarta_Sans',sans-serif] text-white">
                   Why Leading EPCs & Contractors Source With Us
                 </h3>
                 <div className="space-y-3 text-xs text-stone-300">
@@ -283,7 +283,7 @@ export default function EnquirePage() {
                     <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                       ENQUIRY LOGGED SUCCESSFULLY
                     </span>
-                    <h3 className="text-2xl sm:text-3xl font-bold text-[#102a40] font-['Space_Grotesk'] pt-1">
+                    <h3 className="text-2xl sm:text-3xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] pt-1">
                       Thank You, {submittedData.fullName}!
                     </h3>
                     <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">
@@ -365,7 +365,7 @@ export default function EnquirePage() {
                 <div className="p-6 sm:p-8 rounded-2xl bg-white border border-stone-200 shadow-sm">
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="space-y-1 pb-2 border-b border-stone-100">
-                      <h3 className="text-lg font-bold text-[#102a40] font-['Space_Grotesk']">
+                      <h3 className="text-lg font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
                         Direct Sourcing Form
                       </h3>
                       <p className="text-xs text-stone-500">

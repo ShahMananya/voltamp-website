@@ -342,39 +342,39 @@ export default function CertificationsAndAwards() {
               <span>OFFICIAL CORPORATE CREDENTIALS & INDUSTRY HONORS</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white tracking-tight leading-tight">
               Certifications & <span className="text-[#c56718] dark:text-amber-400">Industry Awards</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['DM_Sans'] leading-relaxed max-w-2xl">
+            <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['Plus_Jakarta_Sans',sans-serif] leading-relaxed max-w-2xl">
               Authentic authorisations from India's premier cable manufacturers (Finolex, KEI), longstanding dealer excellence trophies, and executive leadership honors awarded to VOLAMP ELEKTRIKALS PVT LTD.
             </p>
 
             {/* Quick Metrics */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3">
               <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
-                <strong className="text-lg sm:text-xl font-bold text-[#4d1217] dark:text-white block font-['Space_Grotesk']">
+                <strong className="text-lg sm:text-xl font-bold text-[#4d1217] dark:text-white block font-['Plus_Jakarta_Sans',sans-serif]">
                   Finolex
                 </strong>
                 <span className="text-[11px] text-slate-500">Authorised Channel Partner</span>
               </div>
 
               <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
-                <strong className="text-lg sm:text-xl font-bold text-[#c56718] dark:text-amber-400 block font-['Space_Grotesk']">
+                <strong className="text-lg sm:text-xl font-bold text-[#c56718] dark:text-amber-400 block font-['Plus_Jakarta_Sans',sans-serif]">
                   KEI Star Dealer
                 </strong>
                 <span className="text-[11px] text-slate-500">Partner-in-Progress 2024</span>
               </div>
 
               <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
-                <strong className="text-lg sm:text-xl font-bold text-[#4d1217] dark:text-white block font-['Space_Grotesk']">
+                <strong className="text-lg sm:text-xl font-bold text-[#4d1217] dark:text-white block font-['Plus_Jakarta_Sans',sans-serif]">
                   50 Years
                 </strong>
                 <span className="text-[11px] text-slate-500">Continued Association</span>
               </div>
 
               <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
-                <strong className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 block font-['Space_Grotesk']">
+                <strong className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 block font-['Plus_Jakarta_Sans',sans-serif]">
                   6 Credentials
                 </strong>
                 <span className="text-[11px] text-slate-500">100% Live & Verified</span>
@@ -415,10 +415,10 @@ export default function CertificationsAndAwards() {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[#c56718] dark:text-amber-400 block font-['Space_Grotesk']">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#c56718] dark:text-amber-400 block font-['Plus_Jakarta_Sans',sans-serif]">
                 OFFICIAL PORTFOLIO · 6 CREDENTIALS
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white mt-1">
+              <h2 className="text-2xl sm:text-3xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white mt-1">
                 Real Certificates, Authorisations & Trophies
               </h2>
               <p className="text-xs sm:text-sm text-[#5d4a4b] dark:text-slate-300 mt-1 max-w-2xl">
@@ -499,7 +499,7 @@ export default function CertificationsAndAwards() {
                         <Clock className="size-8 animate-pulse" />
                       </div>
                       <div>
-                        <strong className="text-sm font-bold text-[#4d1217] dark:text-white block font-['Space_Grotesk']">
+                        <strong className="text-sm font-bold text-[#4d1217] dark:text-white block font-['Plus_Jakarta_Sans',sans-serif]">
                           Credential 6 of 6
                         </strong>
                         <span className="text-[11px] text-[#71818c] dark:text-slate-400 block mt-0.5">
@@ -526,10 +526,10 @@ export default function CertificationsAndAwards() {
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#c56718] dark:text-amber-400 block">
                       {cert.issuer}
                     </span>
-                    <h3 className="text-base font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white leading-snug group-hover:text-[#c56718] dark:group-hover:text-amber-400 transition-colors">
+                    <h3 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white leading-snug group-hover:text-[#c56718] dark:group-hover:text-amber-400 transition-colors">
                       {cert.title}
                     </h3>
-                    <p className="text-xs text-[#5d4a4b] dark:text-slate-300 font-['DM_Sans'] line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-[#5d4a4b] dark:text-slate-300 font-['Plus_Jakarta_Sans',sans-serif] line-clamp-2 leading-relaxed">
                       {cert.citation}
                     </p>
                   </div>
@@ -552,10 +552,10 @@ export default function CertificationsAndAwards() {
         {/* 6. Technical Quality & Compliance Standards (BIS, CPRI, ERDA, GeM) */}
         <section className="pt-6 border-t border-[#ebd7c7] dark:border-slate-800 space-y-6">
           <div className="space-y-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#c56718] dark:text-amber-400 block font-['Space_Grotesk']">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#c56718] dark:text-amber-400 block font-['Plus_Jakarta_Sans',sans-serif]">
               ENGINEERING & EPC TENDER COMPLIANCE
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white">
+            <h2 className="text-2xl sm:text-3xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white">
               Mandatory Testing Standards & Statutory Compliance
             </h2>
             <p className="text-xs sm:text-sm text-[#5d4a4b] dark:text-slate-300 max-w-2xl">
@@ -586,7 +586,7 @@ export default function CertificationsAndAwards() {
                         <Icon className="size-5 text-[#c56718] dark:text-amber-400" />
                       </div>
                       <div>
-                        <h3 className="text-base font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white leading-snug">
+                        <h3 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white leading-snug">
                           {std.code}
                         </h3>
                         <span className="text-xs text-slate-500 dark:text-slate-400 block mt-0.5">
@@ -595,7 +595,7 @@ export default function CertificationsAndAwards() {
                       </div>
                     </div>
 
-                    <p className="text-xs text-[#5d4a4b] dark:text-slate-300 leading-relaxed font-['DM_Sans']">
+                    <p className="text-xs text-[#5d4a4b] dark:text-slate-300 leading-relaxed font-['Plus_Jakarta_Sans',sans-serif]">
                       {std.summary}
                     </p>
 
@@ -639,10 +639,10 @@ export default function CertificationsAndAwards() {
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block">
               MATERIAL TEST CERTIFICATE ( MTC ) GUARANTEE
             </span>
-            <h2 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] text-white">
+            <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-white">
               Every Consignment Supplied with Factory-Stamped Quality Certificates
             </h2>
-            <p className="text-xs sm:text-sm text-amber-100/80 font-['DM_Sans'] leading-relaxed">
+            <p className="text-xs sm:text-sm text-amber-100/80 font-['Plus_Jakarta_Sans',sans-serif] leading-relaxed">
               We understand the compliance mandates of electrical inspectors, EPC auditors, and client PMCs. Every cable consignment is accompanied by factory-tested conductor resistance readings, high-voltage spark tests, and batch traceability documentation.
             </p>
           </div>
@@ -687,7 +687,7 @@ export default function CertificationsAndAwards() {
                     {activeModalCert.date}
                   </span>
                 </div>
-                <h3 className="text-lg font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white leading-tight">
+                <h3 className="text-lg font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white leading-tight">
                   {activeModalCert.title}
                 </h3>
               </div>
@@ -730,7 +730,7 @@ export default function CertificationsAndAwards() {
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#c56718] dark:text-amber-400 block">
                     OFFICIAL CITATION
                   </span>
-                  <blockquote className="text-xs sm:text-sm text-[#3d2b2d] dark:text-slate-200 italic font-['DM_Sans'] leading-relaxed">
+                  <blockquote className="text-xs sm:text-sm text-[#3d2b2d] dark:text-slate-200 italic font-['Plus_Jakarta_Sans',sans-serif] leading-relaxed">
                     "{activeModalCert.citation}"
                   </blockquote>
                 </div>
@@ -738,14 +738,14 @@ export default function CertificationsAndAwards() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-stone-200 dark:border-slate-700">
                     <span className="text-[10px] text-slate-400 uppercase font-bold block">Issuing Authority / Partner</span>
-                    <strong className="text-xs sm:text-sm text-[#4d1217] dark:text-white font-['Space_Grotesk'] block mt-0.5">
+                    <strong className="text-xs sm:text-sm text-[#4d1217] dark:text-white font-['Plus_Jakarta_Sans',sans-serif] block mt-0.5">
                       {activeModalCert.issuer}
                     </strong>
                   </div>
 
                   <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-stone-200 dark:border-slate-700">
                     <span className="text-[10px] text-slate-400 uppercase font-bold block">Recognized Recipient</span>
-                    <strong className="text-xs sm:text-sm text-[#4d1217] dark:text-white font-['Space_Grotesk'] block mt-0.5">
+                    <strong className="text-xs sm:text-sm text-[#4d1217] dark:text-white font-['Plus_Jakarta_Sans',sans-serif] block mt-0.5">
                       {activeModalCert.recipient}
                     </strong>
                   </div>

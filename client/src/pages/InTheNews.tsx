@@ -67,12 +67,12 @@ export default function InTheNews() {
               </div>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Space_Grotesk'] text-[#4d1217] tracking-tight leading-[1.1]">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] tracking-tight leading-[1.1]">
               VOLAMP in the News. <br />
               <span className="text-[#c56718]">Media & Executive Spotlight.</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-[#5d4a4b] leading-relaxed font-['DM_Sans']">
+            <p className="text-sm sm:text-base text-[#5d4a4b] leading-relaxed font-['Plus_Jakarta_Sans',sans-serif]">
               Explore authentic media coverage and official press features celebrating Volamp Elektrikals' leadership, regional electrical distribution footprint, and commitment to powering infrastructure across Gujarat and beyond.
             </p>
           </div>
@@ -95,11 +95,11 @@ export default function InTheNews() {
               <span className="text-xs text-stone-300 hidden sm:inline">Ahmedabad Mirror (Times Group Network)</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-['Space_Grotesk'] leading-tight text-white">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-['Plus_Jakarta_Sans',sans-serif] leading-tight text-white">
               Ahmedabad Mirror: Naimil Vipul Patel Named Among Top 10 Inspiring Entrepreneurs in Ahmedabad to Watch in 2026
             </h2>
 
-            <p className="text-xs sm:text-sm text-stone-200 leading-relaxed font-['DM_Sans'] italic bg-white/5 p-4 rounded-xl border border-white/10">
+            <p className="text-xs sm:text-sm text-stone-200 leading-relaxed font-['Plus_Jakarta_Sans',sans-serif] italic bg-white/5 p-4 rounded-xl border border-white/10">
               “Under his leadership, Volamp has built a strong presence in the electrical industry, specialising in the distribution of multi-brand wires and cables from leading brands such as KEI, Polycab and Finolex. His business approach combines strong customer relationships with technology-driven processes, efficient operations and data-based decision-making.”
             </p>
 
@@ -185,7 +185,7 @@ export default function InTheNews() {
               <span className="text-xs font-bold uppercase tracking-wider text-[#c56718] block mb-1">
                 FULL EDITORIAL COVERAGE
               </span>
-              <h3 className="text-2xl sm:text-3xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+              <h3 className="text-2xl sm:text-3xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
                 Inside the Ahmedabad Mirror Feature
               </h3>
             </div>
@@ -341,7 +341,7 @@ export default function InTheNews() {
               <Mail className="size-3.5" />
               <span>MEDIA DESK</span>
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] text-[#4d1217]">
+            <h3 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
               Corporate & Press Relations Office
             </h3>
             <p className="text-xs text-[#5d4a4b] max-w-xl">

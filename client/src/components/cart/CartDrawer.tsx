@@ -122,7 +122,7 @@ export default function CartDrawer() {
                   ({totalCount} {totalCount === 1 ? "item" : "items"})
                 </span>
               </div>
-              <h3 className="text-base font-bold font-['Space_Grotesk'] text-white">
+              <h3 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif] text-white">
                 Project BOM & Orders
               </h3>
             </div>
@@ -269,7 +269,7 @@ export default function CartDrawer() {
             <div className="space-y-1">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-stone-600 font-medium">Estimated Subtotal:</span>
-                <strong className="text-lg font-bold text-stone-900 font-['Space_Grotesk']">
+                <strong className="text-lg font-bold text-stone-900 font-['Plus_Jakarta_Sans',sans-serif]">
                   ₹{totalAmount.toLocaleString("en-IN")}
                 </strong>
               </div>

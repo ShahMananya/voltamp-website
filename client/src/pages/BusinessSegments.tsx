@@ -198,11 +198,11 @@ export default function BusinessSegments() {
                 <span>Industry Sectors & Turnkey Supply</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white tracking-tight leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white tracking-tight leading-tight">
                 Business <span className="text-[#c56718] dark:text-amber-400">Segments</span>
               </h1>
 
-              <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['DM_Sans'] leading-snug">
+              <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['Plus_Jakarta_Sans',sans-serif] leading-snug">
                 Certified electrical packages engineered for India’s core industrial sectors. Direct manufacturer dispatch to any jobsite nationwide.
               </p>
             </div>
@@ -330,7 +330,7 @@ export default function BusinessSegments() {
 
                   {/* Bottom Image Caption */}
                   <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <h2 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] tracking-tight drop-shadow-sm leading-tight">
+                    <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] tracking-tight drop-shadow-sm leading-tight">
                       {segment.title}
                     </h2>
                     <p className="text-xs text-amber-200/90 font-medium truncate mt-0.5">
@@ -400,10 +400,10 @@ export default function BusinessSegments() {
             <span className="text-[11px] font-bold uppercase tracking-wider text-amber-300 block">
               HAVE A COMPLETE PROJECT SCHEDULE?
             </span>
-            <h2 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] text-white">
+            <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-white">
               Send Your Bill of Quantities (BOQ)
             </h2>
-            <p className="text-xs text-amber-100/80 font-['DM_Sans']">
+            <p className="text-xs text-amber-100/80 font-['Plus_Jakarta_Sans',sans-serif]">
               Get consolidated pricing, Material Test Certificates ( MTC ), and scheduled site delivery across India.
             </p>
           </div>

@@ -156,7 +156,7 @@ export default function CookieConsentBanner() {
               <Sparkles className="size-2.5 text-[#c56718]" />
               <span>PRIVACY & COOKIES</span>
             </div>
-            <h3 className="text-base font-bold text-[#102a40] font-['Space_Grotesk'] leading-tight">
+            <h3 className="text-base font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
               We value your privacy
             </h3>
           </div>

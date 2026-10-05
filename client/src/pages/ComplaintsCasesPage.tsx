@@ -172,11 +172,11 @@ export default function ComplaintsCasesPage() {
               OFFICIAL GRIEVANCE & RESOLUTION CELL
             </span>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white tracking-tight leading-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white tracking-tight leading-tight">
               Complaints & <span className="text-[#c56718] dark:text-amber-400">Case Resolution</span>
             </h1>
 
-            <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['DM_Sans'] leading-relaxed max-w-2xl">
+            <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['Plus_Jakarta_Sans',sans-serif] leading-relaxed max-w-2xl">
               Dedicated dispute resolution for B2B electrical deliveries, transit damages, batch test discrepancies, and commercial billing. We assign an official tracking reference and enforce strict resolution turnaround.
             </p>
 
@@ -256,7 +256,7 @@ export default function ComplaintsCasesPage() {
                       <span className="text-xs font-black uppercase tracking-wider text-emerald-600">
                         OFFICIAL CASE REGISTERED
                       </span>
-                      <h2 className="text-2xl font-black font-['Space_Grotesk'] text-[#4d1217] dark:text-white">
+                      <h2 className="text-2xl font-black font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white">
                         Case ID: {submittedCase.caseId}
                       </h2>
                       <p className="text-xs text-slate-600 dark:text-slate-300">
@@ -319,7 +319,7 @@ export default function ComplaintsCasesPage() {
                     <span className="text-[11px] font-black uppercase tracking-wider text-[#c25e0a]">
                       STEP 1 OF 2 · CASE REGISTRATION
                     </span>
-                    <h2 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white">
+                    <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white">
                       File a Formal Complaint or Dispute Case
                     </h2>
                     <p className="text-xs text-slate-600 dark:text-slate-300">
@@ -488,7 +488,7 @@ export default function ComplaintsCasesPage() {
                   <span className="text-[11px] font-black uppercase tracking-wider text-[#c25e0a]">
                     CASE STATUS SEARCH
                   </span>
-                  <h2 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white">
+                  <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white">
                     Track Existing Complaint or Dispute Case
                   </h2>
                   <p className="text-xs text-slate-600 dark:text-slate-300">
@@ -570,12 +570,12 @@ export default function ComplaintsCasesPage() {
             <div className="p-6 rounded-2xl bg-white dark:bg-slate-800/90 border border-[#ebd7c7] dark:border-slate-700 shadow-xs space-y-4">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="size-5 text-[#c56718]" />
-                <h3 className="text-sm font-bold uppercase tracking-wider font-['Space_Grotesk'] text-[#4d1217] dark:text-white">
+                <h3 className="text-sm font-bold uppercase tracking-wider font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white">
                   Grievance & Escalation Desk
                 </h3>
               </div>
 
-              <p className="text-xs text-[#5d4a4b] dark:text-slate-300 leading-relaxed font-['DM_Sans']">
+              <p className="text-xs text-[#5d4a4b] dark:text-slate-300 leading-relaxed font-['Plus_Jakarta_Sans',sans-serif]">
                 For urgent project stoppages, transit accidents, or high-value billing disputes, connect directly with our corporate nodal desk.
               </p>
 

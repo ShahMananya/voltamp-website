@@ -956,7 +956,7 @@ export default function ProductDetailPage() {
                 </span>
               </div>
 
-              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-['Space_Grotesk'] tracking-tight leading-snug">
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] tracking-tight leading-snug">
                 {product.name}
               </h1>
 
@@ -1146,7 +1146,7 @@ export default function ProductDetailPage() {
                 )}
                 
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-slate-900 dark:text-white font-['Space_Grotesk'] tracking-tight">
+                  <span className="text-3xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] tracking-tight">
                     {effectiveUnitPrice !== unitPriceNum ? `₹${effectiveUnitPrice.toFixed(2)}` : priceFormatted}
                   </span>
                   <span className="text-xs text-slate-500 font-bold">
@@ -1253,7 +1253,7 @@ export default function ProductDetailPage() {
                   <span className="text-xs text-slate-600 dark:text-slate-300 font-semibold">
                     Estimated Subtotal:
                   </span>
-                  <span className="text-base font-black text-[#1d73b7] dark:text-sky-400 font-['Space_Grotesk']">
+                  <span className="text-base font-black text-[#1d73b7] dark:text-sky-400 font-['Plus_Jakarta_Sans',sans-serif]">
                     ₹{totalPrice.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -1613,7 +1613,7 @@ export default function ProductDetailPage() {
           <section className="space-y-4 pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white font-['Space_Grotesk'] tracking-tight">
+                <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] tracking-tight">
                   Matching Products from {product.category || "Electrical Supplies"}
                 </h2>
                 <p className="text-xs text-slate-400">Frequently procured together for commercial installations</p>
@@ -1659,7 +1659,7 @@ export default function ProductDetailPage() {
                       </h3>
                     </div>
                     <div className="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-                      <span className="text-xs font-black text-slate-900 dark:text-white font-['Space_Grotesk']">
+                      <span className="text-xs font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
                         {relPrice}
                       </span>
                       <span className="text-[11px] text-[#1d73b7] dark:text-sky-400 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">

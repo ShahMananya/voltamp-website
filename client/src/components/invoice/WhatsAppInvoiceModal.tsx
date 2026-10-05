@@ -124,7 +124,7 @@ export function WhatsAppInvoiceModal({
                 <span className="text-[10px] font-black tracking-widest text-[#c46b19] uppercase block">
                   VOLAMP OFFICIAL BILLING DESK
                 </span>
-                <h2 className="text-xl sm:text-2xl font-bold font-['Space_Grotesk'] leading-tight text-[#102a40]">
+                <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] leading-tight text-[#102a40]">
                   Create Invoice on WhatsApp
                 </h2>
                 <div className="flex items-center gap-1.5 mt-1">
@@ -293,7 +293,7 @@ export function WhatsAppInvoiceModal({
             <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
               WhatsApp Chat Initialized
             </span>
-            <h3 className="text-2xl font-bold text-[#102a40] font-['Space_Grotesk'] mt-2">
+            <h3 className="text-2xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] mt-2">
               Invoice Desk Connected
             </h3>
             <p className="text-xs text-[#5a6b78] mt-2 max-w-[420px] mx-auto leading-relaxed">

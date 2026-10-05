@@ -265,7 +265,7 @@ export function CompareModal() {
                 {compareCategory}
               </span>
             </div>
-            <h2 className="text-lg sm:text-xl font-bold font-['Space_Grotesk']">
+            <h2 className="text-lg sm:text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif]">
               Comparing {compareItems.length} Products in {compareCategory}
             </h2>
           </div>

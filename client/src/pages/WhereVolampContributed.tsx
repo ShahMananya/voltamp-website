@@ -71,11 +71,11 @@ export default function WhereVolampContributed() {
                 <span>Nation-Building Infrastructure · 28 States & UTs</span>
               </div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-['Space_Grotesk'] text-[#4d1217] dark:text-white tracking-tight leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white tracking-tight leading-tight">
                 Where Volamp <span className="text-[#c56718] dark:text-amber-400">Contributed</span>
               </h1>
 
-              <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['DM_Sans'] leading-relaxed">
+              <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['Plus_Jakarta_Sans',sans-serif] leading-relaxed">
                 Four generations of heavy electrical transmission, flame-retardant low-smoke cabling, hazardous-area certified cable glands, and copper earthing networks powering iconic infrastructure across India. Explore our verified real-world installations below.
               </p>
 
@@ -110,7 +110,7 @@ export default function WhereVolampContributed() {
             {/* Visual Metrics Badges (Matching Business Segments Warm Styling) */}
             <div className="grid grid-cols-2 gap-3 shrink-0 w-full lg:w-80">
               <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
-                <span className="block text-2xl sm:text-3xl font-bold text-[#c56718] dark:text-amber-400 font-['Space_Grotesk']">
+                <span className="block text-2xl sm:text-3xl font-bold text-[#c56718] dark:text-amber-400 font-['Plus_Jakarta_Sans',sans-serif]">
                   46+
                 </span>
                 <strong className="text-xs font-bold text-[#4d1217] dark:text-white block mt-0.5">
@@ -120,7 +120,7 @@ export default function WhereVolampContributed() {
               </div>
 
               <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
-                <span className="block text-2xl sm:text-3xl font-bold text-[#c56718] dark:text-amber-400 font-['Space_Grotesk']">
+                <span className="block text-2xl sm:text-3xl font-bold text-[#c56718] dark:text-amber-400 font-['Plus_Jakarta_Sans',sans-serif]">
                   28
                 </span>
                 <strong className="text-xs font-bold text-[#4d1217] dark:text-white block mt-0.5">
@@ -130,7 +130,7 @@ export default function WhereVolampContributed() {
               </div>
 
               <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
-                <span className="block text-2xl sm:text-3xl font-bold text-[#c56718] dark:text-amber-400 font-['Space_Grotesk']">
+                <span className="block text-2xl sm:text-3xl font-bold text-[#c56718] dark:text-amber-400 font-['Plus_Jakarta_Sans',sans-serif]">
                   300+ km
                 </span>
                 <strong className="text-xs font-bold text-[#4d1217] dark:text-white block mt-0.5">
@@ -140,7 +140,7 @@ export default function WhereVolampContributed() {
               </div>
 
               <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
-                <span className="block text-2xl sm:text-3xl font-bold text-[#c56718] dark:text-amber-400 font-['Space_Grotesk']">
+                <span className="block text-2xl sm:text-3xl font-bold text-[#c56718] dark:text-amber-400 font-['Plus_Jakarta_Sans',sans-serif]">
                   100%
                 </span>
                 <strong className="text-xs font-bold text-[#4d1217] dark:text-white block mt-0.5">
@@ -165,7 +165,7 @@ export default function WhereVolampContributed() {
             <span className="text-xs font-bold uppercase tracking-widest text-[#c25e0a] dark:text-amber-400">
               PROCUREMENT BENCHMARKS
             </span>
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] dark:text-white font-['Space_Grotesk'] mt-1">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] dark:text-white font-['Plus_Jakarta_Sans',sans-serif] mt-1">
               Engineered for Critical Infrastructure
             </h2>
             <p className="text-[#5d4a4b] dark:text-slate-400 text-xs sm:text-sm mt-2">

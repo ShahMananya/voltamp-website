@@ -232,7 +232,7 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
                 <span className="text-[10px] font-black tracking-widest text-[#c46b19] uppercase block">
                   WORLDWIDE PROJECT SUPPLY & EXPORT
                 </span>
-                <h2 className="text-xl font-bold text-[#102a40] font-['Space_Grotesk'] leading-tight">
+                <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
                   Choose Your Project Location
                 </h2>
               </div>
@@ -416,7 +416,7 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
             </div>
 
             {/* Main Welcome Title */}
-            <h2 className="text-2xl sm:text-[26px] font-bold text-[#102a40] font-['Space_Grotesk'] leading-snug">
+            <h2 className="text-2xl sm:text-[26px] font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] leading-snug">
               Welcome to <span className="text-[#c46b19]">VOLAMP</span> from{" "}
               <span className="text-[#1d73b7] underline decoration-amber-400 decoration-2 underline-offset-4">
                 {cityName}

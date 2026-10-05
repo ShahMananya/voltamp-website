@@ -34,7 +34,7 @@ export default function UniversalFooter({
               <span className="footer-eyebrow text-[#c25e0a] dark:text-[#ef7d19] font-black text-[11px] tracking-widest uppercase block">
                 VOLAMP JOURNAL
               </span>
-              <strong className="text-[#4d1217] dark:text-white font-['Space_Grotesk'] text-lg sm:text-xl font-bold block">
+              <strong className="text-[#4d1217] dark:text-white font-['Plus_Jakarta_Sans',sans-serif] text-lg sm:text-xl font-bold block">
                 Read the latest from our supply desk.
               </strong>
             </div>
@@ -108,8 +108,8 @@ export default function UniversalFooter({
           <button type="button" onClick={() => navigate("/category/lightings")} className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline cursor-pointer block">
             WIRING DEVICE
           </button>
-          <button type="button" onClick={() => navigate("/category/conduits")} className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline cursor-pointer block">
-            EARTHING WIRES
+          <button type="button" onClick={() => navigate("/category/earthing-material")} className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline cursor-pointer block">
+            EARTHING MATERIAL
           </button>
           <button type="button" onClick={() => navigate("/category/solar")} className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline cursor-pointer block">
             SOLAR
@@ -152,7 +152,7 @@ export default function UniversalFooter({
             </span>
             <a
               href={`tel:+91${supportPhone}`}
-              className="text-[#4d1217] dark:text-white font-['Space_Grotesk'] text-lg font-bold hover:text-[#ef7d19] transition-colors block"
+              className="text-[#4d1217] dark:text-white font-['Plus_Jakarta_Sans',sans-serif] text-lg font-bold hover:text-[#ef7d19] transition-colors block"
             >
               {supportPhone}
             </a>

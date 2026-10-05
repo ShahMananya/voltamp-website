@@ -54,7 +54,7 @@ export default function NewsletterSection() {
               <span>VOLAMP NEWSLETTER</span>
             </div>
 
-            <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#4d1217] font-['Space_Grotesk'] leading-snug">
+            <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif] leading-snug">
               Stay updated with the Volamp newsletter.
             </h3>
 

@@ -36,7 +36,7 @@ const CATEGORY_OPTIONS = [
   "Glands & Cable Management",
   "Conduits (LMS / MMS / HMS Pipes & Fittings)",
   "Wiring Device & Modular Accessories",
-  "Earthing Wires & Chemical Electrodes",
+  "Earthing Material & Chemical Electrodes",
   "Solar DC Cables & Structure Hardware",
   "Complete Project Bill of Materials (BOM)",
   "Custom Specification / Other",
@@ -185,7 +185,7 @@ export function EnquireModal({
                   VOLAMP SUPPLY & EXPORT DESK
                 </span>
               </div>
-              <h2 className="text-lg sm:text-xl font-bold font-['Space_Grotesk'] text-white">
+              <h2 className="text-lg sm:text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-white">
                 Enquire Now · Direct RFQ
               </h2>
             </div>
@@ -210,7 +210,7 @@ export function EnquireModal({
               <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                 ENQUIRY REGISTERED SUCCESSFULLY
               </span>
-              <h3 className="text-2xl font-bold text-[#102a40] font-['Space_Grotesk'] pt-1">
+              <h3 className="text-2xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] pt-1">
                 Thank You, {submittedData.fullName}!
               </h3>
               <p className="text-xs sm:text-sm text-stone-600 leading-relaxed">

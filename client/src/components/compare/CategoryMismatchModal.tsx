@@ -40,7 +40,7 @@ export function CategoryMismatchModal() {
               <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400 tracking-wider uppercase">
                 Category Mismatch
               </span>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-['Space_Grotesk'] leading-snug">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] leading-snug">
                 Compare Only Same Category
               </h3>
             </div>

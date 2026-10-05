@@ -25,8 +25,8 @@
   --color-orange: #ef7d19;
   --color-sun: #f5bf21;
   --color-cream: #fffaf0;
-  --font-sans: "DM Sans", sans-serif;
-  --font-display: "Fredoka", sans-serif;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
 }
 
 :root {
@@ -55,13 +55,39 @@
 
 html {
   scroll-behavior: smooth;
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
   margin: 0;
   background: #f5f7f9;
   color: #0b1f33;
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Ensure form controls and buttons strictly inherit Plus Jakarta Sans */
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Fallback aliases for any residual references */
+@font-face {
+  font-family: "Space Grotesk";
+  src: local("Plus Jakarta Sans");
+}
+
+@font-face {
+  font-family: "DM Sans";
+  src: local("Plus Jakarta Sans");
+}
+
+@font-face {
+  font-family: "Fredoka";
+  src: local("Plus Jakarta Sans");
 }
 
 button,
@@ -88,7 +114,7 @@ input:focus-visible {
 }
 
 .font-display {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .text-orange {
@@ -140,7 +166,7 @@ input:focus-visible {
   border-radius: 14px 14px 20px 14px;
   background: #6b2024;
   color: #f5bf21;
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.3rem;
   font-weight: 900;
   transform: rotate(-8deg);
@@ -315,7 +341,7 @@ input:focus-visible {
 }
 
 .hero-note strong {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.2rem;
 }
 
@@ -341,7 +367,7 @@ input:focus-visible {
   right: 8%;
   bottom: 9%;
   color: #fffaf0;
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 2rem;
   font-weight: 900;
   line-height: .8;
@@ -349,7 +375,7 @@ input:focus-visible {
 }
 
 .hero-caption span {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: .65rem;
   letter-spacing: .22em;
   text-transform: uppercase;
@@ -374,7 +400,7 @@ input:focus-visible {
 }
 
 .stats-card strong {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 2rem;
   line-height: 1;
 }
@@ -410,7 +436,7 @@ input:focus-visible {
 .section-space h2,
 .quote-banner h2 {
   margin: .6rem 0 0;
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(2.45rem, 5vw, 4.35rem);
   font-weight: 900;
   line-height: .98;
@@ -451,7 +477,7 @@ input:focus-visible {
 }
 
 .category-card h3 {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.7rem;
   font-weight: 900;
 }
@@ -628,12 +654,12 @@ input:focus-visible {
 
 .about-card-main p {
   margin-top: 1rem;
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.5rem;
 }
 
 .about-card-main strong {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 2.2rem;
   line-height: .85;
 }
@@ -688,7 +714,7 @@ input:focus-visible {
 
 .resource-card h3 {
   margin-top: 1.2rem;
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.45rem;
   font-weight: 900;
 }
@@ -749,7 +775,7 @@ input:focus-visible {
 }
 
 .mini-proof strong {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1rem;
 }
 
@@ -829,7 +855,7 @@ input:focus-visible {
 
 .access-card strong {
   margin-top: .5rem;
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.2rem;
 }
 
@@ -965,7 +991,7 @@ input:focus-visible {
 .portal-login h1,
 .portal-hero h1 {
   margin: .75rem 0 0;
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(2.8rem, 7vw, 5rem);
   font-weight: 900;
   line-height: .95;
@@ -1007,7 +1033,7 @@ input:focus-visible {
   height: 35px;
   border-radius: 50%;
   background: #f5bf21;
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .portal-hero {
@@ -1069,7 +1095,7 @@ input:focus-visible {
 
 .panel-heading h2 {
   margin-top: .25rem;
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.7rem;
   font-weight: 900;
 }
@@ -1151,7 +1177,7 @@ input:focus-visible {
 }
 
 .empty-state strong {
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .empty-state p {
@@ -1206,7 +1232,7 @@ input:focus-visible {
 
 .compare-head h2 {
   margin-top: .5rem;
-  font-family: "Fredoka", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(2.2rem, 4vw, 3.5rem);
   font-weight: 900;
   line-height: 1;
@@ -1380,7 +1406,7 @@ input:focus-visible {
   --color-amber: #f2b84b;
   --color-ice: #e8eef2;
   --color-paper: #f5f7f9;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
 }
 
 body {
@@ -1389,7 +1415,7 @@ body {
 }
 
 .font-display {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .text-orange {
@@ -1465,7 +1491,7 @@ body {
 .section-heading h2,
 .section-space h2,
 .quote-banner h2 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   letter-spacing: -.065em;
 }
 
@@ -1550,7 +1576,7 @@ body {
 }
 
 .hero-note strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .hero-note small {
@@ -1559,7 +1585,7 @@ body {
 
 .hero-caption {
   color: #0b1f33;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .hero-caption span {
@@ -1577,7 +1603,7 @@ body {
 }
 
 .stats-card strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .stats-card span {
@@ -1627,7 +1653,7 @@ body {
 .product-card h3,
 .resource-card h3,
 .panel-heading h2 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .icon-disc {
@@ -1801,7 +1827,7 @@ body {
 
 .portal-login h1,
 .portal-hero h1 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .portal-login h1 span,
@@ -1864,7 +1890,7 @@ body {
 }
 
 .compare-head h2 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .compare-table {
@@ -1891,7 +1917,7 @@ body {
 
 .volamp-site button,
 .volamp-site a {
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .utility-bar {
@@ -2067,7 +2093,7 @@ body {
 .contact-block h2,
 .final-banner h2 {
   margin: 1.25rem 0 0;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(3.1rem, 6vw, 5.4rem);
   font-weight: 700;
   line-height: .95;
@@ -2238,7 +2264,7 @@ body {
 }
 
 .terminal strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.6rem;
 }
 
@@ -2306,7 +2332,7 @@ body {
 }
 
 .metric-strip strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.5rem;
 }
 
@@ -2394,7 +2420,7 @@ body {
 
 .solution-card h3 {
   margin-top: 4rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.35rem;
 }
 
@@ -2520,7 +2546,7 @@ body {
 
 .catalog-card h3 {
   margin-top: .9rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.3rem;
 }
 
@@ -2580,7 +2606,7 @@ body {
 
 .compare-head h2 {
   margin-top: .5rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(2.2rem, 4vw, 3.5rem);
   letter-spacing: -.06em;
 }
@@ -2625,7 +2651,7 @@ body {
 
 .compare-product-name strong {
   display: block;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: .88rem;
 }
 
@@ -2697,7 +2723,7 @@ body {
 }
 
 .timeline-row strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1rem;
 }
 
@@ -2775,7 +2801,7 @@ body {
 .estimate-panel h3,
 .inquiry-panel h3 {
   margin-top: .4rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.45rem;
 }
 
@@ -2859,7 +2885,7 @@ body {
 
 .estimate-total b {
   color: #c56718;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 2.3rem;
 }
 
@@ -2901,7 +2927,7 @@ body {
 
 .resource-grid span {
   margin-top: auto;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.15rem;
   font-weight: 700;
 }
@@ -3062,7 +3088,7 @@ body {
 .product-modal h2,
 .account-modal h2 {
   margin-top: .5rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 2rem;
 }
 
@@ -3145,7 +3171,7 @@ body {
 .chat-drawer-head strong {
   display: block;
   margin-top: .2rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .chat-drawer-head .panel-label {
@@ -3459,7 +3485,7 @@ body {
 }
 
 .portal-hero-aside strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.5rem;
 }
 
@@ -3528,7 +3554,7 @@ body {
 
 .portal-section-heading h2 {
   margin-top: .35rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.25rem;
   letter-spacing: -.035em;
 }
@@ -3633,7 +3659,7 @@ body {
 .portal-login-note strong {
   display: block;
   margin-top: .7rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.1rem;
 }
 
@@ -3727,7 +3753,7 @@ body {
 
 .workboard-intro h2 {
   margin-top: .35rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.45rem;
 }
 
@@ -3767,7 +3793,7 @@ body {
 
 .next-action-card h3 {
   margin-top: 1.7rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.1rem;
 }
 
@@ -3800,7 +3826,7 @@ body {
 
 .workboard-metric strong {
   margin-top: auto;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 2.4rem;
 }
 
@@ -4133,7 +4159,7 @@ body {
 .campaign-heading,
 .campaign strong {
   margin: 0;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.32rem;
   font-weight: 850;
   line-height: 1.15;
@@ -4341,7 +4367,7 @@ body {
 
 .market-hero-slide-heading {
   margin: 0 0 0.4rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(1.85rem, 3vw, 2.4rem);
   font-weight: 800;
   line-height: 1.12;
@@ -4623,7 +4649,7 @@ body {
 .market-section h1,
 .market-section h2 {
   margin-top: .45rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   color: #102a40;
   font-size: 2rem;
   letter-spacing: -.045em;
@@ -4724,7 +4750,7 @@ body {
 
 .market-trust-grid strong {
   margin-top: 1.5rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1rem;
 }
 
@@ -4783,7 +4809,7 @@ body {
 
 .market-product-card h3 {
   margin-top: .4rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1rem;
 }
 
@@ -5116,7 +5142,7 @@ body {
 }
 
 .employee-entry>div>strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: .9rem;
 }
 
@@ -5435,7 +5461,7 @@ html.dark .portal-form-grid textarea::placeholder {
   z-index: 59;
   top: 100%;
   left: 0;
-  width: min(820px, calc(100vw - 2rem));
+  width: min(1200px, calc(100vw - 2rem));
   height: .65rem;
   pointer-events: auto;
 }
@@ -5927,35 +5953,53 @@ html.dark .inquiry-textarea {
   }
 }
 
-/* Reference-style cascading 3-tier category navigation */
+/* =============================================================================
+   PREMIUM 3-TIER ENTERPRISE CATEGORY & SPEC EXPLORER
+   ============================================================================= */
 .mega-menu-cascading {
   display: grid;
-  grid-template-columns: 210px 255px minmax(380px, 1fr);
+  grid-template-columns: 240px 330px minmax(420px, 1fr);
   gap: 0;
-  width: min(1080px, calc(100vw - 2rem));
-  max-height: 600px;
+  width: min(1200px, calc(100vw - 2rem));
+  height: 580px;
+  max-height: 85vh;
   padding: 0;
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0 24px 60px rgba(7, 33, 57, 0.25);
-  border: 1px solid #c8d8e2;
-  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 25px 50px -12px rgba(11, 31, 51, 0.22), 0 0 0 1px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  animation: megaMenuIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes megaMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 1. Primary Categories Sidebar */
 .mega-menu-main-list {
-  max-height: 600px;
+  height: 100%;
   overflow-y: auto;
-  padding: .5rem 0;
-  border-right: 1px solid #d6e0e6;
-  background: #fff;
+  padding: 0.75rem 0.5rem;
+  border-right: 1px solid #f1f5f9;
+  background: #f8fafc;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .mega-menu-main-list::-webkit-scrollbar {
   width: 4px;
 }
-
 .mega-menu-main-list::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
@@ -5964,288 +6008,320 @@ html.dark .inquiry-textarea {
 .mega-menu-main-item {
   display: flex;
   align-items: center;
-  gap: .55rem;
+  gap: 0.65rem;
   width: 100%;
-  border: 0;
-  border-left: 3px solid transparent;
-  padding: .75rem .85rem;
-  background: #fff;
-  color: #0b1f33;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  background: transparent;
+  color: #334155;
   text-align: left;
-  font-size: .76rem;
-  font-weight: 750;
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all .15s ease;
+  transition: all 0.15s ease;
 }
 
-.mega-menu-main-item:hover,
-.mega-menu-main-item:focus-visible,
+.mega-menu-main-item:hover {
+  background: #ffffff;
+  color: #0b1f33;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
 .mega-menu-main-item.is-active {
-  border-left-color: #c56718;
-  background: #e8eef2;
+  background: #ffffff;
   color: #c56718;
-  outline: none;
+  font-weight: 700;
+  border-color: #fed7aa;
+  box-shadow: 0 2px 6px rgba(197, 103, 24, 0.1);
 }
 
-.mega-menu-main-item svg:first-child {
+.mega-menu-main-item svg:first-of-type {
+  color: #64748b;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.mega-menu-main-item.is-active svg:first-of-type,
+.mega-menu-main-item:hover svg:first-of-type {
   color: #c56718;
-  flex: 0 0 auto;
 }
 
 .mega-menu-cat-num {
-  display: inline-block;
-  font-size: .65rem;
-  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   color: #94a3b8;
-  width: 1.3rem;
-  letter-spacing: .04em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: #edf2f7;
+  letter-spacing: 0.04em;
 }
 
-.mega-menu-main-item.is-active .mega-menu-cat-num,
-.mega-menu-main-item:hover .mega-menu-cat-num {
+.mega-menu-main-item.is-active .mega-menu-cat-num {
+  background: #ffedd5;
   color: #c56718;
 }
 
 .mega-menu-cat-name {
   flex: 1;
+  letter-spacing: -0.01em;
 }
 
+.mega-menu-item-count {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.mega-menu-main-item.is-active .mega-menu-item-count {
+  background: #ffedd5;
+  color: #c56718;
+}
+
+/* 2. Subcategories Column */
 .mega-menu-sub-list {
-  max-height: 600px;
+  height: 100%;
   overflow-y: auto;
-  padding: .65rem .45rem;
-  border-right: 1px solid #d6e0e6;
-  background: #f8fafc;
+  padding: 0.85rem 0.65rem;
+  border-right: 1px solid #f1f5f9;
+  background: #ffffff;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
-}
-
-.mega-menu-sub-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.mega-menu-sub-list::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
 }
 
 .mega-menu-sub-list-head {
-  padding: .4rem .55rem .6rem;
-  border-bottom: 1px solid #e2e8f0;
-  margin-bottom: .45rem;
+  padding: 0.25rem 0.5rem 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 0.5rem;
 }
 
 .mega-menu-sub-list-head h4 {
-  margin: .2rem 0 0;
-  font-size: .88rem;
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
   font-weight: 800;
-  color: #0f273d;
+  color: #0b1f33;
+  letter-spacing: -0.01em;
 }
 
 .mega-menu-sub-items {
   display: flex;
   flex-direction: column;
-  gap: .2rem;
+  gap: 0.25rem;
+  padding-right: 0.2rem;
 }
 
 .mega-menu-sub-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: .4rem;
+  gap: 0.5rem;
   width: 100%;
-  padding: .52rem .65rem;
+  padding: 0.6rem 0.75rem;
   border: 1px solid transparent;
-  border-radius: 3px;
+  border-radius: 8px;
   background: transparent;
   color: #334155;
-  font-size: .74rem;
-  font-weight: 600;
+  font-size: 0.78rem;
+  font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: all .15s ease;
+  transition: all 0.15s ease;
 }
 
-.mega-menu-sub-item:hover,
-.mega-menu-sub-item:focus-visible,
+.mega-menu-sub-item:hover {
+  background: #f8fafc;
+  color: #0b1f33;
+}
+
 .mega-menu-sub-item.is-active {
-  background: #e0effa;
-  color: #0b5394;
-  border-color: #bfdbfe;
-  outline: none;
+  background: #fff7ed;
+  color: #c56718;
+  font-weight: 700;
+  border-color: #ffedd5;
+  box-shadow: 0 1px 3px rgba(197, 103, 24, 0.08);
 }
 
 .mega-menu-sub-name {
   flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.35;
+  word-break: break-word;
 }
 
 .mega-menu-sub-count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: .62rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  padding: .08rem .32rem;
-  border-radius: 10px;
-  background: #e2e8f0;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 9999px;
+  background: #f1f5f9;
   color: #64748b;
+  flex-shrink: 0;
 }
 
-.mega-menu-sub-item.is-active .mega-menu-sub-count,
-.mega-menu-sub-item:hover .mega-menu-sub-count {
-  background: #bfdbfe;
-  color: #1d4ed8;
+.mega-menu-sub-item.is-active .mega-menu-sub-count {
+  background: #fed7aa;
+  color: #9a3412;
 }
 
+/* 3. Sub-Subcategory / Variant Showcase Panel */
 .mega-menu-sub-sub-panel {
   min-width: 0;
-  max-height: 600px;
+  height: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.1rem;
+  padding: 1.25rem 1.5rem;
   background: #ffffff;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
 }
 
-.mega-menu-sub-sub-panel::-webkit-scrollbar {
-  width: 4px;
-}
-
-.mega-menu-sub-sub-panel::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+.mega-menu-sub-sub-header {
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 0.85rem;
 }
 
 .mega-menu-sub-sub-header h3 {
-  margin: .3rem 0 .35rem;
-  font-size: 1.2rem;
-  color: #0f273d;
+  margin: 0.35rem 0 0.25rem;
+  font-size: 1.25rem;
+  color: #0b1f33;
   font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
 }
 
 .mega-menu-sub-sub-header p {
   margin: 0;
   color: #64748b;
-  font-size: .75rem;
-  line-height: 1.45;
+  font-size: 0.8rem;
+  line-height: 1.5;
 }
 
 .mega-menu-badge {
-  display: inline-block;
-  padding: .15rem .45rem;
-  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
   background: #ecfdf5;
-  color: #059669;
+  color: #047857;
   border: 1px solid #a7f3d0;
-  font-size: .62rem;
+  font-size: 0.62rem;
   font-weight: 800;
-  letter-spacing: .06em;
+  letter-spacing: 0.05em;
 }
 
-/* Specs highlight strip */
+/* Specs Highlight Strip */
 .mega-menu-specs-strip {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: .5rem;
-  margin: .75rem 0 1rem;
-  padding: .6rem .75rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
+  gap: 0.65rem;
+  margin: 0.85rem 0 1rem;
 }
 
 .mega-menu-spec-item {
   display: flex;
   align-items: center;
-  gap: .45rem;
+  gap: 0.55rem;
+  padding: 0.6rem 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  transition: border-color 0.15s ease;
+}
+
+.mega-menu-spec-item:hover {
+  border-color: #cbd5e1;
 }
 
 .mega-menu-spec-item small {
   display: block;
-  font-size: .58rem;
+  font-size: 0.6rem;
   font-weight: 800;
-  color: #64748b;
-  letter-spacing: .06em;
+  color: #94a3b8;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .mega-menu-spec-item strong {
   display: block;
-  font-size: .68rem;
-  font-weight: 750;
+  font-size: 0.72rem;
+  font-weight: 700;
   color: #0f172a;
-  line-height: 1.2;
+  line-height: 1.25;
+  margin-top: 1px;
 }
 
-/* Sub-subcategory grid and variant cards */
+/* Available Types / Sizes Grid */
 .mega-menu-sub-sub-body {
-  margin: .75rem 0 1rem;
+  margin: 0.5rem 0 1rem;
   flex: 1;
 }
 
 .mega-menu-sub-sub-title {
-  display: block;
-  font-size: .68rem;
+  display: inline-block;
+  font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: .08em;
-  color: #d97706;
+  letter-spacing: 0.06em;
+  color: #c56718;
 }
 
 .mega-menu-sub-sub-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: .45rem;
-  max-height: 220px;
+  gap: 0.6rem;
+  max-height: 170px;
   overflow-y: auto;
-  padding-right: .2rem;
+  padding-right: 0.3rem;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
-}
-
-.mega-menu-sub-sub-grid::-webkit-scrollbar {
-  width: 4px;
-}
-
-.mega-menu-sub-sub-grid::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
 }
 
 .mega-menu-variant-card {
   display: flex;
   align-items: center;
-  gap: .5rem;
-  padding: .5rem .65rem;
+  gap: 0.65rem;
+  padding: 0.65rem 0.8rem;
   border: 1px solid #e2e8f0;
-  border-radius: 4px;
+  border-radius: 10px;
   background: #ffffff;
   text-align: left;
   cursor: pointer;
-  transition: all .15s ease;
+  transition: all 0.15s ease;
 }
 
 .mega-menu-variant-card:hover {
-  border-color: #f59e0b;
-  background: #fffdf7;
+  border-color: #fbbf24;
+  background: #fffdfa;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.08);
+  box-shadow: 0 4px 12px rgba(197, 103, 24, 0.08);
 }
 
 .mega-menu-variant-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: #fef3c7;
+  background: #ffedd5;
+  color: #c56718;
   flex-shrink: 0;
 }
 
@@ -6256,101 +6332,113 @@ html.dark .inquiry-textarea {
 
 .mega-menu-variant-text strong {
   display: block;
-  font-size: .73rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  color: #1e293b;
-  line-height: 1.25;
-  white-space: nowrap;
+  color: #0f172a;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .mega-menu-variant-text small {
   display: block;
-  font-size: .64rem;
+  font-size: 0.65rem;
   color: #64748b;
-  margin-top: .1rem;
+  margin-top: 0.15rem;
 }
 
-/* Procurement reassurance callout */
+/* Premium Wholesale & EPC Callout */
 .mega-menu-procure-box {
-  margin-top: .75rem;
-  padding: .65rem .85rem;
-  border-left: 3px solid #f59e0b;
-  background: #fffbeb;
-  border-radius: 0 4px 4px 0;
+  margin-top: 0.65rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #0b1f33 0%, #15324d 100%);
+  border-radius: 10px;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(11, 31, 51, 0.12);
 }
 
 .mega-menu-procure-box strong {
   display: block;
-  font-size: .72rem;
+  font-size: 0.76rem;
   font-weight: 800;
-  color: #92400e;
+  color: #fbd38d;
 }
 
 .mega-menu-procure-box p {
-  margin: .15rem 0 0;
-  font-size: .68rem;
-  color: #b45309;
-  line-height: 1.35;
+  margin: 0.2rem 0 0;
+  font-size: 0.68rem;
+  color: #cbd5e1;
+  line-height: 1.4;
 }
 
+/* Actions Bar */
 .mega-menu-actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: .5rem;
-  padding-top: .8rem;
-  border-top: 1px solid #e2e8f0;
+  gap: 0.6rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #f1f5f9;
+  margin-top: auto;
 }
 
 .mega-menu-btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: .3rem;
-  padding: .5rem .85rem;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
   border: 0;
-  border-radius: 3px;
+  border-radius: 10px;
   background: #c56718;
-  color: #fff;
-  font-size: .74rem;
-  font-weight: 750;
+  color: #ffffff;
+  font-size: 0.76rem;
+  font-weight: 700;
   cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 4px rgba(197, 103, 24, 0.2);
 }
 
 .mega-menu-btn-primary:hover {
-  background: #155b93;
+  background: #b45309;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(197, 103, 24, 0.25);
 }
 
 .mega-menu-btn-secondary {
   display: inline-flex;
   align-items: center;
-  gap: .3rem;
-  padding: .5rem .85rem;
-  border: 1px solid #d97706;
-  border-radius: 3px;
-  background: #fffbeb;
-  color: #b45309;
-  font-size: .74rem;
-  font-weight: 750;
+  gap: 0.4rem;
+  padding: 0.55rem 0.95rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 0.76rem;
+  font-weight: 700;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
 .mega-menu-btn-secondary:hover {
-  background: #fef3c7;
+  background: #f8fafc;
+  border-color: #cbd5e1;
 }
 
 .mega-menu-btn-ghost {
   display: inline-flex;
   align-items: center;
-  padding: .5rem .75rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 3px;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
   background: transparent;
   color: #475569;
-  font-size: .74rem;
-  font-weight: 700;
+  font-size: 0.76rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: auto;
 }
 
 .mega-menu-btn-ghost:hover {
@@ -6358,59 +6446,80 @@ html.dark .inquiry-textarea {
   color: #0f172a;
 }
 
-/* Dark mode cascading menu */
+/* =============================================================================
+   DARK MODE ADJUSTMENTS
+   ============================================================================= */
 html.dark .mega-menu-cascading {
-  border-color: #31546b;
-  background: #0b1f33;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 255, 255, 0.08);
+  background: #091927;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .dark .mega-menu-main-list,
 html.dark .mega-menu-main-list {
-  border-color: #23455c;
-  background: #0b1f33;
-  scrollbar-color: #334e68 transparent;
+  border-color: rgba(255, 255, 255, 0.06);
+  background: #06121d;
+  scrollbar-color: #1e293b transparent;
 }
 
 .dark .mega-menu-main-item,
 html.dark .mega-menu-main-item {
-  background: #0b1f33;
-  color: #eaf1f5;
+  color: #94a3b8;
 }
 
 .dark .mega-menu-main-item:hover,
-.dark .mega-menu-main-item:focus-visible,
+html.dark .mega-menu-main-item:hover {
+  background: #0d2133;
+  color: #f1f5f9;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
 .dark .mega-menu-main-item.is-active,
 html.dark .mega-menu-main-item.is-active {
-  background: #173b56;
-  color: #60a5fa;
+  background: #0f273d;
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.3);
 }
 
 .dark .mega-menu-cat-num,
 html.dark .mega-menu-cat-num {
+  background: #0d2133;
   color: #64748b;
 }
 
 .dark .mega-menu-main-item.is-active .mega-menu-cat-num,
 html.dark .mega-menu-main-item.is-active .mega-menu-cat-num {
-  color: #60a5fa;
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.dark .mega-menu-item-count,
+html.dark .mega-menu-item-count {
+  background: #0d2133;
+  color: #64748b;
+}
+
+.dark .mega-menu-main-item.is-active .mega-menu-item-count,
+html.dark .mega-menu-main-item.is-active .mega-menu-item-count {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
 }
 
 .dark .mega-menu-sub-list,
 html.dark .mega-menu-sub-list {
-  border-color: #23455c;
-  background: #0d2336;
-  scrollbar-color: #334e68 transparent;
+  border-color: rgba(255, 255, 255, 0.06);
+  background: #091927;
+  scrollbar-color: #1e293b transparent;
 }
 
 .dark .mega-menu-sub-list-head,
 html.dark .mega-menu-sub-list-head {
-  border-color: #23455c;
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 .dark .mega-menu-sub-list-head h4,
 html.dark .mega-menu-sub-list-head h4 {
-  color: #f1f5f9;
+  color: #f8fafc;
 }
 
 .dark .mega-menu-sub-item,
@@ -6419,35 +6528,44 @@ html.dark .mega-menu-sub-item {
 }
 
 .dark .mega-menu-sub-item:hover,
-.dark .mega-menu-sub-item:focus-visible,
+html.dark .mega-menu-sub-item:hover {
+  background: #0d2133;
+  color: #ffffff;
+}
+
 .dark .mega-menu-sub-item.is-active,
 html.dark .mega-menu-sub-item.is-active {
-  background: #173b56;
-  color: #93c5fd;
-  border-color: #2563eb;
+  background: #0f273d;
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.25);
 }
 
 .dark .mega-menu-sub-count,
 html.dark .mega-menu-sub-count {
-  background: #1e3a53;
+  background: #0d2133;
   color: #94a3b8;
 }
 
 .dark .mega-menu-sub-item.is-active .mega-menu-sub-count,
 html.dark .mega-menu-sub-item.is-active .mega-menu-sub-count {
-  background: #1d4ed8;
-  color: #e0f2fe;
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
 }
 
 .dark .mega-menu-sub-sub-panel,
 html.dark .mega-menu-sub-sub-panel {
-  background: #0a1b2b;
-  scrollbar-color: #334e68 transparent;
+  background: #0b1f33;
+  scrollbar-color: #1e293b transparent;
+}
+
+.dark .mega-menu-sub-sub-header,
+html.dark .mega-menu-sub-sub-header {
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 .dark .mega-menu-sub-sub-header h3,
 html.dark .mega-menu-sub-sub-header h3 {
-  color: #f8fafc;
+  color: #ffffff;
 }
 
 .dark .mega-menu-sub-sub-header p,
@@ -6457,15 +6575,21 @@ html.dark .mega-menu-sub-sub-header p {
 
 .dark .mega-menu-badge,
 html.dark .mega-menu-badge {
-  background: #064e3b;
-  color: #6ee7b7;
-  border-color: #047857;
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.3);
 }
 
 .dark .mega-menu-specs-strip,
 html.dark .mega-menu-specs-strip {
-  background: #0d2336;
-  border-color: #23455c;
+  background: #091927;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .mega-menu-spec-item,
+html.dark .mega-menu-spec-item {
+  background: #06121d;
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 .dark .mega-menu-spec-item strong,
@@ -6475,29 +6599,30 @@ html.dark .mega-menu-spec-item strong {
 
 .dark .mega-menu-spec-item small,
 html.dark .mega-menu-spec-item small {
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .dark .mega-menu-variant-card,
 html.dark .mega-menu-variant-card {
-  background: #10283d;
-  border-color: #23455c;
+  background: #091927;
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 .dark .mega-menu-variant-card:hover,
 html.dark .mega-menu-variant-card:hover {
-  background: #173b56;
-  border-color: #f59e0b;
+  background: #0d2133;
+  border-color: rgba(251, 191, 36, 0.4);
 }
 
 .dark .mega-menu-variant-icon,
 html.dark .mega-menu-variant-icon {
-  background: #2a3a2e;
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
 }
 
 .dark .mega-menu-variant-text strong,
 html.dark .mega-menu-variant-text strong {
-  color: #f1f5f9;
+  color: #f8fafc;
 }
 
 .dark .mega-menu-variant-text small,
@@ -6507,29 +6632,37 @@ html.dark .mega-menu-variant-text small {
 
 .dark .mega-menu-procure-box,
 html.dark .mega-menu-procure-box {
-  background: #1a2c3d;
-  border-left-color: #f59e0b;
-}
-
-.dark .mega-menu-procure-box strong,
-html.dark .mega-menu-procure-box strong {
-  color: #fbbf24;
-}
-
-.dark .mega-menu-procure-box p,
-html.dark .mega-menu-procure-box p {
-  color: #cbd5e1;
+  background: linear-gradient(135deg, #06121d 0%, #0d2133 100%);
+  border: 1px solid rgba(251, 191, 36, 0.2);
 }
 
 .dark .mega-menu-actions,
 html.dark .mega-menu-actions {
-  border-color: #1e3a53;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .mega-menu-btn-secondary,
+html.dark .mega-menu-btn-secondary {
+  background: #091927;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+}
+
+.dark .mega-menu-btn-secondary:hover,
+html.dark .mega-menu-btn-secondary:hover {
+  background: #0d2133;
 }
 
 .dark .mega-menu-btn-ghost,
 html.dark .mega-menu-btn-ghost {
-  border-color: #334e68;
+  border-color: rgba(255, 255, 255, 0.1);
   color: #cbd5e1;
+}
+
+.dark .mega-menu-btn-ghost:hover,
+html.dark .mega-menu-btn-ghost:hover {
+  background: #0d2133;
+  color: #ffffff;
 }
 
 .dark .mega-menu-btn-ghost:hover,
@@ -7453,7 +7586,7 @@ html.dark .volamp-tile-stock-badge {
 }
 
 .volamp-tile-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 0.875rem;
   font-weight: 700;
   line-height: 1.35;
@@ -7563,7 +7696,7 @@ html.dark .volamp-tile-price-label {
 }
 
 .volamp-tile-price-num {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.05rem;
   font-weight: 900;
   color: #09233a;
@@ -8111,7 +8244,7 @@ html.dark .category-tile:hover .category-tile-arrow-circle {
 .about-hero h1 {
   max-width: 11ch;
   margin: .8rem 0 1.2rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(3.2rem, 6.5vw, 5.6rem);
   font-weight: 700;
   letter-spacing: -.07em;
@@ -8231,7 +8364,7 @@ html.dark .category-tile:hover .category-tile-arrow-circle {
 
 .about-section-heading h2 {
   margin: .65rem 0 0;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(2.2rem, 5vw, 4.5rem);
   font-weight: 700;
   letter-spacing: -.065em;
@@ -8435,7 +8568,7 @@ html.dark .category-tile:hover .category-tile-arrow-circle {
 }
 
 .legacy-banner-header h3 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(1.4rem, 2.5vw, 2.2rem);
   font-weight: 800;
   margin: 0.5rem 0 0.8rem;
@@ -8785,7 +8918,7 @@ html.dark .about-timeline-item.is-highlighted-card {
 }
 
 .stat-number {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(2.2rem, 4vw, 3.2rem);
   font-weight: 900;
   color: #c56718;
@@ -9379,7 +9512,7 @@ html.dark .about-timeline-item.is-highlighted-card {
 }
 
 .prebar-text h3 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(1.3rem, 2.2vw, 1.8rem);
   font-weight: 800;
   color: #0b1f33;
@@ -9480,7 +9613,7 @@ html.dark .about-timeline-item.is-highlighted-card {
 }
 
 .about-footer-company-name {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 0.78rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -9609,7 +9742,7 @@ html.dark .about-timeline-item.is-highlighted-card {
 }
 
 .contact-phone-link {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.05rem !important;
   font-weight: 900;
   color: #c56718 !important;
@@ -10368,7 +10501,7 @@ html.dark .about-footprint .about-eyebrow {
 }
 
 .counter-number {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(1.7rem, 3.2vw, 2.6rem);
   font-weight: 900;
   color: #f2b84b;
@@ -10823,7 +10956,7 @@ html.dark .about-footprint .about-eyebrow {
 
 .dossier-title {
   margin: 0;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.25rem;
   font-weight: 850;
   color: #ffffff;
@@ -10880,7 +11013,7 @@ html.dark .about-footprint .about-eyebrow {
 }
 
 .dossier-metric-box .num {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.2rem;
   font-weight: 850;
   color: #ffffff;
@@ -11512,7 +11645,7 @@ html.dark .about-footprint .about-eyebrow {
 
 .modal-title {
   margin: 0.4rem 0 0.3rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(1.3rem, 2.4vw, 1.7rem);
   color: #fff;
   letter-spacing: -0.03em;
@@ -11909,7 +12042,7 @@ html:not(.dark) .modal-hero-photo-overlay {
 
 .table-header-row h4 {
   margin: 0 0 0.3rem;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.2rem;
   color: #fff;
 }
@@ -12065,7 +12198,7 @@ html:not(.dark) .modal-hero-photo-overlay {
 }
 
 .footer-blog-inner strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.25rem;
   line-height: 1.1;
   color: #4d1217;
@@ -12178,7 +12311,7 @@ html:not(.dark) .modal-hero-photo-overlay {
 }
 
 .footer-support-phone strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.02rem;
   letter-spacing: .02em;
   color: #4d1217;
@@ -12331,7 +12464,7 @@ html.dark .footer-social-links a {
   min-height: 100vh;
   background: #f7fafc;
   color: #1e3342;
-  font-family: "Inter", -apple-system, sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   display: flex;
   flex-direction: column;
 }
@@ -13634,7 +13767,7 @@ html.dark .bullet-icon {
 }
 
 .segments-hero h1 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(2.2rem, 5vw, 3.8rem);
   font-weight: 800;
   letter-spacing: -0.04em;
@@ -13704,7 +13837,7 @@ html.dark .bullet-icon {
 }
 
 .metric-pill strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.8rem;
   color: #c56718;
   line-height: 1;
@@ -13840,7 +13973,7 @@ html.dark .bullet-icon {
 }
 
 .segment-num {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.5rem;
   font-weight: 900;
   color: #c56718;
@@ -13861,7 +13994,7 @@ html.dark .bullet-icon {
 }
 
 .segment-title-wrap h2 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.45rem;
   font-weight: 800;
   margin: 0.2rem 0 0;
@@ -13950,7 +14083,7 @@ html.dark .bullet-icon {
 }
 
 .segment-products-column h3 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 0.9rem;
   font-weight: 800;
   color: #102a40;
@@ -14013,7 +14146,7 @@ html.dark .bullet-icon {
 }
 
 .vision-card h2 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(1.8rem, 3.5vw, 2.6rem);
   font-weight: 800;
   margin: 0.5rem 0 1.2rem;
@@ -14040,7 +14173,7 @@ html.dark .bullet-icon {
 
 .vision-brand-quote strong {
   display: block;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.15rem;
   color: #fff;
 }
@@ -14119,14 +14252,14 @@ html.dark .bullet-icon {
 }
 
 .home-seg-num {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 0.85rem;
   font-weight: 900;
   color: #c56718;
 }
 
 .home-segment-card h3 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1rem;
   font-weight: 800;
   color: #102a40;
@@ -14342,7 +14475,7 @@ html.dark .home-seg-collab-btn {
 }
 
 .tiles-heading {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 2.75rem;
   font-weight: 800;
   line-height: 1.15;
@@ -14398,7 +14531,7 @@ html:not(.dark) .tile-stat-chip {
 }
 
 .tile-stat-chip strong {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.35rem;
   font-weight: 800;
   color: #f2b84b;
@@ -14837,7 +14970,7 @@ html:not(.dark) .state-dot {
 }
 
 .tile-title {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.28rem;
   font-weight: 800;
   color: #ffffff;
@@ -14996,7 +15129,7 @@ html:not(.dark) .tiles-empty-state {
 }
 
 .tiles-empty-state h4 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 1.15rem;
   font-weight: 800;
   color: #ffffff;
@@ -15093,7 +15226,7 @@ html:not(.dark) .home-landmarks-section {
 }
 
 .home-landmarks-title {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 2.2rem;
   font-weight: 800;
   line-height: 1.18;
@@ -15134,7 +15267,7 @@ html:not(.dark) .home-landmarks-desc {
   gap: 0.5rem;
   background: #f2b84b;
   color: #061828;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   font-size: 0.88rem;
   font-weight: 800;
   padding: 0.75rem 1.4rem;

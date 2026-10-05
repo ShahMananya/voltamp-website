@@ -261,7 +261,7 @@ export default function CollaboratePage() {
       )}`;
 
   return (
-    <div className="volamp-marketplace min-h-screen bg-[#faf7f3] text-[#3d2b2d] font-['Inter',sans-serif] flex flex-col">
+    <div className="volamp-marketplace min-h-screen bg-[#faf7f3] text-[#3d2b2d] font-['Plus_Jakarta_Sans',sans-serif] flex flex-col">
       {/* Universal Header (Matching Home Page Warm Cream Theme) */}
       <UniversalHeader currentPage="collaborate" />
 
@@ -288,7 +288,7 @@ export default function CollaboratePage() {
               </div>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#4d1217] font-['Space_Grotesk'] leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
               Collaborate With <span className="text-[#c56718]">VOLAMP</span>
             </h1>
 
@@ -321,7 +321,7 @@ export default function CollaboratePage() {
               <div className="size-10 rounded-xl bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2] flex items-center justify-center mb-3">
                 <Building2 className="size-5" />
               </div>
-              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Space_Grotesk']">
+              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Plus_Jakarta_Sans',sans-serif]">
                 Distribution & Dealership
               </h3>
               <p className="text-xs text-[#5d4a4b] leading-relaxed">
@@ -333,7 +333,7 @@ export default function CollaboratePage() {
               <div className="size-10 rounded-xl bg-[#f7ede6] text-[#4d1217] border border-[#ebd4c2] flex items-center justify-center mb-3">
                 <FileCheck2 className="size-5" />
               </div>
-              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Space_Grotesk']">
+              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Plus_Jakarta_Sans',sans-serif]">
                 EPC & Tender Supply
               </h3>
               <p className="text-xs text-[#5d4a4b] leading-relaxed">
@@ -345,7 +345,7 @@ export default function CollaboratePage() {
               <div className="size-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center mb-3">
                 <Layers className="size-5" />
               </div>
-              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Space_Grotesk']">
+              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Plus_Jakarta_Sans',sans-serif]">
                 OEM & Custom Label
               </h3>
               <p className="text-xs text-[#5d4a4b] leading-relaxed">
@@ -357,7 +357,7 @@ export default function CollaboratePage() {
               <div className="size-10 rounded-xl bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2] flex items-center justify-center mb-3">
                 <Globe2 className="size-5" />
               </div>
-              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Space_Grotesk']">
+              <h3 className="font-bold text-sm text-[#4d1217] mb-1 font-['Plus_Jakarta_Sans',sans-serif]">
                 Global Export Desk
               </h3>
               <p className="text-xs text-[#5d4a4b] leading-relaxed">
@@ -380,7 +380,7 @@ export default function CollaboratePage() {
                 <span className="text-xs uppercase font-extrabold tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                   Application Received
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Space_Grotesk']">
+                <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                   Thank You, {submittedData.contactName}!
                 </h2>
                 <p className="text-sm text-[#5d4a4b] max-w-lg mx-auto">
@@ -445,7 +445,7 @@ export default function CollaboratePage() {
             >
               <div className="border-b border-[#ebd7c7] pb-4 flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Space_Grotesk']">
+                  <h2 className="text-xl sm:text-2xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                     Partnership Discovery Form
                   </h2>
                   <p className="text-xs sm:text-sm text-[#5d4a4b] mt-0.5">
@@ -770,7 +770,7 @@ export default function CollaboratePage() {
               <span className="text-xs font-bold text-[#c56718] uppercase tracking-wider">
                 COMMON QUESTIONS
               </span>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Space_Grotesk']">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
                 Frequently Asked Partnership Questions
               </h2>
             </div>

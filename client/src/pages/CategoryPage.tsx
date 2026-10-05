@@ -515,7 +515,7 @@ export default function CategoryPage() {
             } lg:block lg:col-span-3 bg-white dark:bg-[#111e2e] rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-xs lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-5.5rem)] lg:overflow-y-auto space-y-4`}
           >
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
-              <h2 className="text-base font-bold text-slate-900 dark:text-white font-['Space_Grotesk'] flex items-center gap-2">
+              <h2 className="text-base font-bold text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] flex items-center gap-2">
                 <Filter className="size-4 text-[#1d73b7]" />
                 Filters
               </h2>
@@ -1854,7 +1854,7 @@ export default function CategoryPage() {
                                 </span>
                               </div>
                             )}
-                            <span className="text-sm font-extrabold text-emerald-600 dark:text-emerald-400 block font-['Space_Grotesk']">
+                            <span className="text-sm font-extrabold text-emerald-600 dark:text-emerald-400 block font-['Plus_Jakarta_Sans',sans-serif]">
                               {priceFormatted}{" "}
                               <small className="text-[10px] font-medium text-slate-400 dark:text-slate-500">
                                 (incl GST)
@@ -2081,7 +2081,7 @@ export default function CategoryPage() {
       <section className="bg-white dark:bg-[#111e2e] border-t border-slate-200 dark:border-slate-800 py-6 mt-8">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <strong className="text-sm sm:text-base font-bold text-slate-900 dark:text-white block font-['Space_Grotesk']">
+            <strong className="text-sm sm:text-base font-bold text-slate-900 dark:text-white block font-['Plus_Jakarta_Sans',sans-serif]">
               Supplying a Project or Large Commercial BOQ?
             </strong>
             <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -2154,7 +2154,7 @@ export default function CategoryPage() {
                       {prod.availability || "IN STOCK"}
                     </span>
                   </div>
-                  <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-['Space_Grotesk'] leading-snug">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] leading-snug">
                     {prod.name}
                   </h2>
                   <span className="text-xs text-slate-400 font-mono mt-0.5 block">
@@ -2201,7 +2201,7 @@ export default function CategoryPage() {
                       </div>
                     )}
                     <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-['Space_Grotesk']">
+                      <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-['Plus_Jakarta_Sans',sans-serif]">
                         {priceFormatted}
                       </span>
                       <span className="text-xs font-semibold text-slate-500">
