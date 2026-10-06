@@ -32,9 +32,9 @@ import {
 import { trpc } from "@/lib/trpc";
 import { STATIC_FOOTPRINT_STATES, STATIC_FOOTPRINT_PROJECTS } from "@/data/footprintData";
 
-// Lazy-load Globe component so Three.js is not loaded into memory unless WebGL is confirmed available
-const LazyGlobe = React.lazy(() => import("react-globe.gl"));
-import Universal3DGlobeCanvas from "./Universal3DGlobeCanvas";
+import Universal3DGlobeCanvas, { Universal3DGlobeHandle } from "./Universal3DGlobeCanvas";
+import SatelliteFootprintMap, { SatelliteMapHandle } from "./SatelliteFootprintMap";
+import SiteInspectionInspector from "./SiteInspectionInspector";
 // @ts-ignore
 import * as THREE from "three";
 if (typeof window !== "undefined") {
@@ -247,8 +247,8 @@ function buildDynamicCinematicJourney(
     eyebrow: "STAGE 1 · ORBITAL 3D EARTH",
     narrative:
       "Originating in Ahmedabad, Volamp operates an integrated global and domestic delivery corridor spanning 28 Indian States and export gateways across the GCC, Africa, and Southeast Asia.",
-    coords: { lat: 20.5, lng: 45.0, altitude: 2.5 },
-    flyDurationMs: 1600,
+    coords: { lat: 20.5, lng: 50.0, altitude: 2.3 },
+    flyDurationMs: 1800,
     dwellMs: 5000,
     autoRotate: true,
     autoRotateSpeed: 0.35,
@@ -262,7 +262,7 @@ function buildDynamicCinematicJourney(
     eyebrow: "STAGE 2 · CONTINENTAL APPROACH",
     narrative:
       "Camera descends across the Indian Ocean basin into South Asia, centering on India's strategic manufacturing clusters and industrial energy corridors.",
-    coords: { lat: 21.0, lng: 69.5, altitude: 1.85 },
+    coords: { lat: 21.0, lng: 70.0, altitude: 1.7 },
     flyDurationMs: 2800,
     dwellMs: 3600,
     autoRotate: false,
@@ -276,7 +276,7 @@ function buildDynamicCinematicJourney(
     eyebrow: "STAGE 3 · SOVEREIGN 3D TERRITORY",
     narrative:
       "Activating official Survey of India boundary representation with 256+ completed installations, 46+ verified landmark facilities, and critical utility interconnections.",
-    coords: { lat: 22.0, lng: 78.5, altitude: 1.18 },
+    coords: { lat: 22.0, lng: 78.5, altitude: 1.35 },
     flyDurationMs: 3000,
     dwellMs: 4000,
     autoRotate: false,
@@ -317,7 +317,7 @@ function buildDynamicCinematicJourney(
       title: `${st.name} · ${officialCount} Completed Projects`,
       eyebrow: `STATE OVERVIEW · ${st.territory.toUpperCase()}`,
       narrative: st.heritage || `Volamp delivers safety-certified HT and LT cabling networks across ${st.name}.`,
-      coords: { lat: Number(st.lat), lng: Number(st.lng), altitude: 0.62 },
+      coords: { lat: Number(st.lat), lng: Number(st.lng), altitude: 0.52 },
       flyDurationMs: 2400,
       dwellMs: 4800,
       stateCode: st.code,
@@ -342,14 +342,14 @@ function buildDynamicCinematicJourney(
         const cityLat = Number(firstProj.lat);
         const cityLng = Number(firstProj.lng);
 
-        // City Transit Waypoint (Altitude 0.36)
+        // City Transit Waypoint (Altitude 0.28 - Deep Zoom Into Metro Grid)
         waypoints.push({
           id: `city_${st.code}_${cityName}`,
           type: "city",
           title: `${cityName} · Infrastructure Corridor`,
           eyebrow: `CITY TRANSIT · ${st.name.toUpperCase()}`,
           narrative: `Approaching ${cityName}, a vital installation hub in ${st.name} powering ${cityProjects.length} major facility network(s).`,
-          coords: { lat: cityLat, lng: cityLng, altitude: 0.36 },
+          coords: { lat: cityLat, lng: cityLng, altitude: 0.28 },
           flyDurationMs: 2200,
           dwellMs: 3600,
           stateCode: st.code,
@@ -359,7 +359,7 @@ function buildDynamicCinematicJourney(
           autoRotate: false,
         });
 
-        // Project Spotlight Waypoints (Altitude 0.24) (Requirement 8 & 15)
+        // Project Spotlight Waypoints (Altitude 0.16 - Deep Landmark Zoom Right to Pin)
         for (const proj of cityProjects) {
           const isMajor =
             proj.category.toLowerCase().includes("landmark") ||
@@ -377,7 +377,7 @@ function buildDynamicCinematicJourney(
             title: proj.name,
             eyebrow: `PROJECT SPOTLIGHT · ${proj.category.toUpperCase()} (${proj.year})`,
             narrative: proj.shortDescription || proj.overview,
-            coords: { lat: Number(proj.lat), lng: Number(proj.lng), altitude: 0.24 },
+            coords: { lat: Number(proj.lat), lng: Number(proj.lng), altitude: 0.16 },
             flyDurationMs: 2000,
             dwellMs: isMajor ? 6500 : 4500, // Longer dwell for major projects (Requirement 15)
             stateCode: st.code,
@@ -412,11 +412,15 @@ function buildDynamicCinematicJourney(
 }
 
 export default function GlobeProjectsExperience() {
-  const globeRef = useRef<any>(null);
+  const globeRef = useRef<Universal3DGlobeHandle | null>(null);
+  const satelliteRef = useRef<SatelliteMapHandle | null>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const tourTimerRef = useRef<NodeJS.Timeout | null>(null);
   const idleResumeTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isInteractingRef = useRef<boolean>(false);
+
+  // View Mode: High-Resolution Real Satellite HD Map (default) vs 3D Orbital Earth
+  const [viewMode, setViewMode] = useState<"satellite" | "globe3d">("satellite");
 
   // tRPC Queries (Requirement 16 & 17: Fully decoupled, zero hardcoding)
   const { data: dbStates } = trpc.footprint.states.useQuery();
@@ -431,12 +435,14 @@ export default function GlobeProjectsExperience() {
 
   // Playback & Storyteller State
   const [currentWaypointIndex, setCurrentWaypointIndex] = useState<number>(0);
+  const [customActiveProject, setCustomActiveProject] = useState<FootprintProject | null>(null);
   const [isAutoTourActive, setIsAutoTourActive] = useState<boolean>(true);
   const [isUserInteracting, setIsUserInteracting] = useState<boolean>(false);
   const [isDossierVisible, setIsDossierVisible] = useState<boolean>(true);
 
   // Modal State
   const [selectedProject, setSelectedProject] = useState<FootprintProject | null>(null);
+  const [inspectorProject, setInspectorProject] = useState<FootprintProject | null>(null);
   const [isArModalOpen, setIsArModalOpen] = useState<boolean>(false);
   const [isVrModalOpen, setIsVrModalOpen] = useState<boolean>(false);
   const [isTableModalOpen, setIsTableModalOpen] = useState<boolean>(false);
@@ -494,7 +500,32 @@ export default function GlobeProjectsExperience() {
     return buildDynamicCinematicJourney(states, allProjectsList);
   }, [states, allProjectsList]);
 
-  const activeWaypoint = waypoints[currentWaypointIndex] ?? waypoints[0];
+  // Dynamic activeWaypoint: seamlessly spotlights custom chosen project or current story step
+  const activeWaypoint: CinematicWaypoint = useMemo(() => {
+    if (customActiveProject) {
+      const pLat = Number(customActiveProject.lat);
+      const pLng = Number(customActiveProject.lng);
+      const st = states.find((s) => s.code.toUpperCase() === customActiveProject.stateCode.toUpperCase());
+      return {
+        id: `project_${customActiveProject.id}`,
+        type: "project",
+        title: customActiveProject.name,
+        eyebrow: `PROJECT SPOTLIGHT · ${customActiveProject.category.toUpperCase()} (${customActiveProject.year})`,
+        narrative: customActiveProject.overview || customActiveProject.shortDescription,
+        coords: { lat: pLat, lng: pLng, altitude: 0.16 },
+        flyDurationMs: 2200,
+        dwellMs: 7000,
+        stateCode: customActiveProject.stateCode,
+        stateName: st?.name || customActiveProject.stateCode,
+        city: customActiveProject.city,
+        project: customActiveProject,
+        heritage: customActiveProject.heritage || st?.heritage,
+        priority: 5,
+        autoRotate: false,
+      };
+    }
+    return waypoints[currentWaypointIndex] ?? waypoints[0];
+  }, [customActiveProject, waypoints, currentWaypointIndex, states]);
 
   // Active state data based on waypoint
   const activeState = useMemo(() => {
@@ -511,6 +542,37 @@ export default function GlobeProjectsExperience() {
       (p) => p.stateCode.toUpperCase() === activeWaypoint.stateCode!.toUpperCase()
     );
   }, [allProjectsList, activeWaypoint]);
+
+  // Priority landmark projects when at National / World view
+  const nationalIconicProjects = useMemo(() => {
+    const priorityIds = [2, 3, 19, 4, 22, 5, 6, 20, 21, 1, 7, 8];
+    return priorityIds
+      .map((id) => allProjectsList.find((p) => p.id === id))
+      .filter(Boolean) as FootprintProject[];
+  }, [allProjectsList]);
+
+  // Projects to display in the Landmark Projects Showcase
+  const showcaseProjects = useMemo(() => {
+    if (activeWaypoint?.stateCode && activeStateProjects.length > 0) {
+      return activeStateProjects;
+    }
+    return nationalIconicProjects;
+  }, [activeWaypoint, activeStateProjects, nationalIconicProjects]);
+
+  // Master list of all verified location projects for location-by-location navigation
+  const allLocationProjects = useMemo(() => {
+    return allProjectsList.filter(
+      (p) => !isNaN(Number(p.lat)) && !isNaN(Number(p.lng))
+    );
+  }, [allProjectsList]);
+
+  // Current active location index
+  const activeLocationIndex = useMemo(() => {
+    const activeId = activeWaypoint.project?.id;
+    if (!activeId) return 0;
+    const idx = allLocationProjects.findIndex((p) => p.id === activeId);
+    return idx !== -1 ? idx : 0;
+  }, [activeWaypoint, allLocationProjects]);
 
   // Load official Survey of India administrative boundary GeoJSON (Requirement 19)
   useEffect(() => {
@@ -552,23 +614,32 @@ export default function GlobeProjectsExperience() {
   // Smooth Camera Navigation Function (Requirement 2 & 11)
   const navigateGlobe = useCallback(
     (coords: { lat: number; lng: number; altitude: number }, durationMs: number = 2200) => {
-      if (!globeRef.current) return;
-      try {
-        const controls = globeRef.current.controls?.();
-        if (controls) {
-          // Disable auto-rotate during flight
-          controls.autoRotate = false;
+      // 1. If Satellite Map is active, smoothly fly down to exact real-world terrain
+      if (satelliteRef.current) {
+        const zoom =
+          coords.altitude <= 0.25 ? 15 : coords.altitude <= 0.7 ? 10 : coords.altitude <= 1.2 ? 7 : 5;
+        satelliteRef.current.flyToLocation(coords.lat, coords.lng, zoom, durationMs / 1000);
+      }
+
+      // 2. Also synchronize 3D globe if instantiated
+      if (globeRef.current) {
+        try {
+          const controls = globeRef.current.controls?.();
+          if (controls) {
+            // Disable auto-rotate during flight
+            controls.autoRotate = false;
+          }
+          globeRef.current.pointOfView(
+            {
+              lat: coords.lat,
+              lng: coords.lng,
+              altitude: coords.altitude,
+            },
+            durationMs
+          );
+        } catch (e) {
+          console.warn("[Globe] pointOfView navigation error:", e);
         }
-        globeRef.current.pointOfView(
-          {
-            lat: coords.lat,
-            lng: coords.lng,
-            altitude: coords.altitude,
-          },
-          durationMs
-        );
-      } catch (e) {
-        console.warn("[Globe] pointOfView navigation error:", e);
       }
     },
     []
@@ -578,6 +649,7 @@ export default function GlobeProjectsExperience() {
   const executeWaypoint = useCallback(
     (index: number) => {
       if (index < 0 || index >= waypoints.length) return;
+      setCustomActiveProject(null);
       const target = waypoints[index];
       setCurrentWaypointIndex(index);
 
@@ -709,6 +781,54 @@ export default function GlobeProjectsExperience() {
     [waypoints, states, handleUserInteractionStart, executeWaypoint, navigateGlobe]
   );
 
+  // Directly focus a project on the satellite map & 3D globe and deeply zoom right into the location
+  const focusProject = useCallback(
+    (proj: FootprintProject) => {
+      handleUserInteractionStart();
+      setCustomActiveProject(proj);
+      const pLat = Number(proj.lat);
+      const pLng = Number(proj.lng);
+      if (satelliteRef.current) {
+        satelliteRef.current.flyToLocation(pLat, pLng, 15, 2.2);
+      }
+      navigateGlobe(
+        { lat: pLat, lng: pLng, altitude: 0.16 },
+        2200
+      );
+      const wpIdx = waypoints.findIndex(
+        (w) => w.type === "project" && w.project?.id === proj.id
+      );
+      if (wpIdx !== -1) {
+        setCurrentWaypointIndex(wpIdx);
+      }
+    },
+    [handleUserInteractionStart, navigateGlobe, waypoints]
+  );
+
+  // Navigate directly to Next Location with deep zoom
+  const handleNextLocation = useCallback(() => {
+    handleUserInteractionStart();
+    const activeId = activeWaypoint.project?.id;
+    const curIdx = allLocationProjects.findIndex((p) => p.id === activeId);
+    const nextIdx = (curIdx + 1) % allLocationProjects.length;
+    const nextProj = allLocationProjects[nextIdx];
+    if (nextProj) {
+      focusProject(nextProj);
+    }
+  }, [activeWaypoint, allLocationProjects, handleUserInteractionStart, focusProject]);
+
+  // Navigate directly to Previous Location with deep zoom
+  const handlePrevLocation = useCallback(() => {
+    handleUserInteractionStart();
+    const activeId = activeWaypoint.project?.id;
+    const curIdx = allLocationProjects.findIndex((p) => p.id === activeId);
+    const prevIdx = (curIdx - 1 + allLocationProjects.length) % allLocationProjects.length;
+    const prevProj = allLocationProjects[prevIdx];
+    if (prevProj) {
+      focusProject(prevProj);
+    }
+  }, [activeWaypoint, allLocationProjects, handleUserInteractionStart, focusProject]);
+
   // 3D Point Markers Layer (Projects + State Hubs + Global Export Gateways)
   const globePoints = useMemo(() => {
     const pts: any[] = [];
@@ -786,7 +906,8 @@ export default function GlobeProjectsExperience() {
   }, [currentWaypointIndex, waypoints.length]);
 
   return (
-    <div className={`footprint-theater-stage ${isImmersive ? "is-immersive" : ""}`}>
+    <div className="footprint-experience-wrapper w-full">
+      <div className={`footprint-theater-stage ${isImmersive ? "is-immersive" : ""}`}>
       {/* 1. Main 3D Canvas Viewport (100% full bleed, Map-first) */}
       <div
         ref={viewportRef}
@@ -820,8 +941,21 @@ export default function GlobeProjectsExperience() {
           handleUserInteractionStart();
         }}
       >
-        {useUniversalEngine ? (
+        {viewMode === "satellite" ? (
+          <SatelliteFootprintMap
+            ref={satelliteRef}
+            activeWaypoint={activeWaypoint}
+            states={states}
+            allProjects={allProjectsList}
+            isUserInteracting={isUserInteracting}
+            onUserInteractionStart={handleUserInteractionStart}
+            onSelectProject={(proj) => focusProject(proj)}
+            onSelectState={(code) => jumpToState(code)}
+            onMapReady={() => setIsGlobeCanvasReady(true)}
+          />
+        ) : (
           <Universal3DGlobeCanvas
+            ref={globeRef}
             activeWaypoint={activeWaypoint}
             states={states}
             allProjects={allProjectsList}
@@ -830,177 +964,10 @@ export default function GlobeProjectsExperience() {
             globalExportPoints={GLOBAL_EXPORT_POINTS}
             isUserInteracting={isUserInteracting}
             onUserInteractionStart={handleUserInteractionStart}
-            onSelectProject={(proj) => setSelectedProject(proj)}
+            onSelectProject={(proj) => focusProject(proj)}
             onSelectState={(code) => jumpToState(code)}
+            onGlobeReady={() => setIsGlobeCanvasReady(true)}
           />
-        ) : (
-          <WebGLErrorBoundary
-            resetKey={retryKey}
-            onError={() => setUseUniversalEngine(true)}
-            fallback={
-              <Universal3DGlobeCanvas
-                activeWaypoint={activeWaypoint}
-                states={states}
-                allProjects={allProjectsList}
-                indiaFeatures={indiaFeatures}
-                exportArcs={SUPPLY_ARCS}
-                globalExportPoints={GLOBAL_EXPORT_POINTS}
-                isUserInteracting={isUserInteracting}
-                onUserInteractionStart={handleUserInteractionStart}
-                onSelectProject={(proj) => setSelectedProject(proj)}
-                onSelectState={(code) => jumpToState(code)}
-              />
-            }
-          >
-            <Suspense
-              fallback={
-                <div className="cinematic-loading-overlay">
-                  <div className="loading-spinner" />
-                  <span>Initializing 3D Global Earth & Sovereign Indian Map...</span>
-                </div>
-              }
-            >
-              <LazyGlobe
-                ref={globeRef}
-                width={globeSize.width}
-                height={globeSize.height}
-                backgroundColor="rgba(0,0,0,0)"
-                globeImageUrl="/manus-storage/earth-blue-marble_cb903e9b.jpg"
-                bumpImageUrl="/manus-storage/earth-topology_640fce13.png"
-                atmosphereColor="#38bdf8"
-                atmosphereAltitude={0.25}
-                animateIn={false}
-                waitForGlobeReady={true}
-                onGlobeReady={() => {
-                  try {
-                    const controls = globeRef.current?.controls?.();
-                    if (controls) {
-                      controls.enableDamping = true;
-                      controls.dampingFactor = 0.05;
-                      controls.autoRotate = false;
-                      controls.enableZoom = true;
-                    }
-                  } catch (e) {
-                    console.warn("[Globe] onGlobeReady error:", e);
-                  }
-                  setIsGlobeCanvasReady(true);
-                }}
-                // Survey of India Official Boundaries 3D Extrusion (Requirement 19)
-                polygonsData={indiaFeatures}
-                polygonGeoJsonGeometry="geometry"
-                polygonCapColor={(feature: any) => {
-                  const name = feature?.properties?.NAME_1 || feature?.properties?.STATE || "";
-                  const code = feature?.properties?.code || "";
-                  const isMatch =
-                    (code && activeWaypoint?.stateCode && code.toUpperCase() === activeWaypoint.stateCode.toUpperCase()) ||
-                    (activeState && name.toLowerCase() === activeState.name.toLowerCase());
-
-                  if (isMatch) {
-                    return "#f2b84be6"; // Illuminated Sovereign Amber
-                  }
-                  if (hoveredStateName && name.toLowerCase() === hoveredStateName.toLowerCase()) {
-                    return "#38bdf8d0"; // Hovered Cyan
-                  }
-                  return "#09274266"; // Deep Space Translucent Blue
-                }}
-                polygonSideColor={() => "#041424"}
-                polygonStrokeColor={(feature: any) => {
-                  const name = feature?.properties?.NAME_1 || feature?.properties?.STATE || "";
-                  const code = feature?.properties?.code || "";
-                  const isMatch =
-                    (code && activeWaypoint?.stateCode && code.toUpperCase() === activeWaypoint.stateCode.toUpperCase()) ||
-                    (activeState && name.toLowerCase() === activeState.name.toLowerCase());
-                  return isMatch ? "#f2b84b" : "#38bdf888";
-                }}
-                polygonAltitude={(feature: any) => {
-                  const name = feature?.properties?.NAME_1 || feature?.properties?.STATE || "";
-                  const code = feature?.properties?.code || "";
-                  const isMatch =
-                    (code && activeWaypoint?.stateCode && code.toUpperCase() === activeWaypoint.stateCode.toUpperCase()) ||
-                    (activeState && name.toLowerCase() === activeState.name.toLowerCase());
-                  if (isMatch) return 0.088;
-                  if (hoveredStateName && name.toLowerCase() === hoveredStateName.toLowerCase()) return 0.055;
-                  return 0.015;
-                }}
-                polygonLabel={(feature: any) => {
-                  const name = feature?.properties?.NAME_1 || feature?.properties?.STATE || "State";
-                  const code = feature?.properties?.code || "";
-                  const official = OFFICIAL_STATE_COUNTS[code] ?? "";
-                  return `<div class="globe-tooltip"><strong>${name}</strong>${
-                    official ? `<br/><span>Verified Projects: <strong>${official}</strong></span>` : ""
-                  }<br/><span>Click to inspect regional installations</span></div>`;
-                }}
-                onPolygonHover={(feature: any) => {
-                  setHoveredStateName(
-                    feature ? feature?.properties?.NAME_1 || feature?.properties?.STATE || null : null
-                  );
-                }}
-                onPolygonClick={(feature: any) => {
-                  handleUserInteractionStart();
-                  const code = feature?.properties?.code || "";
-                  const name = feature?.properties?.NAME_1 || feature?.properties?.STATE || "";
-                  const matched = states.find(
-                    (s) =>
-                      (code && s.code.toUpperCase() === code.toUpperCase()) ||
-                      s.name.toLowerCase() === name.toLowerCase()
-                  );
-                  if (matched) {
-                    jumpToState(matched.code);
-                  }
-                }}
-                // Ripple Rings Layer
-                ringsData={rippleRings}
-                ringLat="lat"
-                ringLng="lng"
-                ringColor="color"
-                ringMaxRadius="maxR"
-                ringPropagationSpeed="propagationSpeed"
-                ringRepeatPeriod="repeatPeriod"
-                // 3D Points Data Layer (Projects + Hubs)
-                pointsData={globePoints}
-                pointLat="lat"
-                pointLng="lng"
-                pointColor="color"
-                pointAltitude="altitude"
-                pointRadius="size"
-                pointLabel={(p: any) => {
-                  if (p.isProjectMarker) {
-                    const proj: FootprintProject = p.projectData;
-                    return `<div class="globe-tooltip"><strong>⚡ ${proj.name}</strong><br/><span>${proj.city} · ${proj.year}</span><br/><span style='color:#38bdf8;'>${proj.category}</span><br/><em>Click to inspect engineering specifications</em></div>`;
-                  }
-                  if (p.isGlobal) {
-                    return `<div class="globe-tooltip"><strong>🌍 ${p.name}</strong><br/><span>${p.territory}</span><br/><span style='color:#34d399;'>Verified International Export Corridor</span></div>`;
-                  }
-                  const official =
-                    OFFICIAL_STATE_COUNTS[p.code] ?? (p.code === "GJ" ? "100+" : p.code === "RJ" ? "50+" : p.projectsCompleted);
-                  return `<div class="globe-tooltip"><strong>${p.name}</strong><br/><span>${p.territory}</span><br/>Projects: <strong>${official}</strong></div>`;
-                }}
-                onPointClick={(p: any) => {
-                  handleUserInteractionStart();
-                  if (p.isProjectMarker) {
-                    setSelectedProject(p.projectData);
-                  } else if (p.isGlobal) {
-                    navigateGlobe({ lat: p.lat, lng: p.lng, altitude: 1.25 }, 1200);
-                  } else if (p.code) {
-                    jumpToState(p.code);
-                  }
-                }}
-                // Animated Global & Domestic Supply Arcs (Requirement 1 & 8)
-                arcsData={SUPPLY_ARCS}
-                arcStartLat="startLat"
-                arcStartLng="startLng"
-                arcEndLat="endLat"
-                arcEndLng="endLng"
-                arcColor="color"
-                arcAltitude={0.16}
-                arcStroke={0.7}
-                arcDashLength={0.4}
-                arcDashGap={0.2}
-                arcDashAnimateTime={2000}
-                enablePointerInteraction
-              />
-            </Suspense>
-          </WebGLErrorBoundary>
         )}
       </div>
 
@@ -1051,8 +1018,114 @@ export default function GlobeProjectsExperience() {
         </div>
       </div>
 
+      {/* 2.5 Interactive Location Navigator Bar (Fly & Deep-Zoom into Each Location) */}
+      <div className="cinematic-location-navigator">
+        <div className="location-nav-stepper">
+          <button
+            className="loc-nav-arrow-btn"
+            onClick={handlePrevLocation}
+            title="Fly & Zoom to Previous Location"
+          >
+            <ChevronLeft className="size-4" />
+            <span className="hidden sm:inline">Prev</span>
+          </button>
+
+          <div className="loc-selector-wrap">
+            <div className="loc-header-badge">
+              <MapPin className="size-3 text-amber-400 animate-pulse" />
+              <span>LOCATION {activeLocationIndex + 1} OF {allLocationProjects.length}</span>
+              <span className="hidden md:inline text-sky-400 font-mono text-[10px]">· DEEP 3D ZOOM</span>
+            </div>
+            <select
+              value={activeWaypoint.project?.id || allLocationProjects[0]?.id}
+              onChange={(e) => {
+                const proj = allLocationProjects.find((p) => p.id === Number(e.target.value));
+                if (proj) focusProject(proj);
+              }}
+              className="loc-dropdown-select"
+            >
+              {allLocationProjects.map((p, idx) => (
+                <option key={p.id} value={p.id}>
+                  {idx + 1}. {p.name} ({p.city}, {p.stateCode})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            className="loc-nav-arrow-btn"
+            onClick={handleNextLocation}
+            title="Fly & Zoom to Next Location"
+          >
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="size-4" />
+          </button>
+        </div>
+
+        {/* Quick Zoom Actions */}
+        <div className="loc-nav-actions">
+          <button
+            className="loc-action-pill is-zoom"
+            onClick={() => {
+              if (activeWaypoint.coords) {
+                if (satelliteRef.current) {
+                  satelliteRef.current.flyToLocation(activeWaypoint.coords.lat, activeWaypoint.coords.lng, 17, 1.8);
+                }
+                navigateGlobe({ ...activeWaypoint.coords, altitude: 0.12 }, 1600);
+              }
+            }}
+            title="Zoom deeply into landmark facility (17x HD Satellite)"
+          >
+            <Maximize2 className="size-3 text-amber-400" />
+            <span>Facility Zoom (17x)</span>
+          </button>
+
+          <button
+            className="loc-action-pill is-reset"
+            onClick={() => {
+              if (satelliteRef.current) {
+                satelliteRef.current.resetToIndia();
+              }
+              navigateGlobe({ lat: 21.0, lng: 75.0, altitude: 1.4 }, 2000);
+            }}
+            title="Reset to All-India sovereign view"
+          >
+            <Globe2 className="size-3 text-sky-400" />
+            <span>India View</span>
+          </button>
+        </div>
+      </div>
+
       {/* 3. Top-Right Minimal Actions Bar (Requirement 12 & 13) */}
       <div className="cinematic-top-actions">
+        {/* Real-World Satellite vs 3D Orbital Earth Toggle */}
+        <div className="flex items-center bg-slate-950/90 backdrop-blur-md border border-slate-700/80 rounded-xl p-0.5 shadow-lg">
+          <button
+            onClick={() => setViewMode("satellite")}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+              viewMode === "satellite"
+                ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black shadow-md"
+                : "text-slate-300 hover:text-white"
+            }`}
+            title="Switch to Real-World High-Resolution Satellite Map"
+          >
+            <Sparkles className="size-3.5" />
+            <span>Satellite HD</span>
+          </button>
+          <button
+            onClick={() => setViewMode("globe3d")}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+              viewMode === "globe3d"
+                ? "bg-gradient-to-r from-sky-500 to-cyan-500 text-slate-950 font-black shadow-md"
+                : "text-slate-300 hover:text-white"
+            }`}
+            title="Switch to 3D Orbital Earth View"
+          >
+            <Globe2 className="size-3.5" />
+            <span>3D Earth</span>
+          </button>
+        </div>
+
         {/* Play/Pause Journey */}
         {isAutoTourActive && !isUserInteracting ? (
           <button className="cinematic-glass-btn" onClick={handlePauseTour} title="Pause automated journey">
@@ -1117,17 +1190,35 @@ export default function GlobeProjectsExperience() {
         </button>
       </div>
 
-      {/* 4. Floating Contextual Dossier (Top-Right, Collapsible) (Requirement 7, 8, 9) */}
+      {/* 4. Floating Contextual Dossier (Top-Right, Collapsible / Bottom Sheet on Mobile) (Requirement 7, 8, 9) */}
       {isDossierVisible && (
         <aside className="cinematic-floating-dossier" aria-label="Geographic & Project Story Context">
+          {/* Mobile Sheet Drag Indicator Handle */}
+          <div
+            className="w-12 h-1 rounded-full bg-slate-500/70 mx-auto -mt-1 mb-2.5 sm:hidden self-center cursor-pointer"
+            onClick={() => setIsDossierVisible(false)}
+            title="Tap to minimize"
+          />
+
           <div className="dossier-header">
             <div>
               <span className="dossier-eyebrow">{activeWaypoint.eyebrow}</span>
               <h3 className="dossier-title">{activeWaypoint.title}</h3>
             </div>
-            {activeWaypoint.stateCode && (
-              <span className="dossier-code-badge">{activeWaypoint.stateCode}</span>
-            )}
+            <div className="flex items-center gap-1.5 shrink-0">
+              {activeWaypoint.stateCode && (
+                <span className="dossier-code-badge">{activeWaypoint.stateCode}</span>
+              )}
+              <button
+                type="button"
+                className="p-1.5 rounded-lg bg-slate-800/90 text-slate-300 hover:text-white sm:hidden border border-slate-700/80 transition-colors"
+                onClick={() => setIsDossierVisible(false)}
+                title="Minimize Info Panel"
+                aria-label="Close Dossier"
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
           </div>
 
           <p className="dossier-narrative">{activeWaypoint.narrative}</p>
@@ -1194,6 +1285,61 @@ export default function GlobeProjectsExperience() {
                   </div>
                 </div>
               )}
+
+              {/* Landmark Projects in this State (Direct Click to Inspect) */}
+              {activeStateProjects.length > 0 && (
+                <div className="dossier-state-projects-list mt-3 pt-3 border-t border-cyan-500/20">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-black tracking-wider text-amber-400 uppercase flex items-center gap-1.5">
+                      <Sparkles className="size-3 text-amber-400" />
+                      Landmark Sites in {activeState.name}
+                    </span>
+                    <span className="text-[10px] text-sky-300/80 font-bold bg-sky-950/60 px-1.5 py-0.5 rounded border border-sky-500/30">
+                      {activeStateProjects.length} Verified
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-2 max-h-[220px] overflow-y-auto pr-1">
+                    {activeStateProjects.map((p) => (
+                      <div
+                        key={p.id}
+                        onClick={() => focusProject(p)}
+                        className="group flex items-center gap-2.5 p-2 rounded-lg bg-slate-900/80 hover:bg-slate-800 border border-slate-700/50 hover:border-amber-400/60 transition-all cursor-pointer shadow-sm"
+                      >
+                        <img
+                          src={p.images || "/projects/project-1.jpg"}
+                          alt={p.name}
+                          className="size-10 rounded-md object-cover border border-slate-700/80 shrink-0 group-hover:scale-105 transition-transform"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = "/projects/project-1.jpg";
+                          }}
+                        />
+                        <div className="min-w-0 flex-1 text-left">
+                          <h5 className="text-[12px] font-bold text-slate-200 group-hover:text-amber-400 truncate">
+                            {p.name}
+                          </h5>
+                          <span className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
+                            <MapPin className="size-2.5 text-amber-400" />
+                            {p.city} · {p.year}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setInspectorProject(p);
+                            }}
+                            className="p-1 rounded bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 transition-colors"
+                            title="Inspect in UNESCO 3D View"
+                          >
+                            <Sparkles className="size-3" />
+                          </button>
+                          <ArrowRight className="size-3 text-slate-500 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
 
@@ -1221,6 +1367,23 @@ export default function GlobeProjectsExperience() {
           {/* Context D: Pinpoint Project Spotlight (Requirement 8) */}
           {activeWaypoint.type === "project" && activeWaypoint.project && (
             <div className="dossier-project-spotlight">
+              {activeWaypoint.project.images && (
+                <div className="relative w-full h-36 rounded-lg overflow-hidden border border-slate-700/60 mb-2 bg-slate-950">
+                  <img
+                    src={activeWaypoint.project.images}
+                    alt={activeWaypoint.project.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "/projects/project-1.jpg";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
+                  <span className="absolute bottom-2 left-2 text-[10px] font-bold text-amber-400 bg-slate-950/85 px-2 py-0.5 rounded border border-amber-400/40">
+                    {activeWaypoint.project.category}
+                  </span>
+                </div>
+              )}
+
               <div className="spotlight-top">
                 <span className="spotlight-badge">{activeWaypoint.project.category}</span>
                 <span className="spotlight-year">{activeWaypoint.project.year}</span>
@@ -1250,12 +1413,21 @@ export default function GlobeProjectsExperience() {
                 </div>
               )}
 
-              <button
-                className="spotlight-action-btn"
-                onClick={() => setSelectedProject(activeWaypoint.project!)}
-              >
-                Inspect Engineering Specifications <ArrowRight className="size-3.5" />
-              </button>
+              <div className="flex flex-col gap-2 mt-2">
+                <button
+                  className="spotlight-action-btn flex items-center justify-center gap-1.5"
+                  onClick={() => setInspectorProject(activeWaypoint.project!)}
+                >
+                  <Sparkles className="size-3.5 text-amber-400" />
+                  <span>Dive into Landmark (UNESCO 3D View)</span>
+                </button>
+                <button
+                  className="text-xs text-slate-300 hover:text-amber-400 py-1 text-center transition-colors underline"
+                  onClick={() => setSelectedProject(activeWaypoint.project!)}
+                >
+                  View Technical Datasheet & Specs
+                </button>
+              </div>
             </div>
           )}
 
@@ -1270,6 +1442,18 @@ export default function GlobeProjectsExperience() {
             </button>
           </div>
         </aside>
+      )}
+
+      {/* Mobile Floating Button to Reveal Dossier when Minimized */}
+      {!isDossierVisible && (
+        <button
+          className="fixed sm:hidden bottom-20 right-3 z-30 flex items-center gap-1.5 px-3 py-2 rounded-full bg-slate-950/95 border border-amber-400 text-amber-300 shadow-2xl font-bold text-xs backdrop-blur-md"
+          onClick={() => setIsDossierVisible(true)}
+          title="Open Project Details"
+        >
+          <Sparkles className="size-3.5 text-amber-400 animate-pulse" />
+          <span>Project Info</span>
+        </button>
       )}
 
       {/* 5. User Manual Override Notice Banner (Requirement 14) */}
@@ -1367,6 +1551,19 @@ export default function GlobeProjectsExperience() {
         </div>
       </div>
 
+      {/* UNESCO Real-World 3D Site Inspection Experience */}
+      <SiteInspectionInspector
+        isOpen={Boolean(inspectorProject)}
+        project={inspectorProject}
+        onClose={() => setInspectorProject(null)}
+        onSelectProject={(proj) => setInspectorProject(proj)}
+        allProjects={allProjectsList}
+        onFlyOnGlobe={(proj) => {
+          setInspectorProject(null);
+          focusProject(proj);
+        }}
+      />
+
       {/* Modal A: Major Project Detailed Specification Modal (Requirement 8 & 16) */}
       {selectedProject && (
         <div className="modal-overlay" onClick={() => setSelectedProject(null)}>
@@ -1445,13 +1642,26 @@ export default function GlobeProjectsExperience() {
               </div>
             </div>
 
-            <div className="modal-footer">
-              <button
-                className="modal-secondary-btn"
-                onClick={() => setSelectedProject(null)}
-              >
-                Close
-              </button>
+            <div className="modal-footer flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <button
+                  className="modal-secondary-btn"
+                  onClick={() => setSelectedProject(null)}
+                >
+                  Close
+                </button>
+                <button
+                  className="modal-secondary-btn flex items-center gap-1.5 text-amber-400 border-amber-500/30 hover:bg-amber-500/10"
+                  onClick={() => {
+                    const p = selectedProject;
+                    setSelectedProject(null);
+                    setInspectorProject(p);
+                  }}
+                >
+                  <Sparkles className="size-3.5 text-amber-400" />
+                  <span>Dive into Site (UNESCO 3D View)</span>
+                </button>
+              </div>
               <a
                 className="modal-primary-btn"
                 href={`https://wa.me/919512365582?text=Hi%20Volamp%20team,%20I%20am%20interested%20in%20learning%20more%20about%20your%20project:%20${encodeURIComponent(
@@ -1708,6 +1918,150 @@ export default function GlobeProjectsExperience() {
           </div>
         </div>
       )}
+      </div>
+
+      {/* 8. Interactive Major Landmark Projects Showcase Bar */}
+      <div className="cinematic-showcase-bar">
+        <div className="showcase-header">
+          <div className="showcase-title-group">
+            <span className="showcase-eyebrow">
+              {activeWaypoint.stateCode
+                ? `VERIFIED LANDMARKS IN ${activeState.name.toUpperCase()}`
+                : "NATIONAL ICONIC INFRASTRUCTURE PROJECTS"}
+            </span>
+            <h4 className="showcase-heading">
+              {activeWaypoint.stateCode
+                ? `Major Installations across ${activeState.name} (${showcaseProjects.length} Verified Sites)`
+                : "Iconic Projects Powered by Volamp Across India"}
+            </h4>
+          </div>
+
+          {/* Quick Region Selector Pills */}
+          <div className="showcase-region-pills">
+            <button
+              onClick={() => {
+                handleUserInteractionStart();
+                executeWaypoint(0);
+              }}
+              className={`region-pill ${activeWaypoint.type === "world" || activeWaypoint.type === "india" ? "is-active" : ""}`}
+            >
+              🇮🇳 All-India Overview
+            </button>
+            <button
+              onClick={() => jumpToState("GJ")}
+              className={`region-pill ${activeWaypoint.stateCode === "GJ" ? "is-active" : ""}`}
+            >
+              ⚡ Gujarat (18 Major Sites)
+            </button>
+            <button
+              onClick={() => jumpToState("MH")}
+              className={`region-pill ${activeWaypoint.stateCode === "MH" ? "is-active" : ""}`}
+            >
+              ⚛️ Maharashtra (BARC Nuclear)
+            </button>
+            <button
+              onClick={() => jumpToState("RJ")}
+              className={`region-pill ${activeWaypoint.stateCode === "RJ" ? "is-active" : ""}`}
+            >
+              ☀️ Rajasthan (50+ Solar Sites)
+            </button>
+            <button
+              onClick={() => jumpToState("AP")}
+              className={`region-pill ${activeWaypoint.stateCode === "AP" ? "is-active" : ""}`}
+            >
+              🏍️ Andhra (Hero MotoCorp)
+            </button>
+            <button
+              onClick={() => jumpToState("KA")}
+              className={`region-pill ${activeWaypoint.stateCode === "KA" ? "is-active" : ""}`}
+            >
+              🚀 Karnataka (Aerospace)
+            </button>
+          </div>
+        </div>
+
+        {/* Horizontal Project Cards Carousel */}
+        <div className="showcase-cards-scroll">
+          {showcaseProjects.map((proj) => {
+            const isSelected = activeWaypoint.project?.id === proj.id;
+            return (
+              <div
+                key={proj.id}
+                className={`showcase-card ${isSelected ? "is-selected" : ""}`}
+                onClick={() => focusProject(proj)}
+              >
+                <div className="card-thumb-wrap">
+                  <img
+                    src={proj.images || "/projects/project-1.jpg"}
+                    alt={proj.name}
+                    className="card-thumb-img"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = "/projects/project-1.jpg";
+                    }}
+                  />
+                  <div className="card-overlay" />
+                  <span className="card-badge">{proj.category}</span>
+                  <span className="card-year">{proj.year}</span>
+                </div>
+
+                <div className="card-content">
+                  <div className="card-location">
+                    <MapPin className="size-3 text-amber-400 shrink-0" />
+                    <span>
+                      {proj.city}, {proj.stateCode}
+                    </span>
+                  </div>
+
+                  <h5 className="card-title" title={proj.name}>
+                    {proj.name}
+                  </h5>
+
+                  <p className="card-contribution">
+                    <strong>Volamp Impact:</strong> {proj.volampContribution}
+                  </p>
+
+                  <div className="card-actions">
+                    <button
+                      className="card-btn-globe"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        focusProject(proj);
+                      }}
+                      title="Inspect pin on 3D Globe"
+                    >
+                      <Compass className="size-3 text-amber-400" />
+                      <span>Fly Globe</span>
+                    </button>
+
+                    <button
+                      className="card-btn-inspect-3d"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setInspectorProject(proj);
+                      }}
+                      title="Inspect Site in UNESCO 3D Real-World View"
+                    >
+                      <Sparkles className="size-3 text-amber-400" />
+                      <span>3D View</span>
+                    </button>
+
+                    <button
+                      className="card-btn-specs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedProject(proj);
+                      }}
+                      title="Inspect technical specifications"
+                    >
+                      <span>Specs</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

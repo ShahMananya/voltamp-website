@@ -617,7 +617,7 @@ export const STATIC_FOOTPRINT_PROJECTS: FootprintProject[] = [
     "customerName": "SOU Electrical Division",
     "customerCompany": "Statue of Unity Tourism & Infra",
     "status": "Completed & Energized",
-    "images": "/projects/project-2.jpg",
+    "images": "/projects/statue-of-unity.jpg",
     "createdAt": "2026-09-30T00:00:00.000Z",
     "updatedAt": "2026-09-30T00:00:00.000Z"
   },
@@ -638,7 +638,7 @@ export const STATIC_FOOTPRINT_PROJECTS: FootprintProject[] = [
     "customerName": "GIFT Project Lead",
     "customerCompany": "GIFT City Infrastructure Works",
     "status": "Completed & Operational",
-    "images": "/projects/project-3.jpg",
+    "images": "/projects/gift-tunnel-real.jpg",
     "createdAt": "2026-09-30T00:00:00.000Z",
     "updatedAt": "2026-09-30T00:00:00.000Z"
   },
@@ -701,7 +701,7 @@ export const STATIC_FOOTPRINT_PROJECTS: FootprintProject[] = [
     "customerName": "Solar Park Grid Intertie",
     "customerCompany": "Gujarat Power Corporation Ltd",
     "status": "Completed & Generating",
-    "images": "/projects/project-6.jpg",
+    "images": "/projects/project-6-solar-field.jpg",
     "createdAt": "2026-09-30T00:00:00.000Z",
     "updatedAt": "2026-09-30T00:00:00.000Z"
   },
@@ -995,7 +995,7 @@ export const STATIC_FOOTPRINT_PROJECTS: FootprintProject[] = [
     "customerName": "Scientific Engineering Desk",
     "customerCompany": "BARC Infrastructure Project",
     "status": "Completed & Operational",
-    "images": "/projects/project-20.jpg",
+    "images": "/projects/barc-nuclear-real.jpg",
     "createdAt": "2026-09-30T00:00:00.000Z",
     "updatedAt": "2026-09-30T00:00:00.000Z"
   },
@@ -1058,7 +1058,7 @@ export const STATIC_FOOTPRINT_PROJECTS: FootprintProject[] = [
     "customerName": "Hero Factory Electricals",
     "customerCompany": "Hero MotoCorp Limited",
     "status": "Completed & Energized",
-    "images": "/projects/project-23.jpg",
+    "images": "/projects/hero-motocorp-real.jpg",
     "createdAt": "2026-09-30T00:00:00.000Z",
     "updatedAt": "2026-09-30T00:00:00.000Z"
   },
@@ -1544,5 +1544,27 @@ export const STATIC_FOOTPRINT_PROJECTS: FootprintProject[] = [
     "images": "/projects/project-46.jpg",
     "createdAt": "2026-09-30T00:00:00.000Z",
     "updatedAt": "2026-09-30T00:00:00.000Z"
+  },
+  {
+    "id": 47,
+    "stateCode": "KA",
+    "name": "Bengaluru Aerospace Park & Tech Megacluster Power Corridor",
+    "city": "Devanahalli / Bengaluru",
+    "lat": "13.2000",
+    "lng": "77.7100",
+    "year": "2024",
+    "category": "Aerospace SEZ & Tech Megacluster Infrastructure",
+    "shortDescription": "High-reliability HT & LT power distribution infrastructure for aerospace defense manufacturing and semiconductor precision labs across 15 sites.",
+    "overview": "Supplying continuous mission-critical power to aerospace component testing centers, precision cleanrooms, and tech parks requiring 99.999% grid stability.",
+    "volampContribution": "Supplied 33kV & 11kV crosslinked polyethylene (XLPE) low-smoke halogen-free (LSZH) armored cables, custom harmonic-suppression feeds, and heavy copper earthing grids.",
+    "heritage": "Powering Karnataka's pinnacle aerospace, defense, and high-technology semiconductor corridor.",
+    "customerTestimonial": "Precision cable harmonics and zero downtime during high-sensitivity cleanroom and aerospace component calibration.",
+    "customerName": "Aerospace Electrical Lead",
+    "customerCompany": "Karnataka Industrial Areas Development (KIADB)",
+    "status": "Completed & Operational",
+    "images": "/projects/project-13.jpg",
+    "createdAt": "2026-09-30T00:00:00.000Z",
+    "updatedAt": "2026-09-30T00:00:00.000Z"
   }
 ];
+

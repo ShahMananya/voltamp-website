@@ -70,8 +70,9 @@ async function startServer() {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
-  server.listen(port, () => {
-    console.log(`Server running on http://localhost:${port}/`);
+  server.listen(port, "0.0.0.0", () => {
+    console.log(`Server running on http://localhost:${port}/ and http://0.0.0.0:${port}/`);
+    console.log(`Any device on your WiFi network can access via: http://192.168.1.2:${port}/`);
   });
 }
 

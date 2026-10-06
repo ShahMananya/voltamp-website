@@ -1,6 +1,42 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import { WORLD_CONTINENTS } from "./worldContinentsData";
-import type { CinematicWaypoint, FootprintProject, FootprintState } from "./GlobeProjectsExperience";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+// @ts-ignore
+import * as THREE from "three";
+// @ts-ignore
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import {
+  Compass,
+  Globe2,
+  Maximize2,
+  Minimize2,
+  Minus,
+  Navigation,
+  Plus,
+  RotateCcw,
+  Sparkles,
+  Zap,
+} from "lucide-react";
+import type {
+  CinematicWaypoint,
+  FootprintProject,
+  FootprintState,
+} from "./GlobeProjectsExperience";
+import { OFFICIAL_STATE_COUNTS } from "./GlobeProjectsExperience";
+
+export interface Universal3DGlobeHandle {
+  pointOfView: (
+    coords: { lat: number; lng: number; altitude?: number },
+    durationMs?: number
+  ) => void;
+  controls: () => OrbitControls | null;
+  renderer: () => any;
+}
 
 interface Universal3DGlobeCanvasProps {
   activeWaypoint: CinematicWaypoint;
@@ -27,436 +63,32 @@ interface Universal3DGlobeCanvasProps {
   onUserInteractionStart: () => void;
   onSelectProject: (proj: FootprintProject) => void;
   onSelectState: (code: string) => void;
+  onGlobeReady?: () => void;
 }
 
-// 3D Spherical Orthographic Projection: Projects latitude & longitude onto a 3D rotating globe
-export function projectSpherical(
+// Convert Geographic Latitude & Longitude to 3D Cartesian coordinates
+export function latLngToVector3(
   lat: number,
   lng: number,
-  centerLat: number,
-  centerLng: number,
-  radius: number,
-  canvasW: number,
-  canvasH: number
-): { x: number; y: number; visible: boolean; cosC: number } {
-  const phi = (lat * Math.PI) / 180;
-  const lambda = (lng * Math.PI) / 180;
-  const phi0 = (centerLat * Math.PI) / 180;
-  const lambda0 = (centerLng * Math.PI) / 180;
-
-  const cosC =
-    Math.sin(phi0) * Math.sin(phi) +
-    Math.cos(phi0) * Math.cos(phi) * Math.cos(lambda - lambda0);
-
-  if (cosC < -0.05) {
-    // Backside of the Earth
-    return { x: 0, y: 0, visible: false, cosC };
-  }
-
-  const x = canvasW / 2 + radius * Math.cos(phi) * Math.sin(lambda - lambda0);
-  const y =
-    canvasH / 2 -
-    radius *
-      (Math.cos(phi0) * Math.sin(phi) -
-        Math.sin(phi0) * Math.cos(phi) * Math.cos(lambda - lambda0));
-
-  return { x, y, visible: true, cosC };
+  radius: number
+): THREE.Vector3 {
+  const phi = (90 - lat) * (Math.PI / 180);
+  const theta = (lng + 180) * (Math.PI / 180);
+  const x = -(radius * Math.sin(phi) * Math.cos(theta));
+  const z = radius * Math.sin(phi) * Math.sin(theta);
+  const y = radius * Math.cos(phi);
+  return new THREE.Vector3(x, y, z);
 }
 
-export default function Universal3DGlobeCanvas({
-  activeWaypoint,
-  states,
-  allProjects,
-  indiaFeatures,
-  exportArcs,
-  globalExportPoints,
-  isUserInteracting,
-  onUserInteractionStart,
-  onSelectProject,
-  onSelectState,
-}: Universal3DGlobeCanvasProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+const GLOBE_RADIUS = 100;
+const MIN_CAMERA_DISTANCE = 108; // Close-up zoom right above the ground and landmark pins!
+const MAX_CAMERA_DISTANCE = 480;
 
-  // Camera Physics State (Smoothed Lat, Lng, Radius)
-  const cameraRef = useRef({
-    lat: 20.5,
-    lng: 45.0,
-    radius: 260,
-  });
-
-  const targetCameraRef = useRef({
-    lat: 20.5,
-    lng: 45.0,
-    radius: 260,
-  });
-
-  const isDraggingRef = useRef(false);
-  const lastMousePosRef = useRef({ x: 0, y: 0 });
-  const animFrameIdRef = useRef<number | null>(null);
-  const pulsePhaseRef = useRef(0);
-
-  // Sync target camera when activeWaypoint changes
-  useEffect(() => {
-    if (isUserInteracting) return;
-
-    const baseRadius = 260;
-    let targetR = baseRadius;
-
-    if (activeWaypoint.type === "world") {
-      targetR = baseRadius;
-    } else if (activeWaypoint.type === "asia") {
-      targetR = baseRadius * 1.55;
-    } else if (activeWaypoint.type === "india") {
-      targetR = baseRadius * 2.5;
-    } else if (activeWaypoint.type === "state") {
-      targetR = baseRadius * 4.2;
-    } else if (activeWaypoint.type === "city") {
-      targetR = baseRadius * 7.5;
-    } else if (activeWaypoint.type === "project") {
-      targetR = baseRadius * 11.0;
-    }
-
-    targetCameraRef.current = {
-      lat: activeWaypoint.coords.lat,
-      lng: activeWaypoint.coords.lng,
-      radius: targetR,
-    };
-  }, [activeWaypoint, isUserInteracting]);
-
-  // Main 60 FPS Render Loop
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let isRunning = true;
-
-    // Fixed stars background
-    const stars: Array<{ x: number; y: number; r: number; alpha: number }> = [];
-    for (let i = 0; i < 90; i++) {
-      stars.push({
-        x: Math.random(),
-        y: Math.random(),
-        r: Math.random() * 1.3 + 0.5,
-        alpha: Math.random() * 0.7 + 0.25,
-      });
-    }
-
-    const render = () => {
-      if (!isRunning) return;
-
-      const w = canvas.width;
-      const h = canvas.height;
-      if (w === 0 || h === 0) {
-        animFrameIdRef.current = requestAnimationFrame(render);
-        return;
-      }
-
-      pulsePhaseRef.current = (pulsePhaseRef.current + 0.04) % (Math.PI * 2);
-
-      // Auto-rotation in world mode if not user interacting
-      if (activeWaypoint.type === "world" && !isUserInteracting && !isDraggingRef.current) {
-        targetCameraRef.current.lng = (targetCameraRef.current.lng + 0.12) % 360;
-      }
-
-      // Smooth camera interpolation
-      const cam = cameraRef.current;
-      const target = targetCameraRef.current;
-      const lerpSpeed = isDraggingRef.current ? 0.2 : 0.065;
-
-      cam.lat += (target.lat - cam.lat) * lerpSpeed;
-
-      // Handle longitude wrap-around
-      let dLng = target.lng - cam.lng;
-      while (dLng > 180) dLng -= 360;
-      while (dLng < -180) dLng += 360;
-      cam.lng += dLng * lerpSpeed;
-      cam.radius += (target.radius - cam.radius) * lerpSpeed;
-
-      const cx = w / 2;
-      const cy = h / 2;
-      const R = cam.radius;
-
-      // 1. Deep Space Background
-      ctx.fillStyle = "#030c17";
-      ctx.fillRect(0, 0, w, h);
-
-      // Draw starry universe
-      for (const s of stars) {
-        ctx.fillStyle = `rgba(215, 235, 255, ${s.alpha})`;
-        ctx.beginPath();
-        ctx.arc(s.x * w, s.y * h, s.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // 2. Outer Atmospheric Glow
-      const atmosGrad = ctx.createRadialGradient(cx, cy, R * 0.95, cx, cy, R * 1.2);
-      atmosGrad.addColorStop(0, "rgba(56, 189, 248, 0.35)");
-      atmosGrad.addColorStop(0.5, "rgba(56, 189, 248, 0.12)");
-      atmosGrad.addColorStop(1, "rgba(56, 189, 248, 0)");
-      ctx.fillStyle = atmosGrad;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R * 1.2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 3. Globe Sphere (Clipping Mask)
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.clip();
-
-      // 3A. Ocean Base with 3D Spherical Curvature Lighting
-      const lightX = cx - R * 0.35;
-      const lightY = cy - R * 0.35;
-      const oceanGrad = ctx.createRadialGradient(lightX, lightY, R * 0.1, cx, cy, R);
-      oceanGrad.addColorStop(0, "#0e3a5f"); // Illuminated sunlit ocean
-      oceanGrad.addColorStop(0.65, "#082138");
-      oceanGrad.addColorStop(1, "#030f1c"); // Shadow limb
-      ctx.fillStyle = oceanGrad;
-      ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
-
-      // 3B. World Continents (Rendered on sphere)
-      for (const continent of WORLD_CONTINENTS) {
-        ctx.beginPath();
-        let started = false;
-
-        for (const [lng, lat] of continent.coordinates) {
-          const pt = projectSpherical(lat, lng, cam.lat, cam.lng, R, w, h);
-          if (pt.visible) {
-            if (!started) {
-              ctx.moveTo(pt.x, pt.y);
-              started = true;
-            } else {
-              ctx.lineTo(pt.x, pt.y);
-            }
-          }
-        }
-
-        if (started) {
-          ctx.closePath();
-          ctx.fillStyle = "#0c273e";
-          ctx.fill();
-          ctx.strokeStyle = "#16446a";
-          ctx.lineWidth = 1.0;
-          ctx.stroke();
-        }
-      }
-
-      // 3C. Official Survey of India Sovereign Boundaries
-      if (indiaFeatures && indiaFeatures.length > 0) {
-        for (const feat of indiaFeatures) {
-          const geom = feat.geometry;
-          if (!geom) continue;
-
-          const stateCode = feat.properties?.code || "";
-          const stateName = feat.properties?.NAME_1 || feat.properties?.STATE || "";
-          const isSelected =
-            (stateCode && activeWaypoint.stateCode && stateCode.toUpperCase() === activeWaypoint.stateCode.toUpperCase()) ||
-            (activeWaypoint.stateName && stateName.toLowerCase() === activeWaypoint.stateName.toLowerCase());
-
-          const polygons =
-            geom.type === "Polygon" ? [geom.coordinates] : geom.type === "MultiPolygon" ? geom.coordinates : [];
-
-          for (const poly of polygons) {
-            for (const ring of poly) {
-              ctx.beginPath();
-              let started = false;
-
-              for (const coord of ring) {
-                const lng = coord[0];
-                const lat = coord[1];
-                const pt = projectSpherical(lat, lng, cam.lat, cam.lng, R, w, h);
-                if (pt.visible) {
-                  if (!started) {
-                    ctx.moveTo(pt.x, pt.y);
-                    started = true;
-                  } else {
-                    ctx.lineTo(pt.x, pt.y);
-                  }
-                }
-              }
-
-              if (started) {
-                if (isSelected) {
-                  ctx.fillStyle = "rgba(242, 184, 75, 0.38)";
-                  ctx.fill();
-                  ctx.strokeStyle = "#f2b84b";
-                  ctx.lineWidth = 2.2;
-                  ctx.stroke();
-                } else {
-                  ctx.fillStyle = "rgba(10, 42, 68, 0.4)";
-                  ctx.fill();
-                  ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
-                  ctx.lineWidth = 0.9;
-                  ctx.stroke();
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // 3D Shading Overlay (Simulate 3D planetary limb shadowing)
-      const shadowGrad = ctx.createRadialGradient(lightX, lightY, R * 0.4, cx, cy, R);
-      shadowGrad.addColorStop(0, "rgba(255, 255, 255, 0.08)");
-      shadowGrad.addColorStop(0.7, "rgba(0, 0, 0, 0)");
-      shadowGrad.addColorStop(1, "rgba(0, 5, 12, 0.65)");
-      ctx.fillStyle = shadowGrad;
-      ctx.fillRect(cx - R, cy - R, R * 2, R * 2);
-
-      ctx.restore(); // Restore clipping mask
-
-      // 4. 3D Animated Curved Supply Arcs (Ahmdedabad HQ -> Global & Domestic)
-      const hq = { lat: 23.02, lng: 72.57 };
-      const hqPt = projectSpherical(hq.lat, hq.lng, cam.lat, cam.lng, R, w, h);
-
-      for (const arc of exportArcs) {
-        const destPt = projectSpherical(arc.endLat, arc.endLng, cam.lat, cam.lng, R, w, h);
-
-        if (hqPt.visible && destPt.visible) {
-          const midLat = (hq.lat + arc.endLat) / 2;
-          const midLng = (hq.lng + arc.endLng) / 2;
-          const arcElevation = R * 1.15; // Raised into 3D space
-          const midPt = projectSpherical(midLat, midLng, cam.lat, cam.lng, arcElevation, w, h);
-
-          if (midPt.visible) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(hqPt.x, hqPt.y);
-            ctx.quadraticCurveTo(midPt.x, midPt.y, destPt.x, destPt.y);
-
-            const isGlobalArc = arc.color[1] === "#10b981";
-            ctx.strokeStyle = isGlobalArc ? "rgba(16, 185, 129, 0.75)" : "rgba(242, 184, 75, 0.6)";
-            ctx.lineWidth = 1.6;
-            ctx.setLineDash([4, 6]);
-            ctx.stroke();
-
-            // Animated Energy Pulse along arc
-            const t = ((pulsePhaseRef.current / (Math.PI * 2)) + arc.endLat * 0.1) % 1;
-            const px = (1 - t) * (1 - t) * hqPt.x + 2 * (1 - t) * t * midPt.x + t * t * destPt.x;
-            const py = (1 - t) * (1 - t) * hqPt.y + 2 * (1 - t) * t * midPt.y + t * t * destPt.y;
-
-            ctx.fillStyle = isGlobalArc ? "#34d399" : "#fcd34d";
-            ctx.beginPath();
-            ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-          }
-        }
-      }
-
-      // 5. Global Export Gateways (Dubai, Riyadh, Doha, Singapore, Nairobi, Dar es Salaam)
-      for (const port of globalExportPoints) {
-        const pt = projectSpherical(port.lat, port.lng, cam.lat, cam.lng, R, w, h);
-        if (pt.visible) {
-          ctx.fillStyle = "#10b981";
-          ctx.beginPath();
-          ctx.arc(pt.x, pt.y, 4.5, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.strokeStyle = "#34d399";
-          ctx.lineWidth = 1.5;
-          ctx.stroke();
-
-          // Label
-          if (R < 900) {
-            ctx.fillStyle = "#a7f3d0";
-            ctx.font = "bold 9px system-ui, -apple-system, sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(port.name, pt.x, pt.y - 8);
-          }
-        }
-      }
-
-      // 6. Indian State Hub Beacons
-      for (const st of states) {
-        const pt = projectSpherical(Number(st.lat), Number(st.lng), cam.lat, cam.lng, R, w, h);
-        if (pt.visible) {
-          const isSelected = activeWaypoint.stateCode?.toUpperCase() === st.code.toUpperCase();
-
-          ctx.fillStyle = isSelected ? "#f2b84b" : "#38bdf8";
-          ctx.beginPath();
-          ctx.arc(pt.x, pt.y, isSelected ? 6.5 : 3.5, 0, Math.PI * 2);
-          ctx.fill();
-
-          if (isSelected) {
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 2.0;
-            ctx.stroke();
-
-            // Ripple ring on selected state
-            const ringR = 12 + Math.sin(pulsePhaseRef.current) * 5;
-            ctx.strokeStyle = "rgba(242, 184, 75, 0.7)";
-            ctx.lineWidth = 1.8;
-            ctx.beginPath();
-            ctx.arc(pt.x, pt.y, ringR, 0, Math.PI * 2);
-            ctx.stroke();
-          }
-
-          // State Name Tag if zoomed in
-          if (R >= 800 || isSelected) {
-            ctx.fillStyle = isSelected ? "#fef08a" : "#bae6fd";
-            ctx.font = isSelected ? "bold 11px system-ui, sans-serif" : "9px system-ui, sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(st.name, pt.x, pt.y - (isSelected ? 14 : 7));
-          }
-        }
-      }
-
-      // 7. Verified Landmark Projects Beacons (When Zoomed into State or City)
-      if (R >= 1200) {
-        for (const proj of allProjects) {
-          const pt = projectSpherical(Number(proj.lat), Number(proj.lng), cam.lat, cam.lng, R, w, h);
-          if (pt.visible) {
-            const isActive = activeWaypoint.project?.id === proj.id;
-
-            // Beacon core
-            ctx.fillStyle = isActive ? "#ffffff" : "#f2b84b";
-            ctx.beginPath();
-            ctx.arc(pt.x, pt.y, isActive ? 7.0 : 4.0, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.strokeStyle = isActive ? "#f2b84b" : "#d97706";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Expanding ripple wave on spotlighted project
-            if (isActive) {
-              const waveR1 = 14 + Math.sin(pulsePhaseRef.current) * 6;
-              const waveR2 = 22 + Math.sin(pulsePhaseRef.current + 1) * 7;
-              ctx.strokeStyle = "rgba(242, 184, 75, 0.65)";
-              ctx.lineWidth = 1.6;
-              ctx.beginPath();
-              ctx.arc(pt.x, pt.y, waveR1, 0, Math.PI * 2);
-              ctx.stroke();
-
-              ctx.strokeStyle = "rgba(56, 189, 248, 0.4)";
-              ctx.lineWidth = 1.2;
-              ctx.beginPath();
-              ctx.arc(pt.x, pt.y, waveR2, 0, Math.PI * 2);
-              ctx.stroke();
-            }
-
-            // Project Name Pill
-            ctx.fillStyle = isActive ? "#f2b84b" : "#e2e8f0";
-            ctx.font = isActive ? "bold 12px system-ui, sans-serif" : "10px system-ui, sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(`⚡ ${proj.name}`, pt.x, pt.y - 12);
-          }
-        }
-      }
-
-      animFrameIdRef.current = requestAnimationFrame(render);
-    };
-
-    render();
-
-    return () => {
-      isRunning = false;
-      if (animFrameIdRef.current) cancelAnimationFrame(animFrameIdRef.current);
-    };
-  }, [
+export const Universal3DGlobeCanvas = forwardRef<
+  Universal3DGlobeHandle,
+  Universal3DGlobeCanvasProps
+>(function Universal3DGlobeCanvas(
+  {
     activeWaypoint,
     states,
     allProjects,
@@ -464,128 +96,1047 @@ export default function Universal3DGlobeCanvas({
     exportArcs,
     globalExportPoints,
     isUserInteracting,
-  ]);
+    onUserInteractionStart,
+    onSelectProject,
+    onSelectState,
+    onGlobeReady,
+  },
+  ref
+) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Handle Resize of Canvas
+  // Three.js Core Refs
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const controlsRef = useRef<OrbitControls | null>(null);
+
+  // Dynamic Scene Group Refs
+  const globeMeshRef = useRef<THREE.Mesh | null>(null);
+  const arcsGroupRef = useRef<THREE.Group | null>(null);
+  const pulsesGroupRef = useRef<THREE.Group | null>(null);
+  const markersGroupRef = useRef<THREE.Group | null>(null);
+  const boundariesGroupRef = useRef<THREE.Group | null>(null);
+  const ringsGroupRef = useRef<THREE.Group | null>(null);
+
+  // Interactive Hover & Raycast State
+  const [hoveredInfo, setHoveredInfo] = useState<{
+    title: string;
+    subtitle: string;
+    tag?: string;
+    extra?: string;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  // Camera flight interpolation state
+  const flightRef = useRef<{
+    isFlying: boolean;
+    startTime: number;
+    duration: number;
+    startPos: THREE.Vector3;
+    endPos: THREE.Vector3;
+    startTarget: THREE.Vector3;
+    endTarget: THREE.Vector3;
+  }>({
+    isFlying: false,
+    startTime: 0,
+    duration: 2200,
+    startPos: new THREE.Vector3(),
+    endPos: new THREE.Vector3(),
+    startTarget: new THREE.Vector3(),
+    endTarget: new THREE.Vector3(),
+  });
+
+  // Pulse animation data
+  const pulseDataRef = useRef<
+    Array<{
+      mesh: THREE.Mesh;
+      curve: THREE.QuadraticBezierCurve3;
+      speed: number;
+      offset: number;
+    }>
+  >([]);
+
+  // Ripple rings animation data
+  const rippleRingsRef = useRef<
+    Array<{
+      mesh: THREE.Mesh;
+      initialScale: number;
+      maxScale: number;
+      speed: number;
+      baseOpacity: number;
+    }>
+  >([]);
+
+  // UNESCO Concentric Target Reticles (spinning crosshairs)
+  const rotatingReticlesRef = useRef<
+    Array<{
+      mesh: THREE.Mesh;
+      speed: number;
+    }>
+  >([]);
+
+  // Smoothly Fly Camera to Given Lat, Lng, Altitude (Cesium / UNESCO Great-Circle Flight)
+  const flyToCoordinates = useCallback(
+    (
+      coords: { lat: number; lng: number; altitude?: number },
+      durationMs: number = 2200
+    ) => {
+      const camera = cameraRef.current;
+      const controls = controlsRef.current;
+      if (!camera || !controls) return;
+
+      // Allow deep zoom into landmark locations down to altitude 0.10!
+      const rawAlt = coords.altitude ?? 1.4;
+      const safeAlt = Math.max(0.10, Math.min(2.8, rawAlt));
+      const distance = Math.max(
+        MIN_CAMERA_DISTANCE,
+        Math.min(MAX_CAMERA_DISTANCE, GLOBE_RADIUS * (1 + safeAlt))
+      );
+      const targetPos = latLngToVector3(coords.lat, coords.lng, distance);
+
+      // Pause auto-rotation during camera flight
+      controls.autoRotate = false;
+
+      // For site-level zoom (altitude < 0.45), orient camera with a gentle 3D oblique tilt
+      const isSiteZoom = safeAlt < 0.45;
+      const surfacePt = latLngToVector3(coords.lat, coords.lng, GLOBE_RADIUS);
+      const endTarget = isSiteZoom
+        ? surfacePt.clone().multiplyScalar(0.25) // subtle forward look target for true 3D horizon
+        : new THREE.Vector3(0, 0, 0);
+
+      flightRef.current = {
+        isFlying: true,
+        startTime: performance.now(),
+        duration: Math.max(800, durationMs),
+        startPos: camera.position.clone(),
+        endPos: targetPos,
+        startTarget: controls.target.clone(),
+        endTarget,
+      };
+    },
+    []
+  );
+
+  // Imperative handle for parent component
+  useImperativeHandle(
+    ref,
+    () => ({
+      pointOfView: (coords, durationMs = 2200) => {
+        flyToCoordinates(coords, durationMs);
+      },
+      controls: () => controlsRef.current,
+      renderer: () => rendererRef.current,
+    }),
+    [flyToCoordinates]
+  );
+
+  // Initialize Three.js WebGL Scene
   useEffect(() => {
-    const handleResize = () => {
-      const canvas = canvasRef.current;
-      if (!canvas || !canvas.parentElement) return;
-      const rect = canvas.parentElement.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const container = containerRef.current;
+    const canvas = canvasRef.current;
+    if (!container || !canvas) return;
 
-      canvas.width = Math.floor(rect.width * dpr);
-      canvas.height = Math.floor(rect.height * dpr);
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
+    const width = container.clientWidth || 1200;
+    const height = container.clientHeight || 740;
+
+    // 1. Scene
+    const scene = new THREE.Scene();
+    sceneRef.current = scene;
+
+    // 2. Camera (Wide 45-degree cinematic FOV)
+    const camera = new THREE.PerspectiveCamera(45, width / height, 1, 5000);
+    // Initial camera overlooking Indian Ocean / India
+    const initialCamPos = latLngToVector3(20.5, 55.0, GLOBE_RADIUS * 2.3);
+    camera.position.copy(initialCamPos);
+    cameraRef.current = camera;
+
+    // 3. WebGL Renderer
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.25;
+    rendererRef.current = renderer;
+
+    // 4. OrbitControls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.rotateSpeed = 0.65;
+    controls.zoomSpeed = 0.85;
+    controls.minDistance = MIN_CAMERA_DISTANCE;
+    controls.maxDistance = MAX_CAMERA_DISTANCE;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.35;
+    controls.addEventListener("start", () => {
+      onUserInteractionStart();
+    });
+    controlsRef.current = controls;
+
+    // 5. Lighting Setup (Sunlight + Rim Light + Ambient)
+    const ambientLight = new THREE.AmbientLight(0xdbeafe, 1.2);
+    scene.add(ambientLight);
+
+    const sunLight = new THREE.DirectionalLight(0xfff7ed, 2.8);
+    sunLight.position.set(350, 240, 280);
+    scene.add(sunLight);
+
+    const blueRimLight = new THREE.DirectionalLight(0x38bdf8, 1.5);
+    blueRimLight.position.set(-280, -120, -220);
+    scene.add(blueRimLight);
+
+    const goldAccentLight = new THREE.DirectionalLight(0xf59e0b, 0.9);
+    goldAccentLight.position.set(150, 300, 100);
+    scene.add(goldAccentLight);
+
+    // 6. Deep Space Starfield
+    const starCount = 800;
+    const starGeom = new THREE.BufferGeometry();
+    const starPos = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount * 3; i += 3) {
+      const r = 900 + Math.random() * 800;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 2 - 1);
+      starPos[i] = r * Math.sin(phi) * Math.cos(theta);
+      starPos[i + 1] = r * Math.sin(phi) * Math.sin(theta);
+      starPos[i + 2] = r * Math.cos(phi);
+    }
+    starGeom.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
+    const starMat = new THREE.PointsMaterial({
+      color: 0x93c5fd,
+      size: 1.6,
+      transparent: true,
+      opacity: 0.75,
+    });
+    const starField = new THREE.Points(starGeom, starMat);
+    scene.add(starField);
+
+    // 7. Earth Sphere
+    const sphereGeom = new THREE.SphereGeometry(GLOBE_RADIUS, 64, 64);
+    const textureLoader = new THREE.TextureLoader();
+
+    // Default base material (deep space ocean with sheen)
+    const earthMat = new THREE.MeshStandardMaterial({
+      color: 0x0a243d,
+      roughness: 0.55,
+      metalness: 0.12,
+    });
+
+    const earthMesh = new THREE.Mesh(sphereGeom, earthMat);
+    scene.add(earthMesh);
+    globeMeshRef.current = earthMesh;
+
+    // Load High-Res Marble, Bump Map & Night Lights
+    textureLoader.load(
+      "/manus-storage/earth-blue-marble_cb903e9b.jpg",
+      (texture: any) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        earthMat.map = texture;
+        earthMat.color.setHex(0xffffff);
+        earthMat.needsUpdate = true;
+      },
+      undefined,
+      (err: any) => {
+        console.warn("[3D Globe] Texture load fallback:", err);
+      }
+    );
+
+    textureLoader.load("/manus-storage/earth-topology_640fce13.png", (bump: any) => {
+      earthMat.bumpMap = bump;
+      earthMat.bumpScale = 0.9;
+      earthMat.needsUpdate = true;
+    });
+
+    textureLoader.load("/manus-storage/earth-night_cb903e9b.jpg", (night: any) => {
+      night.colorSpace = THREE.SRGBColorSpace;
+      earthMat.emissiveMap = night;
+      earthMat.emissive = new THREE.Color(0xffe29a);
+      earthMat.emissiveIntensity = 0.45;
+      earthMat.needsUpdate = true;
+    });
+
+    // 8. Dual-Layer Outer Atmospheric Halo Glow
+    const atmosGeom = new THREE.SphereGeometry(GLOBE_RADIUS * 1.025, 48, 48);
+    const atmosMat = new THREE.MeshBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.22,
+      side: THREE.BackSide,
+    });
+    const atmosMesh = new THREE.Mesh(atmosGeom, atmosMat);
+    scene.add(atmosMesh);
+
+    // 9. Overlay Groups
+    const boundariesGroup = new THREE.Group();
+    scene.add(boundariesGroup);
+    boundariesGroupRef.current = boundariesGroup;
+
+    const arcsGroup = new THREE.Group();
+    scene.add(arcsGroup);
+    arcsGroupRef.current = arcsGroup;
+
+    const pulsesGroup = new THREE.Group();
+    scene.add(pulsesGroup);
+    pulsesGroupRef.current = pulsesGroup;
+
+    const ringsGroup = new THREE.Group();
+    scene.add(ringsGroup);
+    ringsGroupRef.current = ringsGroup;
+
+    const markersGroup = new THREE.Group();
+    scene.add(markersGroup);
+    markersGroupRef.current = markersGroup;
+
+    // Ready signal to parent component
+    if (onGlobeReady) {
+      onGlobeReady();
+    }
+
+    // 10. Resize Observer
+    const handleResize = () => {
+      if (!containerRef.current || !rendererRef.current || !cameraRef.current) return;
+      const w = containerRef.current.clientWidth || 1200;
+      const h = containerRef.current.clientHeight || 740;
+      cameraRef.current.aspect = w / h;
+      cameraRef.current.updateProjectionMatrix();
+      rendererRef.current.setSize(w, h);
     };
 
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(container);
 
-  // Mouse & Touch Drag Controls (3D Spherical Rotation)
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent<HTMLCanvasElement>) => {
-      isDraggingRef.current = true;
-      lastMousePosRef.current = { x: e.clientX, y: e.clientY };
-      onUserInteractionStart();
-    },
-    [onUserInteractionStart]
-  );
+    // 11. Animation Render Loop (60 FPS)
+    let animationFrameId: number;
 
-  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!isDraggingRef.current) return;
-    const dx = e.clientX - lastMousePosRef.current.x;
-    const dy = e.clientY - lastMousePosRef.current.y;
-    lastMousePosRef.current = { x: e.clientX, y: e.clientY };
+    const animate = () => {
+      animationFrameId = requestAnimationFrame(animate);
 
-    const R = cameraRef.current.radius;
-    const sensitivity = (180 / (R * Math.PI)) * 1.4;
+      // Handle Smooth Camera Flight
+      if (flightRef.current.isFlying && cameraRef.current && controlsRef.current) {
+        const { startTime, duration, startPos, endPos, startTarget, endTarget } =
+          flightRef.current;
+        const elapsed = performance.now() - startTime;
+        const progress = Math.min(1, elapsed / duration);
 
-    targetCameraRef.current.lng -= dx * sensitivity;
-    targetCameraRef.current.lat += dy * sensitivity;
-    targetCameraRef.current.lat = Math.max(-85, Math.min(85, targetCameraRef.current.lat));
-  }, []);
+        // Smooth cubic ease-in-out
+        const t =
+          progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-  const handlePointerUp = useCallback(() => {
-    isDraggingRef.current = false;
-  }, []);
+        // Spherical interpolation with realistic orbital arch lift (Cesium / Google Earth style)
+        const baseLength = THREE.MathUtils.lerp(startPos.length(), endPos.length(), t);
+        const archLift = Math.sin(t * Math.PI) * 28;
+        const curLength = baseLength + archLift;
 
-  // Wheel Zoom Control
-  const handleWheel = useCallback(
-    (e: React.WheelEvent<HTMLCanvasElement>) => {
-      e.preventDefault();
-      onUserInteractionStart();
-      const zoomFactor = e.deltaY > 0 ? 0.88 : 1.14;
-      targetCameraRef.current.radius = Math.max(
-        180,
-        Math.min(4800, targetCameraRef.current.radius * zoomFactor)
-      );
-    },
-    [onUserInteractionStart]
-  );
+        const slerpedPos = new THREE.Vector3().copy(startPos).normalize();
+        const endNorm = new THREE.Vector3().copy(endPos).normalize();
+        const angle = slerpedPos.angleTo(endNorm);
 
-  // Click on Canvas: Detect if user clicked a project beacon or state
-  const handleCanvasClick = useCallback(
-    (e: React.MouseEvent<HTMLCanvasElement>) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const clickX = (e.clientX - rect.left) * dpr;
-      const clickY = (e.clientY - rect.top) * dpr;
+        if (angle > 0.001) {
+          const axis = new THREE.Vector3().crossVectors(slerpedPos, endNorm).normalize();
+          slerpedPos.applyAxisAngle(axis, angle * t);
+        }
+        slerpedPos.multiplyScalar(curLength);
+        cameraRef.current.position.copy(slerpedPos);
 
-      const cam = cameraRef.current;
-      const w = canvas.width;
-      const h = canvas.height;
+        controlsRef.current.target.lerpVectors(startTarget, endTarget, t);
 
-      // Check projects first (if zoomed in)
-      if (cam.radius >= 1000) {
-        for (const proj of allProjects) {
-          const pt = projectSpherical(Number(proj.lat), Number(proj.lng), cam.lat, cam.lng, cam.radius, w, h);
-          if (pt.visible) {
-            const dist = Math.hypot(pt.x - clickX, pt.y - clickY);
-            if (dist < 18 * dpr) {
-              onSelectProject(proj);
-              return;
-            }
-          }
+        if (progress >= 1) {
+          flightRef.current.isFlying = false;
         }
       }
 
-      // Check states
-      for (const st of states) {
-        const pt = projectSpherical(Number(st.lat), Number(st.lng), cam.lat, cam.lng, cam.radius, w, h);
-        if (pt.visible) {
-          const dist = Math.hypot(pt.x - clickX, pt.y - clickY);
-          if (dist < 16 * dpr) {
-            onSelectState(st.code);
+      // Update Controls (damping & idle auto-rotation)
+      if (controlsRef.current) {
+        controlsRef.current.update();
+      }
+
+      // Animate Arcs Photon Energy Pulses
+      const now = performance.now() * 0.001;
+      for (const pulse of pulseDataRef.current) {
+        const u = (now * pulse.speed + pulse.offset) % 1.0;
+        const pos = pulse.curve.getPoint(u);
+        pulse.mesh.position.copy(pos);
+      }
+
+      // Animate Radar Ripple Rings
+      for (const ring of rippleRingsRef.current) {
+        const cycle = ((now * ring.speed) % 1.0);
+        const scale = 1 + cycle * (ring.maxScale - 1);
+        ring.mesh.scale.set(scale, scale, scale);
+        // Fade opacity toward edge of ripple
+        if (ring.mesh.material && (ring.mesh.material as any).opacity !== undefined) {
+          (ring.mesh.material as any).opacity = ring.baseOpacity * (1 - cycle);
+        }
+      }
+
+      // Animate UNESCO Concentric Target Reticles
+      for (const reticle of rotatingReticlesRef.current) {
+        reticle.mesh.rotation.z += reticle.speed;
+      }
+
+      // Render Scene
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
+    };
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      resizeObserver.disconnect();
+      controls.dispose();
+      renderer.dispose();
+      scene.clear();
+    };
+  }, [onGlobeReady, onUserInteractionStart]);
+
+  // Sync Camera When activeWaypoint Changes (if user is not manually dragging)
+  useEffect(() => {
+    if (isUserInteracting) return;
+    if (activeWaypoint && activeWaypoint.coords) {
+      flyToCoordinates(activeWaypoint.coords, activeWaypoint.flyDurationMs || 2200);
+    }
+  }, [activeWaypoint, isUserInteracting, flyToCoordinates]);
+
+  // Render Official Survey of India Sovereign Boundary Ribbons
+  useEffect(() => {
+    const group = boundariesGroupRef.current;
+    if (!group || !indiaFeatures || indiaFeatures.length === 0) return;
+
+    group.clear();
+
+    const activeCode = activeWaypoint?.stateCode?.toUpperCase();
+
+    for (const feat of indiaFeatures) {
+      const geom = feat.geometry;
+      if (!geom) continue;
+
+      const code = feat.properties?.code?.toUpperCase() || "";
+      const isSelected = Boolean(activeCode && code === activeCode);
+
+      const polygons =
+        geom.type === "Polygon"
+          ? [geom.coordinates]
+          : geom.type === "MultiPolygon"
+          ? geom.coordinates
+          : [];
+
+      for (const poly of polygons) {
+        for (const ring of poly) {
+          const points: THREE.Vector3[] = [];
+          for (const coord of ring) {
+            const lng = coord[0];
+            const lat = coord[1];
+            // Raise slightly off sphere surface so it never clips
+            const elevation = isSelected ? 100.28 : 100.16;
+            points.push(latLngToVector3(lat, lng, elevation));
+          }
+
+          if (points.length > 1) {
+            const lineGeom = new THREE.BufferGeometry().setFromPoints(points);
+            const lineMat = new THREE.LineBasicMaterial({
+              color: isSelected ? 0xf59e0b : 0x0284c7,
+              linewidth: isSelected ? 2 : 1,
+              transparent: true,
+              opacity: isSelected ? 0.95 : 0.4,
+            });
+            const line = new THREE.Line(lineGeom, lineMat);
+            group.add(line);
+          }
+        }
+      }
+    }
+  }, [indiaFeatures, activeWaypoint]);
+
+  // Build Animated 3D Curved Supply Arcs & Photon Pulses
+  useEffect(() => {
+    const arcsGroup = arcsGroupRef.current;
+    const pulsesGroup = pulsesGroupRef.current;
+    if (!arcsGroup || !pulsesGroup || !exportArcs) return;
+
+    arcsGroup.clear();
+    pulsesGroup.clear();
+    pulseDataRef.current = [];
+
+    const hqLat = 23.02;
+    const hqLng = 72.57;
+    const startPt = latLngToVector3(hqLat, hqLng, 100.25);
+
+    exportArcs.forEach((arc, idx) => {
+      const endPt = latLngToVector3(arc.endLat, arc.endLng, 100.25);
+      const isGlobal = arc.color[1] === "#10b981";
+
+      const distance = startPt.distanceTo(endPt);
+      const arcElevation = GLOBE_RADIUS + Math.min(50, distance * 0.28);
+
+      const midLat = (hqLat + arc.endLat) / 2;
+      const midLng = (hqLng + arc.endLng) / 2;
+      const midPt = latLngToVector3(midLat, midLng, arcElevation);
+
+      const curve = new THREE.QuadraticBezierCurve3(startPt, midPt, endPt);
+      const curvePoints = curve.getPoints(54);
+      const curveGeom = new THREE.BufferGeometry().setFromPoints(curvePoints);
+
+      const arcMat = new THREE.LineBasicMaterial({
+        color: isGlobal ? 0x10b981 : 0xf59e0b,
+        transparent: true,
+        opacity: isGlobal ? 0.8 : 0.65,
+      });
+
+      const arcLine = new THREE.Line(curveGeom, arcMat);
+      arcsGroup.add(arcLine);
+
+      // Photon Energy Particle Pulse traveling along curve
+      const pulseGeom = new THREE.SphereGeometry(isGlobal ? 0.85 : 0.7, 12, 12);
+      const pulseMat = new THREE.MeshBasicMaterial({
+        color: isGlobal ? 0x34d399 : 0xfef08a,
+      });
+      const pulseMesh = new THREE.Mesh(pulseGeom, pulseMat);
+      pulsesGroup.add(pulseMesh);
+
+      pulseDataRef.current.push({
+        mesh: pulseMesh,
+        curve,
+        speed: 0.25 + (idx % 3) * 0.08,
+        offset: (idx * 0.18) % 1.0,
+      });
+    });
+  }, [exportArcs]);
+
+  // Build Sleek 3D Holographic Beacon Pins (States, Global Hubs, Landmark Projects)
+  useEffect(() => {
+    const markersGroup = markersGroupRef.current;
+    const ringsGroup = ringsGroupRef.current;
+    if (!markersGroup || !ringsGroup) return;
+
+    markersGroup.clear();
+    ringsGroup.clear();
+    rippleRingsRef.current = [];
+    rotatingReticlesRef.current = [];
+
+    // Helper: Align a 3D pin object along the sphere surface normal
+    const orientPinToSurface = (mesh: THREE.Object3D, pos: THREE.Vector3) => {
+      const normal = pos.clone().normalize();
+      const up = new THREE.Vector3(0, 1, 0);
+      mesh.quaternion.setFromUnitVectors(up, normal);
+    };
+
+    // 1. Indian State Hub Beacons
+    states.forEach((st) => {
+      const lat = Number(st.lat);
+      const lng = Number(st.lng);
+      if (isNaN(lat) || isNaN(lng)) return;
+
+      const surfacePos = latLngToVector3(lat, lng, 100.1);
+      const isSelected = activeWaypoint?.stateCode?.toUpperCase() === st.code.toUpperCase();
+      const isHq = st.code.toUpperCase() === "GJ";
+
+      const pinGroup = new THREE.Group();
+      pinGroup.position.copy(surfacePos);
+      orientPinToSurface(pinGroup, surfacePos);
+
+      // Light Pillar Cylinder
+      const beamHeight = isSelected || isHq ? 3.8 : 2.2;
+      const beamGeom = new THREE.CylinderGeometry(0.12, 0.28, beamHeight, 10);
+      beamGeom.translate(0, beamHeight / 2, 0);
+      const beamMat = new THREE.MeshStandardMaterial({
+        color: isHq ? 0xf59e0b : isSelected ? 0xf59e0b : 0x0284c7,
+        emissive: isHq ? 0xd97706 : isSelected ? 0xd97706 : 0x0369a1,
+        emissiveIntensity: 0.9,
+        transparent: true,
+        opacity: 0.85,
+      });
+      const beamMesh = new THREE.Mesh(beamGeom, beamMat);
+      pinGroup.add(beamMesh);
+
+      // Glowing Gemstone Tip
+      const tipGeom = new THREE.SphereGeometry(isSelected || isHq ? 0.9 : 0.6, 14, 14);
+      const tipMat = new THREE.MeshStandardMaterial({
+        color: isHq ? 0xfef08a : isSelected ? 0xfef08a : 0x38bdf8,
+        emissive: isHq ? 0xf59e0b : isSelected ? 0xf59e0b : 0x0284c7,
+        emissiveIntensity: 1.2,
+      });
+      const tipMesh = new THREE.Mesh(tipGeom, tipMat);
+      tipMesh.position.set(0, beamHeight, 0);
+      pinGroup.add(tipMesh);
+
+      pinGroup.userData = {
+        type: "state",
+        data: st,
+      };
+      markersGroup.add(pinGroup);
+
+      // Radar Ripple Ring on surface
+      if (isSelected || isHq || st.projectsCompleted >= 15) {
+        const ringGeom = new THREE.RingGeometry(0.6, 1.1, 24);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: isHq || isSelected ? 0xf59e0b : 0x38bdf8,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.7,
+        });
+        const ringMesh = new THREE.Mesh(ringGeom, ringMat);
+        ringMesh.position.copy(surfacePos);
+        ringMesh.lookAt(new THREE.Vector3(0, 0, 0));
+        ringsGroup.add(ringMesh);
+
+        rippleRingsRef.current.push({
+          mesh: ringMesh,
+          initialScale: 1,
+          maxScale: 2.4,
+          speed: 1.8,
+          baseOpacity: 0.7,
+        });
+      }
+    });
+
+    // 2. Global Export Gateways (Dubai, Riyadh, Doha, Singapore, Nairobi, Dar es Salaam)
+    globalExportPoints.forEach((port) => {
+      const surfacePos = latLngToVector3(port.lat, port.lng, 100.1);
+
+      const pinGroup = new THREE.Group();
+      pinGroup.position.copy(surfacePos);
+      orientPinToSurface(pinGroup, surfacePos);
+
+      // Green Emerald Light Pillar
+      const beamGeom = new THREE.CylinderGeometry(0.15, 0.35, 2.6, 10);
+      beamGeom.translate(0, 1.3, 0);
+      const beamMat = new THREE.MeshStandardMaterial({
+        color: 0x10b981,
+        emissive: 0x059669,
+        emissiveIntensity: 1.1,
+      });
+      const beamMesh = new THREE.Mesh(beamGeom, beamMat);
+      pinGroup.add(beamMesh);
+
+      // Glowing Diamond Tip
+      const tipGeom = new THREE.OctahedronGeometry(0.85);
+      const tipMat = new THREE.MeshStandardMaterial({
+        color: 0x6ee7b7,
+        emissive: 0x10b981,
+        emissiveIntensity: 1.3,
+      });
+      const tipMesh = new THREE.Mesh(tipGeom, tipMat);
+      tipMesh.position.set(0, 2.6, 0);
+      pinGroup.add(tipMesh);
+
+      pinGroup.userData = {
+        type: "global",
+        data: port,
+      };
+      markersGroup.add(pinGroup);
+
+      // Pulsing Green Radar Halo
+      const haloGeom = new THREE.RingGeometry(0.7, 1.3, 20);
+      const haloMat = new THREE.MeshBasicMaterial({
+        color: 0x34d399,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.6,
+      });
+      const haloMesh = new THREE.Mesh(haloGeom, haloMat);
+      haloMesh.position.copy(surfacePos);
+      haloMesh.lookAt(new THREE.Vector3(0, 0, 0));
+      ringsGroup.add(haloMesh);
+
+      rippleRingsRef.current.push({
+        mesh: haloMesh,
+        initialScale: 1,
+        maxScale: 2.2,
+        speed: 1.6,
+        baseOpacity: 0.6,
+      });
+    });
+
+    // 3. Landmark Infrastructure Projects
+    allProjects.forEach((proj) => {
+      const lat = Number(proj.lat);
+      const lng = Number(proj.lng);
+      if (isNaN(lat) || isNaN(lng)) return;
+
+      const surfacePos = latLngToVector3(lat, lng, 100.1);
+      const isSpotlight = activeWaypoint.project?.id === proj.id;
+      const isInActiveState = Boolean(
+        activeWaypoint.stateCode &&
+          proj.stateCode.toUpperCase() === activeWaypoint.stateCode.toUpperCase()
+      );
+
+      const pinGroup = new THREE.Group();
+      pinGroup.position.copy(surfacePos);
+      orientPinToSurface(pinGroup, surfacePos);
+
+      // Project Light Beam Pillar
+      const beamHeight = isSpotlight ? 4.8 : isInActiveState ? 3.2 : 2.0;
+      const beamGeom = new THREE.CylinderGeometry(
+        isInActiveState || isSpotlight ? 0.12 : 0.08,
+        isInActiveState || isSpotlight ? 0.28 : 0.2,
+        beamHeight,
+        10
+      );
+      beamGeom.translate(0, beamHeight / 2, 0);
+      const beamMat = new THREE.MeshStandardMaterial({
+        color: isSpotlight || isInActiveState ? 0xf59e0b : 0x0284c7,
+        emissive: isSpotlight || isInActiveState ? 0xd97706 : 0x0369a1,
+        emissiveIntensity: isSpotlight ? 1.8 : isInActiveState ? 1.3 : 0.75,
+        transparent: true,
+        opacity: isSpotlight || isInActiveState ? 0.95 : 0.7,
+      });
+      const beamMesh = new THREE.Mesh(beamGeom, beamMat);
+      pinGroup.add(beamMesh);
+
+      // Gemstone Tip
+      const tipGeom = new THREE.SphereGeometry(
+        isSpotlight ? 0.9 : isInActiveState ? 0.65 : 0.42,
+        14,
+        14
+      );
+      const tipMat = new THREE.MeshStandardMaterial({
+        color: isSpotlight ? 0xffffff : isInActiveState ? 0xfef08a : 0x38bdf8,
+        emissive: isSpotlight || isInActiveState ? 0xf59e0b : 0x0284c7,
+        emissiveIntensity: isSpotlight ? 2.2 : isInActiveState ? 1.4 : 0.9,
+      });
+      const tipMesh = new THREE.Mesh(tipGeom, tipMat);
+      tipMesh.position.set(0, beamHeight, 0);
+      pinGroup.add(tipMesh);
+
+      pinGroup.userData = {
+        type: "project",
+        data: proj,
+      };
+      markersGroup.add(pinGroup);
+
+      // UNESCO Concentric Target Rings for Landmark Projects
+      if (isSpotlight || isInActiveState) {
+        // 1. Inner solid core pearl disc
+        const coreGeom = new THREE.CircleGeometry(0.35, 16);
+        const coreMat = new THREE.MeshBasicMaterial({
+          color: isSpotlight ? 0xffffff : 0xfef08a,
+          side: THREE.DoubleSide,
+        });
+        const coreMesh = new THREE.Mesh(coreGeom, coreMat);
+        coreMesh.position.copy(surfacePos);
+        coreMesh.lookAt(new THREE.Vector3(0, 0, 0));
+        ringsGroup.add(coreMesh);
+
+        // 2. Intermediate thin concentric target ring
+        const innerRingGeom = new THREE.RingGeometry(0.65, 0.85, 24);
+        const innerRingMat = new THREE.MeshBasicMaterial({
+          color: 0xf59e0b,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.85,
+        });
+        const innerRingMesh = new THREE.Mesh(innerRingGeom, innerRingMat);
+        innerRingMesh.position.copy(surfacePos);
+        innerRingMesh.lookAt(new THREE.Vector3(0, 0, 0));
+        ringsGroup.add(innerRingMesh);
+
+        // 3. Expanding outer radar ripple wave
+        const radarGeom = new THREE.RingGeometry(0.95, 1.35, 28);
+        const radarMat = new THREE.MeshBasicMaterial({
+          color: 0xfbbf24,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: isSpotlight ? 0.9 : 0.65,
+        });
+        const radarMesh = new THREE.Mesh(radarGeom, radarMat);
+        radarMesh.position.copy(surfacePos);
+        radarMesh.lookAt(new THREE.Vector3(0, 0, 0));
+        ringsGroup.add(radarMesh);
+
+        rippleRingsRef.current.push({
+          mesh: radarMesh,
+          initialScale: 1,
+          maxScale: isSpotlight ? 2.8 : 2.0,
+          speed: isSpotlight ? 2.0 : 1.6,
+          baseOpacity: isSpotlight ? 0.9 : 0.65,
+        });
+
+        // 4. Rotating target reticle crosshair (Active Spotlight)
+        if (isSpotlight) {
+          const reticleGeom = new THREE.RingGeometry(1.65, 1.95, 32);
+          const reticleMat = new THREE.MeshBasicMaterial({
+            color: 0xf59e0b,
+            side: THREE.DoubleSide,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.85,
+          });
+          const reticleMesh = new THREE.Mesh(reticleGeom, reticleMat);
+          reticleMesh.position.copy(surfacePos);
+          reticleMesh.lookAt(new THREE.Vector3(0, 0, 0));
+          ringsGroup.add(reticleMesh);
+          rotatingReticlesRef.current.push({ mesh: reticleMesh, speed: 0.02 });
+        }
+      }
+    });
+  }, [states, globalExportPoints, allProjects, activeWaypoint]);
+
+  // Raycasting for Mouse Hover & Click
+  const raycasterRef = useRef(new THREE.Raycaster());
+  const mouseRef = useRef(new THREE.Vector2());
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      const container = containerRef.current;
+      const camera = cameraRef.current;
+      const markersGroup = markersGroupRef.current;
+      if (!container || !camera || !markersGroup) return;
+
+      const rect = container.getBoundingClientRect();
+      const clientX = e.clientX - rect.left;
+      const clientY = e.clientY - rect.top;
+
+      mouseRef.current.x = (clientX / rect.width) * 2 - 1;
+      mouseRef.current.y = -(clientY / rect.height) * 2 + 1;
+
+      raycasterRef.current.setFromCamera(mouseRef.current, camera);
+      const intersects = raycasterRef.current.intersectObjects(
+        markersGroup.children,
+        true
+      );
+
+      if (intersects.length > 0) {
+        let hitObj: THREE.Object3D | null = intersects[0].object;
+        while (hitObj && !hitObj.userData?.type && hitObj.parent) {
+          hitObj = hitObj.parent;
+        }
+
+        if (hitObj && hitObj.userData) {
+          const data = hitObj.userData;
+
+          if (data.type === "state") {
+            const st: FootprintState = data.data;
+            const official =
+              OFFICIAL_STATE_COUNTS[st.code] ??
+              (st.projectsCompleted > 0 ? `${st.projectsCompleted}` : "Active Desk");
+            setHoveredInfo({
+              title: st.name,
+              subtitle: `${st.territory} · ${st.industry}`,
+              tag: `Verified Projects: ${official}`,
+              extra: "Click to orbit state corridor",
+              x: clientX,
+              y: clientY,
+            });
+            container.style.cursor = "pointer";
+            return;
+          }
+
+          if (data.type === "global") {
+            const port = data.data;
+            setHoveredInfo({
+              title: port.name,
+              subtitle: port.territory,
+              tag: "Verified Global Export Gateway",
+              extra: "Click to orbit international corridor",
+              x: clientX,
+              y: clientY,
+            });
+            container.style.cursor = "pointer";
+            return;
+          }
+
+          if (data.type === "project") {
+            const proj: FootprintProject = data.data;
+            setHoveredInfo({
+              title: `⚡ ${proj.name}`,
+              subtitle: `${proj.city} · ${proj.year}`,
+              tag: proj.category,
+              extra: "Click to inspect engineering specifications",
+              x: clientX,
+              y: clientY,
+            });
+            container.style.cursor = "pointer";
             return;
           }
         }
       }
+
+      setHoveredInfo(null);
+      container.style.cursor = "grab";
     },
-    [allProjects, states, onSelectProject, onSelectState]
+    []
   );
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="universal-3d-globe-canvas"
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "block",
-        cursor: isDraggingRef.current ? "grabbing" : "grab",
-      }}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
-      onWheel={handleWheel}
-      onClick={handleCanvasClick}
-    />
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const container = containerRef.current;
+      const camera = cameraRef.current;
+      const markersGroup = markersGroupRef.current;
+      if (!container || !camera || !markersGroup) return;
+
+      const rect = container.getBoundingClientRect();
+      const clientX = e.clientX - rect.left;
+      const clientY = e.clientY - rect.top;
+
+      mouseRef.current.x = (clientX / rect.width) * 2 - 1;
+      mouseRef.current.y = -(clientY / rect.height) * 2 + 1;
+
+      raycasterRef.current.setFromCamera(mouseRef.current, camera);
+      const intersects = raycasterRef.current.intersectObjects(
+        markersGroup.children,
+        true
+      );
+
+      if (intersects.length > 0) {
+        onUserInteractionStart();
+        let hitObj: THREE.Object3D | null = intersects[0].object;
+        while (hitObj && !hitObj.userData?.type && hitObj.parent) {
+          hitObj = hitObj.parent;
+        }
+
+        if (hitObj && hitObj.userData) {
+          const data = hitObj.userData;
+          if (data.type === "project") {
+            onSelectProject(data.data);
+          } else if (data.type === "state") {
+            onSelectState(data.data.code);
+          } else if (data.type === "global") {
+            flyToCoordinates({ lat: data.data.lat, lng: data.data.lng, altitude: 1.15 }, 1800);
+          }
+        }
+      }
+    },
+    [onSelectProject, onSelectState, onUserInteractionStart, flyToCoordinates]
   );
-}
+
+  // Quick Action Buttons
+  const handleZoomIn = () => {
+    onUserInteractionStart();
+    if (cameraRef.current) {
+      const currentDist = cameraRef.current.position.length();
+      if (currentDist > MIN_CAMERA_DISTANCE + 2) {
+        cameraRef.current.position.multiplyScalar(0.82);
+      }
+    }
+  };
+
+  const handleZoomOut = () => {
+    onUserInteractionStart();
+    if (cameraRef.current) {
+      const currentDist = cameraRef.current.position.length();
+      if (currentDist < MAX_CAMERA_DISTANCE - 10) {
+        cameraRef.current.position.multiplyScalar(1.18);
+      }
+    }
+  };
+
+  const handleFocusIndia = () => {
+    onUserInteractionStart();
+    flyToCoordinates({ lat: 22.0, lng: 78.5, altitude: 1.35 }, 2000);
+  };
+
+  const handleFocusWorld = () => {
+    onUserInteractionStart();
+    flyToCoordinates({ lat: 20.5, lng: 50.0, altitude: 2.2 }, 2200);
+  };
+
+  const handleFocusHQ = () => {
+    onUserInteractionStart();
+    flyToCoordinates({ lat: 23.02, lng: 72.57, altitude: 0.85 }, 2200);
+    onSelectState("GJ");
+  };
+
+  const toggleAutoRotate = () => {
+    if (controlsRef.current) {
+      controlsRef.current.autoRotate = !controlsRef.current.autoRotate;
+    }
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative w-full h-full select-none overflow-hidden"
+      onPointerMove={handlePointerMove}
+      onClick={handleClick}
+    >
+      <canvas ref={canvasRef} className="w-full h-full block" />
+
+      {/* Floating 3D Tooltip */}
+      {hoveredInfo && (
+        <div
+          className="pointer-events-none absolute z-50 transform -translate-x-1/2 -translate-y-full mb-3 px-4 py-2.5 rounded-xl bg-slate-950/90 backdrop-blur-xl border border-cyan-500/40 shadow-2xl text-left min-w-[210px] max-w-[320px] transition-all duration-75 ease-out"
+          style={{
+            left: `${hoveredInfo.x}px`,
+            top: `${hoveredInfo.y}px`,
+          }}
+        >
+          <div className="text-sm font-bold text-white flex items-center gap-1.5 font-['Plus_Jakarta_Sans',sans-serif]">
+            {hoveredInfo.title}
+          </div>
+          <div className="text-xs text-slate-300 mt-0.5">{hoveredInfo.subtitle}</div>
+          {hoveredInfo.tag && (
+            <div className="mt-1.5 inline-block text-[11px] font-semibold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/30">
+              {hoveredInfo.tag}
+            </div>
+          )}
+          {hoveredInfo.extra && (
+            <div className="text-[10px] text-cyan-300/80 mt-1 italic">
+              {hoveredInfo.extra}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Quick 3D Navigation Controls Widget (Bottom Right) */}
+      <div className="absolute bottom-6 right-6 z-30 flex flex-col gap-1.5 p-1.5 rounded-2xl bg-slate-950/85 backdrop-blur-xl border border-slate-700/60 shadow-2xl">
+        <button
+          onClick={handleZoomIn}
+          className="size-8 rounded-xl bg-slate-800/80 hover:bg-cyan-500 hover:text-slate-950 text-slate-200 flex items-center justify-center transition-all cursor-pointer"
+          title="Zoom In"
+        >
+          <Plus className="size-4" />
+        </button>
+        <button
+          onClick={handleZoomOut}
+          className="size-8 rounded-xl bg-slate-800/80 hover:bg-cyan-500 hover:text-slate-950 text-slate-200 flex items-center justify-center transition-all cursor-pointer"
+          title="Zoom Out"
+        >
+          <Minus className="size-4" />
+        </button>
+        <div className="h-px bg-slate-700/60 my-0.5" />
+        <button
+          onClick={handleFocusIndia}
+          className="size-8 rounded-xl bg-slate-800/80 hover:bg-amber-500 hover:text-slate-950 text-amber-400 flex items-center justify-center text-xs font-bold transition-all cursor-pointer"
+          title="Focus Pan-India Sovereign Map"
+        >
+          🇮🇳
+        </button>
+        <button
+          onClick={handleFocusHQ}
+          className="size-8 rounded-xl bg-slate-800/80 hover:bg-amber-500 hover:text-slate-950 text-amber-400 flex items-center justify-center transition-all cursor-pointer"
+          title="Focus Ahmedabad HQ & Manufacturing Hub"
+        >
+          <Zap className="size-4" />
+        </button>
+        <button
+          onClick={handleFocusWorld}
+          className="size-8 rounded-xl bg-slate-800/80 hover:bg-cyan-500 hover:text-slate-950 text-cyan-400 flex items-center justify-center transition-all cursor-pointer"
+          title="Reset to Orbital World View"
+        >
+          <Globe2 className="size-4" />
+        </button>
+        <button
+          onClick={toggleAutoRotate}
+          className="size-8 rounded-xl bg-slate-800/80 hover:bg-cyan-500 hover:text-slate-950 text-slate-200 flex items-center justify-center transition-all cursor-pointer"
+          title="Toggle Earth Auto-Rotation"
+        >
+          <RotateCcw className="size-3.5" />
+        </button>
+      </div>
+    </div>
+  );
+});
+
+export default Universal3DGlobeCanvas;
