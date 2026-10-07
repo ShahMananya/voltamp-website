@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
+import SeoHead from "@/components/seo/SeoHead";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   ArrowRight,
@@ -29,6 +30,7 @@ import {
   Zap,
 } from "lucide-react";
 import GlobeProjectsExperience from "@/components/footprint/GlobeProjectsExperience";
+import SocialMediaLinks from "@/components/layout/SocialMediaLinks";
 import { trpc } from "@/lib/trpc";
 
 type TeamMemberItem = {
@@ -176,6 +178,145 @@ function TeamMemberCard({ member }: { member: TeamMemberItem }) {
       <span>{member.name}</span>
       <small>{member.role}</small>
     </article>
+  );
+}
+
+function HeroTeamPortrait({ onShowHq }: { onShowHq: (e: React.MouseEvent) => void }) {
+  const [tilt, setTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50, isHovered: false });
+  const [istTime, setIstTime] = useState("");
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const updateTime = () => {
+      try {
+        const now = new Date();
+        const istStr = now.toLocaleTimeString("en-IN", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        });
+        setIstTime(istStr);
+      } catch {
+        setIstTime("");
+      }
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -8; // smooth 3D tilt
+    const rotateY = ((x - centerX) / centerX) * 8;
+    const glareX = (x / rect.width) * 100;
+    const glareY = (y / rect.height) * 100;
+    setTilt({ x: rotateX, y: rotateY, glareX, glareY, isHovered: true });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0, glareX: 50, glareY: 50, isHovered: false });
+  };
+
+  return (
+    <div className="relative group/tilt w-full [perspective:1200px]">
+      {/* 1. Atmospheric Golden Warm Ambient Underglow Aura */}
+      <div className="absolute -inset-4 sm:-inset-6 rounded-3xl bg-gradient-to-tr from-amber-500/35 via-orange-500/25 to-amber-300/35 blur-2xl opacity-75 group-hover/tilt:opacity-100 transition-opacity duration-700 pointer-events-none -z-10 animate-pulse" />
+
+      {/* 2. Interactive 3D Tilting Card with Specular Glare */}
+      <div
+        ref={cardRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transform: tilt.isHovered
+            ? `rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) scale3d(1.025, 1.025, 1.025)`
+            : "rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)",
+          transition: tilt.isHovered ? "transform 0.1s ease-out" : "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
+          transformStyle: "preserve-3d",
+        }}
+        className="about-hero-photo-wrap relative overflow-hidden rounded-2xl sm:rounded-3xl border border-amber-500/40 bg-slate-900 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.4),0_10px_35px_rgba(245,158,11,0.22)] transition-all duration-500 hover:border-amber-400/90 hover:shadow-[0_35px_80px_-15px_rgba(0,0,0,0.55),0_15px_50px_rgba(245,158,11,0.38)] cursor-pointer"
+      >
+        {/* Specular Light Sheen Reflection following mouse cursor */}
+        {tilt.isHovered && (
+          <div
+            className="pointer-events-none absolute inset-0 z-20 rounded-2xl sm:rounded-3xl opacity-60 transition-opacity duration-300"
+            style={{
+              background: `radial-gradient(circle 440px at ${tilt.glareX}% ${tilt.glareY}%, rgba(255,255,255,0.45), rgba(245,158,11,0.18) 40%, transparent 80%)`,
+            }}
+          />
+        )}
+
+        {/* Team Photo */}
+        <img
+          src="/team/volamp-team-hero.jpg?v=2"
+          alt="Volamp Elektrikals Leadership & Core Team at Ahmedabad Corporate Office"
+          className="w-full h-full min-h-[380px] sm:min-h-[430px] lg:min-h-[470px] object-cover object-top transition-transform duration-700 group-hover/tilt:scale-[1.04]"
+        />
+
+        {/* Dynamic Light Sweep Bar */}
+        <div className="pointer-events-none absolute inset-0 -translate-x-full animate-shimmer-sweep bg-gradient-to-r from-transparent via-white/12 to-transparent skew-x-12 z-10" />
+
+        {/* Top-Right: Interactive Khadia HQ Satellite Map Trigger with 3D Pop */}
+        <button
+          type="button"
+          onClick={onShowHq}
+          title="Click to view Old City Khadia Corporate Office on Satellite Map"
+          aria-label="View Old City Office Location on Satellite Map"
+          style={{
+            transform: tilt.isHovered ? "translateZ(36px)" : "translateZ(0px)",
+            transition: "transform 0.25s ease-out",
+          }}
+          className="absolute top-3.5 right-3.5 z-30 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/90 hover:bg-slate-900 active:scale-95 backdrop-blur-md border border-amber-400/60 hover:border-amber-400 text-[11px] font-mono font-bold text-amber-300 shadow-2xl transition-all duration-200 hover:scale-105 group/hqbtn cursor-pointer"
+        >
+          <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
+          <span>23° 01' N · 72° 35' E · Khadia HQ</span>
+          {istTime && (
+            <span className="hidden sm:inline-block text-[10px] text-amber-200/90 font-mono px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40">
+              {istTime}
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1 text-[10px] text-amber-400/90 group-hover/hqbtn:text-amber-200 border-l border-amber-500/40 pl-2 ml-0.5">
+            View on Map ↗
+          </span>
+        </button>
+
+        {/* Bottom-Left: Floating Heritage Badge with 3D Pop */}
+        <div
+          style={{
+            transform: tilt.isHovered ? "translateZ(28px)" : "translateZ(0px)",
+            transition: "transform 0.25s ease-out",
+          }}
+          className="absolute bottom-3.5 left-3.5 z-20 flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-950/85 backdrop-blur-md border border-amber-400/50 text-xs font-semibold text-white shadow-xl transition-all duration-300 hover:scale-105 hover:border-amber-400"
+        >
+          <div className="size-6 rounded-lg bg-amber-500/25 border border-amber-400/60 flex items-center justify-center text-amber-300 shrink-0">
+            <Sparkles className="size-3 text-amber-300 animate-pulse" />
+          </div>
+          <div className="flex flex-col text-left leading-tight">
+            <span className="text-[11px] font-bold text-amber-300 font-['Plus_Jakarta_Sans',sans-serif]">60+ Years Legacy</span>
+            <span className="text-[9.5px] text-slate-300 font-sans">4 Generations · 28 States</span>
+          </div>
+        </div>
+
+        {/* Bottom-Right: Live Landmark Counter Pill with 3D Pop */}
+        <div
+          style={{
+            transform: tilt.isHovered ? "translateZ(30px)" : "translateZ(0px)",
+            transition: "transform 0.25s ease-out",
+          }}
+          className="absolute bottom-3.5 right-3.5 z-20 hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950/85 backdrop-blur-md border border-sky-400/40 shadow-lg text-[10px] font-mono font-bold text-sky-200"
+        >
+          <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>100+ Landmark Sites</span>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -344,8 +485,52 @@ export default function AboutVolamp() {
 
   const team = leadershipData?.team ?? fallbackTeamSlots;
 
+  const handleShowOldCityHQ = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const footprintEl = document.getElementById("footprint");
+    if (footprintEl) {
+      footprintEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("volamp:focus-khadia-hq"));
+    }, 250);
+  };
+
   return (
     <div className="about-page">
+      <SeoHead
+        title="About Voltamp Elektrikals | 60+ Years Electrical Engineering Legacy"
+        description="Founded in June 1964 in Ahmedabad, Voltamp Elektrikals Private Limited is one of India's foremost B2B distributors of industrial cables, switchgear, and power distribution systems."
+        keywords="About Voltamp Elektrikals, electrical distributor Gujarat, Naimil Patel CEO, 60 years electrical supply Ahmedabad, Polycab master distributor, industrial cables history"
+        canonical="https://volampelektrikals.com/about-volamp"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          "name": "About Voltamp Elektrikals Private Limited",
+          "description": "Historical lineage and leadership profile of Voltamp Elektrikals, founded June 1964 in Ahmedabad, Gujarat.",
+          "mainEntity": {
+            "@type": "Organization",
+            "name": "Voltamp Elektrikals Private Limited",
+            "foundingDate": "1964-06",
+            "founder": {
+              "@type": "Person",
+              "name": "Patel Family"
+            },
+            "founderLocation": {
+              "@type": "Place",
+              "name": "Ahmedabad, Gujarat, India"
+            },
+            "numberOfEmployees": "50-100",
+            "knowsAbout": [
+              "HT & LT Power Cables",
+              "Industrial Switchgear",
+              "Substation Automation",
+              "Solar DC PV Cables",
+              "Instrumentation & Control Cables"
+            ]
+          }
+        }}
+      />
       {/* Top Utility Bar (Consistent with Home page) */}
       <div className="market-utility">
         <div className="market-container utility-inner">
@@ -398,35 +583,71 @@ export default function AboutVolamp() {
       </header>
 
       <main>
-        <section className="about-hero">
-          <div className="about-container about-hero-grid">
+        <section className="about-hero relative">
+          {/* Ambient Electrical Energy Background Orbs & Circuit Grid */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden -z-0">
+            <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-amber-400/10 dark:bg-amber-500/15 blur-3xl" />
+            <div className="absolute bottom-1/4 left-1/4 w-80 h-80 rounded-full bg-sky-400/10 dark:bg-sky-500/10 blur-3xl" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000006_1px,transparent_1px),linear-gradient(to_bottom,#00000006_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:36px_36px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_75%)]" />
+          </div>
+
+          <div className="about-container about-hero-grid relative z-10">
             <div>
-              <span className="about-eyebrow">ABOUT VOLAMP · POWERING GROWTH</span>
-              <h1>
-                The work behind the <em>connection.</em>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/25 dark:border-amber-400/30 text-amber-800 dark:text-amber-300 text-xs font-black uppercase tracking-widest mb-3 shadow-xs">
+                <span className="size-2 rounded-full bg-amber-500 dark:bg-amber-400 animate-ping" />
+                <span>About Volamp · Powering Growth</span>
+              </div>
+              <h1 className="text-slate-900 dark:text-white">
+                The work behind the{" "}
+                <em className="hero-electric-word relative inline-block not-italic bg-gradient-to-r from-amber-600 via-orange-500 to-amber-500 dark:from-amber-400 dark:via-yellow-300 dark:to-orange-400 bg-clip-text text-transparent font-extrabold pb-1">
+                  connection.
+                  <span className="absolute -bottom-0.5 left-0 right-0 h-[3px] rounded-full bg-gradient-to-r from-amber-500 via-orange-400 to-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.8)]" />
+                </em>
               </h1>
               <p>
                 Volamp brings clearer electrical sourcing to the people responsible for keeping projects,
                 plants and communities moving.
               </p>
               <div className="about-hero-actions">
-                <a className="about-primary-cta" href="#story">
-                  Read our story <ArrowRight className="size-4" />
+                <a className="about-primary-cta group/cta" href="#story">
+                  <span>Read our story</span>
+                  <ArrowRight className="size-4 transition-transform group-hover/cta:translate-x-1" />
                 </a>
-                <a className="about-secondary-cta" href="#footprint">
-                  Explore 3D Footprint <MapPin className="size-4" />
+                <a className="about-secondary-cta group/cta" href="#footprint">
+                  <span>Explore 3D Footprint</span>
+                  <MapPin className="size-4 text-amber-500 group-hover/cta:scale-110 transition-transform" />
                 </a>
               </div>
-            </div>
-            <div className="about-hero-art">
-              <div className="about-orbit about-orbit-one" />
-              <div className="about-orbit about-orbit-two" />
-              <div className="about-hero-core">
-                <Cable />
-                <span>VLP</span>
+
+              {/* Quick Heritage Stat Chips */}
+              <div className="grid grid-cols-3 gap-3 pt-6 mt-6 border-t border-slate-200/80 dark:border-slate-800/80 max-w-lg">
+                <div className="p-3 rounded-xl bg-white/75 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-xs backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-amber-400/60 hover:shadow-md">
+                  <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
+                    60+ <span className="text-amber-500 text-xs sm:text-sm font-bold">Yrs</span>
+                  </div>
+                  <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+                    Engineering Heritage
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-white/75 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-xs backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-sky-400/60 hover:shadow-md">
+                  <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
+                    100+ <span className="text-sky-500 text-xs sm:text-sm font-bold">Sites</span>
+                  </div>
+                  <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+                    Landmark Projects
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-white/75 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80 shadow-xs backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-emerald-400/60 hover:shadow-md">
+                  <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
+                    4th <span className="text-emerald-500 text-xs sm:text-sm font-bold">Gen</span>
+                  </div>
+                  <div className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+                    Family Integrity
+                  </div>
+                </div>
               </div>
-              <span className="about-hero-coordinate">23° 01' N · 72° 34' E</span>
             </div>
+            <HeroTeamPortrait onShowHq={handleShowOldCityHQ} />
           </div>
         </section>
 
@@ -960,30 +1181,7 @@ export default function AboutVolamp() {
             <p className="about-footer-mission">
               Four generations of trusted electrical manufacturing and engineered supply chains powering landmark infrastructure, solar parks, industrial plants, and smart cities across India.
             </p>
-            <div className="about-footer-socials">
-              <a href="https://www.linkedin.com/company/volampelektrikals/" target="_blank" rel="noreferrer" aria-label="Volamp on LinkedIn">
-                <Linkedin className="size-4" />
-              </a>
-              <a href="https://www.facebook.com/profile.php?id=61587485305483#" target="_blank" rel="noreferrer" aria-label="Volamp on Facebook">
-                <Facebook className="size-4" />
-              </a>
-              <a href="https://www.instagram.com/volampp?stkn=dGtjZDA1enF5OWN6" target="_blank" rel="noreferrer" aria-label="Volamp on Instagram">
-                <Instagram className="size-4" />
-              </a>
-              <a href="https://m.youtube.com/%40cablezone" target="_blank" rel="noreferrer" aria-label="Volamp on YouTube">
-                <Youtube className="size-4" />
-              </a>
-              <a href="https://x.com/VolampL?t=vkBQW9lpw2gNbC5lDqYUCg&s=09" target="_blank" rel="noreferrer" aria-label="Volamp on X" title="Volamp on X">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="size-3.5" aria-hidden="true">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-              <a href="https://in.pinterest.com/volammp2021/" target="_blank" rel="noreferrer" aria-label="Volamp on Pinterest" title="Volamp on Pinterest">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="size-3.5" aria-hidden="true">
-                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.69 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z" />
-                </svg>
-              </a>
-            </div>
+            <SocialMediaLinks className="my-2" />
             <a href="https://gem.gov.in/" target="_blank" rel="noreferrer" className="about-footer-gem-badge" title="Government e-Marketplace Registered Vendor">
               <img src="/gem-marketplace-logo.png" alt="Government e Marketplace GeM" />
             </a>

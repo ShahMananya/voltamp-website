@@ -341,11 +341,11 @@ export default function TermsConditions() {
                   <span>+91 9512365582</span>
                 </a>
                 <a
-                  href="mailto:corporate@volamp.com"
+                  href="mailto:Grievances@volampelektrikals.com"
                   className="flex items-center gap-2 text-[#4d1217] dark:text-white hover:text-[#c56718]"
                 >
                   <Mail className="size-3.5 text-[#c56718]" />
-                  <span>corporate@volamp.com</span>
+                  <span>Grievances@volampelektrikals.com</span>
                 </a>
               </div>
             </div>

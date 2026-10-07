@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import SeoHead from "@/components/seo/SeoHead";
 import {
   ArrowLeft,
   ArrowRight,
@@ -148,6 +149,11 @@ export default function EmployeePortal() {
 
   return (
     <div className="min-h-screen bg-[#fdfbf9] text-[#142b40] transition-colors">
+      <SeoHead
+        title="Internal Employee Operations Portal | Voltamp"
+        description="Internal employee operations portal for order fulfillment, customer quotations, and logistics management."
+        noindex={true}
+      />
       {/* Top Bar */}
       <header className="sticky top-0 z-30 bg-white border-b border-[#ebd7c7]">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">

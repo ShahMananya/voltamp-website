@@ -44,6 +44,7 @@ import { trpc } from "@/lib/trpc";
 import { QuickOrderModal } from "@/components/quickorder/QuickOrderModal";
 import { EnquireModal } from "@/components/enquire/EnquireModal";
 import UniversalFooter from "@/components/layout/UniversalFooter";
+import SeoHead from "@/components/seo/SeoHead";
 import { useCart } from "@/contexts/CartContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
@@ -178,18 +179,39 @@ function getCategoryGallery(product: any): GalleryItem[] {
   ];
 }
 
-export default function ProductDetailPage() {
+interface ProductDetailPageProps {
+  params?: {
+    productId?: string;
+    slug?: string;
+  };
+}
+
+export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
+  const [location, navigate] = useLocation();
   const [, params] = useRoute("/product/:productId");
   const [, pParams] = useRoute("/p/:productId");
   const [, slugParams] = useRoute("/product/:productId/:slug");
-  const [, navigate] = useLocation();
 
-  const productId = params?.productId || pParams?.productId || slugParams?.productId || "";
+  // Fallback direct path extraction in case route regex didn't catch trailing slashes or subpaths
+  const pathSegments = (location || "").split("?")[0].split("#")[0].split("/").filter(Boolean);
+  const pathExtractedId =
+    pathSegments[0] === "product" || pathSegments[0] === "p"
+      ? decodeURIComponent(pathSegments[1] || "")
+      : "";
+
+  const productId = (
+    props.params?.productId ||
+    params?.productId ||
+    pParams?.productId ||
+    slugParams?.productId ||
+    pathExtractedId ||
+    ""
+  ).trim();
 
   // Query product data from backend
-  const { data: product, isLoading, error } = trpc.products.getById.useQuery(
+  const { data: product, isLoading, isFetching, error, refetch } = trpc.products.getById.useQuery(
     { productId },
-    { enabled: Boolean(productId) }
+    { enabled: Boolean(productId), retry: 1 }
   );
 
   // Cart & Compare contexts
@@ -644,7 +666,76 @@ export default function ProductDetailPage() {
     return list.filter((item) => item.label.toLowerCase().includes(q) || item.value.toLowerCase().includes(q));
   }, [keyAttributes, specs, product, specSearchQuery]);
 
-  if (isLoading) {
+  const currentActiveImage = galleryImages[selectedImageIndex]?.url || prodImg || categoryFallback;
+
+  const productJsonLd = useMemo(() => {
+    if (!product) return null;
+    const cat = product.category || "Electrical Supplies";
+    const brandName = product.brand || "VOLAMP ELEKTRIKALS";
+    const imgUrl = currentActiveImage.startsWith("http")
+      ? currentActiveImage
+      : `https://volampelektrikals.com${currentActiveImage.startsWith("/") ? "" : "/"}${currentActiveImage}`;
+
+    return [
+      {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "@id": `https://volampelektrikals.com/product/${product.productId}#product`,
+        name: product.name,
+        image: [imgUrl],
+        description:
+          product.description ||
+          `${product.name} (${brandName}) industrial electrical specification. Certified genuine OEM supply with MTC test certificate from VOLAMP Elektrikals, Ahmedabad.`,
+        sku: product.sku || product.productId,
+        mpn: product.productId,
+        brand: {
+          "@type": "Brand",
+          name: brandName,
+        },
+        category: cat,
+        offers: {
+          "@type": "Offer",
+          url: `https://volampelektrikals.com/product/${product.productId}`,
+          priceCurrency: "INR",
+          price: effectiveUnitPrice.toFixed(2),
+          priceValidUntil: "2027-12-31",
+          itemCondition: "https://schema.org/NewCondition",
+          availability: "https://schema.org/InStock",
+          seller: {
+            "@type": "Organization",
+            name: "VOLAMP ELEKTRIKALS PVT. LTD.",
+            telephone: "+91-9512365582",
+          },
+        },
+      },
+      {
+        "@context": "https://schema.org/",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://volampelektrikals.com/",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: cat,
+            item: `https://volampelektrikals.com/category/wire-cables`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: product.name,
+            item: `https://volampelektrikals.com/product/${product.productId}`,
+          },
+        ],
+      },
+    ];
+  }, [product, currentActiveImage, effectiveUnitPrice]);
+
+  if (isLoading || (isFetching && !product) || !productId) {
     return (
       <div className="min-h-screen bg-[#f8fafc] dark:bg-[#090f17] flex flex-col font-sans">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-12 flex-1 w-full animate-pulse space-y-8">
@@ -673,12 +764,22 @@ export default function ProductDetailPage() {
           </div>
           <h1 className="text-xl font-bold text-slate-900 dark:text-white">Product Not Found</h1>
           <p className="text-xs text-slate-500">
-            We could not find the product with reference ID "{productId}". It may have been relocated or updated in our catalog.
+            We could not find the product with reference ID "{productId || "Unknown"}". It may have been relocated or updated in our catalog.
           </p>
-          <div className="pt-2">
+          <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
+            {error && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                className="cursor-pointer"
+              >
+                <RotateCcw className="size-3.5 mr-1.5" /> Retry Loading
+              </Button>
+            )}
             <Link
-              href="/category/wires-cables"
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#1d73b7] to-[#0284c7] text-white text-xs font-bold hover:shadow-lg hover:shadow-sky-500/25 transition-all"
+              href="/products"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#1d73b7] to-[#0284c7] text-white text-xs font-bold hover:shadow-lg hover:shadow-sky-500/25 transition-all"
             >
               Browse Complete Catalog
             </Link>
@@ -688,10 +789,17 @@ export default function ProductDetailPage() {
     );
   }
 
-  const currentActiveImage = galleryImages[selectedImageIndex]?.url || prodImg || categoryFallback;
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] via-slate-50 to-[#f1f5f9] dark:from-[#090f17] dark:via-[#0c1522] dark:to-[#080d14] text-[#1e293b] dark:text-[#f1f5f9] flex flex-col font-sans transition-colors">
+      <SeoHead
+        title={`${product.name} (${product.brand || "VOLAMP"}) | Wholesale Price & Specs`}
+        description={`Buy ${product.name} (${product.brand || "VOLAMP"}) online from Volamp Elektrikals. B2B contractor rates, certified specifications, MTC test certificates, fast dispatch from Ahmedabad.`}
+        keywords={`${product.name}, ${product.brand}, ${product.category}, buy ${product.name} online, electrical supplier Ahmedabad, Volamp Elektrikals wholesale, Polycab Havells distributor`}
+        canonicalPath={`/product/${product.productId}`}
+        ogImage={currentActiveImage.startsWith("http") ? currentActiveImage : `https://volampelektrikals.com${currentActiveImage}`}
+        ogType="product"
+        jsonLd={productJsonLd || undefined}
+      />
       
       {/* 1. TOP NAVBAR */}
       <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#0c1522]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-xs">

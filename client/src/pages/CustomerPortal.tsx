@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useLocation } from "wouter";
+import SeoHead from "@/components/seo/SeoHead";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -293,6 +294,11 @@ export default function CustomerPortal() {
 
   return (
     <div className="portal-shell industrial-portal">
+      <SeoHead
+        title="Customer Dashboard & Orders | Voltamp"
+        description="Private customer dashboard for B2B procurement, order tracking, and account management."
+        noindex={true}
+      />
       <div className="portal-container">
         <div className="portal-topbar">
           <Link href="/" className="back-link">

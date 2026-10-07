@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { appRouter } from "./routers";
 import { COOKIE_NAME } from "../shared/const";
 import type { TrpcContext } from "./_core/context";
+import { getLatestOtpForEmail } from "./db";
 
 type CookieCall = {
   name: string;
@@ -60,12 +61,16 @@ describe("Authentication and MFA Flow", () => {
 
     expect(result.success).toBe(true);
     expect(result.email).toBe("rohan@volampelektrikals.com");
-    expect(result.devOtp).toMatch(/^\d{6}$/);
+
+    // Code is dispatched to email, verified from backend OTP storage
+    const otp = getLatestOtpForEmail("rohan@volampelektrikals.com", "email_verification");
+    expect(otp).toBeDefined();
+    expect(otp).toMatch(/^\d{6}$/);
 
     // Verify email OTP
     const verifyResult = await caller.auth.verifyEmailOtp({
       email: "rohan@volampelektrikals.com",
-      code: result.devOtp,
+      code: otp!,
     });
 
     expect(verifyResult.success).toBe(true);
@@ -96,9 +101,12 @@ describe("Authentication and MFA Flow", () => {
     // Must require MFA
     expect(loginResult.mfaRequired).toBe(true);
     expect(loginResult.mfaPendingToken).toBeDefined();
-    expect(loginResult.devOtp).toMatch(/^\d{6}$/);
     // Server must NOT have set the session cookie yet
     expect(setCookies).toHaveLength(0);
+
+    const mfaOtp = getLatestOtpForEmail("admin@volampelektrikals.com", "mfa");
+    expect(mfaOtp).toBeDefined();
+    expect(mfaOtp).toMatch(/^\d{6}$/);
 
     // Entering an invalid code must fail
     await expect(
@@ -111,7 +119,7 @@ describe("Authentication and MFA Flow", () => {
     // Entering the valid 6-digit OTP completes MFA and sets session cookie
     const mfaResult = await caller.auth.verifyMfaOtp({
       mfaPendingToken: loginResult.mfaPendingToken!,
-      code: loginResult.devOtp!,
+      code: mfaOtp!,
     });
 
     expect(mfaResult.success).toBe(true);
@@ -132,12 +140,15 @@ describe("Authentication and MFA Flow", () => {
 
     expect(regResult.success).toBe(true);
     expect(regResult.email).toBe("contractor@megabuild.in");
-    expect(regResult.devOtp).toMatch(/^\d{6}$/);
+
+    const customerOtp = getLatestOtpForEmail("contractor@megabuild.in", "email_verification");
+    expect(customerOtp).toBeDefined();
+    expect(customerOtp).toMatch(/^\d{6}$/);
 
     // Verify email OTP
     const verifyResult = await caller.auth.verifyEmailOtp({
       email: "contractor@megabuild.in",
-      code: regResult.devOtp,
+      code: customerOtp!,
     });
 
     expect(verifyResult.success).toBe(true);

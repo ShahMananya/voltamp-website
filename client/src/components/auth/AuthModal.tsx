@@ -69,7 +69,6 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
 
   // OTP State
   const [otpCode, setOtpCode] = useState("");
-  const [devOtpHint, setDevOtpHint] = useState<string | null>(null);
   const [mfaPendingToken, setMfaPendingToken] = useState<string | null>(null);
   const [targetAccountType, setTargetAccountType] = useState<"employee" | "customer">("customer");
   const [activeEmail, setActiveEmail] = useState("");
@@ -87,7 +86,6 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
       else if (initialAccountType === "customer") setView("customer-login");
       else setView("type-selection");
       setDomainError(null);
-      setDevOtpHint(null);
       setOtpCode("");
     }
   }, [isOpen, initialAccountType]);
@@ -99,7 +97,6 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
         setMfaPendingToken(data.mfaPendingToken);
         setActiveEmail(data.email ?? email);
         setTargetAccountType(data.accountType);
-        if (data.devOtp) setDevOtpHint(data.devOtp);
         setOtpCode("");
         setView("mfa-verify");
         toast.info("MFA Verification Required", {
@@ -142,9 +139,8 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
   });
 
   const resendMfaMutation = trpc.auth.resendMfaOtp.useMutation({
-    onSuccess: (data) => {
-      if (data.devOtp) setDevOtpHint(data.devOtp);
-      toast.info("Code resent", { description: "A new 6-digit verification code has been generated." });
+    onSuccess: () => {
+      toast.info("Code resent", { description: `A new 6-digit verification code has been dispatched to ${activeEmail || email}.` });
     },
     onError: (err) => toast.error(err.message),
   });
@@ -153,7 +149,6 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
     onSuccess: (data) => {
       setActiveEmail(data.email ?? email);
       setTargetAccountType("employee");
-      if (data.devOtp) setDevOtpHint(data.devOtp);
       setOtpCode("");
       setView("email-verify");
       toast.success("Verification code sent", {
@@ -170,7 +165,6 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
     onSuccess: (data) => {
       setActiveEmail(data.email ?? email);
       setTargetAccountType("customer");
-      if (data.devOtp) setDevOtpHint(data.devOtp);
       setOtpCode("");
       setView("email-verify");
       toast.success("Verification code sent", {
@@ -179,6 +173,21 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
     },
     onError: (err) => {
       toast.error("Registration Error", { description: err.message });
+    },
+  });
+
+  const resendEmailVerificationMutation = trpc.auth.resendEmailVerificationOtp.useMutation({
+    onSuccess: (data) => {
+      if (data.alreadyVerified) {
+        toast.info("Already Verified", { description: "Your email is already verified. You can log in directly." });
+      } else {
+        toast.success("Verification Code Resent", {
+          description: `A new confirmation code has been dispatched to ${activeEmail || email}.`,
+        });
+      }
+    },
+    onError: (err) => {
+      toast.error("Resend Failed", { description: err.message });
     },
   });
 
@@ -199,8 +208,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
   });
 
   const forgotPasswordMutation = trpc.auth.forgotPassword.useMutation({
-    onSuccess: (data) => {
-      if (data.devOtp) setDevOtpHint(data.devOtp);
+    onSuccess: () => {
       setForgotStep("reset");
       toast.info("Password Reset Code Sent", {
         description: "If an account exists, a 6-digit code was sent to your email.",
@@ -842,15 +850,6 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
               <strong className="text-[#102a40]">{activeEmail}</strong>.
             </p>
 
-            {devOtpHint && (
-              <div className="p-2.5 mb-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-xs text-emerald-800 dark:text-emerald-300 flex items-center justify-between">
-                <span className="font-mono font-bold text-sm tracking-wider">{devOtpHint}</span>
-                <span className="text-[10px] font-semibold uppercase bg-emerald-100 dark:bg-emerald-900 px-2 py-0.5 rounded">
-                  Localhost Code
-                </span>
-              </div>
-            )}
-
             <form onSubmit={handleMfaSubmit} className="flex flex-col items-center space-y-5">
               <InputOTP maxLength={6} value={otpCode} onChange={setOtpCode}>
                 <InputOTPGroup>
@@ -915,14 +914,11 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
               <strong className="text-[#102a40]">{activeEmail}</strong>.
             </p>
 
-            {devOtpHint && (
-              <div className="p-2.5 mb-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-xs text-emerald-800 dark:text-emerald-300 flex items-center justify-between">
-                <span className="font-mono font-bold text-sm tracking-wider">{devOtpHint}</span>
-                <span className="text-[10px] font-semibold uppercase bg-emerald-100 dark:bg-emerald-900 px-2 py-0.5 rounded">
-                  Localhost Code
-                </span>
-              </div>
-            )}
+            <div className="p-3 mb-5 rounded-lg bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-xs text-[#204562] dark:text-blue-200 text-left">
+              <p className="leading-relaxed">
+                A verification code has been dispatched to your email address. Please check your inbox and spam/junk folder.
+              </p>
+            </div>
 
             <form onSubmit={handleEmailOtpSubmit} className="flex flex-col items-center space-y-5">
               <InputOTP maxLength={6} value={otpCode} onChange={setOtpCode}>
@@ -944,6 +940,28 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
                 {verifyEmailOtpMutation.isPending ? "Confirming..." : "Confirm & Proceed"}{" "}
                 <ArrowRight className="size-3.5" />
               </Button>
+
+              <div className="flex items-center justify-between w-full text-xs text-[#6e808b] dark:text-[#b6c8d3] pt-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setView(targetAccountType === "employee" ? "employee-register" : "customer-register")
+                  }
+                  className="hover:underline flex items-center gap-1"
+                >
+                  <ArrowLeft className="size-3" /> Back
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    resendEmailVerificationMutation.mutate({ email: activeEmail || email })
+                  }
+                  disabled={resendEmailVerificationMutation.isPending}
+                  className="text-[#1d73b7] font-semibold hover:underline flex items-center gap-1 disabled:opacity-50"
+                >
+                  <RefreshCw className={`size-3 ${resendEmailVerificationMutation.isPending ? "animate-spin" : ""}`} /> Resend Code
+                </button>
+              </div>
             </form>
           </div>
         )}
@@ -999,15 +1017,6 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
                 ? "Enter your registered email to receive a password reset code."
                 : `Enter the code sent to ${email} and your new password.`}
             </p>
-
-            {devOtpHint && (
-              <div className="p-2.5 mb-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-xs text-emerald-800 dark:text-emerald-300 flex items-center justify-between">
-                <span className="font-mono font-bold text-sm tracking-wider">{devOtpHint}</span>
-                <span className="text-[10px] font-semibold uppercase bg-emerald-100 dark:bg-emerald-900 px-2 py-0.5 rounded">
-                  Reset Code
-                </span>
-              </div>
-            )}
 
             {forgotStep === "email" ? (
               <form

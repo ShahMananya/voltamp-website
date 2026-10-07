@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
+import SeoHead from "@/components/seo/SeoHead";
 import ThemeToggle from "@/components/ThemeToggle";
 import UniversalFooter from "@/components/layout/UniversalFooter";
 import { useUserLocation } from "@/contexts/LocationContext";
@@ -109,6 +110,59 @@ export default function BranchLocations() {
 
   return (
     <div className="volamp-marketplace min-h-screen bg-[#faf7f3] dark:bg-[#0c1520] text-[#3d2b2d] dark:text-[#f5f7f9] flex flex-col font-sans transition-colors">
+      <SeoHead
+        title="Branch Locations & Warehouse Depots | Voltamp Ahmedabad & Aslali"
+        description="Visit Voltamp Elektrikals: Corporate Sales Office at Khadia (Old City) and Central Logistics Fulfillment Center at Aslali, Ahmedabad, Gujarat. Pan-India dispatch."
+        keywords="Voltamp branch Ahmedabad, electrical shop Khadia, cable warehouse Aslali, Polycab distributor Ahmedabad address, electrical wholesale Gujarat, Voltamp contact number"
+        canonical="https://volampelektrikals.com/branch-locations"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "LocalBusiness",
+              "name": "Voltamp Elektrikals Private Limited - Corporate Office",
+              "telephone": "+919512365582",
+              "email": "sales@volampelektrikals.com",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia",
+                "addressLocality": "Ahmedabad",
+                "addressRegion": "Gujarat",
+                "postalCode": "380001",
+                "addressCountry": "IN"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 23.0225,
+                "longitude": 72.5950
+              },
+              "openingHours": "Mo-Sa 09:30-19:30",
+              "hasMap": "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw"
+            },
+            {
+              "@type": "Warehouse",
+              "name": "Voltamp Elektrikals - Aslali Central Fulfillment Hub",
+              "telephone": "+919512365582",
+              "email": "logistics@volampelektrikals.com",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Near NH-48 & SP Ring Road Junction, Aslali",
+                "addressLocality": "Ahmedabad",
+                "addressRegion": "Gujarat",
+                "postalCode": "382427",
+                "addressCountry": "IN"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 22.9064,
+                "longitude": 72.5878
+              },
+              "openingHours": "Mo-Sa 08:00-20:00",
+              "hasMap": "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7"
+            }
+          ]
+        }}
+      />
       {/* 1. Top Utility Bar (Exact Home Page Component) */}
       <div className="market-utility">
         <div className="market-container utility-inner">

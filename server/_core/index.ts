@@ -10,6 +10,7 @@ import { registerStorageProxy } from "./storageProxy";
 import { registerQuickOrderPdfRoute } from "../quickOrderPdfRoute";
 import { registerGoogleMerchantRoutes } from "../googleMerchantFeed";
 import { registerProductRestRoutes } from "../productRestRoutes";
+import { registerSeoRoutes } from "../seoRoutes";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -45,6 +46,7 @@ async function startServer() {
   registerQuickOrderPdfRoute(app);
   registerGoogleMerchantRoutes(app);
   registerProductRestRoutes(app);
+  registerSeoRoutes(app);
   // tRPC API
   app.use(
     "/api/trpc",

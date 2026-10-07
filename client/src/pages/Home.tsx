@@ -16,20 +16,22 @@ import { AIChatBox, type Message } from "@/components/AIChatBox";
 import NewsletterSection from "@/components/home/NewsletterSection";
 import CableCalculatorModal from "@/components/calculator/CableCalculatorModal";
 import ThemeToggle from "@/components/ThemeToggle";
+import SeoHead from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ArrowRight, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Linkedin, Lock, Menu, MessageCircle, MessageSquare, PackageSearch, PlugZap, Quote, Search, Shield, ShieldCheck, ShoppingCart, Sparkles, Truck, UserRound, X, Youtube, Zap } from "lucide-react";
+import SocialMediaLinks from "@/components/layout/SocialMediaLinks";
 import { CATEGORIES, ICON_MAP } from "@/data/categories";
 
 type Product = { name: string; sku: string; category: string; detail: string; accent: "orange" | "brown" | "yellow"; icon: typeof Cable; price: number; unit: string; use: string };
 const products: Product[] = [
-  { name: "1.1kV XLPE Aluminium Armoured Cable", sku: "VLP-AL-001", category: "Wires & Cables", detail: "Heavy-duty cross-linked underground power feeder cable for industrial and plant distribution.", accent: "brown", icon: Cable, price: 118, unit: "per metre", use: "Industrial plants, substations and LT distribution" },
-  { name: "Screened Instrumentation Cable (Pair/Triad)", sku: "VLP-IN-014", category: "Wires & Cables", detail: "Individually and overall shielded signal cabling for control rooms and DCS automation.", accent: "orange", icon: Factory, price: 142, unit: "per metre", use: "Process instrumentation and factory automation" },
-  { name: "Solar DC Cable 1C x 4 sqmm (H1Z2Z2-K)", sku: "VLP-SL-022", category: "Solar", detail: "UV, ozone and weather-resistant crosslinked halogen-free photovoltaic cable.", accent: "yellow", icon: Zap, price: 76, unit: "per metre", use: "Rooftop and ground-mount utility solar plants" },
-  { name: "Flexible FRLS Single Core Building Wire", sku: "VLP-BW-031", category: "Wires & Cables", detail: "Flame retardant low smoke 100% electrolytic copper conductor wire.", accent: "orange", icon: PlugZap, price: 42, unit: "per metre", use: "Commercial buildings, panels and residential wiring" },
-  { name: "10kA C-Curve Miniature Circuit Breaker (MCB)", sku: "VLP-SG-048", category: "Switchgear", detail: "IS/IEC 60898-1 certified final distribution protection device with bi-connect terminals.", accent: "brown", icon: PlugZap, price: 185, unit: "per piece", use: "Distribution boards and motor control centers" },
+  { name: "1.1kV XLPE Aluminium Armoured Cable", sku: "CAB-000001", category: "Wires & Cables", detail: "Heavy-duty cross-linked underground power feeder cable for industrial and plant distribution.", accent: "brown", icon: Cable, price: 118, unit: "per metre", use: "Industrial plants, substations and LT distribution" },
+  { name: "Screened Instrumentation Cable (Pair/Triad)", sku: "CAB-000002", category: "Wires & Cables", detail: "Individually and overall shielded signal cabling for control rooms and DCS automation.", accent: "orange", icon: Factory, price: 142, unit: "per metre", use: "Process instrumentation and factory automation" },
+  { name: "Solar DC Cable 1C x 4 sqmm (H1Z2Z2-K)", sku: "SOL-000001", category: "Solar", detail: "UV, ozone and weather-resistant crosslinked halogen-free photovoltaic cable.", accent: "yellow", icon: Zap, price: 76, unit: "per metre", use: "Rooftop and ground-mount utility solar plants" },
+  { name: "Flexible FRLS Single Core Building Wire", sku: "CAB-000003", category: "Wires & Cables", detail: "Flame retardant low smoke 100% electrolytic copper conductor wire.", accent: "orange", icon: PlugZap, price: 42, unit: "per metre", use: "Commercial buildings, panels and residential wiring" },
+  { name: "10kA C-Curve Miniature Circuit Breaker (MCB)", sku: "SWG-000001", category: "Switchgear", detail: "IS/IEC 60898-1 certified final distribution protection device with bi-connect terminals.", accent: "brown", icon: PlugZap, price: 185, unit: "per piece", use: "Distribution boards and motor control centers" },
 ];
 const categoryNavigation = CATEGORIES.map((category) => {
   const Icon = ICON_MAP[category.iconName] || Cable;
@@ -223,6 +225,13 @@ export default function Home() {
   };
 
   return <div className="volamp-marketplace">
+    <SeoHead
+      title="VOLAMP ELEKTRIKALS | B2B Electrical Supplier & Power Cable Distributor Ahmedabad Gujarat"
+      description="VOLAMP ELEKTRIKALS is a leading B2B electrical distributor in Ahmedabad, Gujarat. Supplying Polycab, Havells, RR Kabel, KEI, and Schneider LT/HT power cables, solar DC cables, switchgear, and earthing materials across India and global export corridors."
+      keywords="electrical supplier Ahmedabad, cable distributor Gujarat, Polycab distributor Ahmedabad, Havells switchgear dealer, solar DC cable supplier, LT HT power cable Gujarat, industrial electrical distributor, Volamp Elektrikals"
+      canonicalPath="/"
+      ogType="website"
+    />
     <div className="market-utility"><div className="market-container utility-inner"><button onClick={openLocationPicker} className="flex items-center gap-2 text-left text-[#c56718] dark:text-amber-300 hover:text-[#b45309] dark:hover:text-amber-400 transition-colors group cursor-pointer" title="Click to view or change your detected project location (Global & Domestic)"><span className={`status-dot ${isDetecting ? "animate-ping" : ""}`} /><Globe2 className="size-3.5 text-[#c56718] dark:text-amber-400 shrink-0" /><span className="font-semibold text-[#4d1217] dark:text-white group-hover:underline">{isDetecting && !location ? "Detecting location..." : location}</span><ChevronDown className="inline size-3 text-[#c56718] dark:text-amber-400 opacity-80 group-hover:translate-y-0.5 transition-transform" /></button><div><span className="desktop-only text-[#5d4a4b] dark:text-slate-300">Global electrical supply & export desk</span><button onClick={() => navigate("/collaborate")} className="utility-collaborate">Collaborate with us <ArrowRight className="inline size-3" /></button><button onClick={handleQuote}>Talk to supply desk <ArrowRight className="inline size-3" /></button></div></div></div>
     <header className="market-header">
       <div className="market-container market-header-top">
@@ -461,7 +470,14 @@ export default function Home() {
           {search && (
             <div className="search-results">
               {searchResults.length ? searchResults.map((product) => (
-                <button key={product.name} onClick={() => { setSelectedDetail(product); setSearch(""); }}>
+                <button
+                  key={product.name + product.sku}
+                  onClick={() => {
+                    navigate(`/product/${product.sku}`);
+                    setSearch("");
+                  }}
+                  className="cursor-pointer"
+                >
                   <ProductIllustration product={product} />
                   <span>
                     <strong>{product.name}</strong>
@@ -941,7 +957,7 @@ export default function Home() {
       </section>
     </main>
 
-    <footer className="site-footer"><NewsletterSection /><div className="footer-blog-bar"><div className="market-container footer-blog-inner"><div><span className="footer-eyebrow">VOLAMP JOURNAL</span><strong>Read the latest from our supply desk.</strong></div><button onClick={() => navigate("/blog")}>Visit the blog <ArrowRight className="size-4" /></button></div></div><div className="market-container footer-columns"><div className="footer-column footer-company"><BrandMark /><span className="footer-column-title">ABOUT VOLAMP</span><button onClick={() => navigate("/about-volamp")}>About Us</button><button onClick={() => navigate("/where-volamp-contributed")}>Where Volamp Contributed</button><button onClick={() => navigate("/business-segments")}>Business Segments</button><button onClick={() => navigate("/careers")}>Careers</button><button onClick={() => navigate("/collaborate")} className="footer-collaborate-link">Collaborate with Us</button><button onClick={() => navigate("/certifications-and-awards")}>Certifications & Quality</button><button onClick={() => navigate("/in-the-news")}>In the News</button></div><div className="footer-column"><span className="footer-column-title">SHOP CATEGORIES</span>{categoryNavigation.map((category) => <button key={category.name} onClick={() => navigate(categoryPath(category.slug || category.name))}>{category.name}<ArrowRight className="footer-link-arrow" /></button>)}</div><div className="footer-column"><span className="footer-column-title">HELP</span><button onClick={handleQuote}>Contact Us</button><button onClick={() => navigate("/branch-locations")}>Branch Location</button><button onClick={() => navigate("/refund-policy")}>Return & Refund Policy</button><button onClick={() => navigate("/shipping-policy")}>Shipping Policy</button><button onClick={() => navigate("/terms-and-conditions")}>Terms & Conditions</button><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></div><div className="footer-column footer-order-support"><span className="footer-column-title">ORDER SUPPORT</span><div className="footer-support-phone"><span>SUPPORT PHONE</span><a className="footer-support-phone-link" href="tel:+919512365582" aria-label="Call VOLAMP support at 9512365582"><strong>9512365582</strong></a><small>Call Volamp support</small></div><button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button><button onClick={() => setQuickOrderOpen(true)}>Quick Order (WhatsApp Invoice)</button><a href="https://www.google.com/shopping?q=VOLAMP+ELEKTRIKALS" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Shopping Store</a><a href="/api/google-merchant-feed.xml" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Merchant Feed (XML)</a><button onClick={() => navigate("/pay-invoice")}>Pay an Invoice Online</button><button onClick={() => toast.info("Price List", { description: "The latest approved price list will be shared by the supply desk." })}>Price List</button><button onClick={() => navigate("/complaints-cases")}>Complaints/Cases</button></div><div className="footer-column footer-social-column"><span className="footer-column-title">SOCIAL MEDIA LINKS</span><div className="footer-social-links"><a href="https://www.linkedin.com/company/volampelektrikals/" target="_blank" rel="noreferrer" aria-label="VOLAMP on LinkedIn"><Linkedin /></a><a href="https://www.facebook.com/profile.php?id=61587485305483#" target="_blank" rel="noreferrer" aria-label="VOLAMP on Facebook"><Facebook /></a><a href="https://www.instagram.com/volampp?stkn=dGtjZDA1enF5OWN6" target="_blank" rel="noreferrer" aria-label="VOLAMP on Instagram"><Instagram /></a><a href="https://m.youtube.com/%40cablezone" target="_blank" rel="noreferrer" aria-label="VOLAMP on YouTube"><Youtube /></a><a href="https://x.com/VolampL?t=vkBQW9lpw2gNbC5lDqYUCg&s=09" target="_blank" rel="noreferrer" aria-label="VOLAMP on X" title="VOLAMP on X"><svg viewBox="0 0 24 24" fill="currentColor" className="size-3.5" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg></a><a href="https://in.pinterest.com/volammp2021/" target="_blank" rel="noreferrer" aria-label="VOLAMP on Pinterest" title="VOLAMP on Pinterest"><svg viewBox="0 0 24 24" fill="currentColor" className="size-3.5" aria-hidden="true"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.69 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z" /></svg></a></div><a className="footer-gem-mark" href="https://gem.gov.in/" target="_blank" rel="noreferrer" aria-label="VOLAMP on Government e Marketplace"><img src="/gem-marketplace-logo.png?v=2" alt="Government e Marketplace GeM" /></a></div></div><div className="market-container footer-bottom"><span>Volamp Elektrikals © 2026. All rights reserved.</span><span>Global & Domestic electrical supply and export network.</span></div></footer>
+    <footer className="site-footer"><NewsletterSection /><div className="footer-blog-bar"><div className="market-container footer-blog-inner"><div><span className="footer-eyebrow">VOLAMP JOURNAL</span><strong>Read the latest from our supply desk.</strong></div><button onClick={() => navigate("/blog")}>Visit the blog <ArrowRight className="size-4" /></button></div></div><div className="market-container footer-columns"><div className="footer-column footer-company"><BrandMark /><span className="footer-column-title">ABOUT VOLAMP</span><button onClick={() => navigate("/about-volamp")}>About Us</button><button onClick={() => navigate("/where-volamp-contributed")}>Where Volamp Contributed</button><button onClick={() => navigate("/business-segments")}>Business Segments</button><button onClick={() => navigate("/careers")}>Careers</button><button onClick={() => navigate("/collaborate")} className="footer-collaborate-link">Collaborate with Us</button><button onClick={() => navigate("/certifications-and-awards")}>Certifications & Quality</button><button onClick={() => navigate("/in-the-news")}>In the News</button></div><div className="footer-column"><span className="footer-column-title">SHOP CATEGORIES</span>{categoryNavigation.map((category) => <button key={category.name} onClick={() => navigate(categoryPath(category.slug || category.name))}>{category.name}<ArrowRight className="footer-link-arrow" /></button>)}</div><div className="footer-column"><span className="footer-column-title">HELP</span><button onClick={handleQuote}>Contact Us</button><button onClick={() => navigate("/branch-locations")}>Branch Location</button><button onClick={() => navigate("/refund-policy")}>Return & Refund Policy</button><button onClick={() => navigate("/shipping-policy")}>Shipping Policy</button><button onClick={() => navigate("/terms-and-conditions")}>Terms & Conditions</button><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></div><div className="footer-column footer-order-support"><span className="footer-column-title">ORDER SUPPORT</span><div className="footer-support-phone"><span>SUPPORT PHONE</span><a className="footer-support-phone-link" href="tel:+919512365582" aria-label="Call VOLAMP support at 9512365582"><strong>9512365582</strong></a><small>Call Volamp support</small></div><button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button><button onClick={() => setQuickOrderOpen(true)}>Quick Order (WhatsApp Invoice)</button><a href="https://www.google.com/shopping?q=VOLAMP+ELEKTRIKALS" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Shopping Store</a><a href="/api/google-merchant-feed.xml" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Merchant Feed (XML)</a><button onClick={() => navigate("/pay-invoice")}>Pay an Invoice Online</button><button onClick={() => toast.info("Price List", { description: "The latest approved price list will be shared by the supply desk." })}>Price List</button><button onClick={() => navigate("/complaints-cases")}>Complaints/Cases</button></div><div className="footer-column footer-social-column"><span className="footer-column-title">SOCIAL MEDIA LINKS</span><SocialMediaLinks /><a className="footer-gem-mark" href="https://gem.gov.in/" target="_blank" rel="noreferrer" aria-label="VOLAMP on Government e Marketplace"><img src="/gem-marketplace-logo.png?v=2" alt="Government e Marketplace GeM" /></a></div></div><div className="market-container footer-bottom"><span>Volamp Elektrikals © 2026. All rights reserved.</span><span>Global & Domestic electrical supply and export network.</span></div></footer>
 
     <CableCalculatorModal
       isOpen={calculatorOpen}
@@ -962,7 +978,64 @@ export default function Home() {
       initialCategory={enquiryInitialCategory}
       initialProduct={enquiryInitialProduct}
     />
-    {selectedDetail && <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label={`${selectedDetail.name} details`} onClick={() => setSelectedDetail(null)}><div className="product-modal" onClick={(e) => e.stopPropagation()}><button className="modal-close" onClick={() => setSelectedDetail(null)} aria-label="Close details"><X /></button><ProductIllustration product={selectedDetail} /><div className="market-kicker">{selectedDetail.category}</div><h2>{selectedDetail.name}</h2><p>{selectedDetail.detail}</p><div className="modal-application"><strong>Typical application</strong><span>{selectedDetail.use}</span></div><div className="flex items-center gap-2 w-full mt-3"><Button onClick={() => { addItem({ id: selectedDetail.sku || selectedDetail.name, name: selectedDetail.name, category: selectedDetail.category, detail: selectedDetail.detail, price: selectedDetail.price, unit: selectedDetail.unit }); setSelectedDetail(null); openCart(); }} className="flex-1 bg-[#c56718] hover:bg-[#b45309] text-white cursor-pointer"><ShoppingCart className="size-4 mr-1.5" /> Add to Cart</Button><Button onClick={() => { const cat = selectedDetail.category; const name = selectedDetail.name; setSelectedDetail(null); handleQuote(cat, name); }} className="flex-1 cursor-pointer" variant="outline">Request RFQ <ArrowRight className="ml-1.5 size-4" /></Button></div></div></div>}
+    {selectedDetail && (
+      <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label={`${selectedDetail.name} details`} onClick={() => setSelectedDetail(null)}>
+        <div className="product-modal" onClick={(e) => e.stopPropagation()}>
+          <button className="modal-close" onClick={() => setSelectedDetail(null)} aria-label="Close details"><X /></button>
+          <ProductIllustration product={selectedDetail} />
+          <div className="market-kicker">{selectedDetail.category}</div>
+          <h2>{selectedDetail.name}</h2>
+          <p>{selectedDetail.detail}</p>
+          <div className="modal-application">
+            <strong>Typical application</strong>
+            <span>{selectedDetail.use}</span>
+          </div>
+          <div className="flex flex-col gap-2 w-full mt-3">
+            <Button
+              onClick={() => {
+                const targetSku = selectedDetail.sku || "CAB-000001";
+                setSelectedDetail(null);
+                navigate(`/product/${targetSku}`);
+              }}
+              className="w-full bg-[#1d73b7] hover:bg-[#165a8e] text-white cursor-pointer font-bold"
+            >
+              View Full Product Page & Specifications <ArrowRight className="ml-1.5 size-4" />
+            </Button>
+            <div className="flex items-center gap-2 w-full">
+              <Button
+                onClick={() => {
+                  addItem({
+                    id: selectedDetail.sku || selectedDetail.name,
+                    name: selectedDetail.name,
+                    category: selectedDetail.category,
+                    detail: selectedDetail.detail,
+                    price: selectedDetail.price,
+                    unit: selectedDetail.unit,
+                  });
+                  setSelectedDetail(null);
+                  openCart();
+                }}
+                className="flex-1 bg-[#c56718] hover:bg-[#b45309] text-white cursor-pointer"
+              >
+                <ShoppingCart className="size-4 mr-1.5" /> Add to Cart
+              </Button>
+              <Button
+                onClick={() => {
+                  const cat = selectedDetail.category;
+                  const name = selectedDetail.name;
+                  setSelectedDetail(null);
+                  handleQuote(cat, name);
+                }}
+                className="flex-1 cursor-pointer"
+                variant="outline"
+              >
+                Request RFQ <ArrowRight className="ml-1.5 size-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
     <AuthModal isOpen={accountOpen} onClose={() => setAccountOpen(false)} />
     <BankCreditModal isOpen={creditOpen} onClose={() => setCreditOpen(false)} />
     <QuickOrderModal isOpen={quickOrderOpen} onClose={() => setQuickOrderOpen(false)} />

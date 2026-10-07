@@ -23,6 +23,7 @@ import type {
   FootprintState,
 } from "./GlobeProjectsExperience";
 import { OFFICIAL_STATE_COUNTS } from "./GlobeProjectsExperience";
+import { KHADIA_HQ_PROJECT } from "@/data/footprintData";
 
 declare const L: any;
 
@@ -248,28 +249,37 @@ export const SatelliteFootprintMap = forwardRef<
     const L = (window as any).L;
     arcsLayer.clearLayers();
 
-    const hqLat = 23.0225;
-    const hqLng = 72.5714;
+    const hqLat = 23.0205;
+    const hqLng = 72.5898;
 
-    // Draw glowing pulsing HQ marker
+    // Draw glowing pulsing Khadia Old City Corporate HQ beacon marker
     const hqIcon = L.divIcon({
-      className: "hq-beacon-pin",
+      className: "hq-beacon-pin cursor-pointer",
       html: `
-        <div class="relative flex items-center justify-center">
-          <div class="absolute w-10 h-10 rounded-full bg-amber-500/20 animate-ping"></div>
-          <div class="absolute w-6 h-6 rounded-full bg-amber-500/40 animate-pulse"></div>
-          <div class="relative w-4 h-4 rounded-full bg-amber-400 border-2 border-white shadow-lg flex items-center justify-center text-[8px] font-black text-slate-950">
+        <div class="relative flex items-center justify-center cursor-pointer group">
+          <div class="absolute w-12 h-12 rounded-full bg-amber-500/30 animate-ping pointer-events-none"></div>
+          <div class="absolute w-7 h-7 rounded-full bg-amber-500/50 animate-pulse pointer-events-none"></div>
+          <div class="relative w-5 h-5 rounded-full bg-amber-400 border-2 border-white shadow-xl flex items-center justify-center text-[10px] font-black text-slate-950 transition-transform group-hover:scale-125">
             ★
           </div>
-          <div class="absolute bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-950/90 text-amber-300 font-bold text-[10px] px-2 py-0.5 rounded border border-amber-500/40 pointer-events-none shadow-md backdrop-blur-sm">
-            VOLAMP HQ (Ahmedabad)
+          <div class="absolute bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-950/95 text-amber-300 font-bold text-[10px] px-2.5 py-1 rounded-md border border-amber-400 shadow-2xl backdrop-blur-md flex items-center gap-1.5 transition-all group-hover:scale-105 pointer-events-none">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>VOLAMP Corporate HQ (Old City Khadia)</span>
           </div>
         </div>
       `,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
     });
-    L.marker([hqLat, hqLng], { icon: hqIcon, zIndexOffset: 2000 }).addTo(arcsLayer);
+    const hqMarker = L.marker([hqLat, hqLng], { icon: hqIcon, zIndexOffset: 3000 });
+    hqMarker.on("click", () => {
+      onUserInteractionStart();
+      onSelectProject(KHADIA_HQ_PROJECT);
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.flyTo([hqLat, hqLng], 17, { duration: 1.8 });
+      }
+    });
+    hqMarker.addTo(arcsLayer);
 
     // Draw supply lines to major states/hubs
     const keyTargets = [

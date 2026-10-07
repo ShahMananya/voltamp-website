@@ -40,6 +40,7 @@ import { trpc } from "@/lib/trpc";
 import { QuickOrderModal } from "@/components/quickorder/QuickOrderModal";
 import { EnquireModal } from "@/components/enquire/EnquireModal";
 import UniversalFooter from "@/components/layout/UniversalFooter";
+import SeoHead from "@/components/seo/SeoHead";
 import { useCart } from "@/contexts/CartContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
@@ -322,8 +323,58 @@ export default function CategoryPage() {
     Boolean(searchQuery) ||
     isCatChanged;
 
+  const categoryJsonLd = useMemo(() => {
+    return [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": `https://volampelektrikals.com/category/${slug || "products"}#collection`,
+        name: `${categoryTitle} | VOLAMP Elektrikals B2B Wholesale Catalog`,
+        description: `Explore genuine ${categoryTitle} with B2B contractor discounts at Volamp Elektrikals. Authorized distribution of Polycab, Havells, Schneider, L&T, and industrial cables from Ahmedabad, Gujarat.`,
+        url: `https://volampelektrikals.com/category/${slug || "products"}`,
+        isPartOf: {
+          "@type": "WebSite",
+          name: "VOLAMP ELEKTRIKALS",
+          url: "https://volampelektrikals.com",
+        },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://volampelektrikals.com/",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Products",
+            item: "https://volampelektrikals.com/products",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: categoryTitle,
+            item: `https://volampelektrikals.com/category/${slug || "products"}`,
+          },
+        ],
+      },
+    ];
+  }, [categoryTitle, slug]);
+
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0c1520] text-[#1e293b] dark:text-[#f1f5f9] flex flex-col font-sans transition-colors">
+      <SeoHead
+        title={`${categoryTitle} - Buy B2B Wholesale Price`}
+        description={`Explore genuine ${categoryTitle} with contractor discounts at Volamp Elektrikals. Polycab, Havells, Schneider, L&T, and industrial power cables ready for immediate dispatch across Gujarat and India.`}
+        keywords={`${categoryTitle}, buy ${categoryTitle} online, electrical cables wholesale Ahmedabad, Polycab distributor Gujarat, industrial electrical switchgear supply`}
+        canonicalPath={`/category/${slug || "products"}`}
+        ogType="website"
+        jsonLd={categoryJsonLd}
+      />
       {/* 1. TOP NAVBAR (Matching Vashi Layout with VOLAMP Branding) */}
       <header className="sticky top-0 z-40 bg-white dark:bg-[#111e2e] border-b border-slate-200 dark:border-slate-800 shadow-2xs">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">

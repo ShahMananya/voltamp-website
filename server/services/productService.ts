@@ -438,20 +438,55 @@ export function queryProducts(params: ProductFilterParams = {}) {
   };
 }
 
+const LEGACY_VLP_ALIASES: Record<string, string> = {
+  "VLP-AL-001": "CAB-000001",
+  "VLP-IN-014": "CAB-000002",
+  "VLP-SL-022": "SOL-000001",
+  "VLP-BW-031": "CAB-000003",
+  "VLP-SG-048": "SWG-000001",
+};
+
 export function getProductByProductId(productId: string): Product | undefined {
+  if (!productId || typeof productId !== "string") return undefined;
   const all = getCachedProducts();
-  const normalized = productId.trim().toUpperCase();
+  const rawClean = productId.trim();
+  const normalized = rawClean.toUpperCase();
+
+  // 1. Direct legacy alias match
+  if (LEGACY_VLP_ALIASES[normalized]) {
+    const aliasedId = LEGACY_VLP_ALIASES[normalized];
+    const match = all.find((p) => p.productId.toUpperCase() === aliasedId);
+    if (match) return match;
+  }
+
+  // 2. Direct exact match by productId or SKU
   const direct = all.find((p) => p.productId.toUpperCase() === normalized || p.sku.toUpperCase() === normalized);
   if (direct) return direct;
 
+  // 3. Prefix match (e.g. CAB-000001 with extra slug)
   const prefixMatch = all.find((p) => normalized.startsWith(p.productId.toUpperCase()));
   if (prefixMatch) return prefixMatch;
 
+  // 4. Numeric ID match (e.g. "1" -> id: 1)
   const num = parseInt(productId, 10);
   if (!isNaN(num)) {
     const byNum = all.find((p) => p.id === num);
     if (byNum) return byNum;
   }
+
+  // 5. Slugified name match (e.g. "0-5-sqmm-x-1-core-unarmoured-copper-cable")
+  const slugifiedInput = rawClean.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  if (slugifiedInput) {
+    const bySlug = all.find((p) => {
+      const pSlug = p.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      return pSlug === slugifiedInput || pSlug.startsWith(slugifiedInput);
+    });
+    if (bySlug) return bySlug;
+  }
+
+  // 6. Partial SKU or case-insensitive search
+  const partial = all.find((p) => p.sku.toUpperCase().includes(normalized) || p.productId.toUpperCase().includes(normalized));
+  if (partial) return partial;
 
   return undefined;
 }

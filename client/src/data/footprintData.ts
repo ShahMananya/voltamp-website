@@ -578,7 +578,30 @@ export const STATIC_FOOTPRINT_STATES: FootprintState[] = [
   }
 ];
 
+export const KHADIA_HQ_PROJECT: FootprintProject = {
+  id: 9999,
+  stateCode: "GJ",
+  name: "VOLAMP Corporate & Commercial Headquarters (Old City Khadia)",
+  city: "Old City, Khadia, Ahmedabad",
+  lat: "23.0205",
+  lng: "72.5898",
+  year: "1964 - Present",
+  category: "Corporate Headquarters & Commercial Operations",
+  shortDescription: "Historic registered headquarters at Khadia, Old City Ahmedabad, anchoring 60+ years of pan-India power infrastructure supply.",
+  overview: "Situated in Ahmedabad's UNESCO World Heritage Old City, this historic commercial headquarters has coordinated four generations of high-voltage transmission, switchgear trade, and critical engineering supplies across 28 Indian states.",
+  volampContribution: "Registered Commercial Headquarters · Executive Operations · Pan-India Dispatch Coordination · Switchgear & Transformer Distribution Hub.",
+  heritage: "1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia, Ahmedabad, Gujarat 380001 (GSTIN: 24AAICV0754B1ZO · Ph: +91 9512365582)",
+  customerTestimonial: "Four generations of trusted electrical leadership, powering critical national infrastructure and power grids across India from this Ahmedabad headquarters.",
+  customerName: "Registered Office",
+  customerCompany: "Volamp Elektrikals Pvt Ltd",
+  status: "Active Corporate HQ",
+  images: "/team/volamp-team-hero.jpg",
+  createdAt: "2026-09-30T00:00:00.000Z",
+  updatedAt: "2026-09-30T00:00:00.000Z",
+};
+
 export const STATIC_FOOTPRINT_PROJECTS: FootprintProject[] = [
+  KHADIA_HQ_PROJECT,
   {
     "id": 1,
     "stateCode": "GJ",

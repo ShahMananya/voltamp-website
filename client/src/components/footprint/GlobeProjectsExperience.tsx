@@ -28,9 +28,11 @@ import {
   Table,
   X,
   Zap,
+  ExternalLink,
+  Phone,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { STATIC_FOOTPRINT_STATES, STATIC_FOOTPRINT_PROJECTS } from "@/data/footprintData";
+import { STATIC_FOOTPRINT_STATES, STATIC_FOOTPRINT_PROJECTS, KHADIA_HQ_PROJECT } from "@/data/footprintData";
 
 import Universal3DGlobeCanvas, { Universal3DGlobeHandle } from "./Universal3DGlobeCanvas";
 import SatelliteFootprintMap, { SatelliteMapHandle } from "./SatelliteFootprintMap";
@@ -489,10 +491,16 @@ export default function GlobeProjectsExperience() {
   }, [dbStates]);
 
   const allProjectsList: FootprintProject[] = useMemo(() => {
+    let list: FootprintProject[] = [];
     if (dbProjects && Array.isArray(dbProjects) && dbProjects.length > 0) {
-      return dbProjects as unknown as FootprintProject[];
+      list = dbProjects as unknown as FootprintProject[];
+    } else {
+      list = STATIC_FOOTPRINT_PROJECTS;
     }
-    return STATIC_FOOTPRINT_PROJECTS;
+    if (!list.some((p) => p.id === 9999)) {
+      return [KHADIA_HQ_PROJECT, ...list];
+    }
+    return list;
   }, [dbProjects]);
 
   // Construct Data-Driven Cinematic Itinerary (Requirement 10 & 16)
@@ -783,16 +791,18 @@ export default function GlobeProjectsExperience() {
 
   // Directly focus a project on the satellite map & 3D globe and deeply zoom right into the location
   const focusProject = useCallback(
-    (proj: FootprintProject) => {
+    (proj: FootprintProject, zoomOverride?: number) => {
       handleUserInteractionStart();
       setCustomActiveProject(proj);
+      setIsDossierVisible(true);
       const pLat = Number(proj.lat);
       const pLng = Number(proj.lng);
+      const targetZoom = zoomOverride || (proj.id === 9999 ? 17 : 15);
       if (satelliteRef.current) {
-        satelliteRef.current.flyToLocation(pLat, pLng, 15, 2.2);
+        satelliteRef.current.flyToLocation(pLat, pLng, targetZoom, 2.2);
       }
       navigateGlobe(
-        { lat: pLat, lng: pLng, altitude: 0.16 },
+        { lat: pLat, lng: pLng, altitude: proj.id === 9999 ? 0.12 : 0.16 },
         2200
       );
       const wpIdx = waypoints.findIndex(
@@ -804,6 +814,19 @@ export default function GlobeProjectsExperience() {
     },
     [handleUserInteractionStart, navigateGlobe, waypoints]
   );
+
+  // Global Event Listener: Automatically navigate & zoom to Khadia Old City Corporate HQ
+  useEffect(() => {
+    const handleFocusHq = () => {
+      setViewMode("satellite");
+      setIsDossierVisible(true);
+      focusProject(KHADIA_HQ_PROJECT, 17);
+    };
+    window.addEventListener("volamp:focus-khadia-hq", handleFocusHq);
+    return () => {
+      window.removeEventListener("volamp:focus-khadia-hq", handleFocusHq);
+    };
+  }, [focusProject]);
 
   // Navigate directly to Next Location with deep zoom
   const handleNextLocation = useCallback(() => {
@@ -1413,21 +1436,72 @@ export default function GlobeProjectsExperience() {
                 </div>
               )}
 
-              <div className="flex flex-col gap-2 mt-2">
-                <button
-                  className="spotlight-action-btn flex items-center justify-center gap-1.5"
-                  onClick={() => setInspectorProject(activeWaypoint.project!)}
-                >
-                  <Sparkles className="size-3.5 text-amber-400" />
-                  <span>Dive into Landmark (UNESCO 3D View)</span>
-                </button>
-                <button
-                  className="text-xs text-slate-300 hover:text-amber-400 py-1 text-center transition-colors underline"
-                  onClick={() => setSelectedProject(activeWaypoint.project!)}
-                >
-                  View Technical Datasheet & Specs
-                </button>
-              </div>
+              {activeWaypoint.project.id === 9999 ? (
+                <div className="flex flex-col gap-2.5 mt-3 pt-3 border-t border-amber-500/30">
+                  <div className="p-3 rounded-xl bg-slate-900/95 border border-amber-500/40 text-xs text-amber-200 space-y-1.5 shadow-lg">
+                    <div className="font-bold text-amber-300 flex items-center gap-1.5 text-[12px]">
+                      <MapPin className="size-3.5 text-amber-400 shrink-0" />
+                      <span>Registered Office (Old City Khadia)</span>
+                    </div>
+                    <p className="text-slate-300 text-[11px] leading-relaxed">
+                      1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia, Ahmedabad, Gujarat 380001
+                    </p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 pt-1 text-[10px] text-slate-400 font-mono border-t border-slate-800">
+                      <span>GSTIN: 24AAICV0754B1ZO</span>
+                      <span>Ph: +91 9512365582</span>
+                    </div>
+                  </div>
+
+                  <a
+                    href="https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="spotlight-action-btn flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold shadow-lg transition-all"
+                  >
+                    <ExternalLink className="size-3.5 text-slate-950" />
+                    <span>Open in Google Maps (Directions)</span>
+                  </a>
+
+                  <div className="flex items-center gap-2">
+                    <a
+                      href="tel:+919512365582"
+                      className="flex-1 py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-xs font-bold text-amber-300 hover:text-white flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <Phone className="size-3 text-amber-400" />
+                      <span>Call Office (+91 9512365582)</span>
+                    </a>
+                    <button
+                      type="button"
+                      className="py-2 px-3 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-xs font-bold text-amber-300 flex items-center justify-center gap-1 transition-colors"
+                      onClick={() => {
+                        if (satelliteRef.current) {
+                          satelliteRef.current.flyToLocation(23.0205, 72.5898, 18, 1.5);
+                        }
+                      }}
+                      title="Zoom 18x High Definition Satellite Imagery"
+                    >
+                      <Maximize2 className="size-3" />
+                      <span>18x HD</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-2 mt-2">
+                  <button
+                    className="spotlight-action-btn flex items-center justify-center gap-1.5"
+                    onClick={() => setInspectorProject(activeWaypoint.project!)}
+                  >
+                    <Sparkles className="size-3.5 text-amber-400" />
+                    <span>Dive into Landmark (UNESCO 3D View)</span>
+                  </button>
+                  <button
+                    className="text-xs text-slate-300 hover:text-amber-400 py-1 text-center transition-colors underline"
+                    onClick={() => setSelectedProject(activeWaypoint.project!)}
+                  >
+                    View Technical Datasheet & Specs
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -1992,7 +2066,11 @@ export default function GlobeProjectsExperience() {
               >
                 <div className="card-thumb-wrap">
                   <img
-                    src={proj.images || "/projects/project-1.jpg"}
+                    src={
+                      proj.images
+                        ? `${proj.images}${proj.images.includes("?") ? "&" : "?"}v=20261006_real7`
+                        : "/projects/project-1.jpg?v=20261006_real7"
+                    }
                     alt={proj.name}
                     className="card-thumb-img"
                     onError={(e) => {

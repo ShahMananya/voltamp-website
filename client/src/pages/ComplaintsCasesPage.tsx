@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
+import SeoHead from "@/components/seo/SeoHead";
 import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
 import { trpc } from "@/lib/trpc";
@@ -154,6 +155,25 @@ export default function ComplaintsCasesPage() {
 
   return (
     <div className="volamp-marketplace min-h-screen bg-[#faf7f3] dark:bg-[#0c1520] text-[#3d2b2d] dark:text-[#f5f7f9] flex flex-col font-sans transition-colors">
+      <SeoHead
+        title="Official Grievance Cell & Complaints Resolution | Voltamp Elektrikals"
+        description="Official B2B grievance resolution desk of Voltamp Elektrikals Private Limited. File or track transit damage, batch test discrepancies, and delivery queries with Grievances@volampelektrikals.com."
+        keywords="Voltamp grievance cell, Voltamp complaint portal, electrical cable dispute resolution, Grievances@volampelektrikals.com, transit damage electrical cable"
+        canonical="https://volampelektrikals.com/complaints"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "name": "Official Grievance Cell & Complaints Resolution",
+          "description": "Escalation desk for commercial, technical, and delivery disputes for Voltamp Elektrikals.",
+          "mainEntity": {
+            "@type": "ContactPoint",
+            "contactType": "Grievance Officer",
+            "email": "Grievances@volampelektrikals.com",
+            "telephone": "+919512365582",
+            "hoursAvailable": "Mo-Sa 09:30-19:30"
+          }
+        }}
+      />
       {/* 1. Header */}
       <UniversalHeader currentPage="enquire" />
 
@@ -289,6 +309,18 @@ export default function ComplaintsCasesPage() {
 
                   <div className="flex flex-wrap items-center gap-3 pt-2">
                     <a
+                      href={`mailto:Grievances@volampelektrikals.com?subject=${encodeURIComponent(
+                        `[CASE ID: ${submittedCase.caseId}] ${submittedCase.type}`
+                      )}&body=${encodeURIComponent(
+                        `Dear Grievances Cell,\n\nI have registered Case ID ${submittedCase.caseId} for ${submittedCase.type}.\n\nPlease find attached the supporting photos, delivery challan, or invoice.\n\nRegards,`
+                      )}`}
+                      className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#4d1217] hover:bg-[#6e1a21] text-white text-xs font-bold shadow-md transition-colors"
+                    >
+                      <Mail className="size-4" />
+                      <span>Email Grievances Cell</span>
+                    </a>
+
+                    <a
                       href={`https://wa.me/919512365582?text=${encodeURIComponent(
                         `Hello VOLAMP team, I have registered Case ID ${submittedCase.caseId} regarding ${submittedCase.type}. Here are the supporting documents/photos.`
                       )}`}
@@ -303,7 +335,7 @@ export default function ComplaintsCasesPage() {
                     <button
                       type="button"
                       onClick={() => setSubmittedCase(null)}
-                      className="px-4 py-3 rounded-xl border border-stone-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700"
+                      className="px-4 py-3 rounded-xl border border-stone-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700 cursor-pointer"
                     >
                       File Another Case
                     </button>
@@ -589,16 +621,16 @@ export default function ComplaintsCasesPage() {
                 </a>
 
                 <a
-                  href="mailto:support@volamp.com"
+                  href="mailto:Grievances@volampelektrikals.com"
                   className="flex items-center gap-2 p-2.5 rounded-lg bg-[#faf4ed] dark:bg-slate-750 text-[#4d1217] dark:text-white hover:text-[#c56718] transition-colors"
                 >
                   <Mail className="size-3.5 text-[#c56718] shrink-0" />
-                  <span>support@volamp.com</span>
+                  <span className="break-all">Grievances@volampelektrikals.com</span>
                 </a>
               </div>
 
               <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-700 text-xs space-y-1">
-                <span className="text-[10px] font-bold text-slate-400 uppercase block">Physical Cell</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase block">Grievance Cell Physical Address</span>
                 <p className="text-slate-700 dark:text-slate-300 leading-tight">
                   Volamp Corporate Main Office: 1753, Dhobi's Pole Sir, Chinubhai Rd, Khadia, Ahmedabad, Gujarat 380001
                 </p>

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
+import SeoHead from "@/components/seo/SeoHead";
 import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
 import ProjectTilesDirectory from "@/components/footprint/ProjectTilesDirectory";
@@ -43,6 +44,24 @@ export default function WhereVolampContributed() {
 
   return (
     <div className="volamp-marketplace min-h-screen bg-[#faf7f3] dark:bg-[#0c1520] text-[#3d2b2d] dark:text-[#f5f7f9] flex flex-col font-sans transition-colors">
+      <SeoHead
+        title="Landmark Infrastructure Projects | Where Voltamp Contributed"
+        description="Explore landmark government, municipal, and industrial projects powered by Voltamp Elektrikals: AMC Sports Complex, Bhopal Water Treatment, Goa Medical College, GMC, and metro corridors."
+        keywords="Voltamp projects, AMC sports complex electrical, Bhopal water treatment electrical contractor, Goa medical college electrical supply, turnkey infrastructure Gujarat, Polycab project supply"
+        canonical="https://volampelektrikals.com/where-volamp-contributed"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "Where Voltamp Contributed - Landmark Project Footprint",
+          "description": "Showcase of critical public works, healthcare institutions, municipal water infrastructure, and sports complexes supplied by Voltamp Elektrikals.",
+          "about": [
+            { "@type": "Thing", "name": "AMC Sports Complex Ahmedabad" },
+            { "@type": "Thing", "name": "Bhopal Municipal Water Treatment Plant" },
+            { "@type": "Thing", "name": "Goa Medical College (GMC) Hospital Complex" },
+            { "@type": "Thing", "name": "Government Medical College Infrastructure" }
+          ]
+        }}
+      />
       {/* 1. Universal Top Header (Warm Sand Utility Strip + Clean White Navbar) */}
       <UniversalHeader currentPage="about" />
 

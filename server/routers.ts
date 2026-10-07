@@ -6,6 +6,7 @@ import { invokeLLM, type Tool, type Message } from "./_core/llm";
 import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { dispatchOtpEmail } from "./services/emailService";
 import {
   approveEmployee,
   createLocalUser,
@@ -76,7 +77,7 @@ const assistantSystemPrompt = `You are VOLA, the Senior Technical Advisor and Co
 - Corporate Main Office: 1753, Khadia, Ahmedabad, Gujarat 380001
 - Central Logistics & Fulfillment Hub: Aslali, Ahmedabad (Pan-India rapid transit & dedicated global export desk)
 - Quality Testing Facilities: Sanand & Ahmedabad (High-voltage spark testing, tensile testing, IS/IEC compliance)
-- Contact: Phone & WhatsApp: +91 9512365582 | Email: sales@volampelektrikals.com / support@volampelektrikals.com
+- Contact: Phone & WhatsApp: +91 9512365582 | Email: sales@volampelektrikals.com | Complaints & Grievances: Grievances@volampelektrikals.com
 - 4-Generation 60+ Years Electrical Legacy (Founded June 1964):
   1. 1964 (1st Gen — Founding): Soma Bhai Khatubhai Patel, an ITI electrician from Panchmahal who moved to Ahmedabad and worked in textile mills, co-founded S.P. Electric and Engineering Company as a partnership firm in June 1964, sparking a 60-year industrial legacy.
   2. 1970s–80s (2nd Gen — Expansion): Chaturbhai Somabhai Patel deepened industrial client relationships across Gujarat's manufacturing corridors, forging lifelong trust with plants and contractors.
@@ -431,6 +432,7 @@ export const appRouter = router({
         if (isMfaRequired) {
           const otp = generate6DigitOtp();
           saveOtp(user.email ?? normalizedEmail, otp, "mfa", 5 * 60 * 1000);
+          await dispatchOtpEmail(user.email ?? normalizedEmail, otp, "mfa");
           const mfaPendingToken = await sdk.createMfaPendingToken(
             user.email ?? normalizedEmail,
             user.accountType
@@ -442,7 +444,6 @@ export const appRouter = router({
             mfaPendingToken,
             email: user.email,
             accountType: user.accountType,
-            devOtp: otp, // Passed for localhost testing ease
           };
         }
 
@@ -524,7 +525,8 @@ export const appRouter = router({
         }
         const otp = generate6DigitOtp();
         saveOtp(payload.email, otp, "mfa", 5 * 60 * 1000);
-        return { success: true as const, devOtp: otp };
+        await dispatchOtpEmail(payload.email, otp, "mfa");
+        return { success: true as const };
       }),
 
     registerEmployee: publicProcedure
@@ -568,11 +570,11 @@ export const appRouter = router({
 
         const otp = generate6DigitOtp();
         saveOtp(normalizedEmail, otp, "email_verification", 15 * 60 * 1000);
+        await dispatchOtpEmail(normalizedEmail, otp, "registration");
 
         return {
           success: true as const,
           email: newUser.email,
-          devOtp: otp,
         };
       }),
 
@@ -607,11 +609,37 @@ export const appRouter = router({
 
         const otp = generate6DigitOtp();
         saveOtp(normalizedEmail, otp, "email_verification", 15 * 60 * 1000);
+        await dispatchOtpEmail(normalizedEmail, otp, "registration");
 
         return {
           success: true as const,
           email: newUser.email,
-          devOtp: otp,
+        };
+      }),
+
+    resendEmailVerificationOtp: publicProcedure
+      .input(z.object({ email: z.string().trim().email() }))
+      .mutation(async ({ input }) => {
+        const normalizedEmail = input.email.toLowerCase().trim();
+        const user = await getUserByEmail(normalizedEmail);
+        if (!user) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Account not found for this email address.",
+          });
+        }
+        if (user.emailVerified) {
+          return {
+            success: true as const,
+            alreadyVerified: true as const,
+          };
+        }
+        const otp = generate6DigitOtp();
+        saveOtp(normalizedEmail, otp, "email_verification", 15 * 60 * 1000);
+        await dispatchOtpEmail(normalizedEmail, otp, "registration");
+        return {
+          success: true as const,
+          alreadyVerified: false as const,
         };
       }),
 
@@ -675,11 +703,12 @@ export const appRouter = router({
         const user = await getUserByEmail(normalizedEmail);
         if (!user) {
           // Prevent email enumeration while still reporting success
-          return { success: true as const, devOtp: undefined };
+          return { success: true as const };
         }
         const otp = generate6DigitOtp();
         saveOtp(normalizedEmail, otp, "password_reset", 15 * 60 * 1000);
-        return { success: true as const, devOtp: otp };
+        await dispatchOtpEmail(normalizedEmail, otp, "password_reset");
+        return { success: true as const };
       }),
 
     resetPassword: publicProcedure

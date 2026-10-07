@@ -58,9 +58,19 @@
             "taxID": "24AAICV0754B1ZO",
             "vatID": "24AAICV0754B1ZO",
             "identifier": "U31900GJ2021PTC122730",
+            "foundingDate": "1964-06-01",
             "url": "https://volampelektrikals.com/",
             "logo": "https://volampelektrikals.com/volamp-logo.png",
-            "description": "Comprehensive electrical distribution and solutions platform serving industries, EPCs, and contractors based in Ahmedabad, Gujarat, India. Main Office: Khadia, Ahmedabad. Central Fulfillment Center: Aslali, Ahmedabad.",
+            "description": "4-generation electrical distribution and infrastructure platform founded in June 1964. Distributes Polycab, Havells, RR Kabel, KEI, Schneider, and L&T power cables, switchgear, and earthing supplies across Ahmedabad, Gujarat, India, and global export corridors.",
+            "knowsAbout": [
+              "Electric power distribution",
+              "Armoured cable",
+              "Switchgear",
+              "Solar DC Cable",
+              "Chemical Earthing",
+              "Cable Gland",
+              "Circuit Breaker"
+            ],
             "address": {
               "@type": "PostalAddress",
               "streetAddress": "1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia",
@@ -69,13 +79,24 @@
               "postalCode": "380001",
               "addressCountry": "IN"
             },
-            "contactPoint": {
-              "@type": "ContactPoint",
-              "telephone": "+91-9512365582",
-              "contactType": "sales",
-              "areaServed": "IN",
-              "availableLanguage": ["English", "Hindi", "Gujarati"]
-            },
+            "contactPoint": [
+              {
+                "@type": "ContactPoint",
+                "telephone": "+91-9512365582",
+                "contactType": "sales",
+                "email": "sales@volampelektrikals.com",
+                "areaServed": "IN",
+                "availableLanguage": ["English", "Hindi", "Gujarati"]
+              },
+              {
+                "@type": "ContactPoint",
+                "telephone": "+91-9512365582",
+                "contactType": "customer support",
+                "email": "Grievances@volampelektrikals.com",
+                "areaServed": "IN",
+                "availableLanguage": ["English", "Hindi", "Gujarati"]
+              }
+            ],
             "sameAs": [
               "https://www.linkedin.com/company/volampelektrikals/",
               "https://www.facebook.com/profile.php?id=61587485305483",
@@ -83,15 +104,21 @@
             ]
           },
           {
-            "@type": "WholesaleStore",
+            "@type": ["WholesaleStore", "LocalBusiness"],
             "@id": "https://volampelektrikals.com/#store",
-            "name": "VOLAMP ELEKTRIKALS - B2B Electrical Supply Store",
+            "name": "VOLAMP ELEKTRIKALS - B2B Electrical Supplier & Cable Distributor",
             "url": "https://volampelektrikals.com/",
             "telephone": "+91-9512365582",
+            "email": "sales@volampelektrikals.com",
             "priceRange": "₹₹",
             "currenciesAccepted": "INR",
-            "paymentAccepted": "Bank Transfer, NEFT, RTGS, Credit Terms",
+            "paymentAccepted": "Bank Transfer, NEFT, RTGS, Credit Terms, UPI",
             "taxID": "24AAICV0754B1ZO",
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 23.0225,
+              "longitude": 72.5950
+            },
             "address": {
               "@type": "PostalAddress",
               "streetAddress": "1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia",
@@ -100,6 +127,25 @@
               "postalCode": "380001",
               "addressCountry": "IN"
             },
+            "openingHoursSpecification": [
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                "opens": "09:30",
+                "closes": "19:30"
+              }
+            ],
+            "areaServed": [
+              "Ahmedabad",
+              "Gujarat",
+              "Surat",
+              "Vadodara",
+              "Rajkot",
+              "Vapi",
+              "Gandhidham",
+              "Sanand GIDC",
+              "India"
+            ],
             "hasMerchantReturnPolicy": {
               "@type": "MerchantReturnPolicy",
               "applicableCountry": "IN",
@@ -107,19 +153,45 @@
               "merchantReturnDays": 7,
               "returnMethod": "https://schema.org/ReturnByMail",
               "returnFees": "https://schema.org/FreeReturn"
-            },
-            "shippingDetails": {
-              "@type": "OfferShippingDetails",
-              "shippingRate": {
-                "@type": "MonetaryAmount",
-                "value": "0.00",
-                "currency": "INR"
-              },
-              "shippingDestination": {
-                "@type": "DefinedRegion",
-                "addressCountry": "IN"
-              }
             }
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://volampelektrikals.com/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Where is Volamp Elektrikals located in Ahmedabad?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Volamp Elektrikals corporate head office is located at 1753, Dhobi's Pole, Chinubhai Road, Khadia, Ahmedabad, Gujarat 380001 in the historic Gandhi Road electrical trading hub. Its central logistics & fulfillment terminal is situated at Aslali Highway, Ahmedabad."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What brands and cables does Volamp distribute in Gujarat?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Volamp Elektrikals is an authorized distributor and supplier of Polycab India, Havells, RR Kabel, KEI Industries, Schneider Electric, Larsen & Toubro (L&T), and Siemens. Products include LT/HT XLPE armoured cables, 1500V solar DC cables, copper flexible wires, switchgear (ACB/MCCB/MCB), and chemical earthing rods."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What is the dispatch turnaround time for industrial electrical orders?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Orders within Ahmedabad and major Gujarat GIDC manufacturing zones (Sanand, Changodar, Vatva, Naroda, Ankleshwar, Dahej) benefit from same-day to 24-hour dispatch from the Aslali central warehouse. Pan-India shipments arrive within 48 to 72 hours with transit insurance."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I register a dispute, shortage, or transit complaint with Volamp?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Customers can register formal cases online at https://volampelektrikals.com/complaints-cases or email the Grievance & Escalation Cell directly at Grievances@volampelektrikals.com."
+                }
+              }
+            ]
           },
           {
             "@type": "WebSite",

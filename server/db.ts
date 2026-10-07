@@ -221,6 +221,21 @@ export function verifyOtp(
   return false;
 }
 
+export function getLatestOtpForEmail(
+  email: string,
+  purpose?: "email_verification" | "mfa" | "password_reset"
+): string | undefined {
+  const normalizedEmail = email.toLowerCase().trim();
+  const now = Date.now();
+  for (let i = memoryOtps.length - 1; i >= 0; i--) {
+    const item = memoryOtps[i];
+    if (item.email === normalizedEmail && (!purpose || item.purpose === purpose) && item.expiresAt > now) {
+      return item.code;
+    }
+  }
+  return undefined;
+}
+
 // ---------------------------------------------------------------------------
 // User Operations
 // ---------------------------------------------------------------------------

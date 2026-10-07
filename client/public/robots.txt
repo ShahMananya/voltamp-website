@@ -1,3 +1,17 @@
 User-agent: *
 Allow: /
-Sitemap: /sitemap.xml
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+# AI Crawlers & Answer Engines
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://volampelektrikals.com/sitemap.xml

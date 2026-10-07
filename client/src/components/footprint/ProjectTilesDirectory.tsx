@@ -127,7 +127,7 @@ function getCategoryFallback(category: string, name: string): string {
 function getProjectImageUrl(img?: string | null): string {
   if (!img) return "";
   if (img.startsWith("/projects/")) {
-    return `${img}?v=20260929_4`;
+    return `${img}?v=20261006_real7`;
   }
   return img;
 }
@@ -360,8 +360,14 @@ export default function ProjectTilesDirectory({
               <article key={proj.id} className="volamp-project-tile group" onClick={() => handleOpenDetail(proj)}>
                 <div className="tile-ambient-glow" />
 
-                {/* Real-World Landmark Photo Cover */}
+                {/* Real-World Landmark Photo Cover - Zero-Crop Presentation */}
                 <div className="tile-photo-wrapper">
+                  <img
+                    src={getProjectImageUrl(proj.images) || getCategoryFallback(proj.category, proj.name)}
+                    alt=""
+                    aria-hidden="true"
+                    className="tile-photo-blur-bg"
+                  />
                   <img
                     src={getProjectImageUrl(proj.images) || getCategoryFallback(proj.category, proj.name)}
                     alt={proj.name}
@@ -459,9 +465,15 @@ export default function ProjectTilesDirectory({
       {activeModalProject && (
         <div className="modal-overlay" onClick={() => setActiveModalProject(null)}>
           <div className="project-detail-modal" onClick={(e) => e.stopPropagation()}>
-            {/* Modal Hero Landmark Photo */}
+            {/* Modal Hero Landmark Photo - Zero-Crop Expanded View */}
             {activeModalProject.images && (
               <div className="modal-hero-photo-wrapper">
+                <img
+                  src={getProjectImageUrl(activeModalProject.images)}
+                  alt=""
+                  aria-hidden="true"
+                  className="modal-hero-blur-bg"
+                />
                 <img
                   src={getProjectImageUrl(activeModalProject.images)}
                   alt={activeModalProject.name}
