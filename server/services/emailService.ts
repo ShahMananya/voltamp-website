@@ -222,40 +222,53 @@ https://volampelektrikals.com
   const smtpPort = Number(process.env.SMTP_PORT) || 465;
   const smtpFrom = process.env.SMTP_FROM?.trim() || smtpUser || "no-reply@volampelektrikals.com";
 
-  const isPlaceholderPass = !smtpPass || smtpPass.includes("PASTE_YOUR_16_CHAR") || smtpPass === "YOUR_PASSWORD_HERE";
+  const isPlaceholderPass =
+    !smtpPass ||
+    smtpPass.includes("PASTE_YOUR_") ||
+    smtpPass.includes("16_CHAR") ||
+    smtpPass === "YOUR_PASSWORD_HERE";
 
   if (smtpHost && smtpUser && smtpPass && !isPlaceholderPass) {
-    try {
-      console.log(`[SMTP DISPATCH] Sending from "${smtpFrom}" to "${normalizedEmail}" via ${smtpHost}:${smtpPort}...`);
-      await sendViaNativeSmtp({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpPort === 465,
-        user: smtpUser,
-        pass: smtpPass,
-        from: smtpFrom,
-        to: normalizedEmail,
-        subject: title,
-        text: textContent,
-        html: htmlContent,
-      });
+    const candidateHosts = [smtpHost];
+    if (smtpHost.includes("zoho.in")) {
+      candidateHosts.push(smtpHost.replace("zoho.in", "zoho.com"));
+    } else if (smtpHost.includes("zoho.com")) {
+      candidateHosts.push(smtpHost.replace("zoho.com", "zoho.in"));
+    }
 
-      console.log(`[SMTP DISPATCH] Successfully delivered OTP email from ${smtpFrom} to ${normalizedEmail}`);
-      return { success: true, channel: "smtp" };
-    } catch (err: any) {
-      console.error(`[SMTP ERROR] Failed delivering from ${smtpFrom} to ${normalizedEmail}:`, err.message);
+    for (const host of candidateHosts) {
+      try {
+        console.log(`[SMTP DISPATCH] Sending from "${smtpFrom}" to "${normalizedEmail}" via ${host}:${smtpPort}...`);
+        await sendViaNativeSmtp({
+          host,
+          port: smtpPort,
+          secure: smtpPort === 465,
+          user: smtpUser,
+          pass: smtpPass,
+          from: smtpFrom,
+          to: normalizedEmail,
+          subject: title,
+          text: textContent,
+          html: htmlContent,
+        });
+
+        console.log(`[SMTP DISPATCH] Successfully delivered OTP email from ${smtpFrom} to ${normalizedEmail} via ${host}`);
+        return { success: true, channel: "smtp" };
+      } catch (err: any) {
+        console.error(`[SMTP ERROR] Attempt via ${host} failed:`, err.message);
+      }
     }
   }
 
   // Fallback: Secure Server Console Log (when no SMTP credentials exist in .env)
   console.log(`\n============================================================`);
   console.log(`⚠️  [NO ACTIVE SMTP CONFIGURED IN .env]`);
-  console.log(`To receive real emails in your inbox, set your SMTP credentials in .env:`);
-  console.log(`   SMTP_HOST="smtp.gmail.com"  (or corporate host)`);
+  console.log(`To receive real emails in your inbox, set your Zoho Mail credentials in .env:`);
+  console.log(`   SMTP_HOST="smtppro.zoho.in"  (or smtppro.zoho.com)`);
   console.log(`   SMTP_PORT=465`);
-  console.log(`   SMTP_USER="your-email@gmail.com"`);
-  console.log(`   SMTP_PASS="your-app-password"`);
-  console.log(`   SMTP_FROM="your-email@gmail.com"`);
+  console.log(`   SMTP_USER="no-reply@volampelektrikals.com"`);
+  console.log(`   SMTP_PASS="your-zoho-app-password"`);
+  console.log(`   SMTP_FROM="no-reply@volampelektrikals.com"`);
   console.log(`------------------------------------------------------------`);
   console.log(`Generated OTP for ${normalizedEmail}: [ ${code} ]`);
   console.log(`Subject: ${title}`);

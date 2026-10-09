@@ -3,7 +3,13 @@ import {
   queryProducts,
   getProductByProductId,
   getCatalogCategories,
+  getCachedProducts,
+  parseItemSpecs,
+  normalizeBrand,
+  normalizeCategory,
+  getProductHaystack,
 } from "./services/productService";
+import type { Product } from "../drizzle/schema";
 
 export type ChatMessage = {
   role: "system" | "user" | "assistant";
@@ -169,7 +175,7 @@ function handleMathAndFormulas(query: string): string | null {
 }
 
 /**
- * Format a Product database item into a clean markdown card with live pricing, discount, and specs.
+ * Format a Product database item into a clean markdown card with live pricing, discount, specs, and direct product detail link.
  */
 function formatProductCard(p: any): string {
   let specsObj: Record<string, string> = {};
@@ -180,18 +186,30 @@ function formatProductCard(p: any): string {
   }
   const lines: string[] = [];
   lines.push(`• **${p.name}** (\`${p.sku || p.productId}\`)`);
-  lines.push(`  - **Brand / Category**: ${p.brand} · ${p.category}${p.subcategory ? ` (${p.subcategory})` : ""}`);
+  lines.push(`  - **Brand & Category**: ${p.brand} · ${p.category}${p.subcategory ? ` (${p.subcategory})` : ""}`);
   if (p.size || p.material) {
-    lines.push(`  - **Conductor / Size**: ${p.size || "Standard"} ${p.material ? `· ${p.material}` : ""}`);
+    lines.push(`  - **Conductor & Size**: ${p.size || "Standard"} ${p.material ? `· ${p.material}` : ""}`);
   }
+  const hasDiscount = Boolean(
+    p.discount &&
+    p.discount !== "0" &&
+    p.discount !== "0.0" &&
+    p.discount !== "0 %" &&
+    p.discount !== "0.0 %" &&
+    p.discount !== "0%"
+  );
   const priceDisplay = p.discountedPrice
-    ? `**${p.discountedPrice}** ${p.unit || "per meter"} *(List: ${p.price}${p.discount ? `, ${p.discount} OFF` : ""})*`
+    ? `**${p.discountedPrice}** ${p.unit || "per meter"}${hasDiscount ? ` *(List: ${p.price}, ${p.discount} OFF Contractor Discount)*` : ""}`
     : p.price || "Contact for Quote";
-  lines.push(`  - **Price / Discount**: ${priceDisplay}`);
+  lines.push(`  - **Live Contractor Price**: ${priceDisplay}`);
 
   const techSpecs: string[] = [];
-  if (specsObj.voltageRating) techSpecs.push(`Voltage: ${specsObj.voltageRating}`);
-  if (specsObj.currentRatingAmp || specsObj.currentRatingA) techSpecs.push(`Rating: ${specsObj.currentRatingAmp || specsObj.currentRatingA}A`);
+  if (specsObj.voltageRating || specsObj.voltageRatingV) techSpecs.push(`Voltage: ${specsObj.voltageRating || specsObj.voltageRatingV}`);
+  const rawRating = specsObj.currentRatingAmp || specsObj.currentRatingA;
+  if (rawRating) {
+    const cleanRating = String(rawRating).trim();
+    techSpecs.push(`Rating: ${cleanRating.endsWith("A") || cleanRating.endsWith("a") ? cleanRating : cleanRating + "A"}`);
+  }
   if (specsObj.cores) techSpecs.push(`Cores: ${specsObj.cores}`);
   if (specsObj.typeOfArmour) techSpecs.push(`Armour: ${specsObj.typeOfArmour}`);
   if (specsObj.insulationType) techSpecs.push(`Insulation: ${specsObj.insulationType}`);
@@ -199,55 +217,165 @@ function formatProductCard(p: any): string {
   if (techSpecs.length > 0) {
     lines.push(`  - **Technical Specs**: ${techSpecs.join(" | ")}`);
   }
+  lines.push(`  - **Availability**: ${p.availability || "IN STOCK"} (Ahmedabad Central Depot) · MOQ: ${p.moq || "Standard"}`);
+  lines.push(`  - [👉 View Full Product Specifications & Order Online](/product/${p.productId})`);
   return lines.join("\n");
 }
 
 /**
- * Extract clean search tokens, removing common inquiry and filler stopwords.
+ * Intelligent parser to decompose user queries into electrical product search dimensions.
  */
-function extractProductSearchTokens(text: string): string {
+export function parseProductQuery(q: string) {
+  const lower = q.toLowerCase();
+  const idMatch = lower.match(/\b(cab-\d+|swg-\d+|sol-\d+|ear-\d+|lug-\d+|gld-\d+|sku-[\w-]+)\b/i);
+  const sizeMatch = lower.match(/\b(\d+(?:\.\d+)?)\s*(?:sqmm|sq\s*mm|sq|mm)\b/i);
+  const coreMatch = lower.match(/\b(\d+(?:\.\d+)?)\s*(?:core|cores|c)\b/i);
+  const currMatch = lower.match(/\b(\d+(?:\.\d+)?)\s*(?:a|amp|amps)\b/i);
+
+  let voltage: string | null = null;
+  if (/11\s*kv/i.test(lower)) voltage = "11kv";
+  else if (/33\s*kv/i.test(lower)) voltage = "33kv";
+  else if (/1\.1\s*kv|1100\s*v/i.test(lower)) voltage = "1.1kv";
+  else if (/1500\s*v/i.test(lower)) voltage = "1500v";
+
+  let brand: string | null = null;
+  if (/polycab/i.test(lower)) brand = "polycab";
+  else if (/kei/i.test(lower)) brand = "kei";
+  else if (/finolex|finnolex/i.test(lower)) brand = "finnolex";
+  else if (/schneider|schnieder/i.test(lower)) brand = "schnieder";
+  else if (/legrand/i.test(lower)) brand = "legrand";
+  else if (/lk|l&t|larsen/i.test(lower)) brand = "lk";
+  else if (/(?:volamp|voltamp)\s+(?:products?|brand|cables?|wires?|switchgear|lugs?|glands?|earthing|conduits?)|brand\s*[:=]?\s*(?:volamp|voltamp)/i.test(lower)) brand = "volamp";
+
+  let material: string | null = null;
+  if (/copper|cu\b/i.test(lower)) material = "copper";
+  else if (/aluminium|aluminum|al\b/i.test(lower)) material = "aluminium";
+
+  let armour: string | null = null;
+  if (/unarmour|unarmor/i.test(lower)) armour = "unarmoured";
+  else if (/armour|armor/i.test(lower)) armour = "armoured";
+
+  let category: string | null = null;
+  if (/mcb|mccb|rccb|switchgear|contactor|isolator|breaker/i.test(lower)) category = "Switchgear";
+  else if (/solar/i.test(lower)) category = "Solar";
+  else if (/earth|ground/i.test(lower)) category = "Earthing Wires";
+  else if (/gland/i.test(lower)) category = "Glands";
+  else if (/lug/i.test(lower)) category = "Lugs";
+  else if (/conduit|pvc\s*pipe|casing/i.test(lower)) category = "Conduit";
+  else if (/wire|cable/i.test(lower)) category = "Wires & Cables";
+
   const stopWords = new Set([
     "what", "is", "the", "tell", "me", "show", "give", "price", "prices", "cost", "costs",
-    "rate", "rates", "discount", "discounts", "of", "for", "in", "with", "and", "please",
-    "do", "you", "have", "i", "need", "want", "to", "buy", "order", "can", "cables", "cable",
-    "wires", "wire", "how", "much", "find", "search", "looking", "specs", "specification"
+    "rate", "rates", "discount", "discounts", "of", "for", "in", "with", "and", "please", "do", "you",
+    "have", "i", "need", "want", "to", "buy", "order", "can", "how", "much", "find", "search",
+    "looking", "about", "any", "available", "product", "products", "item", "items", "details",
+    "recommend", "suggest", "which", "are", "there", "list", "options", "give", "send"
   ]);
-
-  const rawTokens = text
-    .toLowerCase()
+  const tokens = lower
     .replace(/[\?\,\!\:\;\(\)\"\'\*\#\$\@\%\^\&\=\+]/g, " ")
     .split(/\s+/)
-    .filter((w) => w.length > 0 && !stopWords.has(w));
+    .filter((t) => t.length >= 2 && !stopWords.has(t));
 
-  return rawTokens.join(" ").trim();
+  return {
+    productId: idMatch ? idMatch[1].toLowerCase() : null,
+    size: sizeMatch ? sizeMatch[1] : null,
+    cores: coreMatch ? coreMatch[1] : null,
+    voltage,
+    brand,
+    material,
+    armour,
+    currentRating: currMatch ? currMatch[1] : null,
+    category,
+    tokens,
+  };
 }
 
 /**
- * Intelligent product finder that ranks exact cross-section size matches at the top.
+ * Intelligent product finder that searches all 3,385+ live catalog products with multi-attribute scoring.
  */
-function findMatchingProducts(query: string, limit = 3) {
-  const cleanTokens = extractProductSearchTokens(query);
-  const sizeMatch = query.match(/\b(\d+(?:\.\d+)?)\s*(?:sqmm|sq\s*mm)\b/i);
-  const targetSize = sizeMatch ? `${sizeMatch[1]} sqmm` : null;
+function findMatchingProducts(query: string, limit = 4): Product[] {
+  const all = getCachedProducts();
+  const parsed = parseProductQuery(query);
 
-  const searchStr = cleanTokens.length >= 2 ? cleanTokens : query;
-  let result = queryProducts({ search: searchStr, limit: 15 });
-  if (result.products.length === 0 && cleanTokens.length >= 2) {
-    result = queryProducts({ search: query, limit: 15 });
+  if (parsed.productId) {
+    const exact = all.find(
+      (p) =>
+        p.productId.toLowerCase() === parsed.productId ||
+        p.sku.toLowerCase() === parsed.productId ||
+        p.sku.toLowerCase().includes(parsed.productId!)
+    );
+    if (exact) return [exact];
   }
 
-  // Prioritize products whose name or size contains the exact targetSize (e.g. "4 sqmm")
-  if (targetSize && result.products.length > 0) {
-    result.products.sort((a, b) => {
-      const aHas = (a.name || "").toLowerCase().includes(targetSize) || (a.size || "").toLowerCase().includes(targetSize);
-      const bHas = (b.name || "").toLowerCase().includes(targetSize) || (b.size || "").toLowerCase().includes(targetSize);
-      if (aHas && !bHas) return -1;
-      if (!aHas && bHas) return 1;
-      return 0;
-    });
-  }
+  const scored = all.map((p) => {
+    let score = 0;
+    const haystack = getProductHaystack(p);
 
-  return result.products.slice(0, limit);
+    if (parsed.size) {
+      const pSize = (p.size || "").toLowerCase();
+      const pName = p.name.toLowerCase();
+      if (pSize.includes(`${parsed.size} sqmm`) || pName.includes(`${parsed.size} sqmm`)) score += 300;
+      else if (pSize.includes(parsed.size) || pName.includes(parsed.size)) score += 100;
+      else score -= 200;
+    }
+
+    if (parsed.cores) {
+      const pSpecs = parseItemSpecs(p.specifications);
+      const pCores = `${pSpecs.cores || ""} ${p.name}`.toLowerCase();
+      if (pCores.includes(`${parsed.cores} core`) || pCores.includes(`${parsed.cores}core`) || pCores.includes(`${parsed.cores}c`)) score += 250;
+      else score -= 150;
+    }
+
+    if (parsed.voltage) {
+      const pSpecs = parseItemSpecs(p.specifications);
+      const pVolt = `${pSpecs.voltageRating || ""} ${pSpecs.voltageRatingV || ""} ${p.name}`.toLowerCase();
+      if (parsed.voltage === "11kv" && (pVolt.includes("11 kv") || pVolt.includes("11kv"))) score += 250;
+      else if (parsed.voltage === "33kv" && (pVolt.includes("33 kv") || pVolt.includes("33kv"))) score += 250;
+      else if (parsed.voltage === "1.1kv" && (pVolt.includes("1100") || pVolt.includes("1.1"))) score += 200;
+      else if (parsed.voltage === "1500v" && pVolt.includes("1500")) score += 250;
+      else score -= 80;
+    }
+
+    if (parsed.brand) {
+      if (normalizeBrand(p.brand) === parsed.brand) score += 200;
+      else score -= 100;
+    }
+
+    if (parsed.material) {
+      const pMat = `${p.material || ""} ${p.name}`.toLowerCase();
+      if (parsed.material === "copper" && (pMat.includes("copper") || pMat.includes("cu"))) score += 150;
+      else if (parsed.material === "aluminium" && (pMat.includes("alumin") || pMat.includes("al"))) score += 150;
+      else score -= 100;
+    }
+
+    if (parsed.armour) {
+      const pSpecs = parseItemSpecs(p.specifications);
+      const pArmour = `${pSpecs.typeOfArmour || ""} ${p.name}`.toLowerCase();
+      if (parsed.armour === "armoured" && (pArmour.includes("armoured") || pArmour.includes("armored")) && !pArmour.includes("unarmoured")) score += 150;
+      else if (parsed.armour === "unarmoured" && (pArmour.includes("unarmoured") || pArmour.includes("unarmored"))) score += 150;
+      else score -= 80;
+    }
+
+    if (parsed.currentRating) {
+      const pSpecs = parseItemSpecs(p.specifications);
+      const pCurr = `${pSpecs.currentRatingA || ""} ${pSpecs.currentRatingAmp || ""} ${p.size || ""} ${p.name}`.toLowerCase();
+      if (pCurr.includes(`${parsed.currentRating}a`) || pCurr.includes(`${parsed.currentRating}.0a`) || pCurr.includes(`${parsed.currentRating} a`)) score += 250;
+      else score -= 120;
+    }
+
+    if (parsed.category) {
+      if (normalizeCategory(p.category).toLowerCase() === parsed.category.toLowerCase()) score += 80;
+    }
+
+    for (const token of parsed.tokens) {
+      if (haystack.includes(token)) score += 20;
+    }
+
+    return { product: p, score };
+  });
+
+  scored.sort((a, b) => b.score - a.score);
+  return scored.filter((s) => s.score > 0).slice(0, limit).map((s) => s.product);
 }
 
 /**
@@ -273,10 +401,10 @@ function handlePricingCostsAndDiscounts(query: string): string | null {
     /\b(?:\d+(?:\.\d+)?\s*(?:sqmm|sq\s*mm|core|a|amp|mm|kva|kw|hp)|copper|aluminium|polycab|kei|finolex|schneider|legrand|mcb|mccb|rccb|gland|lug|conduit|earthing|solar)\b/i.test(lower);
 
   if (hasSpecificProduct && !isGeneralDiscountQuery) {
-    const matched = findMatchingProducts(lower, 3);
+    const matched = findMatchingProducts(lower, 4);
     if (matched.length > 0) {
       const productCards = matched.map(formatProductCard).join("\n\n");
-      const cleanLabel = extractProductSearchTokens(lower) || lower;
+      const cleanLabel = query.trim();
 
       return (
         `### 💰 Live Factory Pricing & Contractor Discounts for "${cleanLabel}":\n\n` +
@@ -688,82 +816,111 @@ function handleScienceAndElectrical(query: string): string | null {
 function handleProductAndCatalogQuery(query: string): string | null {
   const lower = query.toLowerCase().trim();
 
-  // 1. MASTER CATALOG DIRECTORY / "Teach Vola about each product everything on our website"
+  // Avoid capturing pure technical sizing calculations, heritage/story, or business segments
+  if (/\b(?:calculate\s+(?:cable\s+)?size|cable\s+sizing|sizing\s+for|how\s+many\s+sqmm\s+for)\b/i.test(lower)) return null;
+  if (/\b(?:history|heritage|4\s*generations?|four\s*generations?|founder|story|ceo|who\s+founded|who\s+started|journey)\b/i.test(lower)) return null;
+  if (/\b(?:business\s*segment|segments|what\s+industries|sectors|what\s+sectors|industries\s+do\s+you\s+serve)\b/i.test(lower)) return null;
+  if (/\b(?:contractor\s*discounts?|discount\s*slabs?|what\s+discounts?|pricing\s*architecture)\b/i.test(lower) && !/\b\d+\s*(?:sqmm|sq\s*mm|core|a|amp|kv)\b/i.test(lower)) return null;
+
+  // 1. DIRECT PRODUCT ID / SKU LOOKUP (e.g. CAB-000001, SWG-000012, SOL-000003, SKU-CAB-...)
+  const skuMatch = lower.match(/\b(cab-\d+|swg-\d+|sol-\d+|ear-\d+|lug-\d+|gld-\d+|sku-[\w-]+)\b/i);
+  if (skuMatch) {
+    const targetId = skuMatch[1].toUpperCase();
+    const all = getCachedProducts();
+    const prod =
+      getProductByProductId(targetId) ||
+      all.find(
+        (p) =>
+          p.productId.toUpperCase() === targetId ||
+          p.sku.toUpperCase() === targetId ||
+          p.sku.toLowerCase().includes(skuMatch[1].toLowerCase())
+      );
+    if (prod) {
+      return (
+        `### ⚡ Verified Product Specification & Live Pricing:\n\n` +
+        `${formatProductCard(prod)}\n\n` +
+        `---\n\n` +
+        `**Commercial Ordering & Fast Dispatch:**\n` +
+        `• **Contractor Discount**: Direct **40% OFF** manufacturer list price already applied.\n` +
+        `• **Stock Depot**: Allotted from Ahmedabad Central Hub (24–48h Dispatch under Policy VEP/LOG/001).\n` +
+        `• **Tax Invoice**: 18% GST invoice with full ITC passed on dispatch.\n\n` +
+        `**Ready to book this item?** Tell me your required quantity/meters, customer name, phone number, and delivery city!`
+      );
+    }
+  }
+
+  // 2. MASTER CATALOG DIRECTORY / "what products do you have" / "show catalog"
   const isMasterCatalogQuery =
     /teach\s*(?:vola|me)?\s*(?:about)?\s*(?:each|all)?\s*product/i.test(lower) ||
     /everything\s+on\s+(?:our\s+)?website/i.test(lower) ||
-    /(?:all|list|show|browse|what)\s+(?:the\s+)?(?:products|categories|catalog|items|inventory)\b/i.test(lower) ||
-    /what\s+products\s+do\s+you\s+(?:have|sell|offer|deal\s+in|carry)/i.test(lower) ||
-    /product\s*(?:portfolio|range|directory|list)/i.test(lower);
+    /^(?:what\s+products\s+do\s+you\s+(?:have|sell|offer|deal\s+in|carry)|show\s+(?:me\s+)?(?:all\s+)?products|list\s+products|product\s*catalog|catalog|categories|all\s+categories)\b/i.test(lower) ||
+    (/(?:all|list|show|browse|what)\s+(?:the\s+)?(?:products|categories|catalog|items|inventory)\b/i.test(lower) &&
+      !/\b\d+\s*(?:sqmm|sq\s*mm|core|a|amp|kv)\b/i.test(lower));
 
   if (isMasterCatalogQuery) {
+    const featured = findMatchingProducts("4 sqmm copper", 3);
+    const featuredCards = featured.map(formatProductCard).join("\n\n");
     return (
-      `### ⚡ Complete Volamp Product Catalog Directory (3,385+ Products Across 8 Categories)\n\n` +
-      `Here is the exhaustive inventory across every category, brand, and specification on our website:\n\n` +
+      `### ⚡ Complete Volamp Product Catalog Directory (3,385+ Certified Products Across 8 Categories)\n\n` +
+      `Welcome to **Volamp Elektrikals**! We distribute 3,385+ industrial-grade electrical materials with factory-direct **40% Contractor Discount** from our Ahmedabad fulfillment depot:\n\n` +
       `---\n\n` +
-      `#### 1. 🔌 **Wires & Cables** (2,856 Products in Database)\n` +
+      `#### 1. 🔌 [Wires & Cables (2,856 Products in Database)](/category/wire-cables)\n` +
       `• **Authorized Brands**: Polycab, KEI, Finolex, Volamp\n` +
-      `• **Subcategories & Offerings**:\n` +
-      `  - Single Core Building Wires (FR, FRLS, ZHFR): 0.5 to 16 sqmm (IS 694) in 90m, 180m, and 300m coils (Red, Yellow, Blue, Black, Green).\n` +
-      `  - Multicore Industrial Flexible Cords: 2-Core up to 24-Core (0.5 to 10 sqmm) for machinery and panel wiring.\n` +
-      `  - Armoured LT & HT Power Cables: Aluminium & Copper (A2XWY, 2XWY, AYFY, YFY) conforming to IS 7098 & IS 1554 (4 sqmm to 630 sqmm) for direct burial.\n` +
-      `  - Submersible Flat 3-Core Cables: 1.5 to 35 sqmm water-tight cables for agricultural and borewell pumps.\n` +
-      `  - Communication & Coaxial: CCTV (3+1, 4+1), RG-59, RG-6, RG-11 coaxial, and Cat6 high-speed LAN cables.\n\n` +
-      `#### 2. 🛡️ **Switchgear & Circuit Protection** (221 Products in Database)\n` +
+      `• **Offerings**: Single Core Flexible Building Wires (FR, FRLS, ZHFR), Armoured LT & HT XLPE/PVC Power Cables (1.1kV, 11kV, 33kV), Submersible Flat Cables, LAN Cat6, CCTV Cables.\n` +
+      `• [👉 Browse Full Wires & Cables Catalog](/category/wire-cables)\n\n` +
+      `#### 2. 🛡️ [Switchgear & Circuit Protection (221 Products in Database)](/category/switchgear)\n` +
       `• **Authorized Brands**: Schneider Electric, LK (L&T), Legrand, Volamp\n` +
-      `• **Subcategories & Offerings**:\n` +
-      `  - MCBs: 0.5A to 63A; SP, DP, TP, 4P; B/C/D curves; 6kA / 10kA breaking capacity (IS/IEC 60898-1).\n` +
-      `  - MCCBs: 16A to 1250A; 3-Pole & 4-Pole; 25kA, 36kA, 50kA breaking capacity with thermal-magnetic and microprocessor releases.\n` +
-      `  - RCCBs & RCBOs: 30mA (human shock), 100mA & 300mA (fire protection).\n` +
-      `  - Isolators & Main Switches: 40A to 125A.\n` +
-      `  - Power Contactors & Relays: 9A to 800A AC-3 heavy motor duty.\n` +
-      `  - Changeover Switches & SDF: Manual & motorized changeovers, Switch Disconnector Fuses.\n` +
-      `  - Distribution Boards (DB): SPN, TPN, Vertical DBs with IP43/IP54 weather rating.\n\n` +
-      `#### 3. 🧲 **Lugs & Cable Terminals** (14 Products in Database)\n` +
-      `• **Authorized Brands**: Volamp, Dowells, Comet\n` +
-      `• **Subcategories & Offerings**:\n` +
-      `  - Ring Type, Pin Type, Fork/Spade, and Tubular Crimping Lugs (tinned electrolytic copper & aluminium).\n` +
-      `  - Friction-welded Bimetallic Lugs to connect aluminium cables onto copper busbars without galvanic oxidation.\n\n` +
-      `#### 4. 🧱 **Conduit & Piping Systems** (93 Products in Database)\n` +
-      `• **Authorized Brands**: Volamp, Precision, VIP\n` +
-      `• **Subcategories & Offerings**:\n` +
-      `  - Rigid uPVC Conduits: Light (LMS), Medium (MMS), and Heavy Mechanical Stress (HMS) to IS 9537 Part 3 (19mm to 50mm in 3m lengths).\n` +
-      `  - Non-IS 25 Classic & Super conduits for budget residential wiring.\n` +
-      `  - uPVC Casing & Capping channel profiles with snap-fit lids.\n` +
-      `  - PP Corrugated Flexible Conduits for machinery routing.\n\n` +
-      `#### 5. 🔩 **Cable Glands & Terminations** (90 Products in Database)\n` +
-      `• **Authorized Brands**: Volamp, Comet, Raychem\n` +
-      `• **Subcategories & Offerings**:\n` +
-      `  - Single Compression Brass Glands for indoor unarmoured cables.\n` +
-      `  - Double Compression Heavy-Duty MD Glands (IP66/IP67 weatherproof) for armoured cables.\n` +
-      `  - Flameproof / Explosion-Proof HMI-F Glands (Ex d IIC certified) for hazardous chemical & oil environments.\n` +
-      `  - Metric (M16 to M100), PG, and NPT threads with shrouds, locknuts, and earth tags.\n\n` +
-      `#### 6. 💡 **Wiring Devices, Tools & PPE** (14 Products in Database)\n` +
-      `• **Authorized Brands**: Legrand, Schneider Electric, Anchor, Volamp\n` +
-      `• **Subcategories & Offerings**:\n` +
-      `  - Modular switches & sockets (6A, 16A, 25A), industrial plugs & sockets (16A to 63A IP44/IP67).\n` +
-      `  - PVC insulation tape (600V), ratchet crimpers, digital clamp meters, insulation resistance testers.\n` +
-      `  - High-voltage rubber safety gloves (Class 0/1/2).\n\n` +
-      `#### 7. 🌍 **Earthing Wires & Grounding Systems** (37 Products in Database)\n` +
-      `• **Authorized Brands**: Volamp, True Power, Ashlok\n` +
-      `• **Subcategories & Offerings**:\n` +
-      `  - Copper-Bonded Earthing Rods (14mm, 17.2mm, 25mm dia; 2m, 3m lengths; 100–250 microns molecular copper).\n` +
-      `  - Pipe-in-Pipe Chemical Electrodes.\n` +
-      `  - Maintenance-Free Carbonaceous Compound (< 0.2 Ω·m, 25kg bags, IS 3043:2018).\n` +
-      `  - GI Strips (25x3 to 50x6 mm) & Electrolytic Copper Strips.\n` +
-      `  - FRP / RCC inspection earth pit chambers.\n\n` +
-      `#### 8. ☀️ **Solar Electrical Solutions** (60 Products in Database)\n` +
+      `• **Offerings**: MCBs (0.5A to 63A; 6kA/10kA), MCCBs (16A to 1250A), RCCBs, Contactors, Overload Relays, Distribution Boards.\n` +
+      `• [👉 Browse Full Switchgear Catalog](/category/switchgear)\n\n` +
+      `#### 3. ☀️ [Solar Electrical Solutions (60 Products in Database)](/category/solar)\n` +
       `• **Authorized Brands**: Polycab, KEI, Volamp, Waaree\n` +
-      `• **Subcategories & Offerings**:\n` +
-      `  - 1500V DC Solar PV Cables (EN 50618/TÜV, XLPO, tinned copper, 4/6/10 sqmm Red & Black, 25+ year lifespan).\n` +
-      `  - Solar PV Panels: Mono PERC & TopCon bifacial modules (540W to 670W).\n` +
-      `  - On-grid string inverters (3kW to 100kW), MC4 IP68 connectors, 1000V/1500V DC fuses, Array Junction Boxes (AJB).\n\n` +
+      `• **Offerings**: 1500V DC Solar PV Cables (TÜV/EN 50618 certified, 4/6/10 sqmm), Solar PV Panels, Inverters, MC4 Connectors, Array Junction Boxes.\n` +
+      `• [👉 Browse Full Solar Solutions](/category/solar)\n\n` +
+      `#### 4. 🌍 [Earthing & Grounding Systems (37 Products in Database)](/category/earthing-material)\n` +
+      `• **Authorized Brands**: Volamp, True Power, Ashlok\n` +
+      `• **Offerings**: Copper-Bonded Earthing Rods (100–250 microns molecular copper), Pipe-in-Pipe Chemical Electrodes, Backfill Compound (IS 3043), GI & Copper Strips.\n` +
+      `• [👉 Browse Earthing Systems](/category/earthing-material)\n\n` +
+      `#### 5. 🔩 [Cable Glands & Terminations (90 Products in Database)](/category/glands)\n` +
+      `• **Authorized Brands**: Volamp, Comet, Raychem\n` +
+      `• **Offerings**: Single Compression Brass Glands, Weatherproof IP67 MD Double Compression Glands, Flameproof Ex d IIC Glands.\n` +
+      `• [👉 Browse Cable Glands](/category/glands)\n\n` +
+      `#### 6. 🧲 [Lugs & Cable Terminals (14 Products in Database)](/category/lugs)\n` +
+      `• **Authorized Brands**: Volamp, Dowells, Comet\n` +
+      `• **Offerings**: Tinned Electrolytic Copper & Aluminium Ring, Pin, and Tubular Barrel Lugs (1.5 to 630 sqmm), Bimetallic Cu-Al Lugs.\n` +
+      `• [👉 Browse Crimping Lugs](/category/lugs)\n\n` +
+      `#### 7. 🧱 [Conduit & Cable Management (93 Products in Database)](/category/conduit)\n` +
+      `• **Authorized Brands**: Volamp, Precision, VIP\n` +
+      `• **Offerings**: Rigid uPVC Conduits (LMS, MMS, HMS conforming to IS 9537 Part 3), Casing & Capping, PP Corrugated Flexible Pipes.\n` +
+      `• [👉 Browse Conduits & Pipes](/category/conduit)\n\n` +
+      `#### 8. 💡 [Wiring Devices & Safety Gear (14 Products in Database)](/category/wiring-device)\n` +
+      `• **Authorized Brands**: Legrand, Schneider Electric, Anchor, Volamp\n` +
+      `• **Offerings**: Modular Switches & Sockets, Industrial Plugs (16A–63A IP44/67), Insulation Tapes, HT Safety Gloves, Testing Instruments.\n` +
+      `• [👉 Browse Wiring Devices](/category/wiring-device)\n\n` +
       `---\n\n` +
-      `⚡ **Ready to source or order?** Ask me about any specific size or item, and I'll give you live stock status, wholesale discounts, and instant booking!`
+      `🔥 **Featured Fast-Moving Products in Stock:**\n\n` +
+      `${featuredCards}\n\n` +
+      `Tell me any cable size, switchgear rating, or brand, and I will pull exact live specifications, net prices, and stock for you!`
     );
   }
 
-  // 2. BRAND SPECIFIC INQUIRIES
+  // 3. SPECIFIC DYNAMIC PRODUCT SEARCH (Supports any combination of Size, Core, Voltage, Brand, Material, Armour, Current, Category)
+  const matched = findMatchingProducts(lower, 4);
+  if (matched.length > 0) {
+    const productList = matched.map(formatProductCard).join("\n\n");
+    return (
+      `### ⚡ Live Catalog Matches for "${query.trim()}" (${matched.length} items in stock):\n\n` +
+      `${productList}\n\n` +
+      `---\n\n` +
+      `### ⚡ Commercial Pricing Architecture:\n` +
+      `• **Contractor Discount**: Direct **40% OFF** applied from published manufacturer list prices.\n` +
+      `• **Statutory Tax**: 18% GST with 100% compliant input tax credit (ITC) on all consignments.\n` +
+      `• **Ahmedabad Fulfillment**: Dispatched within 24–48 hours under Shipping Policy VEP/LOG/001.\n\n` +
+      `**Ready to place an order or lock in stock?**\n` +
+      `Tell me your required quantity/meters, customer name, contact phone number, and delivery city, and I'll generate your official **Volamp Order Reference ID** right now!`
+    );
+  }
+
+  // 4. BRAND-ONLY INQUIRY (e.g. "tell me about polycab", "schneider products")
   const brandKeywords = [
     { key: "polycab", name: "Polycab" },
     { key: "kei", name: "Kei" },
@@ -777,13 +934,13 @@ function handleProductAndCatalogQuery(query: string): string | null {
   ];
 
   for (const b of brandKeywords) {
-    if (new RegExp(`\\b${b.key}\\b`, "i").test(lower) && !lower.includes("order") && !lower.includes("price") && !lower.includes("discount")) {
+    if (new RegExp(`\\b${b.key}\\b`, "i").test(lower)) {
       const prods = queryProducts({ brand: b.name, limit: 3 });
       if (prods.products.length > 0) {
         const productList = prods.products.map(formatProductCard).join("\n\n");
         return (
           `### ⚡ Authorized ${prods.products[0].brand} Products at Volamp (${prods.total} items available)\n\n` +
-          `Volamp is a primary distributor for **${prods.products[0].brand}**, supplying factory-direct materials with original Material Test Certificates ( MTC ):\n\n` +
+          `Volamp is a primary distributor for **${prods.products[0].brand}**, supplying factory-direct materials with original Material Test Certificates ( MTC ) and flat **40% OFF** contractor discounts:\n\n` +
           `${productList}\n\n` +
           `Looking for a specific gauge or rating in ${prods.products[0].brand}? Tell me what size or coil length you need!`
         );
@@ -791,134 +948,41 @@ function handleProductAndCatalogQuery(query: string): string | null {
     }
   }
 
-  // 3. CATEGORY SPECIFIC INQUIRIES
-  if (/\b(?:wires?\s*(?:&|and)?\s*cables?|house\s*wires?|building\s*wires?|industrial\s*cables?)\b/i.test(lower) && !lower.includes("order")) {
+  // 5. CATEGORY-ONLY INQUIRY (without specific specs)
+  if (/\b(?:wires?\s*(?:&|and)?\s*cables?|house\s*wires?|building\s*wires?|industrial\s*cables?)\b/i.test(lower)) {
     const prods = queryProducts({ category: "Wires & Cables", limit: 3 });
     const productList = prods.products.map(formatProductCard).join("\n\n");
     return (
       `### 🔌 Volamp Wires & Cables Portfolio (2,856 Products)\n\n` +
-      `We distribute certified cables from **Polycab, KEI, Finolex, and Volamp** across all voltage grades:\n\n` +
+      `We distribute certified cables from **Polycab, KEI, Finolex, and Volamp** across all voltage grades with flat **40% OFF** contractor pricing:\n\n` +
       `• **Single Core Flexible House Wires (FR / FRLS / ZHFR)**: 0.5 sqmm to 16 sqmm (IS 694).\n` +
       `• **Multicore Flexible Industrial Cables**: 2-Core up to 24-Core for machine and panel wiring.\n` +
       `• **Armoured LT & HT Power Cables**: XLPE/PVC insulated, Copper & Aluminium conductors (IS 7098 & IS 1554).\n` +
       `• **Submersible Flat 3-Core Cables**: 1.5 sqmm to 35 sqmm for agricultural pumps.\n` +
       `• **Communication & Coaxial**: CCTV 3+1/4+1, RG-59, RG-6, and Cat6 LAN.\n\n` +
+      `[👉 Browse Complete Wires & Cables Catalog](/category/wire-cables)\n\n` +
       `**Featured Wires & Cables in Stock:**\n\n` +
       `${productList}\n\n` +
       `Looking for a specific gauge or brand? Just tell me what size you need!`
     );
   }
 
-  if (/\b(?:switchgear|mcb|mccb|rccb|rcbo|contactor|isolator|changeover)\b/i.test(lower) && !lower.includes("order")) {
+  if (/\b(?:switchgear|mcb|mccb|rccb|rcbo|contactor|isolator|changeover)\b/i.test(lower)) {
     const prods = queryProducts({ category: "Switchgear", limit: 3 });
     const productList = prods.products.map(formatProductCard).join("\n\n");
     return (
       `### 🛡️ Volamp Switchgear & Protection Portfolio (221 Products)\n\n` +
-      `We carry leading switchgear brands including **Schneider Electric, LK (L&T), Legrand, and Volamp**:\n\n` +
+      `We carry leading switchgear brands including **Schneider Electric, LK (L&T), Legrand, and Volamp** with flat **40% OFF** contractor pricing:\n\n` +
       `• **MCBs (Miniature Circuit Breakers)**: 0.5A to 63A, 6kA & 10kA breaking capacity (IS/IEC 60898).\n` +
       `• **MCCBs (Moulded Case Circuit Breakers)**: 16A to 1250A, 25kA/36kA/50kA, 3-Pole & 4-Pole.\n` +
       `• **RCCBs & RCBOs**: Human safety (30mA) & fire protection (100mA/300mA).\n` +
       `• **Contactors & Relays**: 9A to 800A AC-3 heavy motor duty.\n` +
       `• **Distribution Boards (DB)**: SPN, TPN, Vertical DBs with IP43/IP54 rating.\n\n` +
+      `[👉 Browse Complete Switchgear Catalog](/category/switchgear)\n\n` +
       `**Featured Products in Stock:**\n\n` +
       `${productList}\n\n` +
       `Tell me your load or required breaking capacity, and I'll pull the exact model for you!`
     );
-  }
-
-  if (/\b(?:conduit|pvc\s*pipe|casing\s*capping)\b/i.test(lower) && !lower.includes("order")) {
-    const prods = queryProducts({ category: "Conduit", limit: 3 });
-    const productList = prods.products.map(formatProductCard).join("\n\n");
-    return (
-      `### 🧱 Volamp Conduit & Cable Management Systems (93 Products)\n\n` +
-      `Conforming strictly to **IS 9537 Part 3**:\n\n` +
-      `• **Rigid uPVC Conduits**: Light (LMS), Medium (MMS), and Heavy Mechanical Stress (HMS) in 20mm, 25mm, 32mm, 40mm, 50mm.\n` +
-      `• **Non-IS Conduits**: 25mm Classic & Super for economical residential wiring.\n` +
-      `• **uPVC Casing & Capping**: High-impact surface raceways with snap-fit lids.\n` +
-      `• **PP Corrugated Flexible Conduits**: Flame-retardant routing for machinery.\n\n` +
-      `**Featured Items in Stock:**\n\n` +
-      `${productList}\n\n` +
-      `Tell me your preferred diameter and bundle quantity!`
-    );
-  }
-
-  if (/\b(?:cable\s*gland|glands|double\s*compression|single\s*compression)\b/i.test(lower) && !lower.includes("order")) {
-    const prods = queryProducts({ category: "Glands", limit: 3 });
-    const productList = prods.products.map(formatProductCard).join("\n\n");
-    return (
-      `### 🔩 Volamp Brass Cable Glands & Accessories (90 Products)\n\n` +
-      `• **Single Compression Brass Glands**: For unarmoured indoor terminations.\n` +
-      `• **Double Compression Heavy-Duty MD Glands**: IP66/IP67 weatherproof seals for armoured cables.\n` +
-      `• **Flameproof / Explosion-Proof HMI-F Glands**: Ex d IIC certified for chemical plants and hazardous zones.\n` +
-      `• Metric (M16 to M100), PG, and NPT threads with shrouds, locknuts, and earth tags.\n\n` +
-      `**Featured Glands in Stock:**\n\n` +
-      `${productList}\n\n` +
-      `Tell me your cable outer diameter (OD) or armour type for the exact match!`
-    );
-  }
-
-  if (/\b(?:lugs|crimping\s*lug|bimetallic\s*lug|cable\s*terminal)\b/i.test(lower) && !lower.includes("order")) {
-    const prods = queryProducts({ category: "Lugs", limit: 3 });
-    const productList = prods.products.map(formatProductCard).join("\n\n");
-    return (
-      `### 🧲 Volamp Heavy-Duty Lugs & Terminals (14 Products)\n\n` +
-      `• **Ring & Fork/Spade Lugs**: Tinned copper terminal connections.\n` +
-      `• **Pin Type Lugs**: For MCB and contactor cage clamps.\n` +
-      `• **Tubular Crimping Lugs**: Heavy-duty barrel for cables from 1.5 to 630 sqmm.\n` +
-      `• **Bimetallic Lugs**: Friction-welded Cu-Al construction preventing galvanic corrosion.\n\n` +
-      `**Featured Lugs in Stock:**\n\n` +
-      `${productList}\n\n` +
-      `What cable conductor size (sqmm) are you terminating?`
-    );
-  }
-
-  if (/\b(?:earthing|grounding|copper\s*bonded|chemical\s*earth)\b/i.test(lower) && !lower.includes("order")) {
-    const prods = queryProducts({ category: "Earthing Wires", limit: 3 });
-    const productList = prods.products.map(formatProductCard).join("\n\n");
-    return (
-      `### 🌍 Volamp Earthing & Grounding Systems (37 Products, IS 3043:2018)\n\n` +
-      `• **Copper-Bonded Earthing Rods**: 14mm, 17.2mm, 25mm dia (100–250 microns molecular copper).\n` +
-      `• **Pipe-in-Pipe Chemical Electrodes**: High-discharge dual pipes.\n` +
-      `• **Carbonaceous Backfill Compound (25kg bags)**: Low resistivity (< 0.2 Ω·m).\n` +
-      `• **Earthing Strips**: Hot-dip GI strips & Electrolytic Copper strips.\n` +
-      `• **Inspection Chambers**: FRP, RCC, and Cast Iron covers.\n\n` +
-      `**Featured Earthing Items in Stock:**\n\n` +
-      `${productList}\n\n` +
-      `Are you designing earthing for a factory, solar park, or residential project?`
-    );
-  }
-
-  if (/\b(?:solar|pv\s*cable|solar\s*cable|1500v)\b/i.test(lower) && !lower.includes("order")) {
-    const prods = queryProducts({ category: "Solar", limit: 3 });
-    const productList = prods.products.map(formatProductCard).join("\n\n");
-    return (
-      `### ☀️ Volamp Solar Electrical Solutions (60 Products)\n\n` +
-      `Certified to **EN 50618 / TÜV 2 Pfg 1169**:\n\n` +
-      `• **1500V DC Solar PV Cables**: Electron-beam XLPO, tinned copper in 4, 6, 10 sqmm (Red & Black) with 25+ year lifespan.\n` +
-      `• **Solar PV Panels**: Mono PERC & TopCon bifacial modules (540W to 670W).\n` +
-      `• **Solar Inverters & BOS**: On-grid string inverters (3kW to 100kW), MC4 IP68 connectors, 1000V/1500V DC fuses, Array Junction Boxes.\n\n` +
-      `**Featured Solar Items in Stock:**\n\n` +
-      `${productList}\n\n` +
-      `How many meters of 4 sqmm or 6 sqmm solar cable do you need for your site?`
-    );
-  }
-
-  // 4. DIRECT PRODUCT SEARCH (Matches specific sizes, types, or descriptions)
-  const hasProductSearchIntent =
-    /\b(?:sqmm|sq\s*mm|core|armour|unarmour|mcb|mccb|rccb|gland|conduit|submersible|solar|wire|cable|lug|cctv|rg-59|rg-6|polycab|kei|finolex|schneider|legrand)\b/i.test(lower);
-
-  if (hasProductSearchIntent) {
-    const matched = findMatchingProducts(lower, 3);
-    if (matched.length > 0) {
-      const productList = matched.map(formatProductCard).join("\n\n");
-      const cleanLabel = extractProductSearchTokens(lower) || lower;
-      return (
-        `### ⚡ Matching Products for "${cleanLabel}" (${matched.length} items in stock):\n\n` +
-        `${productList}\n\n` +
-        `**Ready to place an order or get an official quotation?**\n` +
-        `Tell me your required quantity/meters, customer name, phone number, and delivery city, and I'll register your order directly with our Ahmedabad fulfillment desk!`
-      );
-    }
   }
 
   return null;
@@ -1185,34 +1249,34 @@ export async function generateVolaResponse(
     return greetings[Math.floor(Math.random() * greetings.length)];
   }
 
-  // 4. BUSINESS SEGMENTS (All 10 Specialized Segments)
-  const segmentResponse = handleBusinessSegments(lastUserMsg);
-  if (segmentResponse) {
-    return segmentResponse;
+  // 4. PRODUCT CATALOG & SPECIFICATION INTELLIGENCE (3,385+ items across 8 categories)
+  const productResponse = handleProductAndCatalogQuery(lastUserMsg);
+  if (productResponse) {
+    return productResponse;
   }
 
-  // 5. ABOUT US, 4 GENERATIONS, HERITAGE, CEO MESSAGE & TEAM
-  const aboutResponse = handleAboutUsAndHeritage(lastUserMsg);
-  if (aboutResponse) {
-    return aboutResponse;
-  }
-
-  // 6. PRICING, COSTS, CONTRACTOR DISCOUNTS & TAXES
+  // 5. PRICING, COSTS, CONTRACTOR DISCOUNTS & TAXES
   const pricingResponse = handlePricingCostsAndDiscounts(lastUserMsg);
   if (pricingResponse) {
     return pricingResponse;
   }
 
-  // 7. TECHNICAL SIZING & ELECTRICAL FORMULAS
+  // 6. TECHNICAL SIZING & ELECTRICAL FORMULAS
   const sizingResponse = handleTechnicalEngineeringAndSizing(lastUserMsg);
   if (sizingResponse) {
     return sizingResponse;
   }
 
-  // 8. PRODUCT CATALOG & SPECIFICATION INTELLIGENCE (3,385+ items across 8 categories)
-  const productResponse = handleProductAndCatalogQuery(lastUserMsg);
-  if (productResponse) {
-    return productResponse;
+  // 7. BUSINESS SEGMENTS (All 10 Specialized Segments)
+  const segmentResponse = handleBusinessSegments(lastUserMsg);
+  if (segmentResponse) {
+    return segmentResponse;
+  }
+
+  // 8. ABOUT US, 4 GENERATIONS, HERITAGE, CEO MESSAGE & TEAM
+  const aboutResponse = handleAboutUsAndHeritage(lastUserMsg);
+  if (aboutResponse) {
+    return aboutResponse;
   }
 
   // 9. MATH & GST FORMULAS

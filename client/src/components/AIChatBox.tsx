@@ -4,6 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Loader2, Send, User, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "wouter";
 import { Streamdown } from "streamdown";
 
 /**
@@ -126,11 +127,27 @@ export function AIChatBox({
   const inputAreaRef = useRef<HTMLFormElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const [, setLocation] = useLocation();
+
   // Filter out system messages
   const displayMessages = messages.filter((msg) => msg.role !== "system");
 
   // Calculate min-height for last assistant message to push user message to top
   const [minHeightForLastMessage, setMinHeightForLastMessage] = useState(0);
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const anchor = (e.target as HTMLElement).closest("a");
+    if (!anchor) return;
+    const href = anchor.getAttribute("href");
+    if (!href) return;
+    if (href.startsWith("/")) {
+      e.preventDefault();
+      setLocation(href);
+    } else if (href.startsWith("http")) {
+      anchor.setAttribute("target", "_blank");
+      anchor.setAttribute("rel", "noopener noreferrer");
+    }
+  };
 
   useEffect(() => {
     if (containerRef.current && inputAreaRef.current) {
@@ -261,7 +278,10 @@ export function AIChatBox({
                       )}
                     >
                       {message.role === "assistant" ? (
-                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                        <div
+                          className="prose prose-sm dark:prose-invert max-w-none prose-a:text-[#9e2a2b] dark:prose-a:text-[#f2b84b] prose-a:font-semibold prose-a:underline hover:prose-a:text-[#d33a3a]"
+                          onClick={handleLinkClick}
+                        >
                           <Streamdown>{message.content}</Streamdown>
                         </div>
                       ) : (

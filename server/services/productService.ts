@@ -96,7 +96,19 @@ export function normalizeCategory(c: string): string {
   return (c || "").trim();
 }
 
-function parseItemSpecs(specifications: any): Record<string, string> {
+export function normalizeBrand(b: string): string {
+  const lower = (b || "").toLowerCase().trim();
+  if (lower === "finolex" || lower === "finnolex") return "finnolex";
+  if (lower === "schneider" || lower === "schnieder" || lower === "schneider electric") return "schnieder";
+  if (lower === "l&t" || lower === "l & t" || lower === "lk" || lower === "larsen & toubro" || lower === "larsen and toubro") return "lk";
+  if (lower === "polycab") return "polycab";
+  if (lower === "kei") return "kei";
+  if (lower === "legrand") return "legrand";
+  if (lower === "volamp" || lower === "voltamp") return "volamp";
+  return lower;
+}
+
+export function parseItemSpecs(specifications: any): Record<string, string> {
   if (!specifications) return {};
   if (typeof specifications === "object") return specifications;
   try {
@@ -104,6 +116,56 @@ function parseItemSpecs(specifications: any): Record<string, string> {
   } catch {
     return {};
   }
+}
+
+export function getProductHaystack(p: Product): string {
+  const brandNorm = (p.brand || "").toLowerCase();
+  let brandAliases = brandNorm;
+  if (brandNorm === "finnolex") brandAliases += " finolex finnolex";
+  if (brandNorm === "schnieder") brandAliases += " schneider schnieder schneider electric";
+  if (brandNorm === "lk") brandAliases += " lk l&t l and t larsen toubro";
+
+  const size = (p.size || "").toLowerCase();
+  const sizeNum = size.replace(/[^\d\.]/g, "");
+  let sizeAliases = size;
+  if (sizeNum) {
+    sizeAliases += ` ${sizeNum}sqmm ${sizeNum} sqmm ${sizeNum}mm ${sizeNum} mm`;
+  }
+
+  const mat = (p.material || "").toLowerCase();
+  let matAliases = mat;
+  if (mat.includes("copper")) matAliases += " cu pure copper electrolytic";
+  if (mat.includes("alumin")) matAliases += " al aluminium aluminum";
+
+  const specs = parseItemSpecs(p.specifications);
+  const volt = `${specs.voltageRating || ""} ${specs.voltageRatingV || ""}`.toLowerCase();
+  let voltAliases = volt;
+  if (volt.includes("11 kv") || volt.includes("11kv")) voltAliases += " 11kv 11 kv 11000v ht";
+  if (volt.includes("33 kv") || volt.includes("33kv")) voltAliases += " 33kv 33 kv 33000v ht";
+  if (volt.includes("1100") || volt.includes("1.1")) voltAliases += " 1.1kv 1.1 kv 1100v 1100 v lt";
+  if (volt.includes("1500")) voltAliases += " 1500v 1500 v dc solar";
+
+  const cores = (specs.cores || "").toLowerCase();
+  let coreAliases = cores;
+  const coreNum = cores.match(/(\d+(?:\.\d+)?)\s*core/);
+  if (coreNum) {
+    coreAliases += ` ${coreNum[1]}c ${coreNum[1]} core ${coreNum[1]}core`;
+  }
+
+  const curr = `${specs.currentRatingA || ""} ${specs.currentRatingAmp || ""}`.toLowerCase();
+  let currAliases = curr;
+  const currNum = curr.match(/(\d+(?:\.\d+)?)/);
+  if (currNum) {
+    currAliases += ` ${currNum[1]}a ${currNum[1]} a ${currNum[1]}amp ${currNum[1]} amp`;
+  }
+
+  const armour = (specs.typeOfArmour || "").toLowerCase();
+  let armourAliases = armour;
+  if (armour.includes("armour") || armour.includes("armor")) {
+    armourAliases += " armoured armored armour armor";
+  }
+
+  return `${p.productId} ${p.sku} ${p.name} ${brandAliases} ${p.category} ${p.subcategory || ""} ${p.description || ""} ${sizeAliases} ${matAliases} ${voltAliases} ${coreAliases} ${currAliases} ${armourAliases} ${p.specifications || ""}`.toLowerCase();
 }
 
 export function queryProducts(params: ProductFilterParams = {}) {
@@ -175,7 +237,7 @@ export function queryProducts(params: ProductFilterParams = {}) {
     }
 
     if (brandFilter) {
-      if (p.brand.toLowerCase() !== brandFilter) {
+      if (normalizeBrand(p.brand) !== normalizeBrand(brandFilter)) {
         return false;
       }
     }
@@ -403,13 +465,49 @@ export function queryProducts(params: ProductFilterParams = {}) {
     }
 
     if (searchLower) {
-      const haystack = `${p.productId} ${p.sku} ${p.name} ${p.brand} ${p.category} ${p.subcategory || ""} ${p.size || ""} ${p.material || ""} ${p.specifications || ""}`.toLowerCase();
-      const words = searchLower.split(/\s+/);
+      const haystack = getProductHaystack(p);
+      const words = searchLower.split(/\s+/).filter(Boolean);
       return words.every((w) => haystack.includes(w));
     }
 
     return true;
   });
+
+  // If strict word matching produced 0 items and search was provided, try token-based fuzzy search
+  if (filtered.length === 0 && searchLower) {
+    const conversationalStopWords = new Set([
+      "what", "is", "the", "tell", "me", "show", "give", "price", "prices", "cost", "costs",
+      "rate", "rates", "discount", "discounts", "of", "for", "in", "with", "and", "please",
+      "do", "you", "have", "i", "need", "want", "to", "buy", "order", "can", "how", "much",
+      "find", "search", "looking", "specs", "specification", "about", "any", "got", "sell",
+      "provide", "details", "all", "which", "list", "options", "available", "suggest", "item", "items", "product", "products"
+    ]);
+
+    const meaningfulTokens = searchLower
+      .replace(/[\?\,\!\:\;\(\)\"\'\*\#\$\@\%\^\&\=\+]/g, " ")
+      .split(/\s+/)
+      .filter((t) => t.length >= 2 && !conversationalStopWords.has(t));
+
+    if (meaningfulTokens.length > 0) {
+      const scored: Array<{ product: Product; score: number }> = [];
+      for (const p of all) {
+        if (statusFilter !== "all" && p.status !== statusFilter) continue;
+        if (catFilter && normalizeCategory(p.category) !== normalizeCategory(catFilter)) continue;
+        if (brandFilter && normalizeBrand(p.brand) !== normalizeBrand(brandFilter)) continue;
+
+        const haystack = getProductHaystack(p);
+        let score = 0;
+        for (const token of meaningfulTokens) {
+          if (haystack.includes(token)) score += 1;
+        }
+        if (score > 0) {
+          scored.push({ product: p, score });
+        }
+      }
+      scored.sort((a, b) => b.score - a.score);
+      filtered = scored.map((s) => s.product);
+    }
+  }
 
   // Sorting
   if (params.sortBy === "price_asc") {
