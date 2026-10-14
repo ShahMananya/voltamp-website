@@ -197,8 +197,6 @@ export default function Home() {
           className="w-full h-full object-cover object-center"
         >
           <source src="/videos/volamp-operations-hero.mp4" type="video/mp4" />
-          <source src="/videos/VolampIMG_1104.MOV" type="video/mp4" />
-          <source src="/videos/volamp-showcase-hq.mp4" type="video/mp4" />
           <source src="/videos/volamp-reel.mp4" type="video/mp4" />
         </video>
         {/* Crisp cinematic gradient overlay - keeps video vibrant while ensuring text legibility */}

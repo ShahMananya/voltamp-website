@@ -12,7 +12,7 @@ export default function OperationsVideoSection({ onOpenModalTour }: OperationsVi
   const [isMuted, setIsMuted] = useState(true);
   const [quality, setQuality] = useState<"standard" | "hd">("standard");
 
-  const videoSrc = quality === "standard" ? "/videos/volamp-reel.mp4" : "/videos/volamp-showcase-hq.mp4";
+  const videoSrc = quality === "standard" ? "/videos/volamp-reel.mp4" : "/videos/volamp-operations-hero.mp4";
 
   const togglePlay = () => {
     if (!videoRef.current) return;
