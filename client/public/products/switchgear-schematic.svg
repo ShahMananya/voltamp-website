@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <rect width="800" height="800" fill="#081426" />
+  <pattern id="gridSw" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#162947" stroke-width="0.75" />
+    <path d="M 200 0 L 0 0 0 200" fill="none" stroke="#233e68" stroke-width="1.25" opacity="0.4" />
+  </pattern>
+  <rect width="800" height="800" fill="url(#gridSw)" />
+
+  <!-- Header -->
+  <rect x="30" y="25" width="740" height="60" rx="8" fill="#0c203b" stroke="#38bdf8" stroke-width="1.2" opacity="0.95" />
+  <text x="50" y="52" font-family="monospace" font-size="16" font-weight="bold" fill="#38bdf8" letter-spacing="1.5">VOLAMP ELEKTRIKALS · MODULAR SWITCHGEAR & MCB INTERNAL SCHEMATIC</text>
+  <text x="50" y="72" font-family="monospace" font-size="11" fill="#94a3b8">STANDARD: IEC 60898-1 / IS 8828 · BREAKING CAPACITY: 10 kA · DIN RAIL MOUNT 35mm</text>
+
+  <!-- Cutaway MCB Graphic in Center -->
+  <g transform="translate(180, 160)">
+    <!-- MCB Outer Housing Cutaway -->
+    <path d="M 0 0 L 260 0 C 275 0 280 15 280 30 L 280 380 C 280 395 275 400 260 400 L 0 400 C -15 400 -20 395 -20 380 L -20 30 C -20 15 -15 0 0 0 Z" 
+          fill="#132742" stroke="#38bdf8" stroke-width="2.5" />
+    
+    <!-- DIN Rail Clip at Back (Right) -->
+    <path d="M 280 150 L 320 150 L 320 170 L 290 170 L 290 230 L 320 230 L 320 250 L 280 250 Z" 
+          fill="#2563eb" stroke="#60a5fa" stroke-width="1.5" />
+    <text x="330" y="205" font-family="monospace" font-size="10" fill="#60a5fa">35mm DIN RAIL CLIP</text>
+
+    <!-- Top Bi-Connect Tunnel Terminal -->
+    <rect x="30" y="20" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#fbbf24" stroke-width="1.8" />
+    <circle cx="70" cy="45" r="14" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5" />
+    <path d="M 60 45 L 80 45" stroke="#fbbf24" stroke-width="2" />
+    <text x="120" y="50" font-family="monospace" font-size="10" fill="#fbbf24">INCOMING TERMINAL</text>
+
+    <!-- Arc Chute De-Ion Plates (Extinguisher) -->
+    <g transform="translate(40, 100)">
+      <rect width="90" height="120" rx="4" fill="#0b1728" stroke="#ef4444" stroke-width="1.5" />
+      <!-- Splitter plates -->
+      <line x1="10" y1="20" x2="80" y2="20" stroke="#f87171" stroke-width="2" />
+      <line x1="10" y1="40" x2="80" y2="40" stroke="#f87171" stroke-width="2" />
+      <line x1="10" y1="60" x2="80" y2="60" stroke="#f87171" stroke-width="2" />
+      <line x1="10" y1="80" x2="80" y2="80" stroke="#f87171" stroke-width="2" />
+      <line x1="10" y1="100" x2="80" y2="100" stroke="#f87171" stroke-width="2" />
+      <text x="45" y="-10" font-family="monospace" font-size="9" fill="#ef4444" text-anchor="middle">ARC CHUTE (12 PLATES)</text>
+    </g>
+
+    <!-- Moving & Fixed Silver Graphite Contacts -->
+    <circle cx="160" cy="140" r="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2" />
+    <circle cx="180" cy="165" r="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2" />
+    <path d="M 160 140 L 140 180" stroke="#94a3b8" stroke-width="3" />
+    <text x="200" y="150" font-family="monospace" font-size="9" fill="#f1f5f9">AgC CONTACTS</text>
+
+    <!-- Bimetallic Thermal Strip (Overload Trip) -->
+    <rect x="150" y="240" width="16" height="80" rx="3" fill="#d97706" stroke="#b45309" stroke-width="1.5" />
+    <text x="175" y="280" font-family="monospace" font-size="9" fill="#f59e0b">BIMETALLIC STRIP</text>
+
+    <!-- Magnetic Solenoid Coil (Short Circuit Trip) -->
+    <g transform="translate(50, 240)">
+      <rect width="60" height="70" rx="4" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" />
+      <circle cx="80" cy="275" r="2" fill="#38bdf8" />
+      <text x="30" y="90" font-family="monospace" font-size="9" fill="#38bdf8" text-anchor="middle">MAGNETIC COIL</text>
+    </g>
+
+    <!-- Bottom Load Terminal -->
+    <rect x="30" y="330" width="80" height="50" rx="4" fill="#1e3a5f" stroke="#fbbf24" stroke-width="1.8" />
+    <circle cx="70" cy="355" r="14" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5" />
+    <path d="M 60 355 L 80 355" stroke="#fbbf24" stroke-width="2" />
+    <text x="120" y="360" font-family="monospace" font-size="10" fill="#fbbf24">LOAD TERMINAL</text>
+  </g>
+
+  <!-- Technical Spec Matrix Table at Bottom -->
+  <g transform="translate(40, 580)">
+    <rect width="720" height="130" rx="6" fill="#0d1f36" stroke="#334155" stroke-width="1" />
+    <rect width="720" height="28" rx="6" fill="#1e3a5f" />
+    <text x="20" y="19" font-family="sans-serif" font-size="11" font-weight="bold" fill="#38bdf8">KEY PERFORMANCE SPECIFICATIONS</text>
+
+    <text x="20" y="52" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Short-Circuit Capacity:</text>
+    <text x="190" y="52" font-family="monospace" font-size="10" fill="#22c55e">10 kA (10,000 Amperes) Breaking Capacity (Icn/Ics)</text>
+
+    <text x="20" y="75" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Tripping Characteristic:</text>
+    <text x="190" y="75" font-family="monospace" font-size="10" fill="#cbd5e1">Type C Curve (5 - 10 In Magnetic Instantaneous Response for Inductive Loads)</text>
+
+    <text x="20" y="98" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Mechanical Endurance:</text>
+    <text x="190" y="98" font-family="monospace" font-size="10" fill="#cbd5e1">20,000 Operating Cycles · Bi-Connect Cable & Busbar Compatibility (35mm²)</text>
+  </g>
+
+  <!-- Footer Certification Bar -->
+  <rect x="30" y="725" width="740" height="45" rx="6" fill="#0c1626" stroke="#334155" stroke-width="1" />
+  <text x="50" y="752" font-family="monospace" font-size="10.5" fill="#64748b">VOLAMP ELEKTRIKALS PVT LTD · AHMEDABAD · ISO 9001:2015 CERTIFIED FACILITY · CPRI TYPE TESTED</text>
+</svg>

@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <rect width="800" height="800" fill="#081426" />
+  <pattern id="gridSol" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#162947" stroke-width="0.75" />
+    <path d="M 200 0 L 0 0 0 200" fill="none" stroke="#233e68" stroke-width="1.25" opacity="0.4" />
+  </pattern>
+  <rect width="800" height="800" fill="url(#gridSol)" />
+
+  <rect x="30" y="25" width="740" height="60" rx="8" fill="#0c203b" stroke="#38bdf8" stroke-width="1.2" opacity="0.95" />
+  <text x="50" y="52" font-family="monospace" font-size="16" font-weight="bold" fill="#38bdf8" letter-spacing="1.5">VOLAMP ELEKTRIKALS · SOLAR PV MODULE CAD SCHEMATIC</text>
+  <text x="50" y="72" font-family="monospace" font-size="11" fill="#94a3b8">BIFACIAL TOPCon / MONO PERC · 144 HALF-CUT CELLS · IP68 JUNCTION BOX · 1500V DC</text>
+
+  <!-- Solar Module CAD Diagram in Center -->
+  <g transform="translate(240, 120)">
+    <!-- Aluminum Outer Frame -->
+    <rect width="320" height="420" rx="4" fill="#0b1728" stroke="#94a3b8" stroke-width="6" />
+    <rect x="6" y="6" width="308" height="408" fill="#0f223d" stroke="#38bdf8" stroke-width="1.5" />
+
+    <!-- 6 Columns of Half Cut Cells -->
+    <g stroke="#1e3a5f" stroke-width="1" fill="#1e293b">
+      <!-- Row 1 -->
+      <rect x="12" y="12" width="45" height="55" rx="2" />
+      <rect x="63" y="12" width="45" height="55" rx="2" />
+      <rect x="114" y="12" width="45" height="55" rx="2" />
+      <rect x="165" y="12" width="45" height="55" rx="2" />
+      <rect x="216" y="12" width="45" height="55" rx="2" />
+      <rect x="267" y="12" width="45" height="55" rx="2" />
+
+      <!-- Row 2 -->
+      <rect x="12" y="72" width="45" height="55" rx="2" />
+      <rect x="63" y="72" width="45" height="55" rx="2" />
+      <rect x="114" y="72" width="45" height="55" rx="2" />
+      <rect x="165" y="72" width="45" height="55" rx="2" />
+      <rect x="216" y="72" width="45" height="55" rx="2" />
+      <rect x="267" y="72" width="45" height="55" rx="2" />
+
+      <!-- Row 3 -->
+      <rect x="12" y="132" width="45" height="55" rx="2" />
+      <rect x="63" y="132" width="45" height="55" rx="2" />
+      <rect x="114" y="132" width="45" height="55" rx="2" />
+      <rect x="165" y="132" width="45" height="55" rx="2" />
+      <rect x="216" y="132" width="45" height="55" rx="2" />
+      <rect x="267" y="132" width="45" height="55" rx="2" />
+
+      <!-- Center Split Gap (Half-cut architecture) -->
+      <line x1="8" y1="198" x2="312" y2="198" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4 2" />
+
+      <!-- Row 4 -->
+      <rect x="12" y="210" width="45" height="55" rx="2" />
+      <rect x="63" y="210" width="45" height="55" rx="2" />
+      <rect x="114" y="210" width="45" height="55" rx="2" />
+      <rect x="165" y="210" width="45" height="55" rx="2" />
+      <rect x="216" y="210" width="45" height="55" rx="2" />
+      <rect x="267" y="210" width="45" height="55" rx="2" />
+
+      <!-- Row 5 -->
+      <rect x="12" y="270" width="45" height="55" rx="2" />
+      <rect x="63" y="270" width="45" height="55" rx="2" />
+      <rect x="114" y="270" width="45" height="55" rx="2" />
+      <rect x="165" y="270" width="45" height="55" rx="2" />
+      <rect x="216" y="270" width="45" height="55" rx="2" />
+      <rect x="267" y="270" width="45" height="55" rx="2" />
+
+      <!-- Row 6 -->
+      <rect x="12" y="330" width="45" height="55" rx="2" />
+      <rect x="63" y="330" width="45" height="55" rx="2" />
+      <rect x="114" y="330" width="45" height="55" rx="2" />
+      <rect x="165" y="330" width="45" height="55" rx="2" />
+      <rect x="216" y="330" width="45" height="55" rx="2" />
+      <rect x="267" y="330" width="45" height="55" rx="2" />
+    </g>
+
+    <!-- 16BB Busbars Lines across cells -->
+    <path d="M 35 12 L 35 385 M 85 12 L 85 385 M 135 12 L 135 385 M 185 12 L 185 385 M 235 12 L 235 385 M 285 12 L 285 385" 
+          stroke="#94a3b8" stroke-width="0.7" opacity="0.7" />
+
+    <!-- Split Junction Box on Back (Dotted) -->
+    <rect x="110" y="180" width="100" height="36" rx="4" fill="#0f172a" stroke="#22c55e" stroke-width="1.5" />
+    <text x="160" y="202" font-family="monospace" font-size="9" fill="#22c55e" text-anchor="middle">IP68 J-BOX (3 DIODES)</text>
+  </g>
+
+  <!-- Technical Spec Matrix Table at Bottom -->
+  <g transform="translate(40, 580)">
+    <rect width="720" height="130" rx="6" fill="#0d1f36" stroke="#334155" stroke-width="1" />
+    <rect width="720" height="28" rx="6" fill="#1e3a5f" />
+    <text x="20" y="19" font-family="sans-serif" font-size="11" font-weight="bold" fill="#38bdf8">ENGINEERING & OPTICAL ATTRIBUTES</text>
+
+    <text x="20" y="52" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Module Efficiency:</text>
+    <text x="190" y="52" font-family="monospace" font-size="10" fill="#22c55e">&gt; 22.5% Ultra-High Conversion Efficiency (N-Type TOPCon)</text>
+
+    <text x="20" y="75" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Mechanical Load:</text>
+    <text x="190" y="75" font-family="monospace" font-size="10" fill="#cbd5e1">5400 Pa Front Snow Load / 2400 Pa Rear Wind Pressure Tested</text>
+
+    <text x="20" y="98" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Anti-PID & Glass:</text>
+    <text x="190" y="98" font-family="monospace" font-size="10" fill="#cbd5e1">3.2mm High-Transmittance Anti-Reflective Coated Tempered Glass</text>
+  </g>
+
+  <!-- Footer Certification Bar -->
+  <rect x="30" y="725" width="740" height="45" rx="6" fill="#0c1626" stroke="#334155" stroke-width="1" />
+  <text x="50" y="752" font-family="monospace" font-size="10.5" fill="#64748b">VOLAMP ELEKTRIKALS PVT LTD · AHMEDABAD · ISO 9001:2015 CERTIFIED FACILITY · CPRI TYPE TESTED</text>
+</svg>

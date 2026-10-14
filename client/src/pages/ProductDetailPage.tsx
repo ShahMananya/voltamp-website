@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Copy,
   Download,
+  Box,
   ExternalLink,
   Eye,
   FileCheck,
@@ -31,10 +32,14 @@ import {
   Share2,
   ShieldCheck,
   ShoppingCart,
+  Smartphone,
   Sparkles,
   Truck,
   X,
   Zap,
+  ZoomIn,
+  ZoomOut,
+  Crosshair,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +48,7 @@ import { getProductImage, getCategoryFallbackImage } from "@/data/categories";
 import { trpc } from "@/lib/trpc";
 import { QuickOrderModal } from "@/components/quickorder/QuickOrderModal";
 import { EnquireModal } from "@/components/enquire/EnquireModal";
+import { Product3DViewer } from "@/components/ar/Product3DViewer";
 import UniversalFooter from "@/components/layout/UniversalFooter";
 import SeoHead from "@/components/seo/SeoHead";
 import { useCart } from "@/contexts/CartContext";
@@ -96,12 +102,20 @@ interface GalleryItem {
   label: string;
 }
 
+interface ImageHotspot {
+  id: string;
+  x: number; // percentage 0-100
+  y: number; // percentage 0-100
+  title: string;
+  detail: string;
+  spec: string;
+}
+
 /**
- * Returns strictly category-appropriate gallery images.
- * Completely eliminates cross-contamination (e.g. tape or cables on a gland).
+ * Returns strictly category-appropriate gallery images with ultra-sharp detail perspectives.
  */
 function getCategoryGallery(product: any): GalleryItem[] {
-  if (!product) return [{ url: "/products/cables.jpg", label: "Product View" }];
+  if (!product) return [{ url: "/products/cable-cross-section.jpg", label: "Product Cross-Section" }];
 
   const cat = (product.category || "").toLowerCase();
   const name = (product.name || "").toLowerCase();
@@ -111,71 +125,190 @@ function getCategoryGallery(product: any): GalleryItem[] {
   // 1. GLANDS: 4 photorealistic perspectives
   if (cat.includes("gland") || name.includes("gland")) {
     return [
-      { url: primaryImg || "/products/cable-gland.jpg", label: "Assembled Gland" },
-      { url: "/products/gland-exploded.jpg", label: "Component Exploded View" },
-      { url: "/products/gland-schematic.jpg", label: "CAD Dimensions" },
+      { url: primaryImg || "/products/cable-gland.jpg", label: "Assembled Double Compression Gland" },
+      { url: "/products/gland-exploded.jpg", label: "Component Exploded Breakdown" },
+      { url: "/products/gland-schematic.jpg", label: "CAD Dimensions & Nipple Specs" },
       { url: "/products/gland-packaging.jpg", label: "Industrial Packaging Box" },
     ];
   }
 
-  // 2. WIRES & CABLES
+  // 2. WIRES & CABLES: 4 ultra-sharp perspectives
   if (cat.includes("cable") || cat.includes("wire") || name.includes("cable") || name.includes("wire")) {
     return [
-      { url: primaryImg || "/products/cables.jpg", label: "Standard Product Coil" },
-      { url: "/products/cables.jpg", label: "Conductor Structure" },
+      { url: "/products/cable-cross-section.jpg", label: "4-Core Armoured Cutaway (Macro)" },
+      { url: "/products/cable-reel-drum.jpg", label: "Industrial Wooden Reel Spool" },
+      { url: "/products/cable-schematic.svg", label: "Layer CAD Technical Blueprint" },
+      { url: primaryImg || "/products/cables.jpg", label: "Product Coil & IS 694 Mark" },
     ];
   }
 
-  // 3. CABLE LUGS & TERMINALS
+  // 3. CABLE LUGS & TERMINALS: 3 ultra-sharp perspectives
   if (cat.includes("lug") || name.includes("lug") || cat.includes("terminal")) {
     return [
-      { url: primaryImg || "/products/cable-lugs.jpg", label: "Terminal Lug Profile" },
-      { url: "/products/cable-lugs.jpg", label: "Barrel & Palm Chamfer" },
+      { url: "/products/cable-lugs-macro.jpg", label: "Electro-Tinned Lug Array (Macro)" },
+      { url: "/products/lug-schematic.svg", label: "DIN 46235 Precision CAD Blueprint" },
+      { url: primaryImg || "/products/cable-lugs.jpg", label: "Barrel Chamfer & Crimp Profile" },
     ];
   }
 
-  // 4. SWITCHGEAR
+  // 4. SWITCHGEAR: 3 perspectives
   if (cat.includes("switch") || name.includes("mcb") || name.includes("mccb") || cat.includes("breaker")) {
     return [
-      { url: primaryImg || "/products/switchgear.jpg", label: "Modular Unit Front" },
-      { url: "/products/switchgear.jpg", label: "Terminal & DIN Mount" },
+      { url: primaryImg || "/products/switchgear.jpg", label: "Modular Unit Front Profile" },
+      { url: "/products/switchgear-schematic.svg", label: "Internal Arc Chute & CAD Blueprint" },
+      { url: "/products/switchgear.jpg", label: "Bi-Connect & DIN Mount Clamp" },
     ];
   }
 
-  // 5. SOLAR
+  // 5. SOLAR: 2 perspectives
   if (cat.includes("solar") || name.includes("solar") || name.includes("panel")) {
     return [
-      { url: primaryImg || "/products/solar-panel.jpg", label: "PV Module Front" },
-      { url: "/products/solar-panel.jpg", label: "Solar Cell Matrix" },
+      { url: primaryImg || "/products/solar-panel.jpg", label: "Monocrystalline Half-Cut Facia" },
+      { url: "/products/solar-schematic.svg", label: "Module Matrix & Frame CAD Blueprint" },
     ];
   }
 
-  // 6. EARTHING
+  // 6. EARTHING: 2 perspectives
   if (cat.includes("earth") || name.includes("earth") || name.includes("rod")) {
     return [
-      { url: primaryImg || "/products/earthing-rods.png", label: "Copper Bonded Electrode" },
-      { url: "/products/earthing-rods.png", label: "Terminal Clamp Profile" },
+      { url: primaryImg || "/products/earthing-rods.png", label: "254µ Copper Bonded Electrode" },
+      { url: "/products/earthing-schematic.svg", label: "Earth Pit & Soil Matrix Schematic" },
     ];
   }
 
   // 7. PVC PIPES & CONDUITS
   if (cat.includes("pipe") || cat.includes("conduit") || name.includes("pipe") || name.includes("conduit")) {
     return [
-      { url: primaryImg || "/products/pvc-pipe.jpg", label: "Conduit Profile" },
-      { url: "/products/pvc-pipe.jpg", label: "Bundle View" },
+      { url: primaryImg || "/products/pvc-pipe.jpg", label: "Rigid FRLS Conduit Profile" },
+      { url: "/products/pvc-pipe.jpg", label: "Bundle & Bell-Mouth Joint" },
     ];
   }
 
   // 8. WIRING DEVICES
   if (cat.includes("wiring") || cat.includes("device") || name.includes("tape")) {
     return [
-      { url: primaryImg || "/products/wiring-devices.jpg", label: "Device Unit" },
+      { url: primaryImg || "/products/wiring-devices.jpg", label: "Modular Device Unit" },
     ];
   }
 
-  // Default: Only return the primary image or category fallback (never cross-category!)
+  // Default: Only return the primary image or category fallback
   return [
     { url: primaryImg || fallback, label: "Product View" },
+  ];
+}
+
+/**
+ * Technical inspection hotspots positioned dynamically for each category
+ */
+function getCategoryHotspots(product: any): ImageHotspot[] {
+  if (!product) return [];
+  const cat = (product.category || "").toLowerCase();
+  const name = (product.name || "").toLowerCase();
+
+  if (cat.includes("cable") || cat.includes("wire") || name.includes("cable")) {
+    return [
+      {
+        id: "cond",
+        x: 48,
+        y: 48,
+        title: "Pure Copper Conductor",
+        detail: "99.97% high-conductivity electrolytic copper strands (Class 2 / Class 5).",
+        spec: "IS 8130 / IEC 60228",
+      },
+      {
+        id: "insul",
+        x: 32,
+        y: 36,
+        title: "XLPE Core Insulation",
+        detail: "Cross-linked polyethylene rated for 90°C continuous / 250°C short circuit duty.",
+        spec: "IS 7098 (Pt 1) / Type C",
+      },
+      {
+        id: "armour",
+        x: 74,
+        y: 62,
+        title: "Galvanized Steel Wire Armour (GSWA)",
+        detail: "Continuous circumferential steel wire cage protecting against heavy crush & rodent attack.",
+        spec: "IS 3975 Tensile Protection",
+      },
+      {
+        id: "sheath",
+        x: 82,
+        y: 28,
+        title: "UV & Flame Retardant Sheath",
+        detail: "Heavy-duty FRLS outer jacket with Oxygen Index > 29% for low smoke emission.",
+        spec: "IS 5831 / IEC 60332-1",
+      },
+    ];
+  }
+
+  if (cat.includes("lug") || name.includes("lug")) {
+    return [
+      {
+        id: "barrel",
+        x: 34,
+        y: 50,
+        title: "Internal Bell-Mouth Entry",
+        detail: "Precision machined chamfer enables rapid insertion of multi-strand cables without snags.",
+        spec: "DIN 46235 Standard",
+      },
+      {
+        id: "inspect",
+        x: 49,
+        y: 42,
+        title: "Visual Crimp Window",
+        detail: "Guarantees full conductor insertion depth prior to mechanical hydraulic crimping.",
+        spec: "Quality Assurance Clause",
+      },
+      {
+        id: "palm",
+        x: 72,
+        y: 50,
+        title: "Heavy-Duty Mounting Palm",
+        detail: "Flat precision-punched contact palm ensures optimal surface conductivity on switchgear busbars.",
+        spec: "IS 8309 / CPRI Certified",
+      },
+    ];
+  }
+
+  if (cat.includes("switch") || name.includes("mcb") || name.includes("breaker")) {
+    return [
+      {
+        id: "term",
+        x: 50,
+        y: 20,
+        title: "Bi-Connect Tunnel Clamp",
+        detail: "Dual-entry cage terminal accepting both 35mm² cables and fork-type busbars.",
+        spec: "IP20 Touch-Proof",
+      },
+      {
+        id: "arc",
+        x: 38,
+        y: 46,
+        title: "12-Plate De-Ion Arc Chute",
+        detail: "Instantaneously extinguishes high-energy electrical arcs during short circuits.",
+        spec: "10 kA Breaking Capacity",
+      },
+      {
+        id: "din",
+        x: 76,
+        y: 54,
+        title: "Snap-On DIN Rail Clamp",
+        detail: "Bi-stable latching clip for rapid tool-less mounting on standard 35mm distribution rails.",
+        spec: "EN 50022 Conforming",
+      },
+    ];
+  }
+
+  return [
+    {
+      id: "genuine",
+      x: 50,
+      y: 50,
+      title: "Authenticated VOLAMP Engineering Spec",
+      detail: "100% factory inspected with batch test certificate and serial tracking.",
+      spec: "ISO 9001:2015 Conforming",
+    },
   ];
 }
 
@@ -209,10 +342,31 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
   ).trim();
 
   // Query product data from backend
-  const { data: product, isLoading, isFetching, error, refetch } = trpc.products.getById.useQuery(
+  const { data: serverProduct, isLoading, isFetching, error, refetch } = trpc.products.getById.useQuery(
     { productId },
     { enabled: Boolean(productId), retry: 1 }
   );
+
+  // Fallback to static catalog file if API is unreachable on static hosting / Vercel
+  const [staticProductFallback, setStaticProductFallback] = useState<any | null>(null);
+
+  useEffect(() => {
+    if ((error || (!serverProduct && !isLoading)) && productId && !staticProductFallback) {
+      fetch("/products_db.json")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((items: any[]) => {
+          if (Array.isArray(items)) {
+            const found = items.find(
+              (p) => p.productId === productId || p.sku === productId
+            );
+            if (found) setStaticProductFallback(found);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [error, serverProduct, isLoading, productId, staticProductFallback]);
+
+  const product = serverProduct || staticProductFallback;
 
   // Cart & Compare contexts
   const { addItem, totalCount, openCart } = useCart();
@@ -232,8 +386,43 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
   const [specSearchQuery, setSpecSearchQuery] = useState("");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [mediaMode, setMediaMode] = useState<"2d" | "3d">(() => {
+    if (typeof window !== "undefined") {
+      const search = new URLSearchParams(window.location.search);
+      if (search.get("view") === "3d" || search.get("ar") === "1" || window.location.hash === "#ar") {
+        return "3d";
+      }
+    }
+    return "2d";
+  });
+  const [full3DModalOpen, setFull3DModalOpen] = useState(false);
 
-  // Synchronize MOQ & initial packaging option once product is loaded
+  // Ultra-detailed Optical Zoom & Technical Hotspots State
+  const [isMagnifying, setIsMagnifying] = useState(false);
+  const [magnifierPos, setMagnifierPos] = useState({ x: 50, y: 50, cursorX: 0, cursorY: 0 });
+  const [zoomLevel, setZoomLevel] = useState(2.8);
+  const [showHotspots, setShowHotspots] = useState(false);
+  const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
+  const [lightboxZoom, setLightboxZoom] = useState(1);
+
+  const categoryHotspots = useMemo(() => {
+    return getCategoryHotspots(product);
+  }, [product]);
+
+  const handleDownloadImage = () => {
+    if (!currentActiveImage) return;
+    const link = document.createElement("a");
+    link.href = currentActiveImage;
+    const cleanName = (product?.name || "volamp-product").replace(/[^a-zA-Z0-9_-]/g, "_");
+    const label = (galleryImages[selectedImageIndex]?.label || "detail").replace(/[^a-zA-Z0-9_-]/g, "_");
+    link.download = `${cleanName}_${label}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("High-Resolution Asset Downloaded", {
+      description: `Saved: ${cleanName}_${label}`,
+    });
+  };
   useEffect(() => {
     if (product) {
       const moqNum = parseInt(String(product.moq).replace(/[^0-9]/g, ""), 10);
@@ -474,56 +663,244 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
     }, 400);
   };
 
-  // Handle Download Technical Datasheet PDF using jsPDF
-  const handleDownloadDatasheet = () => {
+  // Helper to load image as Data URL for jsPDF
+  const getImageDataUrl = async (src: string): Promise<string | null> => {
+    return new Promise((resolve) => {
+      try {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) {
+              resolve(null);
+              return;
+            }
+            ctx.drawImage(img, 0, 0);
+            resolve(canvas.toDataURL("image/png"));
+          } catch {
+            resolve(null);
+          }
+        };
+        img.onerror = () => resolve(null);
+        img.src = src;
+      } catch {
+        resolve(null);
+      }
+    });
+  };
+
+  // Handle Download Technical Datasheet PDF using jsPDF (Attractive Brochure Dossier)
+  const handleDownloadDatasheet = async () => {
     if (!product) return;
     try {
-      const doc = new jsPDF();
+      toast.info("Generating Brochure...", { description: "Preparing official technical dossier & datasheet PDF." });
 
-      // Top Header Banner
-      doc.setFillColor(29, 115, 183);
-      doc.rect(0, 0, 210, 24, "F");
+      // Preload Volamp logo and product thumbnail
+      const [logoDataUrl, productImgDataUrl] = await Promise.all([
+        getImageDataUrl("/volamp-logo.png"),
+        getImageDataUrl((product as any).image || getProductImage(product.category) || "/products/cables.jpg?v=4"),
+      ]);
+
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // =========================================================================
+      // 1. BRAND HEADER BANNER (Deep Volamp Navy + Warm Amber Accent Line)
+      // =========================================================================
+      doc.setFillColor(11, 31, 51); // Deep Navy #0b1f33
+      doc.rect(0, 0, 210, 26, "F");
+
+      doc.setFillColor(197, 103, 24); // Warm Amber Gold #c56718
+      doc.rect(0, 26, 210, 2.5, "F");
+
+      // Volamp Logo inside White Rounded Badge
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(12, 4, 46, 18, 2, 2, "F");
+
+      if (logoDataUrl) {
+        try {
+          doc.addImage(logoDataUrl, "PNG", 14, 6, 42, 14);
+        } catch {
+          doc.setTextColor(77, 18, 23);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(13);
+          doc.text("VOLAMP", 18, 16);
+        }
+      } else {
+        doc.setTextColor(77, 18, 23);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text("VOLAMP", 18, 16);
+      }
+
+      // Brand Title and Dossier Eyebrow beside Logo
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("VOLAMP ELEKTRIKALS", 63, 11);
+
+      doc.setTextColor(245, 191, 33); // Bright Gold #f5bf21
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.text("TECHNICAL SPECIFICATION DOSSIER & ENGINEERING BROCHURE", 63, 16);
+
+      doc.setTextColor(203, 213, 225); // Slate 300
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6.5);
+      doc.text("ISO 9001:2015 · CPRI Tested · IS/IEC Conforming · GeM Registered Supplier", 63, 21);
+
+      // Top Right Document Metadata Badge
+      doc.setFillColor(18, 48, 77);
+      doc.roundedRect(148, 4, 50, 18, 2, 2, "F");
 
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(15);
-      doc.text("VOLAMP ELEKTRIKALS · TECHNICAL DATASHEET", 14, 16);
+      doc.setFontSize(7.5);
+      doc.text(`Ref: ${product.productId}`, 152, 9.5);
 
-      // Company Info Subheader
-      doc.setTextColor(100, 116, 139);
+      doc.setTextColor(203, 213, 225);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(8.5);
-      doc.text("Government & Industrial Certified Electrical Distributor · ISO 9001:2015 · IS/IEC Conforming", 14, 32);
-      doc.text(`Generated: ${new Date().toLocaleDateString("en-IN")}`, 150, 32);
+      doc.setFontSize(6.5);
+      doc.text(`Date: ${new Date().toLocaleDateString("en-IN")}`, 152, 14);
 
-      // Product Title Box
-      doc.setDrawColor(226, 232, 240);
+      doc.setTextColor(52, 211, 153); // Emerald 400
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(6.5);
+      doc.text("● AUTHENTICATED SPEC", 152, 18.5);
+
+      // =========================================================================
+      // 2. HERO PRODUCT SPOTLIGHT CARD
+      // =========================================================================
+      const heroBoxY = 32;
+      const heroBoxH = 37;
       doc.setFillColor(248, 250, 252);
-      doc.roundedRect(14, 38, 182, 28, 2, 2, "FD");
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(12, heroBoxY, 186, heroBoxH, 2.5, 2.5, "FD");
 
-      doc.setTextColor(29, 115, 183);
+      // Left Brand Tag Pill
+      const brandText = `[ ${(product.brand || "VOLAMP").toUpperCase()} ] · INDUSTRIAL CERTIFIED`;
+      doc.setFillColor(197, 103, 24);
+      doc.roundedRect(16, heroBoxY + 3.5, 62, 5, 1, 1, "F");
+      doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(10.5);
-      doc.text(product.brand?.toUpperCase() || "VOLAMP INDUSTRIAL SPECIFICATION", 18, 46);
+      doc.setFontSize(6.5);
+      doc.text(brandText, 18, heroBoxY + 7);
 
-      doc.setTextColor(17, 30, 46);
-      doc.setFontSize(12);
-      const titleLines = doc.splitTextToSize(product.name, 174);
-      doc.text(titleLines, 18, 54);
-
-      // Master Parameters Table
-      doc.setFontSize(11);
+      // Product Title
+      doc.setTextColor(15, 23, 42); // Slate 900
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(30, 41, 59);
-      doc.text("1. MASTER TECHNICAL ATTRIBUTES", 14, 76);
+      doc.setFontSize(11.5);
+      const titleLines = doc.splitTextToSize(product.name, productImgDataUrl ? 130 : 176);
+      doc.text(titleLines, 16, heroBoxY + 14);
 
-      // Category-aware PDF table
+      // Category / Series Subtitle
+      doc.setTextColor(71, 85, 105);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text(
+        `Category: ${product.category || "Electrical Supplies"} · Series: ${product.subcategory || "Standard Industrial"} · Master SKU: ${product.sku || product.productId}`,
+        16,
+        heroBoxY + 22.5
+      );
+
+      // 3 Highlight Feature Chips inside Hero Card
+      const chipY = heroBoxY + 27.5;
+      const chipH = 6;
+
+      // Chip 1: Voltage
+      const chip1Text = `Voltage: ${specs.voltageRating || "1100V (IS 694)"}`;
+      doc.setFillColor(254, 243, 199); // Amber 100
+      doc.setDrawColor(251, 191, 36);
+      doc.roundedRect(16, chipY, 44, chipH, 1, 1, "FD");
+      doc.setTextColor(180, 83, 9);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(6.5);
+      doc.text(chip1Text, 18, chipY + 4.2);
+
+      // Chip 2: Conductor / Material
+      const chip2Text = `Conductor: ${(product.material || specs.conductorMaterial || "Electrolytic Cu").slice(0, 22)}`;
+      doc.setFillColor(224, 242, 254); // Sky 100
+      doc.setDrawColor(125, 211, 252);
+      doc.roundedRect(63, chipY, 46, chipH, 1, 1, "FD");
+      doc.setTextColor(3, 105, 161);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(6.5);
+      doc.text(chip2Text, 65, chipY + 4.2);
+
+      // Chip 3: Standards
+      const chip3Text = `Standard: ${specs.standard || specs.standardIs || "BIS / IEC Compliant"}`;
+      doc.setFillColor(236, 253, 245); // Emerald 100
+      doc.setDrawColor(110, 231, 183);
+      doc.roundedRect(112, chipY, 38, chipH, 1, 1, "FD");
+      doc.setTextColor(4, 120, 87);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(6.5);
+      doc.text(chip3Text, 114, chipY + 4.2);
+
+      // Right Side: Product Thumbnail Image or Verified Stamp Box
+      if (productImgDataUrl) {
+        try {
+          doc.setFillColor(255, 255, 255);
+          doc.setDrawColor(203, 213, 225);
+          doc.roundedRect(156, heroBoxY + 3.5, 38, 30, 2, 2, "FD");
+          doc.addImage(productImgDataUrl, "PNG", 158, heroBoxY + 4.5, 34, 28);
+        } catch {
+          // Fallback stamp box
+          doc.setFillColor(241, 245, 249);
+          doc.setDrawColor(203, 213, 225);
+          doc.roundedRect(156, heroBoxY + 3.5, 38, 30, 2, 2, "FD");
+          doc.setTextColor(197, 103, 24);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(7.5);
+          doc.text("VOLAMP", 166, heroBoxY + 16);
+          doc.setFontSize(6);
+          doc.text("CERTIFIED SPEC", 160, heroBoxY + 22);
+        }
+      } else {
+        doc.setFillColor(241, 245, 249);
+        doc.setDrawColor(203, 213, 225);
+        doc.roundedRect(156, heroBoxY + 3.5, 38, 30, 2, 2, "FD");
+        doc.setTextColor(197, 103, 24);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(7.5);
+        doc.text("VOLAMP", 166, heroBoxY + 16);
+        doc.setFontSize(6);
+        doc.text("CERTIFIED SPEC", 160, heroBoxY + 22);
+      }
+
+      // =========================================================================
+      // 3. SECTION 1: MASTER ENGINEERING ATTRIBUTES & SPECIFICATIONS TABLE
+      // =========================================================================
+      let yPos = 73;
+
+      // Section Header with Amber Indicator
+      doc.setFillColor(197, 103, 24);
+      doc.rect(12, yPos, 3, 5.5, "F");
+
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text("1. MASTER ENGINEERING PARAMETERS & TEST COMPLIANCE", 18, yPos + 4.2);
+
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(100, 116, 139);
+      doc.text("Inspection & Quality Standard: IS / IEC / BS / CE Conforming", 124, yPos + 4.2);
+
+      // Category-aware PDF table data
       const cat = (product.category || "").toLowerCase();
       let tableData: string[][] = [
         ["Product Reference ID", product.productId],
-        ["Master SKU Code", product.sku || "N/A"],
+        ["Master SKU Code", product.sku || product.productId],
         ["Product Category", product.category || "Electrical Supplies"],
-        ["Subcategory / Series", product.subcategory || "Standard Series"],
+        ["Subcategory / Series", product.subcategory || "Standard Industrial Series"],
       ];
 
       if (cat.includes("gland")) {
@@ -540,86 +917,213 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
       } else if (cat.includes("lug")) {
         tableData.push(
           ["Lug / Terminal Type", specs.lugType || "Tubular Crimping Lug"],
-          ["Size / Cross-Section", product.size || specs.sizeRange || "Standard"],
-          ["Material", product.material || "Electro-Tinned Copper"],
-          ["Barrel Style", specs.barrelStyle || "Standard Barrel"],
+          ["Size / Cross-Section", product.size || specs.sizeRange || "Standard Industrial"],
+          ["Material", product.material || "Electro-Tinned Electrolytic Copper"],
+          ["Barrel Style", specs.barrelStyle || "Standard Barrel with Inspection Hole"],
           ["Standard Conformance", specs.standard || "IS 8309 / DIN 46235"]
         );
       } else if (cat.includes("switch")) {
         tableData.push(
-          ["Poles Configuration", specs.polesPhase || product.size || "1 Pole (1P)"],
-          ["Rated Current", specs.currentRatingA ? `${specs.currentRatingA} A` : "16 Amp"],
+          ["Poles Configuration", specs.polesPhase || product.size || "1 Pole (1P) / 4 Pole (4P)"],
+          ["Rated Current", specs.currentRatingA ? `${specs.currentRatingA} A` : "16 Amp - 63 Amp"],
           ["Breaking Capacity", specs.breakingCapacityKa ? `${specs.breakingCapacityKa} kA` : "10 kA"],
-          ["Tripping Curve", specs.tripCurve || "Type C Curve"],
-          ["Rated Voltage", specs.voltageRatingV ? `${specs.voltageRatingV} V` : "240/415 V AC"],
+          ["Tripping Curve", specs.tripCurve || "Type C Curve (5-10 In)"],
+          ["Rated Voltage", specs.voltageRatingV ? `${specs.voltageRatingV} V` : "240 / 415 V AC"],
           ["Standard Conformance", specs.standard || "IEC 60898-1 / IS 8828"]
+        );
+      } else if (cat.includes("solar")) {
+        tableData.push(
+          ["Conductor Size", product.size || specs.sizeSqMm || "4.0 / 6.0 SQMM"],
+          ["Conductor Material", "Tinned Flexible Electrolytic Copper (Class 5)"],
+          ["Rated Voltage", "1500 V DC (Dual Certified EN 50618 & IEC 62930)"],
+          ["Insulation / Jacket", "Cross-Linked Halogen-Free Polyolefin (XLPO)"],
+          ["Thermal Rating", "-40°C to +120°C (Max Conductor Temp 120°C)"],
+          ["UV & Weather Proofing", "UV, Ozone and Hydrolysis Resistant (EN 50618)"],
+          ["Standard Conformance", "EN 50618 (H1Z2Z2-K) / TUV Certified"]
         );
       } else {
         tableData.push(
           ["Conductor Size", product.size || specs.sizeSqMm || "Standard"],
-          ["Conductor Material", product.material || specs.conductorMaterial || "Electrolytic Grade Copper"],
-          ["Voltage Grade / Rating", specs.voltageRating || "1100 V (IS 694)"],
-          ["Insulation Compound", specs.insulationType || "FRLS / PVC Type C"],
-          ["Conductor Class", specs.conductorClass || "Class 5 (Flexible Stranded)"],
-          ["Core Configuration", specs.cores || "1 Core"],
-          ["Armour Construction", specs.typeOfArmour || "Unarmoured"],
-          ["Standard Conformance", specs.standardIs || "IS 694 : 2010"]
+          ["Conductor Material", product.material || specs.conductorMaterial || "Electrolytic Grade Conductor"],
+          ["Voltage Grade / Rating", specs.voltageRating || "1100 V (IS 694 / IS 7098)"],
+          ["Insulation Compound", specs.insulationType || "Cross-Linked XLPE / FRLS PVC"],
+          ["Conductor Class", specs.conductorClass || "Class 2 (Stranded) / Class 5 (Flexible)"],
+          ["Core Configuration", specs.cores || "1C / 2C / 3C / 3.5C / 4 Core"],
+          ["Armour Construction", specs.typeOfArmour || "Galvanized Steel Strip / Wire / Unarmoured"],
+          ["Standard Conformance", specs.standardIs || specs.standard || "IS 7098 (Part 1) / IS 694"]
         );
       }
 
-      tableData.push(["Minimum Order Quantity", String(product.moq || "100 Units")]);
+      tableData.push(["Minimum Order Quantity (MOQ)", String(product.moq || "Standard Industrial Coil / Drum")]);
 
-      let yPos = 84;
-      doc.setFontSize(9);
+      // Table Header Row
+      yPos += 8;
+      doc.setFillColor(15, 23, 42); // Dark Slate 900
+      doc.rect(12, yPos, 186, 6.5, "F");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.setTextColor(255, 255, 255);
+      doc.text("ENGINEERING PARAMETER / ATTRIBUTE", 16, yPos + 4.3);
+      doc.text("CERTIFIED SPECIFICATION VALUE", 95, yPos + 4.3);
+      doc.text("COMPLIANCE", 168, yPos + 4.3);
+
+      // Render Table Rows
+      yPos += 6.5;
+      doc.setFontSize(7.5);
 
       tableData.forEach(([label, val], idx) => {
+        const rowH = 6.2;
         if (idx % 2 === 0) {
           doc.setFillColor(248, 250, 252);
-          doc.rect(14, yPos - 4.5, 182, 7.5, "F");
+          doc.rect(12, yPos, 186, rowH, "F");
+        } else {
+          doc.setFillColor(255, 255, 255);
+          doc.rect(12, yPos, 186, rowH, "F");
         }
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(71, 85, 105);
-        doc.text(label, 18, yPos);
 
+        // Left Label
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(51, 65, 85);
+        doc.text(label, 16, yPos + 4.3);
+
+        // Center Value
         doc.setFont("helvetica", "normal");
         doc.setTextColor(15, 23, 42);
-        doc.text(String(val || "N/A"), 88, yPos);
+        const valStr = String(val || "N/A");
+        doc.text(valStr.length > 48 ? valStr.slice(0, 48) + "..." : valStr, 95, yPos + 4.3);
 
+        // Right Status Pill
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(5, 150, 105); // Emerald 600
+        doc.text("[✓ Tested]", 168, yPos + 4.3);
+
+        // Thin Border Line
         doc.setDrawColor(241, 245, 249);
-        doc.line(14, yPos + 3, 196, yPos + 3);
+        doc.line(12, yPos + rowH, 198, yPos + rowH);
 
-        yPos += 7.5;
+        yPos += rowH;
       });
 
-      // Quality & Material Test Notice
+      // =========================================================================
+      // 4. SECTION 2: QUALITY ASSURANCE & MATERIAL TEST CERTIFICATES (MTC)
+      // =========================================================================
+      yPos += 6;
+      doc.setFillColor(197, 103, 24);
+      doc.rect(12, yPos, 3, 5.5, "F");
+
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(15, 23, 42);
+      doc.text("2. QUALITY ASSURANCE, TEST CERTIFICATES & INSPECTION", 18, yPos + 4.2);
+
+      // 4 Stamp Credibility Badges side-by-side
       yPos += 8;
+      const stamps = [
+        { title: "BIS / IS Standard", desc: "Original IS:7098 & IS:694", bg: [254, 243, 199], stroke: [251, 191, 36], text: [180, 83, 9] },
+        { title: "ISO 9001:2015", desc: "Audited Facility Standard", bg: [224, 242, 254], stroke: [125, 211, 252], text: [3, 105, 161] },
+        { title: "Material Test Report", desc: "Original Batch MTC", bg: [236, 253, 245], stroke: [110, 231, 183], text: [4, 120, 87] },
+        { title: "Conductor Purity", desc: "100% Electrolytic Conductor", bg: [243, 232, 255], stroke: [216, 180, 254], text: [126, 34, 206] },
+      ];
+
+      const stampW = 44;
+      const stampH = 11;
+      stamps.forEach((s, idx) => {
+        const sx = 12 + idx * (stampW + 3.3);
+        doc.setFillColor(s.bg[0], s.bg[1], s.bg[2]);
+        doc.setDrawColor(s.stroke[0], s.stroke[1], s.stroke[2]);
+        doc.roundedRect(sx, yPos, stampW, stampH, 1.5, 1.5, "FD");
+
+        doc.setTextColor(s.text[0], s.text[1], s.text[2]);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(6.8);
+        doc.text(`[✓] ${s.title}`, sx + 3, yPos + 4.5);
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(6);
+        doc.text(s.desc, sx + 3, yPos + 8.5);
+      });
+
+      // Official Policy Notice Box
+      yPos += 14.5;
       doc.setDrawColor(186, 230, 253);
       doc.setFillColor(240, 249, 255);
-      doc.roundedRect(14, yPos, 182, 22, 2, 2, "FD");
+      doc.roundedRect(12, yPos, 186, 17, 2, 2, "FD");
 
       doc.setTextColor(3, 105, 161);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(9);
-      doc.text("OFFICIAL MATERIAL TEST CERTIFICATE ( MTC ) & DISPATCH POLICY", 18, yPos + 6);
+      doc.setFontSize(7.5);
+      doc.text("OFFICIAL MATERIAL TEST CERTIFICATE ( MTC ) & DISPATCH POLICY", 16, yPos + 5.5);
+
       doc.setFont("helvetica", "normal");
+      doc.setFontSize(6.8);
       doc.setTextColor(12, 74, 110);
       doc.text(
-        "All materials supplied by Volamp Elektrikals conform to Bureau of Indian Standards (BIS) and IEC guidelines.\nFactory Inspection Routine Test Certificates are issued alongside delivery challan for contractor documentation.",
-        18,
-        yPos + 12
+        "All materials supplied by Volamp Elektrikals conform to Bureau of Indian Standards (BIS) and IEC guidelines.\nFactory Inspection Routine Test Certificates & Type Test Reports are issued alongside delivery challans for EPC contractor documentation.",
+        16,
+        yPos + 10.5
       );
 
-      // Footer
-      doc.setTextColor(148, 163, 184);
-      doc.setFontSize(8);
-      doc.text("Volamp Elektrikals · GIDC Estate, Vatva, Ahmedabad, Gujarat · sales@volampelektrikals.com · +91 9512365582", 14, 285);
+      // =========================================================================
+      // 5. SECTION 3: COMMERCIAL DISPATCH & CENTRAL SUPPLY DESK
+      // =========================================================================
+      yPos += 20.5;
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(12, yPos, 186, 23, 2, 2, "FD");
 
-      doc.save(`VOLAMP_${product.productId}_Datasheet.pdf`);
-      toast.success("Datasheet Downloaded", {
-        description: `Official technical PDF for ${product.name} downloaded.`,
+      // Left Column
+      doc.setTextColor(15, 23, 42);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.text("CENTRAL SUPPLY & WAREHOUSE DESK (AHMEDABAD HQ)", 16, yPos + 5.5);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6.5);
+      doc.setTextColor(71, 85, 105);
+      doc.text("Volamp Elektrikals · GIDC Industrial Estate, Vatva, Ahmedabad - 382445, Gujarat, India", 16, yPos + 10);
+      doc.text("Direct Sourcing Desk: +91 9512365582 | Email: sales@volampelektrikals.com | Web: www.volampelektrikals.com", 16, yPos + 14.5);
+      doc.text("Official B2B Quote Turnaround: Less than 2 Hours · Material Test Certificates issued upon dispatch.", 16, yPos + 19);
+
+      // Right Column Badges
+      doc.setFillColor(11, 31, 51);
+      doc.roundedRect(144, yPos + 4, 50, 15, 1.5, 1.5, "F");
+
+      doc.setTextColor(245, 191, 33);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(6.8);
+      doc.text("PAN-INDIA LOGISTICS", 147, yPos + 8.5);
+
+      doc.setTextColor(203, 213, 225);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6);
+      doc.text("28 States · 24-48h Dispatch", 147, yPos + 12.5);
+      doc.text("Export Port Corridors", 147, yPos + 16);
+
+      // =========================================================================
+      // 6. OFFICIAL FOOTER (Bottom 12mm)
+      // =========================================================================
+      doc.setDrawColor(203, 213, 225);
+      doc.line(12, 281, 198, 281);
+
+      doc.setFillColor(197, 103, 24);
+      doc.circle(105, 281, 1, "F");
+
+      doc.setTextColor(148, 163, 184);
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "normal");
+      doc.text("Volamp Elektrikals © 2026 · Confidential B2B Technical Datasheet & Specification Brochure", 12, 286);
+      doc.text("Page 1 of 1 · Authorized Engineering Release", 152, 286);
+
+      // Save PDF with clear descriptive filename
+      const safeSku = (product.sku || product.productId || "SPEC").replace(/[^a-zA-Z0-9-_]/g, "_");
+      doc.save(`VOLAMP_${safeSku}_Brochure_Datasheet.pdf`);
+
+      toast.success("Brochure Downloaded!", {
+        description: `Official technical brochure for ${product.name} downloaded successfully.`,
       });
     } catch (e: any) {
-      toast.error("Failed to generate datasheet", { description: e.message });
+      toast.error("Failed to generate brochure", { description: e.message || "Please try again." });
     }
   };
 
@@ -977,28 +1481,241 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                 </div>
               </div>
 
-              {/* Main Showcase Image Container with Fallback Protection */}
-              <div 
-                onClick={() => setLightboxOpen(true)}
-                className="h-80 sm:h-96 w-full flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-slate-50/50 to-white dark:from-slate-900/30 dark:to-[#0e1726] border border-slate-100/80 dark:border-slate-800/50 p-6 relative cursor-zoom-in group/zoom"
-              >
-                <img
-                  src={currentActiveImage}
-                  alt={galleryImages[selectedImageIndex]?.label || product.name}
-                  onError={(e) => {
-                    if (e.currentTarget.src !== window.location.origin + categoryFallback) {
-                      e.currentTarget.src = categoryFallback;
-                    }
-                  }}
-                  className="max-h-full max-w-full object-contain group-hover/zoom:scale-108 transition-transform duration-500 filter drop-shadow-md"
-                />
-                
-                {/* Click to Enlarge Overlay Pill */}
-                <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] font-medium flex items-center gap-1.5 opacity-0 group-hover/zoom:opacity-100 transition-opacity">
-                  <Eye className="size-3" />
-                  <span>Click to expand high-res</span>
+              {/* Media View Mode Switcher (2D Photos vs 3D / AR View) */}
+              <div className="flex items-center justify-between mb-3 px-0.5">
+                <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-xs font-semibold shadow-2xs">
+                  <button
+                    type="button"
+                    onClick={() => setMediaMode("2d")}
+                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                      mediaMode === "2d"
+                        ? "bg-white dark:bg-[#0e1726] text-[#1d73b7] dark:text-sky-400 shadow-xs"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    }`}
+                  >
+                    <Eye className="size-3.5" />
+                    <span>2D Photos</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMediaMode("3d")}
+                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
+                      mediaMode === "3d"
+                        ? "bg-gradient-to-r from-[#1d73b7] to-sky-500 text-white shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    }`}
+                  >
+                    <Box className="size-3.5 animate-pulse text-amber-300" />
+                    <span>3D & AR View</span>
+                    <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-slate-950 font-black text-[9px] tracking-tight">
+                      360°
+                    </span>
+                  </button>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMediaMode("3d");
+                    setFull3DModalOpen(true);
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/15 to-teal-500/15 hover:from-emerald-500/25 hover:to-teal-500/25 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs hover:scale-103"
+                  title="View full-screen 3D and launch camera AR"
+                >
+                  <Smartphone className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                  <span>View in AR</span>
+                </button>
               </div>
+
+              {mediaMode === "3d" ? (
+                <div className="h-88 sm:h-96 w-full rounded-2xl overflow-hidden shadow-inner border border-slate-800">
+                  <Product3DViewer product={product} />
+                </div>
+              ) : (
+                /* Ultra-Detail Main Showcase Image with Optical Loupe & Technical Hotspots */
+                <div className="space-y-3">
+                  {/* High-Res Image Detail Toolbar */}
+                  <div className="flex items-center justify-between px-1 text-xs">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowHotspots(!showHotspots)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
+                          showHotspots
+                            ? "bg-sky-500 text-white border-sky-400 shadow-sm"
+                            : "bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-sky-300"
+                        }`}
+                        title="Toggle Technical Engineering Hotspots"
+                      >
+                        <Crosshair className={`size-3.5 ${showHotspots ? "animate-spin" : ""}`} />
+                        <span>Hotspots</span>
+                        <span className={`px-1 py-0.2 rounded text-[9px] font-mono ${showHotspots ? "bg-white/20" : "bg-slate-200 dark:bg-slate-700"}`}>
+                          {categoryHotspots.length}
+                        </span>
+                      </button>
+
+                      <div className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700/80 text-[11px] text-slate-600 dark:text-slate-300 font-mono">
+                        <button
+                          type="button"
+                          onClick={() => setZoomLevel((z) => Math.max(1.8, parseFloat((z - 0.4).toFixed(1))))}
+                          className="hover:text-sky-500 px-1 cursor-pointer"
+                          title="Decrease Loupe Zoom"
+                        >
+                          <Minus className="size-3" />
+                        </button>
+                        <span className="font-bold px-0.5">{zoomLevel.toFixed(1)}x</span>
+                        <button
+                          type="button"
+                          onClick={() => setZoomLevel((z) => Math.min(4.0, parseFloat((z + 0.4).toFixed(1))))}
+                          className="hover:text-sky-500 px-1 cursor-pointer"
+                          title="Increase Loupe Zoom"
+                        >
+                          <Plus className="size-3" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleDownloadImage}
+                        className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                        title="Download High-Res 4K Image"
+                      >
+                        <Download className="size-3.5" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLightboxZoom(1);
+                          setLightboxOpen(true);
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/70 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                        title="Full-screen 4K High-Res Lightbox"
+                      >
+                        <Maximize2 className="size-3" />
+                        <span>Expand 4K</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Interactive Showcase Canvas */}
+                  <div
+                    onMouseEnter={() => setIsMagnifying(true)}
+                    onMouseLeave={() => {
+                      setIsMagnifying(false);
+                      setActiveHotspot(null);
+                    }}
+                    onMouseMove={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = ((e.clientX - rect.left) / rect.width) * 100;
+                      const y = ((e.clientY - rect.top) / rect.height) * 100;
+                      setMagnifierPos({
+                        x: Math.max(0, Math.min(100, x)),
+                        y: Math.max(0, Math.min(100, y)),
+                        cursorX: e.clientX - rect.left,
+                        cursorY: e.clientY - rect.top,
+                      });
+                    }}
+                    onClick={() => {
+                      if (!showHotspots) {
+                        setLightboxZoom(1);
+                        setLightboxOpen(true);
+                      }
+                    }}
+                    className="h-80 sm:h-96 w-full flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-slate-50/70 to-white dark:from-slate-900/40 dark:to-[#0e1726] border border-slate-200/90 dark:border-slate-800 p-6 relative cursor-crosshair group/zoom select-none shadow-xs"
+                  >
+                    <img
+                      src={currentActiveImage}
+                      alt={galleryImages[selectedImageIndex]?.label || product.name}
+                      onError={(e) => {
+                        if (e.currentTarget.src !== window.location.origin + categoryFallback) {
+                          e.currentTarget.src = categoryFallback;
+                        }
+                      }}
+                      className="max-h-full max-w-full object-contain transition-transform duration-300 filter drop-shadow-md pointer-events-none"
+                    />
+
+                    {/* Optical Magnifying Loupe (Amazon / Industrial Catalog Lens) */}
+                    {isMagnifying && !showHotspots && (
+                      <div
+                        style={{
+                          left: `${magnifierPos.cursorX}px`,
+                          top: `${magnifierPos.cursorY}px`,
+                          transform: "translate(-50%, -50%)",
+                          backgroundImage: `url(${currentActiveImage})`,
+                          backgroundRepeat: "no-repeat",
+                          backgroundSize: `${zoomLevel * 100}% ${zoomLevel * 100}%`,
+                          backgroundPosition: `${magnifierPos.x}% ${magnifierPos.y}%`,
+                        }}
+                        className="absolute size-44 sm:size-52 rounded-full border-3 border-sky-400 dark:border-sky-300 shadow-2xl pointer-events-none z-30 overflow-hidden ring-4 ring-black/20 backdrop-blur-none bg-white dark:bg-slate-950"
+                      >
+                        {/* Precision Reticle Crosshairs */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+                          <div className="w-full h-px bg-sky-500" />
+                          <div className="h-full w-px bg-sky-500 absolute" />
+                        </div>
+                        {/* Zoom Factor Eyebrow Badge */}
+                        <span className="absolute bottom-2 inset-x-0 mx-auto w-max px-2 py-0.5 rounded-full bg-slate-950/85 text-white font-mono text-[9px] font-bold tracking-wider border border-white/20">
+                          {zoomLevel.toFixed(1)}x OPTICAL LENS
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Interactive Engineering Spec Hotspots */}
+                    {showHotspots &&
+                      categoryHotspots.map((spot) => (
+                        <div
+                          key={spot.id}
+                          style={{ left: `${spot.x}%`, top: `${spot.y}%` }}
+                          className="absolute z-20 -translate-x-1/2 -translate-y-1/2 group/spot"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveHotspot(activeHotspot === spot.id ? null : spot.id);
+                          }}
+                          onMouseEnter={() => setActiveHotspot(spot.id)}
+                        >
+                          {/* Pulsing Ripple Node */}
+                          <div className="relative flex items-center justify-center">
+                            <span className="absolute size-6 rounded-full bg-sky-500/30 animate-ping" />
+                            <span className="size-4 rounded-full bg-sky-500 border-2 border-white dark:border-slate-900 shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-125" />
+                          </div>
+
+                          {/* Detail Popover Card */}
+                          {(activeHotspot === spot.id || false) && (
+                            <div className="absolute left-1/2 -translate-x-1/2 bottom-6 w-60 sm:w-68 p-3 rounded-xl bg-slate-950/95 text-white border border-sky-500/50 shadow-2xl backdrop-blur-md pointer-events-auto z-40 animate-in fade-in zoom-in-95 duration-150">
+                              <div className="flex items-center justify-between pb-1 mb-1 border-b border-slate-800">
+                                <span className="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-wider">
+                                  {spot.title}
+                                </span>
+                                <span className="text-[9px] font-mono text-emerald-400 font-semibold">
+                                  {spot.spec}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-slate-300 leading-snug">
+                                {spot.detail}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+
+                    {/* Bottom Guide Pill */}
+                    <div className="absolute bottom-2.5 inset-x-3 flex items-center justify-between pointer-events-none text-[10px] text-slate-500 dark:text-slate-400 font-medium bg-white/70 dark:bg-slate-900/70 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-slate-200/60 dark:border-slate-800/60">
+                      <div className="flex items-center gap-1.5 truncate">
+                        <Eye className="size-3 text-[#1d73b7] dark:text-sky-400 shrink-0" />
+                        <span className="truncate font-semibold text-slate-700 dark:text-slate-300">
+                          {galleryImages[selectedImageIndex]?.label || "Product Perspective"}
+                        </span>
+                      </div>
+                      <span className="shrink-0 font-mono text-[9px] text-slate-400">
+                        {isMagnifying ? "Active 2.8x Zoom" : "Hover to Magnify"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Verified Quality Spec Footer */}
               <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
@@ -1131,10 +1848,10 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                 </div>
                 <div>
                   <span className="text-xs font-black text-slate-900 dark:text-white block">
-                    Engineering Datasheet (PDF)
+                    Engineering Datasheet & Technical Brochure (PDF)
                   </span>
                   <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                    Official technical parameters & dimension drawing specifications
+                    Official Volamp certified parameters, dimensions & MTC quality dossier
                   </span>
                 </div>
               </div>
@@ -1144,7 +1861,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1d73b7] hover:bg-[#155a8f] text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 group"
               >
                 <Download className="size-3.5 group-hover:-translate-y-0.5 transition-transform" />
-                <span>Download</span>
+                <span>Download Brochure</span>
               </button>
             </div>
 
@@ -1785,36 +2502,127 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
       {/* Universal Footer */}
       <UniversalFooter />
 
-      {/* Image Lightbox Modal */}
+      {/* Image Lightbox Modal with 4K Inspection Controls */}
       {lightboxOpen && (
         <div 
           onClick={() => setLightboxOpen(false)}
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in"
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-3 sm:p-6 animate-in fade-in select-none"
         >
-          <button
-            type="button"
-            onClick={() => setLightboxOpen(false)}
-            className="absolute top-5 right-5 size-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer transition-colors"
-          >
-            <X className="size-5" />
-          </button>
+          {/* Top Control Bar */}
           <div 
             onClick={(e) => e.stopPropagation()}
-            className="max-w-4xl max-h-[85vh] w-full flex flex-col items-center justify-center"
+            className="w-full max-w-5xl flex items-center justify-between text-white/90 z-20 pb-3 border-b border-white/10"
           >
-            <img
-              src={currentActiveImage}
-              alt={product.name}
-              onError={(e) => {
-                if (e.currentTarget.src !== window.location.origin + categoryFallback) {
-                  e.currentTarget.src = categoryFallback;
-                }
-              }}
-              className="max-h-[75vh] max-w-full object-contain drop-shadow-2xl rounded-2xl"
-            />
-            <p className="text-white/80 text-xs font-bold mt-4 text-center">
-              {product.name} · {galleryImages[selectedImageIndex]?.label || `View ${selectedImageIndex + 1} of ${galleryImages.length}`}
-            </p>
+            <div className="flex flex-col truncate pr-4">
+              <span className="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-widest">
+                4K HIGH-RESOLUTION SPECIFICATION ASSET
+              </span>
+              <h4 className="text-xs sm:text-sm font-bold text-white truncate">
+                {product.name} · {galleryImages[selectedImageIndex]?.label || `View ${selectedImageIndex + 1}`}
+              </h4>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/10 border border-white/15 text-xs font-mono">
+                <button
+                  type="button"
+                  onClick={() => setLightboxZoom((z) => Math.max(1, parseFloat((z - 0.5).toFixed(1))))}
+                  className="hover:text-sky-400 px-1 cursor-pointer"
+                  title="Zoom Out"
+                >
+                  <Minus className="size-3.5" />
+                </button>
+                <span className="font-bold px-1">{lightboxZoom.toFixed(1)}x</span>
+                <button
+                  type="button"
+                  onClick={() => setLightboxZoom((z) => Math.min(3.0, parseFloat((z + 0.5).toFixed(1))))}
+                  className="hover:text-sky-400 px-1 cursor-pointer"
+                  title="Zoom In"
+                >
+                  <Plus className="size-3.5" />
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleDownloadImage}
+                className="size-9 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center cursor-pointer transition-colors border border-white/15"
+                title="Download 4K Image"
+              >
+                <Download className="size-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setLightboxOpen(false)}
+                className="size-9 rounded-xl bg-white/10 hover:bg-red-500/80 text-white flex items-center justify-center cursor-pointer transition-colors border border-white/15"
+                title="Close Lightbox"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Central High-Resolution Image Canvas */}
+          <div 
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxZoom((z) => (z > 1 ? 1 : 2));
+            }}
+            className="flex-1 w-full max-w-5xl flex items-center justify-center overflow-auto p-4 cursor-zoom-in"
+          >
+            <div 
+              style={{ transform: `scale(${lightboxZoom})`, transition: "transform 0.25s ease-out" }}
+              className="max-h-[68vh] max-w-full flex items-center justify-center origin-center"
+            >
+              <img
+                src={currentActiveImage}
+                alt={product.name}
+                onError={(e) => {
+                  if (e.currentTarget.src !== window.location.origin + categoryFallback) {
+                    e.currentTarget.src = categoryFallback;
+                  }
+                }}
+                className="max-h-[68vh] max-w-full object-contain drop-shadow-2xl rounded-xl"
+              />
+            </div>
+          </div>
+
+          {/* Bottom Thumbnails Carousel Bar */}
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-2xl flex items-center justify-center gap-2 sm:gap-3 z-20 pt-3 border-t border-white/10"
+          >
+            {galleryImages.map((img, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => {
+                  setSelectedImageIndex(idx);
+                  setLightboxZoom(1);
+                }}
+                className={`h-16 w-20 rounded-xl border p-1 bg-white/5 transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden ${
+                  selectedImageIndex === idx
+                    ? "border-sky-400 ring-2 ring-sky-400/30 scale-105 bg-white/15"
+                    : "border-white/20 hover:border-white/50 opacity-60 hover:opacity-100"
+                }`}
+              >
+                <img src={img.url} alt={img.label} className="max-h-9 max-w-full object-contain" />
+                <span className="text-[8px] text-white/90 truncate w-full text-center mt-1 font-medium">
+                  {img.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Fullscreen 3D & WebAR Inspection Modal */}
+      {full3DModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-5xl h-[85vh] rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col">
+            <Product3DViewer product={product} isModal={true} onClose={() => setFull3DModalOpen(false)} />
           </div>
         </div>
       )}

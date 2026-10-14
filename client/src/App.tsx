@@ -8,6 +8,8 @@ import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LocationProvider } from "./contexts/LocationContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
+import { LanguageModal } from "./components/language/LanguageModal";
 import Home from "./pages/Home";
 import CategoryPage from "./pages/CategoryPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
@@ -218,6 +220,7 @@ function Router() {
     </Switch>
     <GlobalFloatingActions />
     <LocationModal />
+    <LanguageModal />
     <CookieConsentBanner />
     <GlobalVolaChat />
     <GlobalEnquireManager />
@@ -235,14 +238,16 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light" switchable>
         <LocationProvider>
-          <CartProvider>
-            <CompareProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Router />
-              </TooltipProvider>
-            </CompareProvider>
-          </CartProvider>
+          <LanguageProvider>
+            <CartProvider>
+              <CompareProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Router />
+                </TooltipProvider>
+              </CompareProvider>
+            </CartProvider>
+          </LanguageProvider>
         </LocationProvider>
       </ThemeProvider>
     </ErrorBoundary>

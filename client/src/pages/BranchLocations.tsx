@@ -14,6 +14,7 @@ import {
   Clock,
   ExternalLink,
   ArrowRight,
+  ArrowUpRight,
   Copy,
   ChevronDown,
   Globe2,
@@ -182,11 +183,13 @@ export default function BranchLocations() {
             <span className="desktop-only text-[#5d4a4b] dark:text-slate-300">
               Global electrical supply & export desk
             </span>
-            <button onClick={() => navigate("/collaborate")} className="utility-collaborate">
-              Collaborate with us <ArrowRight className="inline size-3" />
-            </button>
-            <button onClick={() => handleOpenRFQ("Supply Desk")} className="font-semibold hover:underline">
-              Talk to supply desk <ArrowRight className="inline size-3" />
+            <button
+              onClick={() => navigate("/collaborate")}
+              className="inline-flex items-center gap-1 font-semibold text-amber-600 dark:text-amber-400 hover:underline cursor-pointer"
+              title="Collaborate with Volamp"
+            >
+              <span>Collab</span>
+              <ArrowUpRight className="size-3.5" />
             </button>
           </div>
         </div>
@@ -307,6 +310,21 @@ export default function BranchLocations() {
                 key={loc.id}
                 className="bg-white dark:bg-slate-800/90 rounded-2xl border border-[#ebd7c7] dark:border-slate-700 hover:border-amber-400 shadow-xs hover:shadow-md transition-all overflow-hidden flex flex-col justify-between"
               >
+                {/* Location Storefront Banner for Khadia */}
+                {isOffice && (
+                  <div className="relative h-44 sm:h-52 w-full overflow-hidden bg-slate-900 border-b border-[#f0e4d8] dark:border-slate-700/60">
+                    <img
+                      src="/team/volamp-khadia-storefront.jpg"
+                      alt="VOLAMP ELEKTRIKALS Khadia Main Office Storefront"
+                      className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+                    <span className="absolute bottom-2.5 left-3 text-[10px] font-mono font-bold text-amber-300 bg-slate-950/80 px-2.5 py-1 rounded-md border border-amber-400/40 backdrop-blur-xs">
+                      1753 Khadia · Official Commercial Facade
+                    </span>
+                  </div>
+                )}
+
                 {/* Card Header */}
                 <div className="p-6 border-b border-[#f0e4d8] dark:border-slate-700/60 space-y-2">
                   <div className="flex items-center justify-between gap-2">

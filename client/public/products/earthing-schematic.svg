@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <rect width="800" height="800" fill="#081426" />
+  <pattern id="gridEarth" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#162947" stroke-width="0.75" />
+    <path d="M 200 0 L 0 0 0 200" fill="none" stroke="#233e68" stroke-width="1.25" opacity="0.4" />
+  </pattern>
+  <rect width="800" height="800" fill="url(#gridEarth)" />
+
+  <rect x="30" y="25" width="740" height="60" rx="8" fill="#0c203b" stroke="#38bdf8" stroke-width="1.2" opacity="0.95" />
+  <text x="50" y="52" font-family="monospace" font-size="16" font-weight="bold" fill="#38bdf8" letter-spacing="1.5">VOLAMP ELEKTRIKALS · CHEMICAL EARTHING & ELECTRODE SCHEMATIC</text>
+  <text x="50" y="72" font-family="monospace" font-size="11" fill="#94a3b8">STANDARD: IS 3043 / IEEE 80 · 254 MICRON COPPER BONDED · LOW RESISTANCE &lt; 1 OHM</text>
+
+  <!-- Earthing Pit Diagram in Center -->
+  <g transform="translate(240, 120)">
+    <!-- Earth Inspection Pit Chamber Cover -->
+    <rect x="20" y="0" width="280" height="60" rx="4" fill="#1e293b" stroke="#64748b" stroke-width="2" />
+    <text x="160" y="35" font-family="monospace" font-size="11" font-weight="bold" fill="#38bdf8" text-anchor="middle">EARTH PIT INSPECTION CHAMBER</text>
+
+    <!-- Ground Level Line -->
+    <line x1="-80" y1="60" x2="400" y2="60" stroke="#22c55e" stroke-width="2.5" />
+    <text x="-60" y="50" font-family="monospace" font-size="9" fill="#22c55e">GROUND LEVEL (GL)</text>
+
+    <!-- Pit Hole Backfill Compound (BFC) Cylinder -->
+    <rect x="60" y="60" width="200" height="340" rx="4" fill="#0f1f33" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4 2" />
+    <text x="160" y="150" font-family="monospace" font-size="9.5" fill="#f59e0b" text-anchor="middle">CARBON BACKFILL COMPOUND</text>
+    <text x="160" y="165" font-family="monospace" font-size="8" fill="#94a3b8" text-anchor="middle">(Hygroscopic Low Resistivity Soil Matrix)</text>
+
+    <!-- Copper Bonded Steel Electrode Rod (Center) -->
+    <rect x="148" y="40" width="24" height="360" rx="4" fill="#b45309" stroke="#f59e0b" stroke-width="2" />
+    <!-- High Tensile Steel Core -->
+    <rect x="154" y="45" width="12" height="350" fill="#64748b" />
+    
+    <!-- Heavy Duty Bronze Terminal Clamp at Top -->
+    <rect x="140" y="45" width="40" height="30" rx="3" fill="#d97706" stroke="#fbbf24" stroke-width="1.5" />
+    <circle cx="160" cy="60" r="4" fill="#0f172a" />
+    
+    <!-- Copper Grounding Strip Earthing Tape -->
+    <path d="M 160 60 L 290 60 L 320 20" fill="none" stroke="#f59e0b" stroke-width="4" />
+    <text x="325" y="15" font-family="monospace" font-size="9" font-weight="bold" fill="#f59e0b">COPPER EARTHING TAPE</text>
+  </g>
+
+  <!-- Technical Spec Matrix Table at Bottom -->
+  <g transform="translate(40, 580)">
+    <rect width="720" height="130" rx="6" fill="#0d1f36" stroke="#334155" stroke-width="1" />
+    <rect width="720" height="28" rx="6" fill="#1e3a5f" />
+    <text x="20" y="19" font-family="sans-serif" font-size="11" font-weight="bold" fill="#38bdf8">TECHNICAL EARTHING DESIGN SPECIFICATIONS</text>
+
+    <text x="20" y="52" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Copper Coating Thickness:</text>
+    <text x="200" y="52" font-family="monospace" font-size="10" fill="#22c55e">254 Microns (Molecularly Bonded 99.9% Electrolytic Copper Layer)</text>
+
+    <text x="20" y="75" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Expected Operational Life:</text>
+    <text x="200" y="75" font-family="monospace" font-size="10" fill="#cbd5e1">&gt; 25+ Years Maintenance-Free Protection against Soil Electrolytic Corrosion</text>
+
+    <text x="20" y="98" font-family="sans-serif" font-size="10" font-weight="bold" fill="#ffffff">Fault Current Dissipation:</text>
+    <text x="200" y="98" font-family="monospace" font-size="10" fill="#cbd5e1">Tested up to 35 kA for 1 sec · Conforms to IS 3043 Code of Practice for Earthing</text>
+  </g>
+
+  <!-- Footer Certification Bar -->
+  <rect x="30" y="725" width="740" height="45" rx="6" fill="#0c1626" stroke="#334155" stroke-width="1" />
+  <text x="50" y="752" font-family="monospace" font-size="10.5" fill="#64748b">VOLAMP ELEKTRIKALS PVT LTD · AHMEDABAD · ISO 9001:2015 CERTIFIED FACILITY · CPRI TYPE TESTED</text>
+</svg>

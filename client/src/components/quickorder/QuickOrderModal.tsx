@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useUserLocation } from "@/contexts/LocationContext";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import {
   FileText,
   Lock,
   LogIn,
+  Mic,
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
@@ -29,6 +30,8 @@ import {
   generateQuickOrderPdf,
   QuickOrderItem,
 } from "@/lib/quickOrderPdf";
+import { InlineVoiceOrderCard } from "./InlineVoiceOrderCard";
+import type { ConfirmedVoiceProduct } from "./InlineVoiceOrderCard";
 
 interface QuickOrderRow {
   id: string;
@@ -134,8 +137,25 @@ export function QuickOrderModal({ isOpen, onClose, initialProduct }: QuickOrderM
     }
   }, [initialProduct]);
 
-  // Query live products for datalist autocomplete
+  // Query live products for datalist autocomplete with static fallback
   const { data: liveCatalog } = trpc.products.list.useQuery({ limit: 50 }, { enabled: isOpen });
+  const [staticCatalogFallback, setStaticCatalogFallback] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    if (isOpen && (!liveCatalog?.products || liveCatalog.products.length === 0) && !staticCatalogFallback) {
+      fetch("/products_db.json")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((items) => {
+          if (Array.isArray(items)) setStaticCatalogFallback(items.slice(0, 100));
+        })
+        .catch(() => {});
+    }
+  }, [isOpen, liveCatalog, staticCatalogFallback]);
+
+  const effectiveCatalogProducts =
+    liveCatalog?.products && liveCatalog.products.length > 0
+      ? liveCatalog.products
+      : (staticCatalogFallback || []);
 
   // Submission / success state
   const [orderIdDraft] = useState(() => {
@@ -165,6 +185,23 @@ export function QuickOrderModal({ isOpen, onClose, initialProduct }: QuickOrderM
     setRows((prev) => [...prev, createEmptyRow()]);
   };
 
+  const handleConfirmVoiceItems = (newVoiceItems: ConfirmedVoiceProduct[]) => {
+    setRows((prev) => {
+      // Keep all existing rows that have product names entered by customer
+      const existing = prev.filter((r) => r.name.trim().length > 0);
+      const mappedNewRows: QuickOrderRow[] = newVoiceItems.map((v) => ({
+        id: v.id,
+        productId: v.productId,
+        name: v.name,
+        brand: v.brand,
+        specification: v.specification,
+        unitPrice: v.unitPrice,
+        quantity: v.quantity,
+      }));
+      return [...existing, ...mappedNewRows];
+    });
+  };
+
   const handleRemoveProduct = (rowId: string) => {
     setRows((prev) => {
       const filtered = prev.filter((r) => r.id !== rowId);
@@ -178,8 +215,8 @@ export function QuickOrderModal({ isOpen, onClose, initialProduct }: QuickOrderM
   };
 
   const handleUpdateName = (rowId: string, name: string) => {
-    const match = liveCatalog?.products.find(
-      (p) =>
+    const match = effectiveCatalogProducts.find(
+      (p: any) =>
         p.name.toLowerCase() === name.toLowerCase().trim() ||
         p.productId.toLowerCase() === name.toLowerCase().trim()
     );
@@ -481,13 +518,13 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
               </div>
               <div>
                 <span className="text-[10px] font-black tracking-widest text-[#c46b19] uppercase block">
-                  VOLAMP QUICK ORDER & INVOICE DESK · WHATSAPP +91 9512365582
+                  VOLAMP QUICK ORDER · WHATSAPP +91 9512365582
                 </span>
                 <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
-                  Quick Order — Create WhatsApp Invoice
+                  Quick Order
                 </h2>
                 <p className="text-xs text-[#5a6b78] mt-1">
-                  Add products, adjust quantities, and instantly create an official B2B invoice & requisition on WhatsApp (+91 9512365582).
+                  Add products, adjust quantities, and instantly create an official B2B requisition on WhatsApp (+91 9512365582).
                 </p>
               </div>
             </div>
@@ -538,6 +575,12 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
 
             {/* PRODUCT ENTRY SECTION */}
             <div className="mb-6 rounded-xl border border-[#dce5eb] bg-[#f8fafc] p-4">
+              {/* AI Voice Quick Order In-Place Card (Expanded & Recorded In-Place) */}
+              <InlineVoiceOrderCard
+                onAddItems={handleConfirmVoiceItems}
+                availableProducts={effectiveCatalogProducts}
+              />
+
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h3 className="text-xs font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#102a40] uppercase tracking-wider">
@@ -638,7 +681,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
 
               {/* Datalist for live product suggestions */}
               <datalist id="quick-order-product-suggestions">
-                {liveCatalog?.products?.map((p) => (
+                {effectiveCatalogProducts.map((p: any) => (
                   <option key={p.productId} value={p.name}>
                     [{p.productId}] {p.brand} · {p.size || p.subcategory} · {p.price}
                   </option>
@@ -962,7 +1005,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
             </div>
           </div>
         )}
+        </div>
       </div>
-    </div>
   );
 }

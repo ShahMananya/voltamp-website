@@ -4,6 +4,7 @@ import SeoHead from "@/components/seo/SeoHead";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
   ArrowRight,
+  Building2,
   Cable,
   CheckCircle2,
   ChevronRight,
@@ -23,6 +24,8 @@ import {
   ShieldCheck,
   Sparkles,
   Target,
+  TrendingUp,
+  Truck,
   Users,
   Volume2,
   VolumeX,
@@ -31,6 +34,7 @@ import {
 } from "lucide-react";
 import GlobeProjectsExperience from "@/components/footprint/GlobeProjectsExperience";
 import SocialMediaLinks from "@/components/layout/SocialMediaLinks";
+import FacilityVideoModal from "@/components/video/FacilityVideoModal";
 import { trpc } from "@/lib/trpc";
 
 type TeamMemberItem = {
@@ -43,6 +47,44 @@ type TeamMemberItem = {
   bio?: string;
   active?: boolean;
 };
+
+const DEPARTMENTS = [
+  {
+    number: "01",
+    name: "ACCOUNTS & FINANCE",
+    description: "Credit underwriting, billing reconciliation, commercial documentation & GST-compliant invoicing.",
+    badge: "Commercial Desk",
+    icon: Building2,
+  },
+  {
+    number: "02",
+    name: "ANALYSTS",
+    description: "Live copper & aluminium market tracking, price forecasting, tender analysis & procurement intelligence.",
+    badge: "Market Intelligence",
+    icon: TrendingUp,
+  },
+  {
+    number: "03",
+    name: "OPERATIONS",
+    description: "Central mega-depot logistics, master drum cutting, packing integrity & MTC quality verification.",
+    badge: "Fulfillment & QC",
+    icon: Truck,
+  },
+  {
+    number: "04",
+    name: "SALES",
+    description: "Technical specification assistance, fast turnaround project quotes & dedicated account management.",
+    badge: "Client Solutions",
+    icon: Phone,
+  },
+  {
+    number: "05",
+    name: "GROUND FORCE",
+    description: "On-site consignment delivery, driver logistics, transit insurance compliance & pan-India dispatch.",
+    badge: "Site Logistics",
+    icon: ShieldCheck,
+  },
+];
 
 const fallbackTeamSlots: TeamMemberItem[] = [
   {
@@ -253,11 +295,14 @@ function HeroTeamPortrait({ onShowHq }: { onShowHq: (e: React.MouseEvent) => voi
           />
         )}
 
-        {/* Team Photo */}
+        {/* Storefront / Corporate Office Photo */}
         <img
-          src="/team/volamp-team-hero.jpg?v=2"
-          alt="Volamp Elektrikals Leadership & Core Team at Ahmedabad Corporate Office"
-          className="w-full h-full min-h-[380px] sm:min-h-[430px] lg:min-h-[470px] object-cover object-top transition-transform duration-700 group-hover/tilt:scale-[1.04]"
+          src="/team/volamp-khadia-storefront.jpg?v=3"
+          alt="VOLAMP ELEKTRIKALS Corporate Office & Storefront - Khadia, Ahmedabad"
+          className="w-full h-full min-h-[380px] sm:min-h-[430px] lg:min-h-[470px] object-cover object-center transition-transform duration-700 group-hover/tilt:scale-[1.04]"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = "/team/volamp-khadia-storefront.jpg";
+          }}
         />
 
         {/* Dynamic Light Sweep Bar */}
@@ -484,6 +529,7 @@ export default function AboutVolamp() {
   };
 
   const team = leadershipData?.team ?? fallbackTeamSlots;
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
 
   const handleShowOldCityHQ = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -561,6 +607,7 @@ export default function AboutVolamp() {
           </Link>
           <nav aria-label="About Volamp navigation">
             <a href="#story">Our story</a>
+            <a href="#operations">Operations & Hub</a>
             <a href="#leadership">Leadership</a>
             <a href="#footprint">Global Presence & Footprint</a>
             <Link href="/where-volamp-contributed" className="hover:text-[#c56718] transition-colors">
@@ -595,28 +642,27 @@ export default function AboutVolamp() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/25 dark:border-amber-400/30 text-amber-800 dark:text-amber-300 text-xs font-black uppercase tracking-widest mb-3 shadow-xs">
                 <span className="size-2 rounded-full bg-amber-500 dark:bg-amber-400 animate-ping" />
-                <span>About Volamp · Powering Growth</span>
+                <span>About Volamp · Powering Growth Since 1964</span>
               </div>
               <h1 className="text-slate-900 dark:text-white">
-                The work behind the{" "}
+                60+ Years of Powering{" "}
                 <em className="hero-electric-word relative inline-block not-italic bg-gradient-to-r from-amber-600 via-orange-500 to-amber-500 dark:from-amber-400 dark:via-yellow-300 dark:to-orange-400 bg-clip-text text-transparent font-extrabold pb-1">
-                  connection.
+                  National Infrastructure.
                   <span className="absolute -bottom-0.5 left-0 right-0 h-[3px] rounded-full bg-gradient-to-r from-amber-500 via-orange-400 to-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.8)]" />
                 </em>
               </h1>
               <p>
-                Volamp brings clearer electrical sourcing to the people responsible for keeping projects,
-                plants and communities moving.
+                From our historic Khadia commercial headquarters to high-tonnage pan-India project sites, Volamp supplies primary mill-direct LT/HT power cables, solar DC cabling, and switchgear with certified conductor purity and complete technical clarity.
               </p>
               <div className="about-hero-actions">
                 <a className="about-primary-cta group/cta" href="#story">
-                  <span>Read our story</span>
+                  <span>Explore Our Legacy</span>
                   <ArrowRight className="size-4 transition-transform group-hover/cta:translate-x-1" />
                 </a>
-                <a className="about-secondary-cta group/cta" href="#footprint">
-                  <span>Explore 3D Footprint</span>
+                <Link className="about-secondary-cta group/cta" href="/where-volamp-contributed">
+                  <span>View Landmark Projects</span>
                   <MapPin className="size-4 text-amber-500 group-hover/cta:scale-110 transition-transform" />
-                </a>
+                </Link>
               </div>
 
               {/* Quick Heritage Stat Chips */}
@@ -906,6 +952,7 @@ export default function AboutVolamp() {
           </div>
         </section>
 
+
         <section id="leadership" className="about-section about-leadership">
           <div className="about-container">
             <div className="about-section-heading">
@@ -1057,25 +1104,6 @@ export default function AboutVolamp() {
                 <div className="about-ceo-signoff">
                   <span className="about-signoff-regards">With Regards,</span>
                   <span className="about-signoff-org">VOLAMP ELEKTRIKALS PRIVATE LIMITED</span>
-                  <div className="about-ceo-signature-block">
-                    <svg viewBox="0 0 200 42" className="ceo-signature-svg" aria-label="Naimil Patel Signature">
-                      <path
-                        d="M 15 30 Q 25 6 40 24 Q 50 36 60 14 Q 70 26 85 20 Q 95 16 110 28 Q 130 12 150 24 Q 170 30 185 16"
-                        fill="none"
-                        stroke="url(#sigGold)"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        className="sig-path"
-                      />
-                      <defs>
-                        <linearGradient id="sigGold" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#f2b84b" />
-                          <stop offset="50%" stopColor="#fde29f" />
-                          <stop offset="100%" stopColor="#d4952b" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                  </div>
                   <span className="about-signoff-author"><strong>Naimil Patel</strong> · Chief Executive Officer</span>
                 </div>
               </div>
@@ -1083,21 +1111,36 @@ export default function AboutVolamp() {
             <div className="about-team-header">
               <div>
                 <span className="about-eyebrow">MEET THE TEAM</span>
-                <h3>
-                  {team.length === 6
-                    ? "Six"
-                    : team.length === 9
-                    ? "Nine"
-                    : team.length === 1
-                    ? "One"
-                    : `${team.length}`}{" "}
-                  people, one accountable handoff.
-                </h3>
+                <h3>Six dept, one accountable handoff.</h3>
               </div>
             </div>
-            <div className="about-team-grid">
-              {team.map((member) => (
-                <TeamMemberCard key={member.id ?? member.number} member={member} />
+            <div className="about-team-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 mt-6">
+              {DEPARTMENTS.map((dept) => (
+                <div
+                  key={dept.number}
+                  className="about-dept-card p-5 rounded-2xl bg-white dark:bg-[#0c2235] border border-slate-200/90 dark:border-slate-800 shadow-xs hover:shadow-xl hover:border-amber-400/80 transition-all duration-300 flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs font-mono font-black text-amber-600 dark:text-amber-400 bg-amber-500/10 dark:bg-amber-950/40 px-2.5 py-1 rounded-lg">
+                        {dept.number}
+                      </span>
+                      <div className="size-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:text-amber-500 group-hover:bg-amber-500/10 transition-colors flex items-center justify-center">
+                        <dept.icon className="size-4" />
+                      </div>
+                    </div>
+                    <h4 className="text-sm font-black font-['Plus_Jakarta_Sans',sans-serif] text-slate-900 dark:text-white uppercase tracking-wider group-hover:text-[#c56718] dark:group-hover:text-amber-400 transition-colors">
+                      {dept.name}
+                    </h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                      {dept.description}
+                    </p>
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] font-semibold text-slate-400">
+                    <span>{dept.badge}</span>
+                    <span className="size-1.5 rounded-full bg-emerald-500" />
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -1274,6 +1317,7 @@ export default function AboutVolamp() {
           </div>
         </div>
       </footer>
+      <FacilityVideoModal isOpen={videoModalOpen} onClose={() => setVideoModalOpen(false)} />
     </div>
   );
 }

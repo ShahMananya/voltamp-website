@@ -235,8 +235,64 @@ export default function CategoryPage() {
     subcategory: selectedSubCat || undefined,
   });
 
-  // Direct reference to server paginated and filtered products
-  const displayProducts = productsData?.products || [];
+  // Fallback to static catalog if API is unreachable on static hosting / Vercel
+  const [staticFallback, setStaticFallback] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    if ((!productsData || productsData.products.length === 0) && !isProductsLoading && !staticFallback) {
+      fetch("/products_db.json")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((items) => {
+          if (Array.isArray(items) && items.length > 0) {
+            setStaticFallback(items);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [productsData, isProductsLoading, staticFallback]);
+
+  const fallbackFiltered = useMemo(() => {
+    if (!staticFallback) return null;
+    let list = staticFallback;
+    if (categoryQueryParam && categoryQueryParam !== "ALL") {
+      const catLower = categoryQueryParam.toLowerCase();
+      list = list.filter((p) => (p.category || "").toLowerCase().includes(catLower));
+    }
+    if (selectedSubCat) {
+      const subLower = selectedSubCat.toLowerCase();
+      list = list.filter((p) => (p.subcategory || "").toLowerCase().includes(subLower));
+    }
+    if (selectedBrand) {
+      const bLower = selectedBrand.toLowerCase();
+      list = list.filter((p) => (p.brand || "").toLowerCase().includes(bLower));
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter(
+        (p) =>
+          (p.name || "").toLowerCase().includes(q) ||
+          (p.productId || "").toLowerCase().includes(q) ||
+          (p.sku || "").toLowerCase().includes(q)
+      );
+    }
+    const total = list.length;
+    const totalPages = Math.ceil(total / pageSize) || 1;
+    const start = (page - 1) * pageSize;
+    return {
+      products: list.slice(start, start + pageSize),
+      total,
+      totalPages,
+      page,
+    };
+  }, [staticFallback, categoryQueryParam, selectedSubCat, selectedBrand, searchQuery, page, pageSize]);
+
+  // Direct reference to server paginated products with fallback to static catalog
+  const effectiveData =
+    productsData && productsData.products && productsData.products.length > 0
+      ? productsData
+      : (fallbackFiltered || productsData);
+
+  const displayProducts = effectiveData?.products || [];
 
   const handleAddToCart = (e: React.MouseEvent, prod: any) => {
     e.stopPropagation();
@@ -552,7 +608,7 @@ export default function CategoryPage() {
           </button>
 
           <span className="text-xs text-slate-500 font-medium">
-            Showing {displayProducts.length} of {productsData?.total ?? 0}
+            Showing {displayProducts.length} of {effectiveData?.total ?? 0}
           </span>
         </div>
 
@@ -1601,7 +1657,7 @@ export default function CategoryPage() {
             {/* Top Results Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
               <span className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400">
-                Showing {productsData?.total ? `${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, productsData.total)} of ${productsData.total}` : "0"} Products
+                Showing {effectiveData?.total ? `${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, effectiveData.total)} of ${effectiveData.total}` : "0"} Products
               </span>
 
               <div className="flex items-center gap-3">
@@ -2096,10 +2152,10 @@ export default function CategoryPage() {
             )}
 
             {/* Clean Pagination Bar */}
-            {productsData && productsData.totalPages > 1 && (
+            {effectiveData && effectiveData.totalPages > 1 && (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-6 border-t border-slate-200 dark:border-slate-800 text-xs">
                 <span className="text-slate-500 dark:text-slate-400 font-medium">
-                  Page {productsData.page} of {productsData.totalPages} ({productsData.total} products)
+                  Page {effectiveData.page} of {effectiveData.totalPages} ({effectiveData.total} products)
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -2115,8 +2171,8 @@ export default function CategoryPage() {
                   </span>
                   <button
                     type="button"
-                    disabled={page >= productsData.totalPages}
-                    onClick={() => setPage((p) => Math.min(productsData.totalPages, p + 1))}
+                    disabled={page >= effectiveData.totalPages}
+                    onClick={() => setPage((p) => Math.min(effectiveData.totalPages, p + 1))}
                     className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1 cursor-pointer"
                   >
                     Next <ChevronRight className="size-3.5" />

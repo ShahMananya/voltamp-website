@@ -114,3 +114,18 @@ client/public/__manus__/version.json
 .project-config.json
 drive_*.html
 *_analysis.json
+
+# Large media files (exceeding GitHub 50MB/100MB limits)
+client/public/videos/volamp-showcase-hq.mp4
+client/public/videos/volamp-operations-hero.mp4
+client/public/videos/VolampIMG_1104.MOV
+client/public/VolampIMG_1104.MOV
+*.MOV
+*.mov
+*.mp4
+!client/public/videos/volamp-reel.mp4
+/categories_section.png
+/categories_section_fixed.png
+/final_wonderland_polish.png
+/gallery_test.png
+/wonderland_upgrade.png

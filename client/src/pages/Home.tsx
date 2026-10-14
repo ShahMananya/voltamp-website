@@ -11,17 +11,27 @@ import { WhatsAppInvoiceModal } from "@/components/invoice/WhatsAppInvoiceModal"
 import { TrackOrderModal } from "@/components/track/TrackOrderModal";
 import { EnquireModal } from "@/components/enquire/EnquireModal";
 import { useUserLocation } from "@/contexts/LocationContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { AIChatBox, type Message } from "@/components/AIChatBox";
 import NewsletterSection from "@/components/home/NewsletterSection";
+import ContractorSizingEstimator from "@/components/home/ContractorSizingEstimator";
+import FacilityVideoModal from "@/components/video/FacilityVideoModal";
 import CableCalculatorModal from "@/components/calculator/CableCalculatorModal";
+import LiveMetalPricesModal from "@/components/metal/LiveMetalPricesModal";
+import { CategoryCard3D } from "@/components/home/CategoryCard3D";
+import { SolarSystemCategories } from "@/components/home/SolarSystemCategories";
+import { SpatialWonderlandCategories } from "@/components/home/SpatialWonderlandCategories";
+import { VirtualShowroomLab } from "@/components/home/VirtualShowroomLab";
+import { VolampGalaxySpace } from "@/components/home/VolampGalaxySpace";
+import { Product3DViewer } from "@/components/ar/Product3DViewer";
 import ThemeToggle from "@/components/ThemeToggle";
 import SeoHead from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { ArrowRight, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Linkedin, Lock, Menu, MessageCircle, MessageSquare, PackageSearch, PlugZap, Quote, Search, Shield, ShieldCheck, ShoppingCart, Sparkles, Truck, UserRound, X, Youtube, Zap } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Layers, Linkedin, Lock, Maximize2, Menu, MessageCircle, MessageSquare, PackageSearch, Phone, Play, PlugZap, Quote, Search, Shield, ShieldCheck, ShoppingCart, Sparkles, TrendingDown, TrendingUp, Truck, UserRound, Volume2, VolumeX, X, Youtube, Zap } from "lucide-react";
 import SocialMediaLinks from "@/components/layout/SocialMediaLinks";
 import { CATEGORIES, ICON_MAP } from "@/data/categories";
 
@@ -73,6 +83,7 @@ function ProductIllustration({ product }: { product: Product }) { const Icon = p
 export default function Home() {
   const { user } = useAuth();
   const { location, country, openLocationPicker, isDetecting } = useUserLocation();
+  const { openLanguagePicker, currentLanguageObj } = useLanguage();
   const { totalCount, openCart, addItem } = useCart();
   const [, navigate] = useLocation();
   const categoryPath = (name: string) => `/category/${name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
@@ -105,10 +116,17 @@ export default function Home() {
   });
 
   const [creditOpen, setCreditOpen] = useState(false);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [global3DMode, setGlobal3DMode] = useState(true);
+  const [galaxySpaceOpen, setGalaxySpaceOpen] = useState(false);
+  const [virtualShowroomLabOpen, setVirtualShowroomLabOpen] = useState(false);
+  const [virtualShowroomInitialCategory, setVirtualShowroomInitialCategory] = useState<string>("cables");
+  const [selectedARCategory, setSelectedARCategory] = useState<any | null>(null);
   const [quickOrderOpen, setQuickOrderOpen] = useState(false);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [trackOrderOpen, setTrackOrderOpen] = useState(() => previewSurface === "track");
   const [trackedOrderId, setTrackedOrderId] = useState<string>("");
+  const [metalPricesOpen, setMetalPricesOpen] = useState(false);
   const whatsappBusinessUrl = import.meta.env.VITE_WHATSAPP_BUSINESS_URL || "";
   const [mobileOpen, setMobileOpen] = useState(false); const [accountOpen, setAccountOpen] = useState(() => previewSurface === "account"); const [calculatorOpen, setCalculatorOpen] = useState(() => previewSurface === "calculator"); const [calculatorCategory, setCalculatorCategory] = useState<string | null>(null); const [calculatorSubcategory, setCalculatorSubcategory] = useState<string | null>(null); const [calculatorDetail, setCalculatorDetail] = useState<string | null>(null); const [selectedDetail, setSelectedDetail] = useState<Product | null>(() => previewSurface === "product" ? products[0] : null); const [compareList, setCompareList] = useState<string[]>([]); const [search, setSearch] = useState(() => new URLSearchParams(window.location.search).get("q") ?? ""); const [quantity, setQuantity] = useState(100); const [selectedProduct, setSelectedProduct] = useState(products[0]); const [discount, setDiscount] = useState(5);
   const liveSearch = trpc.products.list.useQuery(
@@ -135,12 +153,13 @@ export default function Home() {
   const selectedCalculatorSubcategory = selectedCalculatorCategory?.subcategories.find((subcategory) => subcategory.name === calculatorSubcategory);
   const openCalculator = () => { setMobileOpen(false); setCalculatorOpen(true); };
   const jump = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); setMobileOpen(false); };
-  const handleQuote = (initialCatOrEvent?: string | React.MouseEvent, initialProd?: string) => {
+  const handleQuote = (initialCatOrEvent?: string | React.MouseEvent, initialProd?: string, details?: string) => {
     setMobileOpen(false);
     setActiveMegaCategory(null);
     const cat = typeof initialCatOrEvent === "string" ? initialCatOrEvent : undefined;
     if (cat) setEnquiryInitialCategory(cat);
     if (initialProd) setEnquiryInitialProduct(initialProd);
+    if (details) setInlineRequirement(details);
     setInquiryOpen(true);
   };
 
@@ -154,75 +173,8 @@ export default function Home() {
 
   const toggleCompare = (name: string) => setCompareList((current) => current.includes(name) ? current.filter((item) => item !== name) : current.length < 3 ? [...current, name] : current);
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: true,
-    duration: 32,
-  });
-  const [currentCampaignSlide, setCurrentCampaignSlide] = useState(0);
-  const [isSliderHovered, setIsSliderHovered] = useState(false);
+  const [heroVideoMuted, setHeroVideoMuted] = useState(true);
 
-  const campaignSlides = useMemo(() => [
-    {
-      id: "segments",
-      eyebrow: "SOLUTIONS",
-      heading: "Business Segments",
-      pill: "CONTRACTORS · EPC · INFRA",
-      cta: "Explore Segments",
-      image: "/business-segments-hero.png?v=2",
-      themeClass: "campaign-slide-segments",
-      onClick: () => navigate("/business-segments"),
-    },
-    {
-      id: "credit",
-      eyebrow: "FINANCING",
-      heading: "Order & Pay Later",
-      pill: "PRE-APPROVED BANK CREDIT",
-      cta: "Apply for Credit",
-      image: "/order-pay-later-3d.jpg?v=2",
-      themeClass: "campaign-slide-financing",
-      onClick: () => setCreditOpen(true),
-    },
-    {
-      id: "workspace",
-      eyebrow: "PORTAL",
-      heading: "Project Workspace",
-      pill: "LIVE TRACKING & QUOTES",
-      cta: "Open Workspace",
-      image: "/workspace-portal-hero.jpg",
-      themeClass: "campaign-slide-portal",
-      onClick: () => setAccountOpen(true),
-    },
-  ], [navigate]);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    const onSelect = () => {
-      setCurrentCampaignSlide(emblaApi.selectedScrollSnap());
-    };
-    emblaApi.on("select", onSelect);
-    onSelect();
-    return () => {
-      emblaApi.off("select", onSelect);
-    };
-  }, [emblaApi]);
-
-  useEffect(() => {
-    if (!emblaApi || isSliderHovered) return;
-    const timer = setInterval(() => {
-      emblaApi.scrollNext();
-    }, 5500);
-    return () => clearInterval(timer);
-  }, [emblaApi, isSliderHovered]);
-
-  const handlePrevSlide = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    emblaApi?.scrollPrev();
-  };
-
-  const handleNextSlide = (e?: React.MouseEvent) => {
-    e?.stopPropagation();
-    emblaApi?.scrollNext();
-  };
 
   return <div className="volamp-marketplace">
     <SeoHead
@@ -232,59 +184,252 @@ export default function Home() {
       canonicalPath="/"
       ogType="website"
     />
-    <div className="market-utility"><div className="market-container utility-inner"><button onClick={openLocationPicker} className="flex items-center gap-2 text-left text-[#c56718] dark:text-amber-300 hover:text-[#b45309] dark:hover:text-amber-400 transition-colors group cursor-pointer" title="Click to view or change your detected project location (Global & Domestic)"><span className={`status-dot ${isDetecting ? "animate-ping" : ""}`} /><Globe2 className="size-3.5 text-[#c56718] dark:text-amber-400 shrink-0" /><span className="font-semibold text-[#4d1217] dark:text-white group-hover:underline">{isDetecting && !location ? "Detecting location..." : location}</span><ChevronDown className="inline size-3 text-[#c56718] dark:text-amber-400 opacity-80 group-hover:translate-y-0.5 transition-transform" /></button><div><span className="desktop-only text-[#5d4a4b] dark:text-slate-300">Global electrical supply & export desk</span><button onClick={() => navigate("/collaborate")} className="utility-collaborate">Collaborate with us <ArrowRight className="inline size-3" /></button><button onClick={handleQuote}>Talk to supply desk <ArrowRight className="inline size-3" /></button></div></div></div>
-    <header className="market-header">
-      <div className="market-container market-header-top">
-        <a href="#top"><BrandMark /></a>
-        <nav className="market-nav">
-          <button onClick={() => jump("categories")}>Categories</button>
-          <button onClick={() => jump("solutions")}>Solutions</button>
-          <button onClick={() => navigate("/about-volamp")}>About Volamp</button>
-          <button onClick={() => navigate("/careers")} className="market-nav-link">Careers</button>
-          <button onClick={() => navigate("/collaborate")} className="market-nav-link">Collaborate with us</button>
-        </nav>
-        <div className="market-header-actions">
-          <ThemeToggle />
-          <button onClick={() => { if (user) { navigate(user.accountType === "employee" ? "/employee-portal" : "/portal"); } else { setAccountOpen(true); } }}>
-            <UserRound className="size-4" /> {user ? (user.accountType === "employee" ? "Employee portal" : "My portal") : "Login / Register"}
+    {/* Full-Bleed Video Hero & Overlaid Transparent Header (Cleveland Cable Company exact layout) */}
+    <div className="relative w-full overflow-hidden bg-slate-950 text-white min-h-[500px] sm:min-h-[560px] lg:min-h-[620px] flex flex-col justify-between">
+      {/* 1. Full-bleed Background Facility Video covering Header and Hero */}
+      <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
+        <video
+          autoPlay
+          loop
+          muted={heroVideoMuted}
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover object-center"
+        >
+          <source src="/videos/volamp-operations-hero.mp4" type="video/mp4" />
+          <source src="/videos/VolampIMG_1104.MOV" type="video/mp4" />
+          <source src="/videos/volamp-showcase-hq.mp4" type="video/mp4" />
+          <source src="/videos/volamp-reel.mp4" type="video/mp4" />
+        </video>
+        {/* Crisp cinematic gradient overlay - keeps video vibrant while ensuring text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70 z-1" />
+      </div>
+
+      {/* 2. Top utility row (overlaid on top of video, 100% transparent) */}
+      <div className="relative z-20 border-b border-white/10 bg-transparent">
+        <div className="market-container flex items-center justify-between py-2 text-xs gap-3 sm:gap-4">
+          <button
+            onClick={openLocationPicker}
+            className="flex items-center gap-2 text-left text-amber-300 hover:text-amber-200 transition-colors cursor-pointer group shrink-0"
+            title="Click to view or change your detected project location"
+          >
+            <span className={`size-2 rounded-full bg-emerald-400 ${isDetecting ? "animate-ping" : ""}`} />
+            <Globe2 className="size-3.5 text-amber-400 shrink-0" />
+            <span className="font-semibold text-white group-hover:underline text-[11px] sm:text-xs">
+              {isDetecting && !location ? "Detecting location..." : location}
+            </span>
+            <ChevronDown className="inline size-3 text-amber-400 opacity-80 group-hover:translate-y-0.5 transition-transform" />
           </button>
-          <Button onClick={handleQuote} className="market-quote">
-            Request a quote <ArrowRight className="ml-2 size-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="market-menu" onClick={() => setMobileOpen(true)} aria-label="Open navigation">
-            <Menu />
-          </Button>
+
+          {/* Centered Search Bar in place of Live Metal Price */}
+          <div className="flex-1 max-w-lg mx-1 sm:mx-3 relative">
+            <div className="flex items-center gap-2 bg-black/25 hover:bg-black/35 focus-within:bg-black/50 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/20 text-white transition-all shadow-xs">
+              <Search className="size-3.5 text-amber-400 shrink-0" />
+              <input
+                id="hero-catalog-search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search 3,385+ cables, switchgear, sizes, or brands..."
+                className="w-full border-0 bg-transparent text-xs text-white placeholder:text-white/60 focus:outline-none focus:ring-0"
+              />
+              {search && (
+                <button onClick={() => setSearch("")} className="text-white/60 hover:text-white p-0.5 cursor-pointer">
+                  <X className="size-3" />
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  if (search.trim()) navigate(`/products?search=${encodeURIComponent(search.trim())}`);
+                  else jump("categories");
+                }}
+                className="bg-[#c56718] hover:bg-[#b45309] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shrink-0 transition-colors cursor-pointer"
+              >
+                Search
+              </button>
+            </div>
+
+            {/* Autocomplete dropdown */}
+            {search && (
+              <div className="search-results absolute top-full left-0 right-0 text-left rounded-xl shadow-2xl overflow-hidden mt-1.5 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                {searchResults.length ? searchResults.map((product) => (
+                  <button
+                    key={product.name + product.sku}
+                    onClick={() => {
+                      navigate(`/product/${product.sku}`);
+                      setSearch("");
+                    }}
+                    className="cursor-pointer w-full text-left p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-0"
+                  >
+                    <ProductIllustration product={product} />
+                    <span className="flex-1 min-w-0">
+                      <strong className="block truncate text-xs">{product.name}</strong>
+                      <small className="block truncate text-[10px] text-slate-400">{product.sku} · {product.category} · indicative from ₹{product.price}/m</small>
+                    </span>
+                    <ArrowRight className="ml-auto size-3.5 text-slate-400 shrink-0" />
+                  </button>
+                )) : <p className="p-3 text-xs text-slate-500">No exact SKU found. Try searching by size or brand, or ask our quote desk.</p>}
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2.5 sm:gap-3 text-slate-300 shrink-0">
+            <span className="hidden xl:inline text-[11px]">Global electrical supply & export desk</span>
+            <a href="tel:+919512365582" className="hidden md:flex items-center gap-1.5 text-white/90 hover:text-white text-xs">
+              <Phone className="size-3 text-amber-400" />
+              <span>+91 9512365582</span>
+            </a>
+            <button
+              onClick={() => navigate("/collaborate")}
+              className="inline-flex items-center gap-1 text-amber-300 hover:text-amber-200 font-semibold cursor-pointer whitespace-nowrap transition-colors text-xs"
+              title="Collaborate with Volamp"
+            >
+              <span>Collab</span>
+              <ArrowUpRight className="size-3.5 text-amber-400" />
+            </button>
+          </div>
         </div>
       </div>
-      <div className="market-search-row market-container">
-        <div className="category-menu-wrap" onMouseLeave={() => setActiveMegaCategory(null)}>
-          <button
-            className="category-menu"
-            onMouseEnter={() => {
-              if (!activeMegaCategory) {
-                setActiveMegaCategory("WIRE CABLES");
-                setActiveMegaSubcategory(CATEGORIES[0]?.subcategories[0]?.name ?? null);
-              }
-            }}
-            onFocus={() => {
-              if (!activeMegaCategory) {
-                setActiveMegaCategory("WIRE CABLES");
-                setActiveMegaSubcategory(CATEGORIES[0]?.subcategories[0]?.name ?? null);
-              }
-            }}
-            onClick={() => {
-              setActiveMegaCategory(activeMegaCategory ? null : "WIRE CABLES");
-            }}
-          >
-            <Menu className="size-4" /> Categories <ChevronDown className="ml-auto size-4" />
-          </button>
-          {activeMegaCategory && (
-            <div
-              className="mega-menu mega-menu-cascading"
-              onMouseEnter={() => {
-                if (!activeMegaCategory) setActiveMegaCategory("WIRE CABLES");
+
+      {/* 3. Main Transparent Navigation Header directly over the video (Cleveland Cable style) */}
+      <header className="relative z-20 w-full border-b border-white/10">
+        <div className="market-container flex items-center justify-between py-3.5 gap-4">
+          <a href="#top" className="shrink-0">
+            <BrandMark />
+          </a>
+
+          {/* Navigation links: PRODUCT RANGE, ABOUT, SEGMENTS, METAL PRICES */}
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+            <button
+              onClick={() => {
+                setActiveMegaCategory(activeMegaCategory ? null : "WIRE CABLES");
               }}
+              className="text-white hover:text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
             >
+              <span>PRODUCT RANGE</span>
+              <ChevronDown className="size-3 text-red-500" />
+            </button>
+            <button
+              onClick={() => navigate("/about-volamp")}
+              className="text-white hover:text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              <span>ABOUT</span>
+              <ChevronDown className="size-3 text-red-500" />
+            </button>
+            <button
+              onClick={() => navigate("/business-segments")}
+              className="text-white hover:text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              <span>SEGMENTS</span>
+              <ChevronDown className="size-3 text-red-500" />
+            </button>
+            <button
+              onClick={() => setMetalPricesOpen(true)}
+              className="text-amber-400 hover:text-amber-300 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
+            >
+              <span>METAL PRICES</span>
+              <ChevronDown className="size-3 text-red-500" />
+            </button>
+            <button
+              onClick={() => setQuickOrderOpen(true)}
+              className="text-emerald-400 hover:text-emerald-300 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
+              title="Fast Voice & Multi-Product Quick Order"
+            >
+              <Zap className="size-3 text-amber-400" />
+              <span>QUICK ORDER</span>
+              <ChevronDown className="size-3 text-red-500" />
+            </button>
+          </nav>
+
+          {/* Right Header Action Icons matching Cleveland Cable */}
+          <div className="flex items-center gap-4 sm:gap-5">
+            <button
+              onClick={openLanguagePicker}
+              className="flex items-center gap-1.5 text-xs text-white/90 hover:text-white font-semibold cursor-pointer group"
+              title={`Change language & translate site (Current: ${currentLanguageObj.name} · ${currentLanguageObj.nativeName})`}
+            >
+              <span>{currentLanguageObj.flag}</span>
+              <span className="hidden sm:inline uppercase">{currentLanguageObj.nativeName}</span>
+              <ChevronDown className="size-3 text-red-500 group-hover:translate-y-0.5 transition-transform" />
+            </button>
+
+            <a
+              href="tel:+919512365582"
+              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+              title="Call Central Supply Desk: 9512365582"
+            >
+              <Phone className="size-4" />
+            </a>
+
+            <button
+              onClick={() => handleQuote()}
+              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+              title="Request Project Quote"
+            >
+              <FileText className="size-4" />
+            </button>
+
+            <button
+              onClick={() => {
+                const searchEl = document.getElementById("hero-catalog-search");
+                if (searchEl) {
+                  searchEl.focus();
+                  searchEl.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+              }}
+              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+              title="Search 3,385+ Catalog"
+            >
+              <Search className="size-4" />
+            </button>
+
+            <button
+              onClick={() => {
+                if (user) {
+                  navigate(user.accountType === "employee" ? "/employee-portal" : "/portal");
+                } else {
+                  setAccountOpen(true);
+                }
+              }}
+              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer hidden sm:block"
+              title="Account / Portal"
+            >
+              <UserRound className="size-4" />
+            </button>
+
+            <button
+              onClick={openCart}
+              className="relative p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+              title="View Cart"
+            >
+              <ShoppingCart className="size-4" />
+              {totalCount > 0 && (
+                <span className="absolute -top-1 -right-1 size-4 bg-[#c56718] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  {totalCount}
+                </span>
+              )}
+            </button>
+
+            <ThemeToggle />
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden text-white hover:bg-white/10"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open navigation"
+            >
+              <Menu className="size-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Mega Menu dropdown if open */}
+        {activeMegaCategory && (
+          <div
+            className="market-container relative z-50 pt-2 pb-6"
+            onMouseLeave={() => setActiveMegaCategory(null)}
+          >
+            <div className="mega-menu mega-menu-cascading shadow-2xl rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
               <div className="mega-menu-main-list">
                 {megaMenuGroups.map((group) => {
                   const Icon = group.icon;
@@ -461,239 +606,99 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          )}
-        </div>
-        <div className="market-search">
-          <Search className="size-5" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Enter product name, category or SKU" aria-label="Search products" />
-          {search && <button onClick={() => setSearch("")} aria-label="Clear search"><X className="size-4" /></button>}
-          {search && (
-            <div className="search-results">
-              {searchResults.length ? searchResults.map((product) => (
-                <button
-                  key={product.name + product.sku}
-                  onClick={() => {
-                    navigate(`/product/${product.sku}`);
-                    setSearch("");
-                  }}
-                  className="cursor-pointer"
-                >
-                  <ProductIllustration product={product} />
-                  <span>
-                    <strong>{product.name}</strong>
-                    <small>{product.sku} · {product.category} · indicative from ₹{product.price}/m</small>
-                  </span>
-                  <ArrowRight className="ml-auto size-4" />
-                </button>
-              )) : <p>No matching published category. Ask Vola or contact the supply desk.</p>}
-            </div>
-          )}
-        </div>
-        <div className="quick-actions">
-          <button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>
-            <PackageSearch />
-            <span>Track order</span>
-          </button>
-          <button onClick={openCalculator} aria-label="Open calculator">
-            <Calculator />
-            <span>Calculator</span>
-          </button>
-          <button onClick={handleQuote}>
-            <FileText />
-            <span>PO / enquiry</span>
-          </button>
-          <button onClick={() => setQuickOrderOpen(true)}>
-            <Zap />
-            <span>Quick order</span>
-          </button>
-          <button onClick={handleQuote}>
-            <Quote />
-            <span>Quote desk</span>
-          </button>
-          <button onClick={openCart} className="relative cursor-pointer" aria-label="Open supply cart">
-            <div className="relative flex items-center justify-center">
-              <ShoppingCart className="size-5" />
-              {totalCount > 0 && <span className="absolute -top-1.5 -right-2 size-4 bg-[#c56718] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-xs">{totalCount}</span>}
-            </div>
-            <span>Cart</span>
-          </button>
-        </div>
-      </div>
-      {mobileOpen && (
-        <div className="market-mobile-nav">
-          <button onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X /></button>
-          <button onClick={() => jump("categories")}>Categories</button>
-          <button onClick={() => jump("solutions")}>Solutions</button>
-          <button onClick={() => navigate("/about-volamp")}>About Volamp</button>
-          <button onClick={() => { setMobileOpen(false); navigate("/careers"); }} className="market-mobile-link">Careers</button>
-          <button onClick={() => { setMobileOpen(false); openCart(); }} className="market-mobile-link flex items-center gap-2">
-            <ShoppingCart className="size-4" /> Cart ({totalCount})
-          </button>
-          <button onClick={() => { setMobileOpen(false); setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button>
-          <button onClick={() => { setMobileOpen(false); navigate("/collaborate"); }} className="market-mobile-link">Collaborate with us</button>
-          <ThemeToggle />
-          <button onClick={() => { setMobileOpen(false); if (user) { navigate(user.accountType === "employee" ? "/employee-portal" : "/portal"); } else { setAccountOpen(true); } }}>
-            {user ? (user.accountType === "employee" ? "Open employee portal" : "Open my portal") : "Login / Register"}
-          </button>
-        </div>
-      )}
-    </header>
+          </div>
+        )}
 
-    <main id="top"><div className="market-container market-breadcrumb">Home <ChevronDown className="size-3 -rotate-90" /> <span>Let's Build {country} Together</span></div>
-      <section
-        className="market-hero-slider market-container"
-        ref={emblaRef}
-        aria-label="Key Solutions and Portals Rotating Showcase"
-        onMouseEnter={() => setIsSliderHovered(true)}
-        onMouseLeave={() => setIsSliderHovered(false)}
-      >
-        <div className="market-hero-slider-track">
-          {campaignSlides.map((slide, idx) => (
-            <div
-              key={slide.id}
-              className={`market-hero-slide ${slide.themeClass}`}
-              onClick={slide.onClick}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  slide.onClick();
-                }
-              }}
-            >
-              <div className="market-hero-slide-split">
-                <div className="market-hero-slide-content">
-                  <div className="market-hero-slide-eyebrow">
-                    <span className="market-hero-pulse-dot" />
-                    <span>{slide.eyebrow}</span>
-                  </div>
-
-                  <h2 className="market-hero-slide-heading">{slide.heading}</h2>
-
-                  <div className="market-hero-slide-pill">{slide.pill}</div>
-
-                  <div className="market-hero-slide-actions">
-                    <button
-                      type="button"
-                      className="market-hero-slide-cta"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        slide.onClick();
-                      }}
-                    >
-                      <span>{slide.cta}</span>
-                      <ArrowRight className="size-4 market-hero-slide-arrow" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="market-hero-slide-visual">
-                  <div className="market-hero-visual-glow" />
-                  <img
-                    src={slide.image}
-                    alt={slide.heading}
-                    loading={idx === 0 ? "eager" : "lazy"}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Prev / Next Navigation Controls */}
-        <button
-          type="button"
-          className="market-hero-slider-btn prev"
-          onClick={handlePrevSlide}
-          aria-label="Previous Slide"
-        >
-          <ChevronLeft className="size-5" />
-        </button>
-        <button
-          type="button"
-          className="market-hero-slider-btn next"
-          onClick={handleNextSlide}
-          aria-label="Next Slide"
-        >
-          <ChevronRight className="size-5" />
-        </button>
-
-        {/* Slide Indicators / Tabs */}
-        <div className="market-hero-slider-dots">
-          {campaignSlides.map((slide, idx) => (
-            <button
-              key={slide.id}
-              type="button"
-              className={`market-hero-dot ${idx === currentCampaignSlide ? "is-active" : ""}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                emblaApi?.scrollTo(idx);
-              }}
-              aria-label={`Go to slide ${idx + 1}: ${slide.heading}`}
-            >
-              <span className="dot-label">{slide.id === "segments" ? "Business Segments" : slide.id === "credit" ? "Order & Pay Later" : "Project Workspace"}</span>
-              <span className="dot-bar" />
+        {/* Mobile Navigation Drawer */}
+        {mobileOpen && (
+          <div className="market-mobile-nav bg-slate-950 text-white z-50">
+            <button onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X /></button>
+            <button onClick={() => jump("categories")}>Categories</button>
+            <button onClick={() => jump("solutions")}>Solutions</button>
+            <button onClick={() => navigate("/about-volamp")}>About Volamp</button>
+            <button onClick={() => { setMobileOpen(false); navigate("/careers"); }} className="market-mobile-link">Careers</button>
+            <button onClick={() => { setMobileOpen(false); openCart(); }} className="market-mobile-link flex items-center gap-2">
+              <ShoppingCart className="size-4" /> Cart ({totalCount})
             </button>
-          ))}
+            <button onClick={() => { setMobileOpen(false); setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button>
+            <button onClick={() => { setMobileOpen(false); navigate("/collaborate"); }} className="market-mobile-link">Collaborate with us</button>
+            <ThemeToggle />
+            <button onClick={() => { setMobileOpen(false); if (user) { navigate(user.accountType === "employee" ? "/employee-portal" : "/portal"); } else { setAccountOpen(true); } }}>
+              {user ? (user.accountType === "employee" ? "Open employee portal" : "Open my portal") : "Login / Register"}
+            </button>
+          </div>
+        )}
+      </header>
+
+      {/* 4. Hero Controls (Clean, unobstructed video presentation) */}
+      <div className="relative z-10 market-container flex flex-col items-center justify-end text-center pt-16 sm:pt-24 lg:pt-32 pb-8 sm:pb-10 px-4 mt-auto">
+        {/* Screen-reader accessible H1 for SEO compliance */}
+        <h1 className="sr-only">
+          VOLAMP ELEKTRIKALS | India's Premier Industrial Power Cable & Electrical Stockist
+        </h1>
+
+        {/* Sound mute/unmute control positioned discreetly */}
+        <div className="absolute bottom-6 left-6 sm:left-8 z-20 hidden sm:block">
+          <button
+            onClick={() => setHeroVideoMuted(!heroVideoMuted)}
+            className="p-2.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 text-white transition-all cursor-pointer flex items-center gap-2 shadow-lg group"
+            title={heroVideoMuted ? "Unmute facility ambient sound" : "Mute video sound"}
+          >
+            {heroVideoMuted ? <VolumeX className="size-4 text-slate-300" /> : <Volume2 className="size-4 text-amber-400" />}
+            <span className="text-[11px] font-medium text-slate-300 pr-1 group-hover:text-white transition-colors">
+              {heroVideoMuted ? "Sound Off" : "Sound On"}
+            </span>
+          </button>
         </div>
+
+      </div>
+    </div>
+
+    {/* Page Content Begins */}
+    <main id="top" className="bg-slate-50 dark:bg-slate-900">
+      {/* FULL-BLEED WONDERLAND STUDIO 3D PERSPECTIVE RUNWAY */}
+      <section id="categories" className="relative w-full bg-[#1a191b] overflow-hidden border-y border-[#2e2d31]">
+        <SpatialWonderlandCategories
+          onNavigate={(target) => {
+            if (target.startsWith("/")) navigate(target);
+            else if (target.startsWith("category/")) navigate(`/${target}`);
+            else navigate(`/category/${target}`);
+          }}
+          onOpenARModal={(selected) => {
+            const catLower = (selected.name || "").toLowerCase();
+            let initialId = "cables";
+            if (catLower.includes("cable") || catLower.includes("wire")) initialId = "cables";
+            else if (catLower.includes("switch") || catLower.includes("mcb")) initialId = "switchgear";
+            else if (catLower.includes("lug") || catLower.includes("termin")) initialId = "lugs";
+            else if (catLower.includes("gland") || catLower.includes("conduit")) initialId = "glands";
+            else if (catLower.includes("solar")) initialId = "solar";
+            else if (catLower.includes("earth")) initialId = "earthing";
+
+            setVirtualShowroomInitialCategory(initialId);
+            setVirtualShowroomLabOpen(true);
+          }}
+          onOpenShowroomLab={(catId) => {
+            setVirtualShowroomInitialCategory(catId);
+            setVirtualShowroomLabOpen(true);
+          }}
+        />
       </section>
 
-      <section id="categories" className="market-section">
-        <div className="market-container">
-          <div className="market-section-head">
-            <div>
-              <span className="market-kicker">BROWSE THE SUPPLY SYSTEM · 8 MASTER CATEGORIES · 3,385+ PRODUCTS</span>
-              <h1>Explore categories</h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-                Direct manufacturer pricing, IS/IEC/CE certifications, Material Test Certificates ( MTC ), and 12-hour pan-India project dispatch across our complete electrical portfolio.
-              </p>
-            </div>
-            <div className="hidden sm:flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-xs font-semibold cursor-pointer"
-                onClick={() => navigate("/products")}
-              >
-                View Full Catalog ({CATEGORIES.reduce((acc, c) => acc + c.productCount, 0).toLocaleString("en-IN")}+) <ArrowRight className="ml-1.5 size-3.5" />
-              </Button>
-            </div>
-          </div>
-          <div className="category-grid">
-            {categoryTiles.map((cat) => (
-              <button
-                key={cat.name}
-                className="category-tile group"
-                onClick={() => { navigate(`/category/${cat.slug}`); }}
-              >
-                <div className="category-tile-photo-wrap">
-                  <img
-                    src={cat.image || "/products/cables.jpg"}
-                    alt={cat.name}
-                    className="category-tile-photo"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="category-tile-info">
-                  <div className="flex items-center justify-between gap-1">
-                    <strong className="category-tile-name">{cat.name}</strong>
-                    <div className="category-tile-arrow-circle">
-                      <ArrowRight className="size-3.5" />
-                    </div>
-                  </div>
-                  <p className="category-tile-desc">{cat.detail}</p>
-                  <div className="category-tile-pills">
-                    {cat.featuredPills.slice(0, 3).map((pill) => (
-                      <span key={pill} className="category-tile-pill">{pill}</span>
-                    ))}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ContractorSizingEstimator
+        onQuote={(cat, prod, details) => handleQuote(cat, prod, details)}
+        onAddToCart={(item) =>
+          addItem({
+            id: item.id,
+            sku: item.sku,
+            name: item.name,
+            category: item.category,
+            price: item.price,
+            unit: item.unit,
+            quantity: item.quantity,
+          })
+        }
+        onOpenFullCalculator={openCalculator}
+      />
 
       <section id="solutions" className="py-20 bg-slate-50/70 dark:bg-[#071421] border-t border-slate-200/80 dark:border-slate-800">
         <div className="market-container">
@@ -1041,5 +1046,51 @@ export default function Home() {
     <QuickOrderModal isOpen={quickOrderOpen} onClose={() => setQuickOrderOpen(false)} />
     <WhatsAppInvoiceModal isOpen={invoiceModalOpen} onClose={() => setInvoiceModalOpen(false)} />
     <TrackOrderModal open={trackOrderOpen} onOpenChange={setTrackOrderOpen} initialOrderId={trackedOrderId} />
+    <FacilityVideoModal isOpen={videoModalOpen} onClose={() => setVideoModalOpen(false)} />
+    <LiveMetalPricesModal
+      isOpen={metalPricesOpen}
+      onClose={() => setMetalPricesOpen(false)}
+      onRequestLockedQuote={(spec) => handleQuote(undefined, undefined, spec)}
+    />
+
+    {/* 3D Volamp Electrical Galaxy Universe Modal */}
+    <VolampGalaxySpace
+      isOpen={galaxySpaceOpen}
+      onClose={() => setGalaxySpaceOpen(false)}
+      onSelectCategory={(slug) => navigate(`/category/${slug}`)}
+      onOpenShowroomLab={(catId) => {
+        setVirtualShowroomInitialCategory(catId);
+        setVirtualShowroomLabOpen(true);
+      }}
+    />
+
+    {/* Fullscreen 3D & WebAR Virtual Showroom Modal */}
+    <VirtualShowroomLab
+      isOpen={virtualShowroomLabOpen}
+      onClose={() => setVirtualShowroomLabOpen(false)}
+      initialCategory={virtualShowroomInitialCategory}
+      onRequestQuote={(catName, prodTitle) => {
+        handleQuote(catName, prodTitle);
+      }}
+    />
+
+    {/* Legacy 3D Product Twin Modal fallback */}
+    {selectedARCategory && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+        <div className="relative w-full max-w-5xl h-[85vh] rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col">
+          <Product3DViewer
+            product={{
+              name: `${selectedARCategory.name} (3D Digital Twin)`,
+              category: selectedARCategory.name,
+              brand: "VOLAMP ELEKTRIKALS",
+              subcategory: selectedARCategory.detail,
+              material: "Certified Industrial Grade",
+            }}
+            isModal={true}
+            onClose={() => setSelectedARCategory(null)}
+          />
+        </div>
+      </div>
+    )}
   </div>;
 }

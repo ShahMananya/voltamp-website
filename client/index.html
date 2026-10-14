@@ -39,11 +39,14 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
 
     <!-- Leaflet High-Resolution Satellite & GIS Engine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Google WebXR & Apple Quick Look 3D / AR Engine -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 
     <!-- Google Structured Data (Schema.org) for Google Search & Google Shopping / Merchant Center -->
     <script type="application/ld+json">
@@ -211,6 +214,21 @@
     <title>VOLAMP ELEKTRIKALS | Powering Growth</title>
   </head>
   <body>
+    <!-- Google Translate Engine Container -->
+    <div id="google_translate_element" style="display:none;position:absolute;top:-9999px;left:-9999px;opacity:0;pointer-events:none;height:0;width:0;"></div>
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        if (window.google && window.google.translate) {
+          new window.google.translate.TranslateElement({
+            pageLanguage: 'en',
+            includedLanguages: 'en,hi,gu,mr,ta,te,bn,kn,ml,pa,ar,es,fr,de,pt,ru,zh-CN,ja',
+            autoDisplay: false
+          }, 'google_translate_element');
+        }
+      }
+    </script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

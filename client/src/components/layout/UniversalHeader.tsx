@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Globe2, Menu, PhoneCall, X, User, LogIn } from "
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface UniversalHeaderProps {
   currentPage?: "home" | "about" | "segments" | "careers" | "collaborate" | "blog" | "enquire" | "calculator" | "pay" | "track" | "news";
@@ -17,6 +18,7 @@ export default function UniversalHeader({
   showUtilityBar = true,
 }: UniversalHeaderProps) {
   const { user } = useAuth();
+  const { openLanguagePicker, currentLanguageObj } = useLanguage();
   const [, navigate] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const supportPhone = "9512365582";
@@ -138,7 +140,15 @@ export default function UniversalHeader({
           </nav>
 
           {/* Header Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={openLanguagePicker}
+              className="flex items-center gap-1.5 text-xs font-bold text-[#4d1217] hover:text-[#c56718] px-2.5 py-1.5 rounded-lg border border-[#ebd7c7] bg-white hover:bg-[#f7ede6] transition-colors cursor-pointer shadow-2xs"
+              title={`Translate Website Language (Current: ${currentLanguageObj.name} · ${currentLanguageObj.nativeName})`}
+            >
+              <span>{currentLanguageObj.flag}</span>
+              <span className="hidden sm:inline uppercase text-[11px]">{currentLanguageObj.nativeName}</span>
+            </button>
             <ThemeToggle />
             {user ? (
               <Button

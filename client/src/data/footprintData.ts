@@ -595,7 +595,7 @@ export const KHADIA_HQ_PROJECT: FootprintProject = {
   customerName: "Registered Office",
   customerCompany: "Volamp Elektrikals Pvt Ltd",
   status: "Active Corporate HQ",
-  images: "/team/volamp-team-hero.jpg",
+  images: "/team/volamp-khadia-storefront.jpg",
   createdAt: "2026-09-30T00:00:00.000Z",
   updatedAt: "2026-09-30T00:00:00.000Z",
 };

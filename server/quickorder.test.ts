@@ -130,4 +130,24 @@ describe("Quick Order Product Add / Remove & Submission Flow", () => {
     expect(Array.isArray(orders)).toBe(true);
     expect(orders.length).toBeGreaterThan(0);
   });
+
+  it("processes voice ordering transcript through TRPC procedure caller", async () => {
+    const caller = appRouter.createCaller({
+      req: {} as any,
+      res: { cookie: () => {}, clearCookie: () => {} } as any,
+      user: null,
+    });
+
+    const voiceResult = await caller.quickOrder.parseVoice({
+      transcript:
+        "I need 10 pieces of Polycab 1.5 sq mm single-core unarmoured copper cable, 5 pieces of Polycab 2.5 sq mm cable, and 2 LK power contactors 3 pole 9 amp.",
+      language: "en-IN",
+    });
+
+    expect(voiceResult.success).toBe(true);
+    expect(voiceResult.totalItemsDetected).toBe(3);
+    expect(voiceResult.items[0].matchedProduct?.productId).toBe("CAB-000004");
+    expect(voiceResult.items[1].matchedProduct?.productId).toBe("CAB-000005");
+    expect(voiceResult.items[2].matchedProduct?.productId).toBe("SWG-000001");
+  });
 });

@@ -82,46 +82,43 @@ function getCategoryFallback(category: string, name: string): string {
   const cat = (category || "").toLowerCase();
   const n = (name || "").toLowerCase();
 
-  if (cat.includes("aviation") || n.includes("airport")) {
-    return "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&q=80";
+  if (cat.includes("nuclear") || cat.includes("defense") || n.includes("barc")) {
+    return "/projects/barc-nuclear-real.jpg";
   }
   if (cat.includes("solar") || cat.includes("renewable")) {
-    return "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=1200&q=80";
+    return "/projects/solar-park-panels-real.jpg";
   }
   if (cat.includes("water") || cat.includes("jal") || n.includes("wtp")) {
-    return "https://images.unsplash.com/photo-1584467735871-8e85353a8413?auto=format&fit=crop&w=1200&q=80";
+    return "/projects/water-treatment-plant-real.jpg";
   }
-  if (cat.includes("heritage") || cat.includes("temple") || n.includes("mandir")) {
-    return "https://images.unsplash.com/photo-1609766857041-ed402ea8069a?auto=format&fit=crop&w=1200&q=80";
+  if (cat.includes("heritage") || cat.includes("temple") || n.includes("mandir") || cat.includes("monument") || n.includes("statue") || n.includes("sou") || n.includes("bridge") || n.includes("riverfront")) {
+    return "/projects/statue-of-unity.jpg";
   }
-  if (cat.includes("monument") || n.includes("statue") || n.includes("sou")) {
-    return "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80";
-  }
-  if (cat.includes("bridge") || n.includes("bridge") || n.includes("riverfront")) {
-    return "https://images.unsplash.com/photo-1545167622-3a6ac756afa4?auto=format&fit=crop&w=1200&q=80";
-  }
-  if (cat.includes("smart") || cat.includes("financial") || n.includes("gift city")) {
-    return "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80";
-  }
-  if (cat.includes("steel") || n.includes("steel") || n.includes("bhilai")) {
-    return "https://images.unsplash.com/photo-1565793298595-6a879b1d9492?auto=format&fit=crop&w=1200&q=80";
+  if (cat.includes("smart") || cat.includes("financial") || n.includes("gift city") || n.includes("tunnel")) {
+    return "/projects/gift-tunnel-real.jpg";
   }
   if (cat.includes("sanctuary") || n.includes("vantara") || cat.includes("wildlife")) {
-    return "https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?auto=format&fit=crop&w=1200&q=80";
+    return "/projects/vantara-real.jpg";
   }
   if (cat.includes("education") || n.includes("campus") || n.includes("iit") || n.includes("university")) {
-    return "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80";
+    return "/projects/marwadi-university-real.jpg";
   }
   if (cat.includes("health") || cat.includes("medical") || n.includes("hospital")) {
-    return "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80";
+    return "/projects/goa-medical-college-real.jpg";
   }
-  if (cat.includes("ropeway") || n.includes("girnar") || n.includes("pavagadh")) {
-    return "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80";
+  if (cat.includes("sports") || cat.includes("stadium") || n.includes("amc")) {
+    return "/projects/amc-sports-complex-real.jpg";
   }
-  if (cat.includes("petrochemical") || cat.includes("refinery") || n.includes("lng") || n.includes("iocl")) {
-    return "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80";
+  if (cat.includes("thermal") || cat.includes("amarkantak")) {
+    return "/projects/amarkantak-thermal-real.jpg";
   }
-  return "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80";
+  if (cat.includes("steel") || n.includes("steel") || cat.includes("manufacturing") || cat.includes("industrial") || n.includes("factory") || n.includes("hero")) {
+    return "/projects/manufacturing-plant-real.jpg";
+  }
+  if (cat.includes("petrochemical") || cat.includes("refinery") || n.includes("lng") || n.includes("iocl") || n.includes("reliance")) {
+    return "/projects/project-7.jpg";
+  }
+  return "/projects/substation-66kv-real.jpg";
 }
 
 function getProjectImageUrl(img?: string | null): string {
@@ -367,6 +364,12 @@ export default function ProjectTilesDirectory({
                     alt=""
                     aria-hidden="true"
                     className="tile-photo-blur-bg"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (!target.src.includes("substation-66kv-real.jpg")) {
+                        target.src = "/projects/substation-66kv-real.jpg";
+                      }
+                    }}
                   />
                   <img
                     src={getProjectImageUrl(proj.images) || getCategoryFallback(proj.category, proj.name)}
@@ -375,7 +378,13 @@ export default function ProjectTilesDirectory({
                     referrerPolicy="no-referrer"
                     className="tile-photo-img"
                     onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).src = getCategoryFallback(proj.category, proj.name);
+                      const target = e.currentTarget as HTMLImageElement;
+                      const fallback = getCategoryFallback(proj.category, proj.name);
+                      if (!target.src.includes(fallback)) {
+                        target.src = fallback;
+                      } else if (!target.src.includes("substation-66kv-real.jpg")) {
+                        target.src = "/projects/substation-66kv-real.jpg";
+                      }
                     }}
                   />
                   <div className="tile-photo-overlay" />
@@ -469,18 +478,30 @@ export default function ProjectTilesDirectory({
             {activeModalProject.images && (
               <div className="modal-hero-photo-wrapper">
                 <img
-                  src={getProjectImageUrl(activeModalProject.images)}
+                  src={getProjectImageUrl(activeModalProject.images) || getCategoryFallback(activeModalProject.category, activeModalProject.name)}
                   alt=""
                   aria-hidden="true"
                   className="modal-hero-blur-bg"
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes("substation-66kv-real.jpg")) {
+                      target.src = "/projects/substation-66kv-real.jpg";
+                    }
+                  }}
                 />
                 <img
-                  src={getProjectImageUrl(activeModalProject.images)}
+                  src={getProjectImageUrl(activeModalProject.images) || getCategoryFallback(activeModalProject.category, activeModalProject.name)}
                   alt={activeModalProject.name}
                   referrerPolicy="no-referrer"
                   className="modal-hero-photo-img"
                   onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = getCategoryFallback(activeModalProject.category, activeModalProject.name);
+                    const target = e.currentTarget as HTMLImageElement;
+                    const fallback = getCategoryFallback(activeModalProject.category, activeModalProject.name);
+                    if (!target.src.includes(fallback)) {
+                      target.src = fallback;
+                    } else if (!target.src.includes("substation-66kv-real.jpg")) {
+                      target.src = "/projects/substation-66kv-real.jpg";
+                    }
                   }}
                 />
                 <div className="modal-hero-photo-overlay" />

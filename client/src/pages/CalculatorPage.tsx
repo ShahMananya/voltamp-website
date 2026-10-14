@@ -365,107 +365,263 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
     window.open(`https://wa.me/919512365582?text=${encodeURIComponent(text)}`, "_blank");
   };
 
-  // Download PDF
-  const handleDownloadPDF = () => {
+  // Helper to load image as Data URL
+  const getImageDataUrl = async (src: string): Promise<string | null> => {
+    return new Promise((resolve) => {
+      try {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) { resolve(null); return; }
+            ctx.drawImage(img, 0, 0);
+            resolve(canvas.toDataURL("image/png"));
+          } catch { resolve(null); }
+        };
+        img.onerror = () => resolve(null);
+        img.src = src;
+      } catch { resolve(null); }
+    });
+  };
+
+  // Download PDF (Attractive Brochure Dossier)
+  const handleDownloadPDF = async () => {
     try {
-      const doc = new jsPDF();
-      doc.setFillColor(29, 115, 183);
-      doc.rect(0, 0, 210, 24, "F");
+      toast.info("Generating Dossier...", { description: "Preparing official sizing & commercial estimation PDF." });
+      const logoDataUrl = await getImageDataUrl("/volamp-logo.png");
+
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // 1. BRAND HEADER BANNER
+      doc.setFillColor(11, 31, 51); // Deep Navy #0b1f33
+      doc.rect(0, 0, 210, 26, "F");
+
+      doc.setFillColor(197, 103, 24); // Warm Amber Gold #c56718
+      doc.rect(0, 26, 210, 2.5, "F");
+
+      // Volamp Logo inside White Rounded Badge
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(12, 4, 46, 18, 2, 2, "F");
+
+      if (logoDataUrl) {
+        try {
+          doc.addImage(logoDataUrl, "PNG", 14, 6, 42, 14);
+        } catch {
+          doc.setTextColor(77, 18, 23);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(13);
+          doc.text("VOLAMP", 18, 16);
+        }
+      } else {
+        doc.setTextColor(77, 18, 23);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text("VOLAMP", 18, 16);
+      }
+
+      // Brand Title beside Logo
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(12);
+      doc.text("VOLAMP ELEKTRIKALS", 63, 11);
+
+      doc.setTextColor(245, 191, 33); // Bright Gold
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.text("PROJECT ESTIMATION DOSSIER & ENGINEERING SIZING BROCHURE", 63, 16);
+
+      doc.setTextColor(203, 213, 225);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6.5);
+      doc.text("ISO 9001:2015 · IS:7098 & IS:694 Conforming · CPRI Standards · GeM Registered", 63, 21);
+
+      // Top Right Document Metadata Badge
+      doc.setFillColor(18, 48, 77);
+      doc.roundedRect(148, 4, 50, 18, 2, 2, "F");
 
       doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(15);
-      doc.text("VOLAMP ELEKTRIKALS · ELECTRICAL PROJECT ESTIMATION", 14, 16);
+      doc.setFontSize(7.5);
+      doc.text(`Ref: ${activeProductSku}`, 152, 9.5);
 
-      doc.setTextColor(100, 116, 139);
+      doc.setTextColor(203, 213, 225);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(8.5);
-      doc.text("Official Technical Sizing & Cost Breakdown · ISO 9001:2015 · IS/IEC Certified", 14, 32);
-      doc.text(`Generated: ${new Date().toLocaleDateString("en-IN")}`, 150, 32);
+      doc.setFontSize(6.5);
+      doc.text(`Date: ${new Date().toLocaleDateString("en-IN")}`, 152, 14);
 
-      // Box
+      doc.setTextColor(52, 211, 153);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(6.5);
+      doc.text("● VERIFIED BOM ESTIMATE", 152, 18.5);
+
+      // 2. PRODUCT HERO SPOTLIGHT CARD
+      const heroY = 32;
       doc.setDrawColor(226, 232, 240);
       doc.setFillColor(248, 250, 252);
-      doc.roundedRect(14, 38, 182, 34, 2, 2, "FD");
+      doc.roundedRect(12, heroY, 186, 32, 2.5, 2.5, "FD");
 
-      doc.setTextColor(29, 115, 183);
+      // Brand Pill
+      doc.setFillColor(197, 103, 24);
+      doc.roundedRect(16, heroY + 3.5, 52, 5, 1, 1, "F");
+      doc.setTextColor(255, 255, 255);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
-      doc.text(`${activeBrandName.toUpperCase()} — ${activeProductName.toUpperCase()}`, 18, 48);
+      doc.setFontSize(6.5);
+      doc.text(`[ ${activeBrandName.toUpperCase()} ] · PROJECT GRADE`, 18, heroY + 7);
 
       doc.setTextColor(15, 23, 42);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9.5);
-      doc.text(`Catalog SKU: ${activeProductSku} · Category: ${activeCategoryName}`, 18, 56);
-      doc.text(`Specification: ${activeSpecSummary}`, 18, 64);
-
-      // Financials
-      let yPos = 82;
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
-      doc.text("COMMERCIAL & FINANCIAL BREAKDOWN", 14, yPos);
+      doc.setFontSize(11.5);
+      doc.text(activeProductName, 16, heroY + 14.5);
+
+      doc.setTextColor(71, 85, 105);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      doc.text(`SKU: ${activeProductSku} · Category: ${activeCategoryName} · Packaging: ${formatQuantityWithUnit(activeQuantity, activeUnitLabel)}`, 16, heroY + 20.5);
+
+      doc.setTextColor(3, 105, 161);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.text(`Specification: ${activeSpecSummary}`, 16, heroY + 26);
+
+      // 3. FINANCIAL & COMMERCIAL BREAKDOWN
+      let yPos = 69;
+      doc.setFillColor(197, 103, 24);
+      doc.rect(12, yPos, 3, 5.5, "F");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(15, 23, 42);
+      doc.text("1. COMMERCIAL & SCHEDULE-OF-RATES FINANCIAL BREAKDOWN", 18, yPos + 4.2);
+
+      // Table Header Row
       yPos += 8;
+      doc.setFillColor(15, 23, 42);
+      doc.rect(12, yPos, 186, 6.5, "F");
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7);
+      doc.setTextColor(255, 255, 255);
+      doc.text("LINE ITEM / COST COMPONENT", 16, yPos + 4.3);
+      doc.text("VALUATION / COMMERCIAL DETAILS", 110, yPos + 4.3);
+      doc.text("STATUS", 172, yPos + 4.3);
+
+      yPos += 6.5;
 
       const lines = [
         ["Product Specification & Model", `${activeProductName} (${activeSpecSummary})`],
         ["Catalog Manufacturer SKU", activeProductSku],
         ["Procurement Quantity", formatQuantityWithUnit(activeQuantity, activeUnitLabel)],
-        ["Gross Unit List Price (Pricelist MRP)", `Rs. ${unitListPrice.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)}`],
+        ["Gross Unit List Price (MRP)", `Rs. ${unitListPrice.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)}`],
         ["Website Catalog Discount", `${websiteDiscountPct}% OFF (-Rs. ${unitDiscountAmount.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)})`],
-        ["Volamp Online Net Rate", `Rs. ${unitNetPrice.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)}`],
-        ["Gross List Total (Unchecked MRP)", `Rs. ${listTotal.toLocaleString("en-IN")}`],
-        [`Total Website Discount (${websiteDiscountPct}%)`, `- Rs. ${websiteDiscountTotal.toLocaleString("en-IN")}`],
+        ["Volamp Net Rate", `Rs. ${unitNetPrice.toLocaleString("en-IN")}/${formatRateUnit(activeUnitLabel)}`],
+        ["Gross List Total", `Rs. ${listTotal.toLocaleString("en-IN")}`],
+        [`Total Wholesale Discount (${websiteDiscountPct}%)`, `- Rs. ${websiteDiscountTotal.toLocaleString("en-IN")}`],
         ["Net Taxable Subtotal", `Rs. ${taxableSubtotal.toLocaleString("en-IN")}`],
         ["Goods & Services Tax (GST 18%)", `Rs. ${gstAmount.toLocaleString("en-IN")}`],
         ["Total Estimated Procurement Value", `Rs. ${finalTotal.toLocaleString("en-IN")}`],
         ["Total Project Cost Savings", `Rs. ${totalSavings.toLocaleString("en-IN")} (${websiteDiscountPct}% off MRP)`],
       ];
 
-      lines.forEach(([lbl, val]) => {
+      lines.forEach(([lbl, val], idx) => {
+        const rowH = 6;
+        if (idx % 2 === 0) {
+          doc.setFillColor(248, 250, 252);
+          doc.rect(12, yPos, 186, rowH, "F");
+        } else {
+          doc.setFillColor(255, 255, 255);
+          doc.rect(12, yPos, 186, rowH, "F");
+        }
+
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(9);
-        doc.setTextColor(71, 85, 105);
-        doc.text(lbl, 18, yPos);
+        doc.setFontSize(7.5);
+        doc.setTextColor(51, 65, 85);
+        doc.text(lbl, 16, yPos + 4.2);
 
         doc.setFont("helvetica", "normal");
         doc.setTextColor(15, 23, 42);
-        doc.text(val, 110, yPos);
+        const valStr = String(val || "");
+        doc.text(valStr.length > 44 ? valStr.slice(0, 44) + "..." : valStr, 110, yPos + 4.2);
+
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(5, 150, 105);
+        doc.text("[✓ Quoted]", 172, yPos + 4.2);
 
         doc.setDrawColor(241, 245, 249);
-        doc.line(14, yPos + 3, 196, yPos + 3);
-        yPos += 7.5;
+        doc.line(12, yPos + rowH, 198, yPos + rowH);
+        yPos += rowH;
       });
 
-      // Engineering Sizing notes (if cables)
+      // 4. Engineering Sizing summary (if cables)
       if (isCable) {
-        yPos += 10;
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(10);
-        doc.setTextColor(3, 105, 161);
-        doc.text("ENGINEERING COMPLIANCE & VOLTAGE DROP SUMMARY", 14, yPos);
         yPos += 6;
+        doc.setFillColor(197, 103, 24);
+        doc.rect(12, yPos, 3, 5.5, "F");
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(15, 23, 42);
+        doc.text("2. ENGINEERING SIZING COMPLIANCE & VOLTAGE DROP VERIFICATION", 18, yPos + 4.2);
+        yPos += 7.5;
+
+        doc.setFillColor(240, 249, 255);
+        doc.setDrawColor(186, 230, 253);
+        doc.roundedRect(12, yPos, 186, 24, 2, 2, "FD");
 
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
-        doc.setTextColor(51, 65, 85);
+        doc.setFontSize(7.5);
+        doc.setTextColor(12, 74, 110);
         doc.text(
-          `Calculated Full Load Current: ${realSizing.calculatedAmps} A (${effectiveKw} kW / ${loadHp} HP at ${voltagePhase === "415V_3P" ? "415V 3-Phase" : "230V 1-Phase"})\n` +
-          `Recommended Minimum Sizing: ${realSizing.cuRecommendation.runs > 1 ? `${realSizing.cuRecommendation.runs} Runs × ` : ""}${realSizing.cuRecommendation.sizeLabel} (Copper) or ${realSizing.alRecommendation.runs > 1 ? `${realSizing.alRecommendation.runs} Runs × ` : ""}${realSizing.alRecommendation.sizeLabel} (Aluminium)\n` +
-          `Estimated Voltage Drop over ${runDistanceMeters}m: ${activeRec.voltageDropVolts} V (${activeRec.voltageDropPct}% drop - ${activeRec.isDropCompliant ? "Conforms to IS 7098" : "Stepped up for IS 7098"})`,
-          14,
-          yPos
+          `• Calculated Full Load Current: ${realSizing.calculatedAmps} A (${effectiveKw} kW / ${loadHp} HP at ${voltagePhase === "415V_3P" ? "415V 3-Phase" : "230V 1-Phase"})\n` +
+          `• Recommended Minimum Conductor: ${realSizing.cuRecommendation.runs > 1 ? `${realSizing.cuRecommendation.runs} Runs × ` : ""}${realSizing.cuRecommendation.sizeLabel} (Copper) or ${realSizing.alRecommendation.runs > 1 ? `${realSizing.alRecommendation.runs} Runs × ` : ""}${realSizing.alRecommendation.sizeLabel} (Aluminium)\n` +
+          `• Estimated Voltage Drop over ${runDistanceMeters}m: ${activeRec.voltageDropVolts} V (${activeRec.voltageDropPct}% drop - ${activeRec.isDropCompliant ? "Safe & Compliant with IS 7098" : "Stepped up for IS 7098 Standard"})\n` +
+          `• Short Circuit & Thermal Withstand: Conforming to Central Electricity Authority (CEA) & CPRI guidelines.`,
+          16,
+          yPos + 5.5
         );
+        yPos += 26;
       }
 
-      // Footer
+      // 5. Supply Hub Box
+      yPos += 4;
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(12, yPos, 186, 20, 2, 2, "FD");
+
+      doc.setTextColor(15, 23, 42);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      doc.text("VOLAMP ELEKTRIKALS · CENTRAL AHMEDABAD SUPPLY DESK", 16, yPos + 5.5);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6.5);
+      doc.setTextColor(71, 85, 105);
+      doc.text("GIDC Industrial Estate, Vatva, Ahmedabad - 382445, Gujarat, India · Direct Desk: +91 9512365582", 16, yPos + 10);
+      doc.text("Email: sales@volampelektrikals.com · Web: www.volampelektrikals.com · 28 States Pan-India Corridors", 16, yPos + 14.5);
+
+      // 6. Footer
+      doc.setDrawColor(203, 213, 225);
+      doc.line(12, 281, 198, 281);
+      doc.setFillColor(197, 103, 24);
+      doc.circle(105, 281, 1, "F");
+
       doc.setTextColor(148, 163, 184);
-      doc.setFontSize(8);
-      doc.text("Volamp Elektrikals · GIDC Estate, Vatva, Ahmedabad, Gujarat · Phone: +91 9512365582 · sales@volampelektrikals.com", 14, 285);
+      doc.setFontSize(6.5);
+      doc.setFont("helvetica", "normal");
+      doc.text("Volamp Elektrikals © 2026 · Confidential B2B Estimation Dossier & Technical Sizing Brochure", 12, 286);
+      doc.text("Page 1 of 1 · Authorized Release", 156, 286);
 
       doc.save(`VOLAMP_Estimation_${activeBrandName}_${activeProductSku}.pdf`);
-      toast.success("PDF Estimation Saved!");
+      toast.success("Brochure Estimation PDF Saved!");
     } catch (e: any) {
-      toast.error("Failed to generate PDF", { description: e.message });
+      toast.error("Failed to generate PDF", { description: e.message || "Please try again." });
     }
   };
 

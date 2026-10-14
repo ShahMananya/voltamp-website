@@ -1,16 +1,41 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { Product, InsertProduct, QuotedProductSnapshot } from "../../drizzle/schema";
 
-const DB_PATH = path.resolve(process.cwd(), "server/data/products_db.json");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+function findProductsDbPath(): string | null {
+  const candidates = [
+    path.resolve(process.cwd(), "server/data/products_db.json"),
+    path.resolve(process.cwd(), "data/products_db.json"),
+    path.resolve(process.cwd(), "client/public/products_db.json"),
+    path.resolve(process.cwd(), "dist/public/products_db.json"),
+    path.join(__dirname, "../data/products_db.json"),
+    path.join(__dirname, "../../server/data/products_db.json"),
+    path.join(__dirname, "./data/products_db.json"),
+  ];
+
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
+export const DB_PATH = findProductsDbPath() || path.resolve(process.cwd(), "server/data/products_db.json");
 
 // In-memory cache for ultra-fast query performance
 let _productsCache: Product[] | null = null;
 
 export function loadProductsFromDisk(): Product[] {
   try {
-    if (fs.existsSync(DB_PATH)) {
-      const raw = fs.readFileSync(DB_PATH, "utf-8");
+    const dbPath = findProductsDbPath();
+    if (dbPath && fs.existsSync(dbPath)) {
+      console.log(`[ProductService] Loading catalog from: ${dbPath}`);
+      const raw = fs.readFileSync(dbPath, "utf-8");
       const parsed = JSON.parse(raw);
       _productsCache = parsed.map((item: any, idx: number) => ({
         id: item.id || idx + 1,

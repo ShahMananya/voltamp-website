@@ -171,6 +171,15 @@ export default defineConfig({
   server: {
     host: true,
     allowedHosts: true,
+    watch: {
+      ignored: [
+        "**/client/public/videos/**",
+        "**/client/public/*.MOV",
+        "**/*.MOV",
+        "**/*.mp4",
+        "**/*.mov",
+      ],
+    },
     fs: {
       strict: true,
       deny: ["**/.*"],

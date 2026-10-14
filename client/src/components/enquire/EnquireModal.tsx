@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   X,
   Headphones,
@@ -17,6 +17,10 @@ import {
   PackageSearch,
   Clock,
   ExternalLink,
+  UploadCloud,
+  Paperclip,
+  Trash2,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
@@ -67,10 +71,82 @@ export function EnquireModal({
   const [urgency, setUrgency] = useState(TIMELINE_OPTIONS[1]);
   const [details, setDetails] = useState("");
 
+  // File upload state
+  interface AttachedFileInfo {
+    name: string;
+    size: number;
+    formattedSize: string;
+    dataUrl?: string;
+  }
+  const [attachedFile, setAttachedFile] = useState<AttachedFileInfo | null>(null);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+  };
+
+  const processFile = (file: File) => {
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+    if (file.size > MAX_SIZE) {
+      toast.error("File is too large", {
+        description: `Max allowed size is 10MB. Selected file is ${formatFileSize(file.size)}.`,
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setAttachedFile({
+        name: file.name,
+        size: file.size,
+        formattedSize: formatFileSize(file.size),
+        dataUrl: reader.result as string,
+      });
+      toast.success("Document attached", {
+        description: `${file.name} (${formatFileSize(file.size)}) ready to submit.`,
+      });
+    };
+    reader.onerror = () => {
+      toast.error("Failed to read file", {
+        description: "Please try selecting the file again.",
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      processFile(file);
+    }
+  };
+
+  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDraggingFile(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      processFile(file);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setAttachedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const [submittedData, setSubmittedData] = useState<{
     enquiryNumber: string;
     fullName: string;
     category: string;
+    fileName?: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -95,6 +171,7 @@ export function EnquireModal({
         enquiryNumber: data.enquiryNumber,
         fullName,
         category,
+        fileName: attachedFile?.name,
       });
       toast.success("Enquiry submitted successfully!", {
         description: `Reference: ${data.enquiryNumber}. A technical specialist will follow up shortly.`,
@@ -137,6 +214,9 @@ export function EnquireModal({
       quantity: quantity.trim() || undefined,
       urgency,
       details: details.trim(),
+      fileName: attachedFile?.name,
+      fileSize: attachedFile?.formattedSize,
+      fileData: attachedFile?.dataUrl,
     });
   };
 
@@ -157,6 +237,10 @@ export function EnquireModal({
     setPhone("");
     setQuantity("");
     setDetails("");
+    setAttachedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
     onClose();
   };
 
@@ -242,6 +326,12 @@ export function EnquireModal({
               <p className="text-[11px] text-stone-500 pt-1">
                 Category: <strong>{submittedData.category}</strong>
               </p>
+              {submittedData.fileName && (
+                <div className="flex items-center gap-2 pt-1 text-xs text-amber-800 bg-amber-50/80 px-2.5 py-1.5 rounded-lg border border-amber-200/60">
+                  <Paperclip className="size-3.5 text-[#c56718] shrink-0" />
+                  <span className="truncate">Attached Document: <strong>{submittedData.fileName}</strong></span>
+                </div>
+              )}
             </div>
 
             {/* WhatsApp Priority Action */}
@@ -257,7 +347,9 @@ export function EnquireModal({
               </div>
               <a
                 href={`https://wa.me/919512365582?text=${encodeURIComponent(
-                  `Hello Volamp Supply Desk, I have submitted project enquiry *${submittedData.enquiryNumber}* for *${submittedData.category}*. Please review and share formal quotation.`
+                  `Hello Volamp Supply Desk, I have submitted project enquiry *${submittedData.enquiryNumber}* for *${submittedData.category}*${
+                    submittedData.fileName ? ` with attached document *${submittedData.fileName}*` : ""
+                  }. Please review and share formal quotation.`
                 )}`}
                 target="_blank"
                 rel="noreferrer"
@@ -297,7 +389,7 @@ export function EnquireModal({
             <div className="flex items-center justify-between p-3 rounded-xl bg-[#fff8f0] border border-[#fed7aa] text-xs text-[#7c2d12]">
               <div className="flex items-center gap-2">
                 <Sparkles className="size-4 text-[#c56718] shrink-0" />
-                <span>Direct Mill & Distributor Pricing · Fast Technical Spec Verification</span>
+                <span>Direct Plant & Distributor Pricing · Fast Technical Spec Verification</span>
               </div>
               <span className="hidden sm:inline-block text-[11px] font-semibold text-[#c56718] bg-white px-2 py-0.5 rounded border border-[#fed7aa]">
                 24h Response
@@ -489,6 +581,89 @@ export function EnquireModal({
                   className="w-full px-3 py-2 text-xs bg-white text-stone-900 border border-stone-300 rounded-lg focus:border-[#c56718] focus:ring-1 focus:ring-[#c56718] focus:outline-none transition-all resize-y"
                 />
               </div>
+            </div>
+
+            {/* Section 3: Attach Specification / BOQ / PO Document */}
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center justify-between pb-1 border-b border-stone-200">
+                <div className="flex items-center gap-2">
+                  <Paperclip className="size-4 text-[#ef7d19]" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-stone-700">
+                    3. Attach Specification, BOQ or Purchase Order (Optional)
+                  </h4>
+                </div>
+                <span className="text-[11px] text-stone-500 font-medium">Max 10MB</span>
+              </div>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.xlsx,.xls,.csv,.doc,.docx,.png,.jpg,.jpeg"
+                onChange={handleFileChange}
+                className="hidden"
+                id="enquire-file-upload"
+              />
+
+              {!attachedFile ? (
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDraggingFile(true);
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    setIsDraggingFile(false);
+                  }}
+                  onDrop={handleFileDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all ${
+                    isDraggingFile
+                      ? "border-[#c56718] bg-[#fff8f0]"
+                      : "border-stone-300 hover:border-[#c56718] hover:bg-stone-50/75 bg-white"
+                  }`}
+                >
+                  <div className="flex flex-col items-center justify-center gap-1.5">
+                    <div className="p-2 rounded-full bg-amber-50 text-[#c56718] border border-amber-200/80">
+                      <UploadCloud className="size-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-stone-800">
+                        Click to upload or drag & drop files here
+                      </p>
+                      <p className="text-[11px] text-stone-500 mt-0.5">
+                        Supports PDF, Excel (.xlsx, .csv), Word (.docx), Technical Drawings & Images
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50/70 border border-amber-200 transition-all">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="p-2 rounded-lg bg-[#c56718] text-white shrink-0">
+                      <FileText className="size-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-stone-900 truncate">
+                        {attachedFile.name}
+                      </p>
+                      <p className="text-[11px] text-stone-500">
+                        {attachedFile.formattedSize} · Document ready for technical evaluation
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveFile();
+                    }}
+                    className="p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors ml-2 cursor-pointer"
+                    title="Remove file"
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Trust Footnote */}

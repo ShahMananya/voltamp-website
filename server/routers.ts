@@ -47,6 +47,7 @@ import {
   getCareerApplications,
   getCareerApplicationById,
 } from "./db";
+import { parseVoiceOrderText } from "./services/voiceOrderParser";
 import { generateVolaResponse } from "./volaBrain";
 import {
   queryProducts,
@@ -1172,6 +1173,17 @@ export const appRouter = router({
         }
         return { success: true as const, order: updated };
       }),
+
+    parseVoice: publicProcedure
+      .input(
+        z.object({
+          transcript: z.string().trim().min(1, "Please provide voice transcript"),
+          language: z.enum(["en-IN", "hi-IN", "gu-IN", "auto"]).optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return parseVoiceOrderText(input.transcript, input.language);
+      }),
   }),
 
   tracking: router({
@@ -1260,10 +1272,20 @@ export const appRouter = router({
           quantity: z.string().trim().optional(),
           urgency: z.string().trim().optional(),
           details: z.string().trim().min(5, "Please share some details about your requirement"),
+          fileName: z.string().optional(),
+          fileSize: z.string().optional(),
+          fileData: z.string().optional(),
         })
       )
       .mutation(async ({ input }) => {
-        const result = await createEnquiry(input);
+        const enrichedDetails = input.fileName
+          ? `${input.details}\n\n[ATTACHED SPECIFICATION / BOQ]: ${input.fileName} (${input.fileSize || "Uploaded"})`
+          : input.details;
+
+        const result = await createEnquiry({
+          ...input,
+          details: enrichedDetails,
+        });
         return {
           success: true as const,
           enquiryNumber: result.enquiryNumber,
