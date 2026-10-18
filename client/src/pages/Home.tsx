@@ -77,7 +77,7 @@ const calculatorTree = CATEGORIES.map((category) => ({
   })),
 }));
 
-function BrandMark() { return <div className="brand-mark bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-[#ebd7c7] shadow-xs flex items-center justify-center" aria-label="VOLAMP home"><img src="/volamp-logo.png" alt="VOLAMP Powering Growth" className="h-7 sm:h-8 w-auto object-contain" /><span className="sr-only">VOLAMP Powering Growth</span></div>; }
+function BrandMark() { return <div className="brand-mark bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-[#ebd7c7] shadow-xs flex items-center justify-center transition-transform hover:scale-[1.02]" aria-label="VOLAMP home"><img src="/volamp-logo.png?v=3" alt="VOLAMP Powering Growth" className="h-8 sm:h-9 w-auto object-contain" /><span className="sr-only">VOLAMP Powering Growth</span></div>; }
 function ProductIllustration({ product }: { product: Product }) { const Icon = product.icon; return <div className={`product-art art-${product.accent}`}><div className="wire-orbit" /><Icon className="relative z-10 size-12 stroke-[1.25]" /><span className="product-art-code">{product.category.slice(0, 3).toUpperCase()}</span></div>; }
 
 export default function Home() {
@@ -189,6 +189,7 @@ export default function Home() {
       {/* 1. Full-bleed Background Facility Video covering Header and Hero */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
         <video
+          key="hero-video-1536-v5"
           autoPlay
           loop
           muted={heroVideoMuted}
@@ -196,8 +197,9 @@ export default function Home() {
           preload="auto"
           className="w-full h-full object-cover object-center"
         >
-          <source src="/videos/volamp-operations-hero.mp4" type="video/mp4" />
-          <source src="/videos/volamp-reel.mp4" type="video/mp4" />
+          <source src="/videos/volamp-operations-hero.mp4?v=5" type="video/mp4" />
+          <source src="/videos/IMG_1536.mp4?v=5" type="video/mp4" />
+          <source src="/videos/IMG_1536.MOV" type="video/quicktime" />
         </video>
         {/* Crisp cinematic gradient overlay - keeps video vibrant while ensuring text legibility */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70 z-1" />
@@ -357,6 +359,15 @@ export default function Home() {
             >
               <Phone className="size-4" />
             </a>
+
+            <button
+              onClick={openCalculator}
+              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+              title="Cable Sizing & Wattage Calculator"
+              aria-label="Cable Calculator"
+            >
+              <Calculator className="size-4" />
+            </button>
 
             <button
               onClick={() => handleQuote()}

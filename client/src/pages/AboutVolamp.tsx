@@ -368,7 +368,7 @@ function HeroTeamPortrait({ onShowHq }: { onShowHq: (e: React.MouseEvent) => voi
 function BrandMark() {
   return (
     <div className="about-brand" aria-label="VOLAMP home">
-      <img src="/volamp-logo.png" alt="VOLAMP Powering Growth" />
+      <img src="/volamp-logo.png?v=3" alt="VOLAMP Powering Growth" />
     </div>
   );
 }

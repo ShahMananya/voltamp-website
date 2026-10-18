@@ -63,9 +63,9 @@ export default function UniversalHeader({
             <Link href="/" className="flex items-center group" aria-label="VOLAMP home">
               <div className="brand-mark bg-white px-2.5 py-1.5 rounded-lg border border-[#ebd7c7] shadow-xs group-hover:border-[#c56718] transition-all flex items-center justify-center">
                 <img
-                  src="/volamp-logo.png"
+                  src="/volamp-logo.png?v=3"
                   alt="VOLAMP Elektrikals - Powering Growth"
-                  className="h-7 sm:h-8 w-auto object-contain"
+                  className="h-8 sm:h-9 w-auto object-contain"
                 />
               </div>
             </Link>
