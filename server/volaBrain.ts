@@ -10,6 +10,41 @@ import {
   getProductHaystack,
 } from "./services/productService";
 import type { Product } from "../drizzle/schema";
+import {
+  matchVolaFaq,
+  ESCALATION_STANDARD_RESPONSE,
+  ESCALATION_SHORT_RESPONSE,
+} from "./volaFaqBank";
+
+export function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Normalizes user queries by stripping corrupted separators and fixing common typos
+ * in cable, electrical, and brand terminology.
+ */
+export function normalizeTypoQuery(raw: string): string {
+  let text = raw.toLowerCase();
+
+  // Strip accidental punctuation characters inside words (e.g. cabk=le, c=able, cab-le)
+  text = text.replace(/([a-z0-9])[\=\_\+\*\#\$\@\^\&]+([a-z0-9])/gi, "$1$2");
+
+  // Common cable typos
+  text = text.replace(/\b(?:cabb?k?le?s?|cble?s?|cabels?|cabl|cabkle)\b/gi, "cable");
+  text = text.replace(/\b(?:sollar|solaar|solor|soler)\b/gi, "solar");
+  text = text.replace(/\b(?:polycap|polycabb|polycbb)\b/gi, "polycab");
+  text = text.replace(/\b(?:finolx|finolexx|finnolex)\b/gi, "finolex");
+  text = text.replace(/\b(?:havel|havels|havell)\b/gi, "havells");
+  text = text.replace(/\b(?:almunium|aliminium|alluminium|alumin)\b/gi, "aluminium");
+  text = text.replace(/\b(?:copr|coppr|cooper)\b/gi, "copper");
+  text = text.replace(/\b(?:swg|swich|swichgear|switchger)\b/gi, "switchgear");
+  text = text.replace(/\b(?:glandd|glands)\b/gi, "gland");
+  text = text.replace(/\b(?:lugg|luggs|lugs)\b/gi, "lug");
+  text = text.replace(/\b(?:conduitt|conduits)\b/gi, "conduit");
+
+  return text;
+}
 
 export type ChatMessage = {
   role: "system" | "user" | "assistant";
@@ -226,7 +261,8 @@ function formatProductCard(p: any): string {
  * Intelligent parser to decompose user queries into electrical product search dimensions.
  */
 export function parseProductQuery(q: string) {
-  const lower = q.toLowerCase();
+  const normalized = normalizeTypoQuery(q);
+  const lower = normalized.toLowerCase();
   const idMatch = lower.match(/\b(cab-\d+|swg-\d+|sol-\d+|ear-\d+|lug-\d+|gld-\d+|sku-[\w-]+)\b/i);
   const sizeMatch = lower.match(/\b(\d+(?:\.\d+)?)\s*(?:sqmm|sq\s*mm|sq|mm)\b/i);
   const coreMatch = lower.match(/\b(\d+(?:\.\d+)?)\s*(?:core|cores|c)\b/i);
@@ -269,12 +305,15 @@ export function parseProductQuery(q: string) {
     "rate", "rates", "discount", "discounts", "of", "for", "in", "with", "and", "please", "do", "you",
     "have", "i", "need", "want", "to", "buy", "order", "can", "how", "much", "find", "search",
     "looking", "about", "any", "available", "product", "products", "item", "items", "details",
-    "recommend", "suggest", "which", "are", "there", "list", "options", "give", "send"
+    "recommend", "suggest", "which", "are", "there", "list", "options", "give", "send",
+    "vola", "voltamp", "volamp", "hey", "hi", "hello", "charge", "charges", "charged", "let", "know",
+    "cabk", "le", "whats", "bhav", "kya", "yeh", "hai"
   ]);
+  const technicalValid2Chars = new Set(["al", "cu", "1c", "2c", "3c", "4c", "xl", "lt", "ht"]);
   const tokens = lower
     .replace(/[\?\,\!\:\;\(\)\"\'\*\#\$\@\%\^\&\=\+]/g, " ")
     .split(/\s+/)
-    .filter((t) => t.length >= 2 && !stopWords.has(t));
+    .filter((t) => (t.length >= 3 || technicalValid2Chars.has(t)) && !stopWords.has(t));
 
   return {
     productId: idMatch ? idMatch[1].toLowerCase() : null,
@@ -295,7 +334,8 @@ export function parseProductQuery(q: string) {
  */
 function findMatchingProducts(query: string, limit = 4): Product[] {
   const all = getCachedProducts();
-  const parsed = parseProductQuery(query);
+  const normalized = normalizeTypoQuery(query);
+  const parsed = parseProductQuery(normalized);
 
   if (parsed.productId) {
     const exact = all.find(
@@ -314,9 +354,12 @@ function findMatchingProducts(query: string, limit = 4): Product[] {
     if (parsed.size) {
       const pSize = (p.size || "").toLowerCase();
       const pName = p.name.toLowerCase();
-      if (pSize.includes(`${parsed.size} sqmm`) || pName.includes(`${parsed.size} sqmm`)) score += 300;
-      else if (pSize.includes(parsed.size) || pName.includes(parsed.size)) score += 100;
-      else score -= 200;
+      const sqmmMatch = new RegExp(`\\b${escapeRegExp(parsed.size)}\\s*(?:sqmm|sq\\s*mm|sq)\\b`, "i");
+      if (sqmmMatch.test(pSize) || sqmmMatch.test(pName)) {
+        score += 300;
+      } else {
+        score -= 2000;
+      }
     }
 
     if (parsed.cores) {
@@ -368,7 +411,8 @@ function findMatchingProducts(query: string, limit = 4): Product[] {
     }
 
     for (const token of parsed.tokens) {
-      if (haystack.includes(token)) score += 20;
+      const tokenRegex = new RegExp(`\\b${escapeRegExp(token)}\\b`, "i");
+      if (tokenRegex.test(haystack)) score += 40;
     }
 
     return { product: p, score };
@@ -382,26 +426,27 @@ function findMatchingProducts(query: string, limit = 4): Product[] {
  * Handle Pricing, Cost, Contractor Discounts, and GST Inquiries.
  */
 function handlePricingCostsAndDiscounts(query: string): string | null {
-  const lower = query.toLowerCase().trim();
+  const normalized = normalizeTypoQuery(query);
+  const lower = normalized.toLowerCase().trim();
 
   const isPricingOrDiscountQuery =
-    /\b(?:prices?|costs?|discounts?|rates?|pricing|bhav|discount\s*slabs?|contractor\s*discounts?|wholesale|margins?|taxes|tax|gst\s*rates?|payment\s*terms?|moqs?|drum\s*costs?)\b/i.test(lower);
+    /\b(?:prices?|costs?|discounts?|rates?|pricing|charge|charges|how\s*much|bhav|discount\s*slabs?|contractor\s*discounts?|wholesale|margins?|taxes|tax|gst\s*rates?|payment\s*terms?|moqs?|drum\s*costs?|quotations?|rfqs?)\b/i.test(lower);
 
   if (!isPricingOrDiscountQuery) return null;
 
   // Check if they are asking generally about discounts/pricing policy
   const isGeneralDiscountQuery =
     /\b(?:contractor\s*discounts?|wholesale\s*rates?|discount\s*slabs?|payment\s*terms?)\b/i.test(lower) ||
-    /\b(?:what|how\s*much|tell\s*me|explain|give|offer|share|any)\b.*\b(?:discounts?|pricing|rates?|slabs?|terms?|structure)\b/i.test(lower) ||
+    /\b(?:what|tell\s*me|explain|give|offer|share|any)\b.*\b(?:discounts?|slabs?|terms?|structure)\b/i.test(lower) ||
     /^(?:discounts?|prices?|pricing|costs?)$/i.test(lower.replace(/[?.!]/g, "").trim()) ||
-    (/\b(?:discount|pricing|rates?|slabs?)\b/i.test(lower) && /\b(?:wires?|cables?|switchgear)\b/i.test(lower) && !/\b\d+\s*(?:sqmm|sq\s*mm|core|a|amp)\b/i.test(lower));
+    (/\b(?:discount|pricing|rates?|slabs?)\b/i.test(lower) && /\b(?:wires?|cables?|switchgear)\b/i.test(lower) && !/\b(?:\d+\s*(?:sqmm|sq\s*mm|core|a|amp)|solar|polycab|kei|finolex|schneider|legrand|gland|lug)\b/i.test(lower));
 
-  // Check if specific product tokens exist (e.g. 4 sqmm, 2.5, mcb, mccb, 63a, 10mm, etc.)
+  // Check if specific product tokens exist (e.g. 4 sqmm, 2.5, mcb, mccb, 63a, 10mm, solar, cable, etc.)
   const hasSpecificProduct =
-    /\b(?:\d+(?:\.\d+)?\s*(?:sqmm|sq\s*mm|core|a|amp|mm|kva|kw|hp)|copper|aluminium|polycab|kei|finolex|schneider|legrand|mcb|mccb|rccb|gland|lug|conduit|earthing|solar)\b/i.test(lower);
+    /\b(?:\d+(?:\.\d+)?\s*(?:sqmm|sq\s*mm|core|c\b|a\b|amp|mm|kva|kw|hp)|copper|aluminium|polycab|kei|finolex|schneider|legrand|mcb|mccb|rccb|gland|lug|conduit|earthing|solar|cable|cables|wire|wires|pipe|switchgear|breaker|terminal)\b/i.test(lower);
 
   if (hasSpecificProduct && !isGeneralDiscountQuery) {
-    const matched = findMatchingProducts(lower, 4);
+    const matched = findMatchingProducts(normalized, 4);
     if (matched.length > 0) {
       const productCards = matched.map(formatProductCard).join("\n\n");
       const cleanLabel = query.trim();
@@ -413,9 +458,15 @@ function handlePricingCostsAndDiscounts(query: string): string | null {
         `### ⚡ Commercial Pricing Architecture at Volamp:\n` +
         `• **Contractor Discount**: Direct **40% OFF** applied from published manufacturer list prices across our catalog (Polycab, KEI, Finolex, Schneider Electric, Legrand, LK), exactly as listed on our website.\n` +
         `• **Statutory Tax**: 18% GST (CGST 9% + SGST 9% in Gujarat; IGST 18% interstate). Full GST input tax credit invoice issued on dispatch.\n` +
-        `• **Packaging & Freight**: Coils (90m/180m/300m) or Continuous Heavy Wooden Drums (500m/1000m). Dispatched from our **Ahmedabad Fulfillment Hub within 24–48 hours** under Shipping Policy VEP/LOG/001.\n` +
-        `• **Payment & Credit**: NEFT/RTGS, instant WhatsApp digital invoice, and **30-day corporate credit** for approved POs with active GSTIN.\n\n` +
+        `• **Dispatch Cutoff & Logistics**: Orders placed between 8:00 AM and 5:30 PM are considered for delivery/dispatch as per availability and logistics feasibility. For available stock, B2B delivery generally takes around 1–3 days. Customer pickup can also be arranged at our separate warehouse.\n` +
+        `• **Payment & Credit**: Direct NEFT/RTGS, advance payment, and approved corporate credit for verified POs.\n\n` +
         `**Want to lock in this stock?** Tell me your required length/quantity, customer name, contact phone number, and delivery city, and I'll generate your official **Volamp Order Reference ID** right now!`
+      );
+    } else {
+      // Mandatory AI Rule: Never invent a price or commitment. If not in DB, escalate to sales team.
+      return (
+        `Let me have our sales team confirm that for you. I don't want to give you incorrect information.\n\n` +
+        `Please share your exact cable or product specifications, size, conductor material (copper/aluminium), quantity, and delivery location. Our sales team will verify current mill availability and provide the exact quotation.`
       );
     }
   }
@@ -985,6 +1036,91 @@ function handleProductAndCatalogQuery(query: string): string | null {
     );
   }
 
+  // 6. SOLAR CABLE & ACCESSORIES
+  if (/\b(?:solar|pv\s*cables?|solar\s*cables?|solar\s*panels?)\b/i.test(lower)) {
+    const prods = queryProducts({ category: "Solar", limit: 4 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### ☀️ Volamp Solar Electrical & DC Cable Portfolio (${prods.total} Products in Database)\n\n` +
+      `We distribute 1500V DC Solar PV Cables (TÜV / EN 50618 certified, electron-beam crosslinked halogen-free XLPO, tinned copper) with flat **40% OFF** contractor pricing:\n\n` +
+      `• **PV1-F & H1Z2Z2-K Solar DC Cables**: 1.5 sqmm, 2.5 sqmm, 4 sqmm, 6 sqmm, 10 sqmm, 16 sqmm.\n` +
+      `• **MC4 Connectors & Branch Splitters**: IP68 waterproof rated for outdoor arrays.\n` +
+      `• **Solar PV Earthing Kits & Chemical Electrodes**: High dissipation for utility and rooftop solar.\n\n` +
+      `[👉 Browse Complete Solar Catalog](/category/solar)\n\n` +
+      `**Live Pricing & Fast-Moving Solar Cables in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `Tell me what gauge or length you need, and I'll generate your official project quote or dispatch right away!`
+    );
+  }
+
+  // 7. CABLE GLANDS
+  if (/\b(?:glands?|cable\s*glands?|brass\s*glands?|double\s*compression)\b/i.test(lower)) {
+    const prods = queryProducts({ category: "Glands", limit: 4 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### 🔩 Volamp Industrial Cable Glands Portfolio (${prods.total} Products in Database)\n\n` +
+      `We supply certified Single & Double Compression Brass Glands with flat **40% OFF** contractor pricing:\n\n` +
+      `• **Double Compression MD Glands (IP66/IP68)**: For heavy armoured cables.\n` +
+      `• **Single Compression Glands**: For flexible control cables and unarmoured leads.\n` +
+      `• **Flameproof Ex d IIC Glands**: For chemical plants, refineries, and hazardous areas.\n\n` +
+      `[👉 Browse Cable Glands Catalog](/category/glands)\n\n` +
+      `**Featured Glands in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `Tell me your cable outer diameter or armour type, and I'll recommend the exact gland size!`
+    );
+  }
+
+  // 8. CABLE LUGS & TERMINALS
+  if (/\b(?:lugs?|terminals?|cable\s*lugs?|crimping\s*lugs?)\b/i.test(lower)) {
+    const prods = queryProducts({ category: "Lugs", limit: 4 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### 🧲 Volamp Heavy-Duty Cable Lugs & Terminals (${prods.total} Products in Database)\n\n` +
+      `We supply pure electrolytic tinned copper & aluminium compression lugs with flat **40% OFF** contractor pricing:\n\n` +
+      `• **Tubular Barrel Lugs (DIN 46235)**: Heavy-duty long & short barrel.\n` +
+      `• **Ring & Pin Terminals**: For switchgear and control wiring.\n` +
+      `• **Bimetallic Friction-Welded Lugs**: For connecting aluminium cable to copper busbars.\n\n` +
+      `[👉 Browse Lugs & Terminals Catalog](/category/lugs)\n\n` +
+      `**Featured Lugs in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `Tell me your cable cross-section (sqmm) and stud size (M6 to M20), and I'll pull the exact lug reference!`
+    );
+  }
+
+  // 9. EARTHING & GROUNDING
+  if (/\b(?:earthing|grounding|earth\s*rods?|chemical\s*electrodes?)\b/i.test(lower)) {
+    const prods = queryProducts({ category: "Earthing Wires", limit: 4 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### 🌍 Volamp Earthing & Grounding Systems (${prods.total} Products in Database)\n\n` +
+      `We supply certified earthing materials conforming to **IS 3043 / IEEE 80** with flat **40% OFF** contractor pricing:\n\n` +
+      `• **Copper-Bonded Steel Earth Rods**: Molecularly bonded (> 250 microns copper).\n` +
+      `• **Pipe-in-Pipe Chemical Electrodes**: Maintenance-free with crystalline backfill compound.\n` +
+      `• **Hot-Dip Galvanized (GI) & Copper Strips**: For substation mesh and structural grounding.\n\n` +
+      `[👉 Browse Earthing Systems Catalog](/category/earthing-material)\n\n` +
+      `**Featured Earthing Products in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `Tell me your soil resistivity or fault current rating for a tailored proposal!`
+    );
+  }
+
+  // 10. CONDUITS & PIPING
+  if (/\b(?:conduits?|pvc\s*pipes?|casing\s*(?:&|and)?\s*capping)\b/i.test(lower)) {
+    const prods = queryProducts({ category: "Conduit", limit: 4 });
+    const productList = prods.products.map(formatProductCard).join("\n\n");
+    return (
+      `### 🧱 Volamp Rigid Conduit & Containment (${prods.total} Products in Database)\n\n` +
+      `We distribute ISI Marked rigid uPVC conduits conforming to **IS 9537 (Part 3)** with flat **40% OFF** contractor pricing:\n\n` +
+      `• **Heavy Mechanical Stress (HMS)**: For concrete slab casting and exposed industrial runs.\n` +
+      `• **Medium Mechanical Stress (MMS)**: For standard commercial concealed wiring.\n` +
+      `• **Casing & Capping & Corrugated Flexible Pipes**: For surface raceways and machine routing.\n\n` +
+      `[👉 Browse Conduit & Containment Catalog](/category/conduit)\n\n` +
+      `**Featured Conduits in Stock:**\n\n` +
+      `${productList}\n\n` +
+      `Tell me your pipe diameter (19mm to 50mm) and stress grade!`
+    );
+  }
+
   return null;
 }
 
@@ -1081,17 +1217,79 @@ function handleGeneralKnowledgeAndChitChat(query: string): string | null {
 }
 
 /**
- * Fallback synthesizer that analyzes open-ended questions with intense, sharp engineering authority.
+ * Fallback synthesizer that analyzes open-ended questions with universal world knowledge and sharp engineering authority.
  */
-function synthesizeOpenEndedResponse(query: string): string {
+async function synthesizeOpenEndedResponse(query: string): Promise<string> {
   const trimmed = query.trim();
+
+  // Try extracting the central subject
+  let topic = trimmed
+    .replace(/^(what\s+is|what\s+are|who\s+is|who\s+was|tell\s+me\s+about|explain|how\s+does|how\s+do|can\s+you\s+explain|give\s+me\s+info\s+on)\s+/i, "")
+    .replace(/[?!.]+$/, "")
+    .trim();
+
+  if (!topic || topic.length < 2) topic = trimmed;
+
+  // 1. Try real-time encyclopedic lookup (Wikipedia REST API)
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topic.replace(/\s+/g, "_"))}`,
+      {
+        signal: controller.signal,
+        headers: { "User-Agent": "VolampAssistant/2.0 (sales@volampelektrikals.com)" },
+      }
+    );
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = (await res.json()) as any;
+      if (data.extract && data.extract.length > 30) {
+        return (
+          `### 🌐 **${data.title}**\n\n` +
+          `${data.extract}\n\n` +
+          (data.description ? `*(${data.description})*\n\n` : "") +
+          `---\n` +
+          `*Ask VOLA anything in the world — from world history and science to technical cable sizing & direct factory procurement!* ⚡`
+        );
+      }
+    }
+  } catch {
+    // Network fallback
+  }
+
+  // 2. Try DuckDuckGo Instant Answer API
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    const res = await fetch(
+      `https://api.duckduckgo.com/?q=${encodeURIComponent(trimmed)}&format=json&no_html=1&skip_disambig=1`,
+      { signal: controller.signal }
+    );
+    clearTimeout(timeout);
+
+    if (res.ok) {
+      const data = (await res.json()) as any;
+      const answer = data.AbstractText || data.Answer || data.RelatedTopics?.[0]?.Text;
+      if (answer && answer.length > 20) {
+        return (
+          `### 💡 **${data.Heading || topic}**\n\n` +
+          `${answer}\n\n` +
+          `---\n` +
+          `*Ask VOLA any question in the world — from universal science & technology to electrical supply calculations!* ⚡`
+        );
+      }
+    }
+  } catch {
+    // Network fallback
+  }
 
   return (
     `### ⚡ Regarding: *"${trimmed}"*\n\n` +
-    `In electrical engineering and industrial infrastructure, precision and safety are non-negotiable.\n\n` +
-    `Whether you're specifying conductor ampacity, insulation dielectric ratings (XLPE vs PVC), circuit protection breaking capacity (6kA to 50kA), or project procurement schedules, every variable matters to prevent thermal overload and costly downtime.\n\n` +
-    `At **Volamp Elektrikals**, we bring over **60 years and 4 generations** of industrial electrical experience from our Ahmedabad headquarters to deliver factory-direct, certified materials across all 10 business segments.\n\n` +
-    `Tell me your exact load, project parameters, or what you need to order, and I'll give you the technical sizing and direct contractor pricing right away!`
+    `Whether exploring general knowledge, universal science, coding, or commercial infrastructure, precision is key.\n\n` +
+    `At **Volamp Elektrikals**, our technical intelligence covers broad engineering systems as well as factory-direct procurement across all 8 electrical divisions.\n\n` +
+    `Ask me any question in the world, or request electrical sizing, contractor discounts, and project BOM calculations!`
   );
 }
 
@@ -1147,14 +1345,22 @@ export async function generateVolaResponse(
     }
   }
 
+  // 1.5. FAQS, ANSWER BANK & ESCALATION RULES (Volamp AI Sales Call Agent Bank)
+  const faqMatch = matchVolaFaq(lastUserMsg);
+  if (faqMatch) {
+    return faqMatch.response;
+  }
+
   // 2. ORDER TAKING & DIRECT PLACEMENT
-  const orderIntent =
-    /\b(?:place\s*(?:an\s*)?order|want\s+to\s+order|buy|purchase|chahiye|need\s+to\s+order|book\s*(?:an\s*)?order|order\s+karna)\b/i.test(
+  const isQuestionAboutBuying = /\b(?:why|how|can\s+i|where)\s+(?:should\s+i\s+)?(?:buy|purchase)\b/i.test(lower);
+  const orderIntent = !isQuestionAboutBuying && (
+    /\b(?:place\s*(?:an\s*)?order|want\s+to\s+(?:order|buy|purchase)|need\s+to\s+(?:order|buy|purchase)|book\s*(?:an\s*)?order|order\s+karna)\b/i.test(
       lower
     ) ||
     /(\d+)\s*(?:m|meter|meters|metre|metres|coils?|rolls?|drums?)\s+(?:of\s+)?([a-zA-Z0-9\s\.\-]+(?:cable|wire|sqmm))/i.test(
       lower
-    );
+    )
+  );
 
   if (orderIntent) {
     const details = extractOrderDetails(messages);
@@ -1223,7 +1429,10 @@ export async function generateVolaResponse(
     /what('?s|\s+is)\s+up\b/i.test(lower) ||
     /kaisa\s*hai\b/i.test(lower);
 
-  if (isGreeting && !lower.includes("order") && !lower.includes("price") && !lower.includes("buy")) {
+  const hasBusinessOrTechnicalIntent =
+    /\b(?:cables?|wires?|solar|switchgear|mcb|mccb|rccb|lugs?|glands?|conduits?|pipes?|earthing|electrodes?|charges?|how\s*much|prices?|pricing|costs?|rates?|bhav|discounts?|orders?|buy|purchase|stocks?|catalog|products?|items?|sqmm|amps?|volts?|gauge|meters?|drums?|quotes?|rfqs?|sizing|calculate|specs?|specification|brand|polycab|kei|finolex|schneider|legrand|lk)\b/i.test(lower);
+
+  if (isGreeting && !hasBusinessOrTechnicalIntent) {
     if (/kem\s*cho/i.test(lower)) {
       return (
         "Majama! 😊 Kem cho tame? Hu chu **Vola**, Volamp Elektrikals Ahmedabad supply desk thi! ⚡\n\n" +
@@ -1249,13 +1458,22 @@ export async function generateVolaResponse(
     return greetings[Math.floor(Math.random() * greetings.length)];
   }
 
-  // 4. PRODUCT CATALOG & SPECIFICATION INTELLIGENCE (3,385+ items across 8 categories)
+  // 4. PRICING, COSTS, CONTRACTOR DISCOUNTS & CHARGES (run first if pricing intent)
+  const isPricingIntent = /\b(?:prices?|costs?|rates?|pricing|charge|charges|how\s*much|bhav|discounts?|quotations?|rfqs?)\b/i.test(lower);
+  if (isPricingIntent) {
+    const pricingResponse = handlePricingCostsAndDiscounts(lastUserMsg);
+    if (pricingResponse) {
+      return pricingResponse;
+    }
+  }
+
+  // 5. PRODUCT CATALOG & SPECIFICATION INTELLIGENCE (3,385+ items across 8 categories)
   const productResponse = handleProductAndCatalogQuery(lastUserMsg);
   if (productResponse) {
     return productResponse;
   }
 
-  // 5. PRICING, COSTS, CONTRACTOR DISCOUNTS & TAXES
+  // 6. PRICING FALLBACK (if not caught earlier)
   const pricingResponse = handlePricingCostsAndDiscounts(lastUserMsg);
   if (pricingResponse) {
     return pricingResponse;
@@ -1297,6 +1515,6 @@ export async function generateVolaResponse(
     return generalResponse;
   }
 
-  // 12. HIGH-VOLTAGE OPEN-ENDED TOPIC SYNTHESIZER
-  return synthesizeOpenEndedResponse(lastUserMsg);
+  // 12. HIGH-VOLTAGE UNIVERSAL OPEN-ENDED TOPIC SYNTHESIZER
+  return await synthesizeOpenEndedResponse(lastUserMsg);
 }

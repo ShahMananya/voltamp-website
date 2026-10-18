@@ -165,7 +165,7 @@ export default function EnquirePage() {
               Tell us what you need to source.
             </h1>
             <p className="mt-3 text-[#5d4a4b] text-sm sm:text-base max-w-2xl leading-relaxed">
-              Get direct manufacturer pricing, verified mill specifications, and prompt technical quotations for industrial, EPC, and export projects.
+              Get direct manufacturer pricing, verified plant specifications, and prompt technical quotations for industrial, EPC, and export projects.
             </p>
           </div>
 
@@ -252,7 +252,7 @@ export default function EnquirePage() {
                 <div className="space-y-3 text-xs text-stone-300">
                   <div className="flex items-start gap-2.5">
                     <ShieldCheck className="size-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span><strong>100% Genuine Certified Goods:</strong> Direct from Polycab, Finolex, KEI, Schneider, Havells & Volamp certified mills.</span>
+                    <span><strong>100% Genuine Certified Goods:</strong> Direct from Polycab, Finolex, KEI, Schneider, Havells & Volamp certified plants.</span>
                   </div>
                   <div className="flex items-start gap-2.5">
                     <FileCheck2 className="size-4 text-amber-400 shrink-0 mt-0.5" />

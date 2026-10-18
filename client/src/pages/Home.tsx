@@ -15,23 +15,18 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useCart } from "@/contexts/CartContext";
 import { AIChatBox, type Message } from "@/components/AIChatBox";
 import NewsletterSection from "@/components/home/NewsletterSection";
+import MetalPriceTrendFooterWidget from "@/components/metal/MetalPriceTrendFooterWidget";
 import ContractorSizingEstimator from "@/components/home/ContractorSizingEstimator";
 import FacilityVideoModal from "@/components/video/FacilityVideoModal";
 import CableCalculatorModal from "@/components/calculator/CableCalculatorModal";
 import LiveMetalPricesModal from "@/components/metal/LiveMetalPricesModal";
-import { CategoryCard3D } from "@/components/home/CategoryCard3D";
-import { SolarSystemCategories } from "@/components/home/SolarSystemCategories";
-import { SpatialWonderlandCategories } from "@/components/home/SpatialWonderlandCategories";
-import { VirtualShowroomLab } from "@/components/home/VirtualShowroomLab";
-import { VolampGalaxySpace } from "@/components/home/VolampGalaxySpace";
-import { Product3DViewer } from "@/components/ar/Product3DViewer";
 import ThemeToggle from "@/components/ThemeToggle";
 import SeoHead from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { ArrowRight, ArrowUpRight, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Layers, Linkedin, Lock, Maximize2, Menu, MessageCircle, MessageSquare, PackageSearch, Phone, Play, PlugZap, Quote, Search, Shield, ShieldCheck, ShoppingCart, Sparkles, TrendingDown, TrendingUp, Truck, UserRound, Volume2, VolumeX, X, Youtube, Zap } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Boxes, Briefcase, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Layers, Linkedin, Lock, LogIn, Maximize2, Menu, MessageCircle, MessageSquare, PackageSearch, Phone, Play, PlugZap, Quote, Search, Shield, ShieldCheck, ShoppingCart, Sparkles, TrendingDown, TrendingUp, Truck, User, UserRound, Volume2, VolumeX, X, Youtube, Zap } from "lucide-react";
 import SocialMediaLinks from "@/components/layout/SocialMediaLinks";
 import { CATEGORIES, ICON_MAP } from "@/data/categories";
 
@@ -117,11 +112,7 @@ export default function Home() {
 
   const [creditOpen, setCreditOpen] = useState(false);
   const [videoModalOpen, setVideoModalOpen] = useState(false);
-  const [global3DMode, setGlobal3DMode] = useState(true);
-  const [galaxySpaceOpen, setGalaxySpaceOpen] = useState(false);
-  const [virtualShowroomLabOpen, setVirtualShowroomLabOpen] = useState(false);
-  const [virtualShowroomInitialCategory, setVirtualShowroomInitialCategory] = useState<string>("cables");
-  const [selectedARCategory, setSelectedARCategory] = useState<any | null>(null);
+
   const [quickOrderOpen, setQuickOrderOpen] = useState(false);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [trackOrderOpen, setTrackOrderOpen] = useState(() => previewSurface === "track");
@@ -292,69 +283,98 @@ export default function Home() {
 
       {/* 3. Main Transparent Navigation Header directly over the video (Cleveland Cable style) */}
       <header className="relative z-20 w-full border-b border-white/10">
-        <div className="market-container flex items-center justify-between py-3.5 gap-4">
+        <div className="market-container flex items-center justify-between py-3 gap-2 xl:gap-4 flex-nowrap">
           <a href="#top" className="shrink-0">
             <BrandMark />
           </a>
 
-          {/* Navigation links: PRODUCT RANGE, ABOUT, SEGMENTS, METAL PRICES */}
-          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
+          {/* Navigation links: PRODUCT RANGE, ABOUT, SEGMENTS, METAL PRICES, QUICK ORDER, CHECK STOCK / WORKSPACE */}
+          <nav className="hidden lg:flex items-center gap-2.5 xl:gap-4 2xl:gap-6 flex-nowrap shrink-0">
             <button
               onClick={() => {
                 setActiveMegaCategory(activeMegaCategory ? null : "WIRE CABLES");
               }}
-              className="text-white hover:text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
+              className="text-white hover:text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors whitespace-nowrap shrink-0"
             >
               <span>PRODUCT RANGE</span>
-              <ChevronDown className="size-3 text-red-500" />
+              <ChevronDown className="size-3 text-red-500 shrink-0" />
             </button>
             <button
               onClick={() => navigate("/about-volamp")}
-              className="text-white hover:text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
+              className="text-white hover:text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors whitespace-nowrap shrink-0"
             >
               <span>ABOUT</span>
-              <ChevronDown className="size-3 text-red-500" />
+              <ChevronDown className="size-3 text-red-500 shrink-0" />
             </button>
             <button
               onClick={() => navigate("/business-segments")}
-              className="text-white hover:text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
+              className="text-white hover:text-amber-400 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors whitespace-nowrap shrink-0"
             >
               <span>SEGMENTS</span>
-              <ChevronDown className="size-3 text-red-500" />
+              <ChevronDown className="size-3 text-red-500 shrink-0" />
             </button>
             <button
               onClick={() => setMetalPricesOpen(true)}
-              className="text-amber-400 hover:text-amber-300 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
+              className="text-amber-400 hover:text-amber-300 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors whitespace-nowrap shrink-0"
             >
               <span>METAL PRICES</span>
-              <ChevronDown className="size-3 text-red-500" />
+              <ChevronDown className="size-3 text-red-500 shrink-0" />
             </button>
             <button
               onClick={() => setQuickOrderOpen(true)}
-              className="text-emerald-400 hover:text-emerald-300 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors"
+              className="text-emerald-400 hover:text-emerald-300 font-bold text-xs uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-colors whitespace-nowrap shrink-0"
               title="Fast Voice & Multi-Product Quick Order"
             >
-              <Zap className="size-3 text-amber-400" />
+              <Zap className="size-3 text-amber-400 shrink-0" />
               <span>QUICK ORDER</span>
-              <ChevronDown className="size-3 text-red-500" />
+              <ChevronDown className="size-3 text-red-500 shrink-0" />
             </button>
+
+            {/* Show only after login: Workspace (for Employees) or Check Stock (for Customers) */}
+            {user && (
+              user.accountType === "employee" ? (
+                <a
+                  href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 border border-purple-500/50 px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs whitespace-nowrap shrink-0"
+                  title="Open Official VOLAMP Employee Workspace"
+                >
+                  <Briefcase className="size-3 text-purple-300 shrink-0" />
+                  <span>WORKSPACE</span>
+                  <ExternalLink className="size-2.5 opacity-70 shrink-0" />
+                </a>
+              ) : (
+                <a
+                  href="https://script.google.com/macros/s/AKfycby_LZjD_6KFK33CCaCrV4Xxgbav0HceiHg1YL0U1iVEnnHMHYbrdXIFhwRILa8VFuuV/exec"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs whitespace-nowrap shrink-0"
+                  title="Real-Time Factory & Warehouse Stock Availability"
+                >
+                  <Boxes className="size-3 text-cyan-300 shrink-0" />
+                  <span>CHECK STOCK</span>
+                  <ExternalLink className="size-2.5 opacity-70 shrink-0" />
+                </a>
+              )
+            )}
           </nav>
 
           {/* Right Header Action Icons matching Cleveland Cable */}
-          <div className="flex items-center gap-4 sm:gap-5">
+          <div className="flex items-center gap-2 sm:gap-3 xl:gap-4 shrink-0 flex-nowrap">
             <button
               onClick={openLanguagePicker}
-              className="flex items-center gap-1.5 text-xs text-white/90 hover:text-white font-semibold cursor-pointer group"
+              className="flex items-center gap-1 text-xs text-white/90 hover:text-white font-semibold cursor-pointer group whitespace-nowrap shrink-0"
               title={`Change language & translate site (Current: ${currentLanguageObj.name} · ${currentLanguageObj.nativeName})`}
             >
               <span>{currentLanguageObj.flag}</span>
-              <span className="hidden sm:inline uppercase">{currentLanguageObj.nativeName}</span>
-              <ChevronDown className="size-3 text-red-500 group-hover:translate-y-0.5 transition-transform" />
+              <span className="hidden sm:inline uppercase whitespace-nowrap">{currentLanguageObj.nativeName}</span>
+              <ChevronDown className="size-3 text-red-500 group-hover:translate-y-0.5 transition-transform shrink-0" />
             </button>
 
             <a
               href="tel:+919512365582"
-              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
               title="Call Central Supply Desk: 9512365582"
             >
               <Phone className="size-4" />
@@ -362,7 +382,7 @@ export default function Home() {
 
             <button
               onClick={openCalculator}
-              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
               title="Cable Sizing & Wattage Calculator"
               aria-label="Cable Calculator"
             >
@@ -371,7 +391,7 @@ export default function Home() {
 
             <button
               onClick={() => handleQuote()}
-              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
               title="Request Project Quote"
             >
               <FileText className="size-4" />
@@ -385,29 +405,41 @@ export default function Home() {
                   searchEl.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
               }}
-              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
               title="Search 3,385+ Catalog"
             >
               <Search className="size-4" />
             </button>
 
-            <button
-              onClick={() => {
-                if (user) {
-                  navigate(user.accountType === "employee" ? "/employee-portal" : "/portal");
-                } else {
-                  setAccountOpen(true);
-                }
-              }}
-              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer hidden sm:block"
-              title="Account / Portal"
-            >
-              <UserRound className="size-4" />
-            </button>
+            {user ? (
+              <button
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent("volamp:open-profile"));
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white transition-all cursor-pointer shadow-xs whitespace-nowrap shrink-0"
+                title="View & Edit Profile Details"
+              >
+                <div className="size-4.5 rounded-full bg-[#c56718] text-white flex items-center justify-center font-bold text-[9px] shadow-inner shrink-0">
+                  {(user.name || user.email || "V").charAt(0).toUpperCase()}
+                </div>
+                <span className="text-xs font-semibold max-w-[120px] truncate hidden sm:inline whitespace-nowrap">
+                  {user.name || user.email?.split("@")[0]}
+                </span>
+              </button>
+            ) : (
+              <button
+                onClick={() => setAccountOpen(true)}
+                className="flex items-center gap-1.5 text-xs text-white/90 hover:text-white font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-white/20 hover:bg-white/10 transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                title="Sign In / Register"
+              >
+                <LogIn className="size-3.5 text-amber-400 shrink-0" />
+                <span className="whitespace-nowrap">SIGN IN</span>
+              </button>
+            )}
 
             <button
               onClick={openCart}
-              className="relative p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer"
+              className="relative p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
               title="View Cart"
             >
               <ShoppingCart className="size-4" />
@@ -632,9 +664,52 @@ export default function Home() {
             <button onClick={() => { setMobileOpen(false); setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button>
             <button onClick={() => { setMobileOpen(false); navigate("/collaborate"); }} className="market-mobile-link">Collaborate with us</button>
             <ThemeToggle />
-            <button onClick={() => { setMobileOpen(false); if (user) { navigate(user.accountType === "employee" ? "/employee-portal" : "/portal"); } else { setAccountOpen(true); } }}>
-              {user ? (user.accountType === "employee" ? "Open employee portal" : "Open my portal") : "Login / Register"}
-            </button>
+            {user ? (
+              <>
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    window.dispatchEvent(new CustomEvent("volamp:open-profile"));
+                  }}
+                  className="market-mobile-link font-bold text-amber-400 flex items-center gap-2"
+                >
+                  <User className="size-4" /> My Profile ({user.name || user.email?.split("@")[0]})
+                </button>
+                {user.accountType === "employee" ? (
+                  <a
+                    href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileOpen(false)}
+                    className="market-mobile-link font-bold text-purple-300 flex items-center gap-2"
+                  >
+                    <Briefcase className="size-4 text-purple-400" /> Open Employee Workspace
+                    <ExternalLink className="size-3 opacity-70" />
+                  </a>
+                ) : (
+                  <a
+                    href="https://script.google.com/macros/s/AKfycby_LZjD_6KFK33CCaCrV4Xxgbav0HceiHg1YL0U1iVEnnHMHYbrdXIFhwRILa8VFuuV/exec"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileOpen(false)}
+                    className="market-mobile-link font-bold text-cyan-300 flex items-center gap-2"
+                  >
+                    <Boxes className="size-4 text-cyan-400" /> Check Live Stock
+                    <ExternalLink className="size-3 opacity-70" />
+                  </a>
+                )}
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  setMobileOpen(false);
+                  setAccountOpen(true);
+                }}
+                className="market-mobile-link font-bold text-amber-400 flex items-center gap-2"
+              >
+                <LogIn className="size-4" /> Login / Register
+              </button>
+            )}
           </div>
         )}
       </header>
@@ -665,32 +740,59 @@ export default function Home() {
 
     {/* Page Content Begins */}
     <main id="top" className="bg-slate-50 dark:bg-slate-900">
-      {/* FULL-BLEED WONDERLAND STUDIO 3D PERSPECTIVE RUNWAY */}
-      <section id="categories" className="relative w-full bg-[#1a191b] overflow-hidden border-y border-[#2e2d31]">
-        <SpatialWonderlandCategories
-          onNavigate={(target) => {
-            if (target.startsWith("/")) navigate(target);
-            else if (target.startsWith("category/")) navigate(`/${target}`);
-            else navigate(`/category/${target}`);
-          }}
-          onOpenARModal={(selected) => {
-            const catLower = (selected.name || "").toLowerCase();
-            let initialId = "cables";
-            if (catLower.includes("cable") || catLower.includes("wire")) initialId = "cables";
-            else if (catLower.includes("switch") || catLower.includes("mcb")) initialId = "switchgear";
-            else if (catLower.includes("lug") || catLower.includes("termin")) initialId = "lugs";
-            else if (catLower.includes("gland") || catLower.includes("conduit")) initialId = "glands";
-            else if (catLower.includes("solar")) initialId = "solar";
-            else if (catLower.includes("earth")) initialId = "earthing";
-
-            setVirtualShowroomInitialCategory(initialId);
-            setVirtualShowroomLabOpen(true);
-          }}
-          onOpenShowroomLab={(catId) => {
-            setVirtualShowroomInitialCategory(catId);
-            setVirtualShowroomLabOpen(true);
-          }}
-        />
+      {/* 8 MASTER ELECTRICAL CATEGORIES */}
+      <section id="categories" className="market-section">
+        <div className="market-container">
+          <div className="market-section-head">
+            <div>
+              <span className="market-kicker">BROWSE THE SUPPLY SYSTEM · 8 MASTER CATEGORIES · 3,385+ PRODUCTS</span>
+              <h1>Explore categories</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
+                Direct manufacturer pricing, IS/IEC/CE certifications, Material Test Certificates (MTC), and 48-hour pan-India project dispatch across our complete electrical portfolio.
+              </p>
+            </div>
+            <div className="hidden sm:flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs font-semibold cursor-pointer"
+                onClick={() => navigate("/products")}
+              >
+                View Full Catalog ({CATEGORIES.reduce((acc, c) => acc + c.productCount, 0).toLocaleString("en-IN")}+) <ArrowRight className="ml-1.5 size-3.5" />
+              </Button>
+            </div>
+          </div>
+          <div className="category-grid">
+            {categoryTiles.map((cat) => (
+              <button
+                key={cat.name}
+                className="category-tile group"
+                onClick={() => { navigate(`/category/${cat.slug}`); }}
+              >
+                <div className="category-tile-photo-wrap">
+                  <span className="category-tile-count-badge">
+                    <PackageSearch className="size-3 text-[#c56718]" />
+                    {cat.productCount.toLocaleString("en-IN")}+ items
+                  </span>
+                  <img
+                    src={cat.image || "/products/cables.jpg"}
+                    alt={cat.name}
+                    className="category-tile-photo"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="category-tile-info">
+                  <div className="flex items-center justify-between gap-1">
+                    <strong className="category-tile-name">{cat.name}</strong>
+                    <div className="category-tile-arrow-circle">
+                      <ArrowRight className="size-3.5" />
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </section>
 
       <ContractorSizingEstimator
@@ -971,7 +1073,7 @@ export default function Home() {
       </section>
     </main>
 
-    <footer className="site-footer"><NewsletterSection /><div className="footer-blog-bar"><div className="market-container footer-blog-inner"><div><span className="footer-eyebrow">VOLAMP JOURNAL</span><strong>Read the latest from our supply desk.</strong></div><button onClick={() => navigate("/blog")}>Visit the blog <ArrowRight className="size-4" /></button></div></div><div className="market-container footer-columns"><div className="footer-column footer-company"><BrandMark /><span className="footer-column-title">ABOUT VOLAMP</span><button onClick={() => navigate("/about-volamp")}>About Us</button><button onClick={() => navigate("/where-volamp-contributed")}>Where Volamp Contributed</button><button onClick={() => navigate("/business-segments")}>Business Segments</button><button onClick={() => navigate("/careers")}>Careers</button><button onClick={() => navigate("/collaborate")} className="footer-collaborate-link">Collaborate with Us</button><button onClick={() => navigate("/certifications-and-awards")}>Certifications & Quality</button><button onClick={() => navigate("/in-the-news")}>In the News</button></div><div className="footer-column"><span className="footer-column-title">SHOP CATEGORIES</span>{categoryNavigation.map((category) => <button key={category.name} onClick={() => navigate(categoryPath(category.slug || category.name))}>{category.name}<ArrowRight className="footer-link-arrow" /></button>)}</div><div className="footer-column"><span className="footer-column-title">HELP</span><button onClick={handleQuote}>Contact Us</button><button onClick={() => navigate("/branch-locations")}>Branch Location</button><button onClick={() => navigate("/refund-policy")}>Return & Refund Policy</button><button onClick={() => navigate("/shipping-policy")}>Shipping Policy</button><button onClick={() => navigate("/terms-and-conditions")}>Terms & Conditions</button><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></div><div className="footer-column footer-order-support"><span className="footer-column-title">ORDER SUPPORT</span><div className="footer-support-phone"><span>SUPPORT PHONE</span><a className="footer-support-phone-link" href="tel:+919512365582" aria-label="Call VOLAMP support at 9512365582"><strong>9512365582</strong></a><small>Call Volamp support</small></div><button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button><button onClick={() => setQuickOrderOpen(true)}>Quick Order (WhatsApp Invoice)</button><a href="https://www.google.com/shopping?q=VOLAMP+ELEKTRIKALS" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Shopping Store</a><a href="/api/google-merchant-feed.xml" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Merchant Feed (XML)</a><button onClick={() => navigate("/pay-invoice")}>Pay an Invoice Online</button><button onClick={() => toast.info("Price List", { description: "The latest approved price list will be shared by the supply desk." })}>Price List</button><button onClick={() => navigate("/complaints-cases")}>Complaints/Cases</button></div><div className="footer-column footer-social-column"><span className="footer-column-title">SOCIAL MEDIA LINKS</span><SocialMediaLinks /><a className="footer-gem-mark" href="https://gem.gov.in/" target="_blank" rel="noreferrer" aria-label="VOLAMP on Government e Marketplace"><img src="/gem-marketplace-logo.png?v=2" alt="Government e Marketplace GeM" /></a></div></div><div className="market-container footer-bottom"><span>Volamp Elektrikals © 2026. All rights reserved.</span><span>Global & Domestic electrical supply and export network.</span></div></footer>
+    <footer className="site-footer"><NewsletterSection /><MetalPriceTrendFooterWidget /><div className="footer-blog-bar"><div className="market-container footer-blog-inner"><div><span className="footer-eyebrow">VOLAMP JOURNAL</span><strong>Read the latest from our supply desk.</strong></div><button onClick={() => navigate("/blog")}>Visit the blog <ArrowRight className="size-4" /></button></div></div><div className="market-container footer-columns"><div className="footer-column footer-company"><BrandMark /><span className="footer-column-title">ABOUT VOLAMP</span><button onClick={() => navigate("/about-volamp")}>About Us</button><button onClick={() => navigate("/where-volamp-contributed")}>Where Volamp Contributed</button><button onClick={() => navigate("/business-segments")}>Business Segments</button><button onClick={() => navigate("/careers")}>Careers</button><button onClick={() => navigate("/collaborate")} className="footer-collaborate-link">Collaborate with Us</button><button onClick={() => navigate("/certifications-and-awards")}>Certifications & Quality</button><button onClick={() => navigate("/in-the-news")}>In the News</button></div><div className="footer-column"><span className="footer-column-title">SHOP CATEGORIES</span>{categoryNavigation.map((category) => <button key={category.name} onClick={() => navigate(categoryPath(category.slug || category.name))}>{category.name}<ArrowRight className="footer-link-arrow" /></button>)}</div><div className="footer-column"><span className="footer-column-title">HELP</span><button onClick={handleQuote}>Contact Us</button><button onClick={() => navigate("/branch-locations")}>Branch Location</button><button onClick={() => navigate("/refund-policy")}>Return & Refund Policy</button><button onClick={() => navigate("/shipping-policy")}>Shipping Policy</button><button onClick={() => navigate("/terms-and-conditions")}>Terms & Conditions</button><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></div><div className="footer-column footer-order-support"><span className="footer-column-title">ORDER SUPPORT</span><div className="footer-support-phone"><span>SUPPORT PHONE</span><a className="footer-support-phone-link" href="tel:+919512365582" aria-label="Call VOLAMP support at 9512365582"><strong>9512365582</strong></a><small>Call Volamp support</small></div><button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button><a href="https://www.google.com/shopping?q=VOLAMP+ELEKTRIKALS" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Shopping Store</a><a href="/api/google-merchant-feed.xml" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Merchant Feed (XML)</a><button onClick={() => navigate("/pay-invoice")}>Pay an Invoice Online</button><button onClick={() => toast.info("Price List", { description: "The latest approved price list will be shared by the supply desk." })}>Price List</button><button onClick={() => navigate("/complaints-cases")}>Complaints/Cases</button></div><div className="footer-column footer-social-column"><span className="footer-column-title">SOCIAL MEDIA LINKS</span><SocialMediaLinks /><a className="footer-gem-mark" href="https://gem.gov.in/" target="_blank" rel="noreferrer" aria-label="VOLAMP on Government e Marketplace"><img src="/gem-marketplace-logo.png?v=2" alt="Government e Marketplace GeM" /></a></div></div><div className="market-container footer-bottom"><span>Volamp Elektrikals © 2026. All rights reserved.</span><span>Global & Domestic electrical supply and export network.</span></div></footer>
 
     <CableCalculatorModal
       isOpen={calculatorOpen}
@@ -1011,7 +1113,7 @@ export default function Home() {
                 setSelectedDetail(null);
                 navigate(`/product/${targetSku}`);
               }}
-              className="w-full bg-[#1d73b7] hover:bg-[#165a8e] text-white cursor-pointer font-bold"
+              className="w-full bg-[#c56718] hover:bg-[#165a8e] text-white cursor-pointer font-bold"
             >
               View Full Product Page & Specifications <ArrowRight className="ml-1.5 size-4" />
             </Button>
@@ -1061,45 +1163,5 @@ export default function Home() {
       onClose={() => setMetalPricesOpen(false)}
       onRequestLockedQuote={(spec) => handleQuote(undefined, undefined, spec)}
     />
-
-    {/* 3D Volamp Electrical Galaxy Universe Modal */}
-    <VolampGalaxySpace
-      isOpen={galaxySpaceOpen}
-      onClose={() => setGalaxySpaceOpen(false)}
-      onSelectCategory={(slug) => navigate(`/category/${slug}`)}
-      onOpenShowroomLab={(catId) => {
-        setVirtualShowroomInitialCategory(catId);
-        setVirtualShowroomLabOpen(true);
-      }}
-    />
-
-    {/* Fullscreen 3D & WebAR Virtual Showroom Modal */}
-    <VirtualShowroomLab
-      isOpen={virtualShowroomLabOpen}
-      onClose={() => setVirtualShowroomLabOpen(false)}
-      initialCategory={virtualShowroomInitialCategory}
-      onRequestQuote={(catName, prodTitle) => {
-        handleQuote(catName, prodTitle);
-      }}
-    />
-
-    {/* Legacy 3D Product Twin Modal fallback */}
-    {selectedARCategory && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-        <div className="relative w-full max-w-5xl h-[85vh] rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col">
-          <Product3DViewer
-            product={{
-              name: `${selectedARCategory.name} (3D Digital Twin)`,
-              category: selectedARCategory.name,
-              brand: "VOLAMP ELEKTRIKALS",
-              subcategory: selectedARCategory.detail,
-              material: "Certified Industrial Grade",
-            }}
-            isModal={true}
-            onClose={() => setSelectedARCategory(null)}
-          />
-        </div>
-      </div>
-    )}
   </div>;
 }

@@ -44,6 +44,19 @@ import { CompareBar } from "./components/compare/CompareBar";
 import { CompareModal } from "./components/compare/CompareModal";
 import { CategoryMismatchModal } from "./components/compare/CategoryMismatchModal";
 import { AuthModal } from "./components/auth/AuthModal";
+import { UserProfileModal } from "./components/profile/UserProfileModal";
+
+function GlobalProfileManager() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener("volamp:open-profile", handleOpen);
+    return () => window.removeEventListener("volamp:open-profile", handleOpen);
+  }, []);
+
+  return <UserProfileModal isOpen={isOpen} onClose={() => setIsOpen(false)} />;
+}
 
 function GlobalAuthManager() {
   const [isOpen, setIsOpen] = useState(false);
@@ -229,6 +242,7 @@ function Router() {
     <CompareModal />
     <CategoryMismatchModal />
     <GlobalAuthManager />
+    <GlobalProfileManager />
     </>
   );
 }

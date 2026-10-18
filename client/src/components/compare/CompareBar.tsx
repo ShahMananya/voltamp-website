@@ -27,10 +27,10 @@ export function CompareBar() {
           {/* Header Bar */}
           <div className="bg-slate-900 text-white px-4 py-2 flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="p-1 rounded bg-[#1d73b7] text-white">
+              <span className="p-1 rounded bg-gradient-to-r from-[#c56718] to-[#ea580c] text-white">
                 <Scale className="size-3.5" />
               </span>
-              <span className="font-bold tracking-wider text-[11px] uppercase text-sky-300">
+              <span className="font-bold tracking-wider text-[11px] uppercase text-amber-400">
                 Comparing {compareCategory}:
               </span>
               <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full text-[10px] font-semibold">
@@ -74,7 +74,7 @@ export function CompareBar() {
                   return (
                     <div
                       key={prod.productId}
-                      className="relative shrink-0 w-44 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl p-2 flex items-center gap-2 group hover:border-[#1d73b7] transition-all"
+                      className="relative shrink-0 w-44 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl p-2 flex items-center gap-2 group hover:border-[#c56718] transition-all"
                     >
                       <button
                         type="button"
@@ -97,7 +97,7 @@ export function CompareBar() {
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <span className="text-[10px] font-bold text-[#1d73b7] dark:text-sky-400 uppercase truncate block">
+                        <span className="text-[10px] font-bold text-[#c56718] dark:text-amber-400 uppercase truncate block">
                           {prod.brand || "VOLAMP"}
                         </span>
                         <h4
@@ -134,7 +134,7 @@ export function CompareBar() {
                   disabled={compareItems.length < 2}
                   className={`w-full sm:w-auto px-5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow transition-all cursor-pointer ${
                     compareItems.length >= 2
-                      ? "bg-[#1d73b7] hover:bg-[#165a91] text-white"
+                      ? "bg-gradient-to-r from-[#c56718] to-[#ea580c] hover:from-[#d97706] hover:to-[#f97316] text-white shadow-md shadow-orange-950/30"
                       : "bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed"
                   }`}
                 >

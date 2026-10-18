@@ -490,9 +490,12 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-[720px] max-h-[92vh] overflow-y-auto rounded-2xl bg-white border border-[#d2e0e8] p-5 sm:p-7 shadow-2xl transition-all text-[#142b40]"
+        className="relative w-full max-w-[720px] max-h-[92vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#0c2235] border border-slate-200 dark:border-slate-700/80 p-5 sm:p-7 shadow-2xl shadow-slate-900/10 transition-all text-[#142b40] dark:text-white"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Top ambient brand highlight line */}
+        <div className="absolute top-0 inset-x-8 h-1 bg-gradient-to-r from-transparent via-[#c56718] to-transparent rounded-t-3xl" />
+
         {/* Datalist for suggestions */}
         <datalist id="quick-order-product-suggestions">
           {productSuggestions.map((prod) => (
@@ -590,7 +593,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
                     Enter product name, specify quantity, or remove any row.
                   </p>
                 </div>
-                <span className="text-[11px] font-mono font-bold text-[#1d73b7] bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                <span className="text-[11px] font-mono font-bold text-[#c56718] bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
                   {rows.length} {rows.length === 1 ? "Product" : "Products"}
                 </span>
               </div>
@@ -697,7 +700,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
                   type="button"
                   variant="outline"
                   onClick={handleAddProduct}
-                  className="text-xs font-bold border-dashed border-[#1d73b7] text-[#1d73b7] hover:bg-blue-50/60 h-9 px-4 flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  className="text-xs font-bold border-dashed border-[#c56718] text-[#c56718] hover:bg-amber-500/10 h-9 px-4 flex items-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Plus className="size-4" />
                   <span>+ Add Product</span>
@@ -791,7 +794,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
 
                 <div>
                   <Label htmlFor="qo-location" className="text-xs font-semibold text-[#102a40] flex items-center gap-1">
-                    <MapPin className="size-3 text-[#1d73b7]" /> Project Delivery Location
+                    <MapPin className="size-3 text-[#c56718]" /> Project Delivery Location
                   </Label>
                   <Input
                     id="qo-location"
@@ -895,21 +898,21 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
             </p>
 
             {/* Live PDF Document Link Card */}
-            <div className="my-4 p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 text-left max-w-[500px] mx-auto text-xs space-y-2">
+            <div className="my-4 p-3.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-500/30 text-left max-w-[500px] mx-auto text-xs space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-[#102a40] flex items-center gap-1.5">
-                  <FileText className="size-4 text-[#1d73b7]" /> Stamped PDF Document Link:
+                <span className="font-bold text-[#102a40] dark:text-white flex items-center gap-1.5">
+                  <FileText className="size-4 text-[#c56718] dark:text-amber-400" /> Stamped PDF Document Link:
                 </span>
-                <span className="text-[10px] font-mono bg-blue-100 text-blue-800 px-2 py-0.5 rounded font-bold">
+                <span className="text-[10px] font-mono bg-amber-100 dark:bg-amber-900/60 text-[#c56718] dark:text-amber-300 px-2 py-0.5 rounded font-bold">
                   PDF FORMAT
                 </span>
               </div>
-              <div className="flex items-center gap-2 bg-white p-2 rounded-lg border border-blue-200">
+              <div className="flex items-center gap-2 bg-white dark:bg-slate-900 p-2 rounded-lg border border-amber-200 dark:border-amber-500/30">
                 <input
                   type="text"
                   readOnly
                   value={pdfUrl}
-                  className="text-[11px] font-mono text-gray-700 bg-transparent flex-1 outline-hidden"
+                  className="text-[11px] font-mono text-gray-700 dark:text-gray-300 bg-transparent flex-1 outline-hidden"
                 />
                 <button
                   type="button"
@@ -917,7 +920,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
                     navigator.clipboard.writeText(pdfUrl);
                     toast.success("PDF link copied to clipboard!");
                   }}
-                  className="text-xs font-semibold text-[#1d73b7] hover:underline flex items-center gap-1 shrink-0"
+                  className="text-xs font-semibold text-[#c56718] hover:underline flex items-center gap-1 shrink-0"
                 >
                   <Copy className="size-3" /> Copy
                 </button>
@@ -925,7 +928,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
                   href={pdfUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-xs font-semibold text-[#1d73b7] hover:underline flex items-center gap-1 shrink-0"
+                  className="text-xs font-semibold text-[#c56718] hover:underline flex items-center gap-1 shrink-0"
                 >
                   <ExternalLink className="size-3" /> View
                 </a>
@@ -933,14 +936,14 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
             </div>
 
             {/* Item summary box */}
-            <div className="my-4 p-4 rounded-xl bg-[#f8fafc] border border-[#dce5eb] text-left max-w-[500px] mx-auto text-xs space-y-2">
-              <strong className="block text-[11px] uppercase tracking-wider text-[#5a6b78] border-b border-[#e2ecf2] pb-1.5">
+            <div className="my-4 p-4 rounded-xl bg-[#f8fafc] dark:bg-slate-900/50 border border-[#dce5eb] dark:border-slate-800 text-left max-w-[500px] mx-auto text-xs space-y-2">
+              <strong className="block text-[11px] uppercase tracking-wider text-[#5a6b78] dark:text-slate-400 border-b border-[#e2ecf2] dark:border-slate-800 pb-1.5">
                 Included Products in PDF ({submittedItems.length})
               </strong>
               {submittedItems.map((item, idx) => (
                 <div key={idx} className="flex justify-between items-center py-0.5">
-                  <span className="font-semibold text-[#102a40]">{item.name}</span>
-                  <span className="font-mono font-bold text-[#1d73b7]">Qty: {item.quantity}</span>
+                  <span className="font-semibold text-[#102a40] dark:text-white">{item.name}</span>
+                  <span className="font-mono font-bold text-[#c56718] dark:text-amber-400">Qty: {item.quantity}</span>
                 </div>
               ))}
               <div className="pt-2 border-t border-[#e2ecf2] flex justify-between text-[11px] text-[#5a6b78]">
@@ -967,7 +970,7 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
               <Button
                 type="button"
                 onClick={handleDownloadExistingPdf}
-                className="bg-[#1d73b7] hover:bg-[#155a90] text-white text-xs font-semibold h-10 rounded-lg flex items-center justify-center gap-1.5"
+                className="bg-gradient-to-r from-[#c56718] via-[#d97706] to-[#b45309] hover:from-[#d97706] hover:to-[#a04a0a] text-white text-xs font-semibold h-10 px-5 rounded-xl flex items-center justify-center gap-1.5 shadow-md shadow-orange-600/20"
               >
                 <FileDown className="size-4" /> Download PDF
               </Button>

@@ -12,8 +12,11 @@ import { toast } from "sonner";
 import {
   ArrowLeft,
   ArrowRight,
+  Boxes,
   Check,
   CirclePlus,
+  Edit3,
+  ExternalLink,
   FileText,
   Headphones,
   Loader2,
@@ -305,11 +308,30 @@ export default function CustomerPortal() {
             <ArrowLeft className="size-4" /> Back to VOLAMP
           </Link>
           <div className="portal-identity">
+            <a
+              href="https://script.google.com/macros/s/AKfycby_LZjD_6KFK33CCaCrV4Xxgbav0HceiHg1YL0U1iVEnnHMHYbrdXIFhwRILa8VFuuV/exec"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#0d6e6e] hover:bg-[#0a5252] text-white transition-colors shadow-xs"
+              title="Real-Time Factory & Warehouse Stock Availability"
+            >
+              <Boxes className="size-3.5" />
+              <span>Check Live Stock</span>
+              <ExternalLink className="size-3 opacity-80" />
+            </a>
             <ThemeToggle />
-            <span className="portal-avatar">
-              {(user.name || user.email || "V").charAt(0).toUpperCase()}
-            </span>
-            <span>{user.name || user.email}</span>
+            <button
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("volamp:open-profile"));
+              }}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
+              title="View & Edit Profile Details"
+            >
+              <span className="portal-avatar">
+                {(user.name || user.email || "V").charAt(0).toUpperCase()}
+              </span>
+              <span className="font-semibold text-xs">{user.name || user.email}</span>
+            </button>
             <Button
               variant="ghost"
               size="sm"

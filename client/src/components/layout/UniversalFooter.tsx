@@ -4,6 +4,7 @@ import { ArrowRight, PhoneCall } from "lucide-react";
 import { toast } from "sonner";
 import NewsletterSection from "@/components/home/NewsletterSection";
 import SocialMediaLinks from "./SocialMediaLinks";
+import MetalPriceTrendFooterWidget from "@/components/metal/MetalPriceTrendFooterWidget";
 
 interface UniversalFooterProps {
   showNewsletter?: boolean;
@@ -27,7 +28,10 @@ export default function UniversalFooter({
       {/* 1. Optional Newsletter Section (Matching Home Page) */}
       {showNewsletter && <NewsletterSection />}
 
-      {/* 2. Optional Volamp Journal Strip */}
+      {/* 2. Copper & Aluminium Live Price Trend Graph */}
+      <MetalPriceTrendFooterWidget />
+
+      {/* 3. Optional Volamp Journal Strip */}
       {showJournalBar && (
         <div className="footer-blog-bar border-b border-[#ebd4c2] dark:border-[#3a1014] bg-[#f7ede6] dark:bg-[#200609] transition-colors">
           <div className="market-container footer-blog-inner py-4 sm:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -165,9 +169,6 @@ export default function UniversalFooter({
           <div className="space-y-1.5 pt-1">
             <button type="button" onClick={() => navigate("/track")} className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline cursor-pointer block">
               Track My Order
-            </button>
-            <button type="button" onClick={() => window.open("https://wa.me/919512365582?text=Hello%20VOLAMP%20team%2C%20I%20would%20like%20to%20place%20a%20Quick%20Order.", "_blank")} className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline cursor-pointer block">
-              Quick Order (WhatsApp Invoice)
             </button>
             <a
               href="https://www.google.com/shopping?q=VOLAMP+ELEKTRIKALS"

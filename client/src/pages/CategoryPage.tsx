@@ -445,19 +445,19 @@ export default function CategoryPage() {
             </Link>
 
             <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-slate-300">
-              <Link href="/" className="hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors">
+              <Link href="/" className="hover:text-[#c56718] dark:hover:text-sky-400 transition-colors">
                 Home
               </Link>
-              <Link href="/about-volamp" className="hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors">
+              <Link href="/about-volamp" className="hover:text-[#c56718] dark:hover:text-sky-400 transition-colors">
                 About Us
               </Link>
-              <Link href="/enquire" className="hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors">
+              <Link href="/enquire" className="hover:text-[#c56718] dark:hover:text-sky-400 transition-colors">
                 Contact Us
               </Link>
-              <Link href="/branch-locations" className="hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors">
+              <Link href="/branch-locations" className="hover:text-[#c56718] dark:hover:text-sky-400 transition-colors">
                 Find a branch
               </Link>
-              <Link href="/business-segments" className="hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors">
+              <Link href="/business-segments" className="hover:text-[#c56718] dark:hover:text-sky-400 transition-colors">
                 Business Segments
               </Link>
             </nav>
@@ -468,7 +468,7 @@ export default function CategoryPage() {
             <ThemeToggle />
             <Link
               href="/portal"
-              className="px-4 py-2 rounded-lg bg-[#1d73b7] hover:bg-[#165a91] text-white text-xs font-bold transition-all shadow-xs"
+              className="px-4 py-2 rounded-lg bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold transition-all shadow-xs"
             >
               Login / Register
             </Link>
@@ -488,7 +488,7 @@ export default function CategoryPage() {
                 onClick={() => setCategoriesDropdownOpen(!categoriesDropdownOpen)}
                 className="flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer transition-colors"
               >
-                <Menu className="size-4 text-[#1d73b7]" />
+                <Menu className="size-4 text-[#c56718]" />
                 <span className="hidden sm:inline">Categories</span>
                 <ChevronDown className="size-3.5 text-slate-500" />
               </button>
@@ -531,11 +531,11 @@ export default function CategoryPage() {
                   setSearchQuery(e.target.value);
                   setPage(1);
                 }}
-                className="w-full h-11 pl-4 pr-12 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1d73b7]/30 focus:border-[#1d73b7]"
+                className="w-full h-11 pl-4 pr-12 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#c56718]/30 focus:border-[#c56718]"
               />
               <button
                 type="button"
-                className="absolute right-1 top-1 bottom-1 px-3.5 rounded-md bg-[#1d73b7] hover:bg-[#165a91] text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="absolute right-1 top-1 bottom-1 px-3.5 rounded-md bg-[#c56718] hover:bg-[#b45309] text-white flex items-center justify-center transition-colors cursor-pointer"
                 title="Search"
               >
                 <Search className="size-4" />
@@ -548,9 +548,9 @@ export default function CategoryPage() {
             {/* Track Order */}
             <Link
               href="/track"
-              className="flex items-center gap-1.5 hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors cursor-pointer group"
+              className="flex items-center gap-1.5 hover:text-[#c56718] dark:hover:text-sky-400 transition-colors cursor-pointer group"
             >
-              <Send className="size-4 text-[#1d73b7] group-hover:-translate-y-0.5 transition-transform" />
+              <Send className="size-4 text-[#c56718] group-hover:-translate-y-0.5 transition-transform" />
               <span className="hidden sm:inline">Track Order</span>
             </Link>
 
@@ -558,9 +558,9 @@ export default function CategoryPage() {
             <button
               type="button"
               onClick={() => setEnquireOpen(true)}
-              className="flex items-center gap-1.5 hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors cursor-pointer group"
+              className="flex items-center gap-1.5 hover:text-[#c56718] dark:hover:text-sky-400 transition-colors cursor-pointer group"
             >
-              <FileText className="size-4 text-[#1d73b7] group-hover:-translate-y-0.5 transition-transform" />
+              <FileText className="size-4 text-[#c56718] group-hover:-translate-y-0.5 transition-transform" />
               <span>Upload PO</span>
             </button>
 
@@ -568,7 +568,7 @@ export default function CategoryPage() {
             <button
               type="button"
               onClick={() => setQuickOrderOpen(true)}
-              className="flex items-center gap-1.5 hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors cursor-pointer group"
+              className="flex items-center gap-1.5 hover:text-[#c56718] dark:hover:text-sky-400 transition-colors cursor-pointer group"
             >
               <Zap className="size-4 text-[#c56718] group-hover:scale-110 transition-transform" />
               <span>Quick Order</span>
@@ -578,10 +578,10 @@ export default function CategoryPage() {
             <button
               type="button"
               onClick={openCart}
-              className="flex items-center gap-1.5 hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors cursor-pointer relative"
+              className="flex items-center gap-1.5 hover:text-[#c56718] dark:hover:text-sky-400 transition-colors cursor-pointer relative"
             >
               <div className="relative">
-                <ShoppingCart className="size-5 text-[#1d73b7]" />
+                <ShoppingCart className="size-5 text-[#c56718]" />
                 {totalCount > 0 && (
                   <span className="absolute -top-2 -right-2.5 size-4 bg-[#c56718] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                     {totalCount}
@@ -603,7 +603,7 @@ export default function CategoryPage() {
             onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200"
           >
-            <SlidersHorizontal className="size-4 text-[#1d73b7]" />
+            <SlidersHorizontal className="size-4 text-[#c56718]" />
             <span>Filters {hasActiveFilters && "•"}</span>
           </button>
 
@@ -623,14 +623,14 @@ export default function CategoryPage() {
           >
             <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
               <h2 className="text-base font-bold text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] flex items-center gap-2">
-                <Filter className="size-4 text-[#1d73b7]" />
+                <Filter className="size-4 text-[#c56718]" />
                 Filters
               </h2>
               {hasActiveFilters && (
                 <button
                   type="button"
                   onClick={handleResetFilters}
-                  className="text-xs font-semibold text-[#1d73b7] hover:underline cursor-pointer"
+                  className="text-xs font-semibold text-[#c56718] hover:underline cursor-pointer"
                 >
                   Clear All
                 </button>
@@ -660,7 +660,7 @@ export default function CategoryPage() {
                       setSelectedStock(null);
                       setPage(1);
                     }}
-                    className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                    className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                   >
                     <div className="flex items-center gap-2">
                       <input
@@ -668,9 +668,9 @@ export default function CategoryPage() {
                         name="stock"
                         checked={selectedStock === null}
                         readOnly
-                        className="pointer-events-none text-[#1d73b7]"
+                        className="pointer-events-none text-[#c56718]"
                       />
-                      <span className={selectedStock === null ? "font-bold text-[#1d73b7]" : ""}>All Availability</span>
+                      <span className={selectedStock === null ? "font-bold text-[#c56718]" : ""}>All Availability</span>
                     </div>
                     {filterStats?.stock?.all !== undefined && (
                       <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -685,7 +685,7 @@ export default function CategoryPage() {
                       setSelectedStock((prev) => (prev === "in_stock" ? null : "in_stock"));
                       setPage(1);
                     }}
-                    className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                    className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                   >
                     <div className="flex items-center gap-2">
                       <input
@@ -693,9 +693,9 @@ export default function CategoryPage() {
                         name="stock"
                         checked={selectedStock === "in_stock"}
                         readOnly
-                        className="pointer-events-none text-[#1d73b7]"
+                        className="pointer-events-none text-[#c56718]"
                       />
-                      <span className={selectedStock === "in_stock" ? "font-bold text-[#1d73b7]" : ""}>In Stock (Ready)</span>
+                      <span className={selectedStock === "in_stock" ? "font-bold text-[#c56718]" : ""}>In Stock (Ready)</span>
                     </div>
                     {filterStats?.stock?.in_stock !== undefined && (
                       <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -731,16 +731,16 @@ export default function CategoryPage() {
                       setSelectedSubCat(null);
                       setPage(1);
                     }}
-                    className="flex items-center gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 select-none"
+                    className="flex items-center gap-2 cursor-pointer hover:text-[#c56718] py-0.5 select-none"
                   >
                     <input
                       type="radio"
                       name="mainCat"
                       checked={selectedMainCat === "ALL" || (!selectedMainCat && !category?.name)}
                       readOnly
-                      className="pointer-events-none text-[#1d73b7]"
+                      className="pointer-events-none text-[#c56718]"
                     />
-                    <span className={selectedMainCat === "ALL" || (!selectedMainCat && !category?.name) ? "font-bold text-[#1d73b7]" : ""}>
+                    <span className={selectedMainCat === "ALL" || (!selectedMainCat && !category?.name) ? "font-bold text-[#c56718]" : ""}>
                       All Categories
                     </span>
                   </div>
@@ -756,16 +756,16 @@ export default function CategoryPage() {
                           setSelectedSubCat(null);
                           setPage(1);
                         }}
-                        className="flex items-center gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 select-none"
+                        className="flex items-center gap-2 cursor-pointer hover:text-[#c56718] py-0.5 select-none"
                       >
                         <input
                           type="radio"
                           name="mainCat"
                           checked={isSelected}
                           readOnly
-                          className="pointer-events-none text-[#1d73b7]"
+                          className="pointer-events-none text-[#c56718]"
                         />
-                        <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{cat.name}</span>
+                        <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{cat.name}</span>
                       </div>
                     );
                   })}
@@ -796,16 +796,16 @@ export default function CategoryPage() {
                       setSelectedBrand(null);
                       setPage(1);
                     }}
-                    className="flex items-center gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 select-none"
+                    className="flex items-center gap-2 cursor-pointer hover:text-[#c56718] py-0.5 select-none"
                   >
                     <input
                       type="radio"
                       name="brand"
                       checked={selectedBrand === null}
                       readOnly
-                      className="pointer-events-none text-[#1d73b7]"
+                      className="pointer-events-none text-[#c56718]"
                     />
-                    <span className={selectedBrand === null ? "font-bold text-[#1d73b7]" : ""}>All Brands</span>
+                    <span className={selectedBrand === null ? "font-bold text-[#c56718]" : ""}>All Brands</span>
                   </div>
                   {availableBrands?.map((brand) => {
                     const isSelected = selectedBrand === brand;
@@ -818,16 +818,16 @@ export default function CategoryPage() {
                           setSelectedBrand((prev) => (prev === brand ? null : brand));
                           setPage(1);
                         }}
-                        className="flex items-center gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 select-none"
+                        className="flex items-center gap-2 cursor-pointer hover:text-[#c56718] py-0.5 select-none"
                       >
                         <input
                           type="radio"
                           name="brand"
                           checked={isSelected}
                           readOnly
-                          className="pointer-events-none text-[#1d73b7]"
+                          className="pointer-events-none text-[#c56718]"
                         />
-                        <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{brand}</span>
+                        <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{brand}</span>
                       </div>
                     );
                   })}
@@ -859,16 +859,16 @@ export default function CategoryPage() {
                         setSelectedSubCat(null);
                         setPage(1);
                       }}
-                      className="flex items-center gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 select-none"
+                      className="flex items-center gap-2 cursor-pointer hover:text-[#c56718] py-0.5 select-none"
                     >
                       <input
                         type="radio"
                         name="subCat"
                         checked={selectedSubCat === null}
                         readOnly
-                        className="pointer-events-none text-[#1d73b7]"
+                        className="pointer-events-none text-[#c56718]"
                       />
-                      <span className={selectedSubCat === null ? "font-bold text-[#1d73b7]" : ""}>All Subcategories</span>
+                      <span className={selectedSubCat === null ? "font-bold text-[#c56718]" : ""}>All Subcategories</span>
                     </div>
                     {category.subcategories.map((sub) => {
                       const isSelected = selectedSubCat === sub.name;
@@ -881,16 +881,16 @@ export default function CategoryPage() {
                             setSelectedSubCat((prev) => (prev === sub.name ? null : sub.name));
                             setPage(1);
                           }}
-                          className="flex items-center gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 select-none"
+                          className="flex items-center gap-2 cursor-pointer hover:text-[#c56718] py-0.5 select-none"
                         >
                           <input
                             type="radio"
                             name="subCat"
                             checked={isSelected}
                             readOnly
-                            className="pointer-events-none text-[#1d73b7]"
+                            className="pointer-events-none text-[#c56718]"
                           />
-                          <span className={`truncate ${isSelected ? "font-bold text-[#1d73b7]" : ""}`}>{sub.name}</span>
+                          <span className={`truncate ${isSelected ? "font-bold text-[#c56718]" : ""}`}>{sub.name}</span>
                         </div>
                       );
                     })}
@@ -927,7 +927,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectSwitchgearFilter(setSelectedPoles, pol)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -935,9 +935,9 @@ export default function CategoryPage() {
                                 name="poles"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{pol}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{pol}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -976,7 +976,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectSwitchgearFilter(setSelectedRating, rt)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -984,9 +984,9 @@ export default function CategoryPage() {
                                 name="rating"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{rt}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{rt}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1027,7 +1027,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedColor, col)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1035,9 +1035,9 @@ export default function CategoryPage() {
                                 name="color"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{col}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{col}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1081,7 +1081,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedSize, sz)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1089,9 +1089,9 @@ export default function CategoryPage() {
                                 name="sizeSqMm"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{sz}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{sz}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1130,7 +1130,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedCores, core)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1138,9 +1138,9 @@ export default function CategoryPage() {
                                 name="cores"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{core}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{core}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1179,7 +1179,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedMaterial, mat)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1187,9 +1187,9 @@ export default function CategoryPage() {
                                 name="material"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{mat}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{mat}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1228,7 +1228,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedInsulation, ins)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1236,9 +1236,9 @@ export default function CategoryPage() {
                                 name="insulation"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{ins}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{ins}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1277,7 +1277,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedShielding, sh)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1285,9 +1285,9 @@ export default function CategoryPage() {
                                 name="shielding"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{sh}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{sh}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1326,7 +1326,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedInnerSheath, isM)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1334,9 +1334,9 @@ export default function CategoryPage() {
                                 name="innerSheath"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{isM}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{isM}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1375,7 +1375,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedArmor, arm)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1383,9 +1383,9 @@ export default function CategoryPage() {
                                 name="armor"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{arm}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{arm}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1424,7 +1424,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedConductorClass, cc)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1432,9 +1432,9 @@ export default function CategoryPage() {
                                 name="conductorClass"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{cc}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{cc}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1473,7 +1473,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedOuterSheath, osM)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1481,9 +1481,9 @@ export default function CategoryPage() {
                                 name="outerSheath"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{osM}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{osM}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1522,7 +1522,7 @@ export default function CategoryPage() {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleSelectCableFilter(setSelectedVoltage, volt)}
-                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                            className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                           >
                             <div className="flex items-center gap-2">
                               <input
@@ -1530,9 +1530,9 @@ export default function CategoryPage() {
                                 name="voltage"
                                 checked={isSelected}
                                 readOnly
-                                className="pointer-events-none text-[#1d73b7]"
+                                className="pointer-events-none text-[#c56718]"
                               />
-                              <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{volt}</span>
+                              <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{volt}</span>
                             </div>
                             {count !== undefined && count > 0 && (
                               <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1573,7 +1573,7 @@ export default function CategoryPage() {
                                 role="button"
                                 tabIndex={0}
                                 onClick={() => handleSelectSwitchgearFilter(setSelectedPoles, pol)}
-                                className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                                className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                               >
                                 <div className="flex items-center gap-2">
                                   <input
@@ -1581,9 +1581,9 @@ export default function CategoryPage() {
                                     name="poles"
                                     checked={isSelected}
                                     readOnly
-                                    className="pointer-events-none text-[#1d73b7]"
+                                    className="pointer-events-none text-[#c56718]"
                                   />
-                                  <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{pol}</span>
+                                  <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{pol}</span>
                                 </div>
                                 {count !== undefined && count > 0 && (
                                   <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1621,7 +1621,7 @@ export default function CategoryPage() {
                                 role="button"
                                 tabIndex={0}
                                 onClick={() => handleSelectSwitchgearFilter(setSelectedRating, rt)}
-                                className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#1d73b7] py-0.5 group select-none"
+                                className="flex items-center justify-between gap-2 cursor-pointer hover:text-[#c56718] py-0.5 group select-none"
                               >
                                 <div className="flex items-center gap-2">
                                   <input
@@ -1629,9 +1629,9 @@ export default function CategoryPage() {
                                     name="rating"
                                     checked={isSelected}
                                     readOnly
-                                    className="pointer-events-none text-[#1d73b7]"
+                                    className="pointer-events-none text-[#c56718]"
                                   />
-                                  <span className={isSelected ? "font-bold text-[#1d73b7]" : ""}>{rt}</span>
+                                  <span className={isSelected ? "font-bold text-[#c56718]" : ""}>{rt}</span>
                                 </div>
                                 {count !== undefined && count > 0 && (
                                   <span className="text-[10px] text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 font-mono">
@@ -1686,7 +1686,7 @@ export default function CategoryPage() {
                     onClick={() => setViewMode("grid")}
                     className={`p-1.5 rounded transition-all cursor-pointer ${
                       viewMode === "grid"
-                        ? "bg-[#1d73b7] text-white"
+                        ? "bg-[#c56718] text-white"
                         : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                     }`}
                     title="4-Column Grid View"
@@ -1698,7 +1698,7 @@ export default function CategoryPage() {
                     onClick={() => setViewMode("list")}
                     className={`p-1.5 rounded transition-all cursor-pointer ${
                       viewMode === "list"
-                        ? "bg-[#1d73b7] text-white"
+                        ? "bg-[#c56718] text-white"
                         : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                     }`}
                     title="List Table View"
@@ -1714,103 +1714,103 @@ export default function CategoryPage() {
               <div className="flex flex-wrap items-center gap-2 pt-1 text-xs">
                 <span className="text-slate-400 font-medium">Active:</span>
                 {selectedBrand && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Brand: {selectedBrand}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedBrand(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedSubCat && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     {selectedSubCat}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedSubCat(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedColor && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Color: {selectedColor}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedColor(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedSize && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Size: {selectedSize}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedSize(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedInsulation && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Insulation: {selectedInsulation}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedInsulation(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedShielding && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Shielding: {selectedShielding}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedShielding(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedInnerSheath && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Inner Sheath: {selectedInnerSheath}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedInnerSheath(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedOuterSheath && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Outer Sheath: {selectedOuterSheath}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedOuterSheath(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedConductorClass && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Class: {selectedConductorClass}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedConductorClass(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedMaterial && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Material: {selectedMaterial}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedMaterial(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedVoltage && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Voltage: {selectedVoltage}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedVoltage(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedCores && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Cores: {selectedCores}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedCores(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedArmor && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Armour: {selectedArmor}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedArmor(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedPoles && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Poles: {selectedPoles}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedPoles(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedRating && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     Rating: {selectedRating}
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedRating(null); setPage(1); }} />
                   </span>
                 )}
                 {selectedStock === "in_stock" && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     In Stock
                     <X className="size-3 cursor-pointer" onClick={() => { setSelectedStock(null); setPage(1); }} />
                   </span>
                 )}
                 {searchQuery && (
-                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-[#1d73b7] font-semibold border border-blue-200 dark:border-blue-800 flex items-center gap-1">
+                  <span className="px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/60 text-[#c56718] dark:text-amber-400 font-semibold border border-orange-200 dark:border-orange-800/60 flex items-center gap-1">
                     "{searchQuery}"
                     <X className="size-3 cursor-pointer" onClick={() => { setSearchQuery(""); setPage(1); }} />
                   </span>
@@ -1860,7 +1860,7 @@ export default function CategoryPage() {
                       <div
                         key={prod.productId}
                         onClick={() => navigate(`/product/${prod.productId}`)}
-                        className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-3.5 flex flex-col justify-between hover:shadow-lg hover:border-[#1d73b7] dark:hover:border-sky-500 transition-all group relative cursor-pointer"
+                        className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-3.5 flex flex-col justify-between hover:shadow-xl hover:border-[#c56718] dark:hover:border-[#f59e0b] hover:shadow-orange-950/10 transition-all group relative cursor-pointer"
                       >
                         <div>
                           {/* Top-Right Compare / Availability */}
@@ -1873,8 +1873,8 @@ export default function CategoryPage() {
                               onClick={(e) => handleToggleCompare(e, prod)}
                               className={`px-2 py-0.5 rounded-md text-[11px] font-semibold flex items-center gap-1 transition-all cursor-pointer ${
                                 isCompared
-                                  ? "bg-[#1d73b7] text-white shadow-xs"
-                                  : "text-slate-400 hover:text-[#1d73b7] hover:bg-slate-100 dark:hover:bg-slate-700/60"
+                                  ? "bg-gradient-to-r from-[#c56718] to-[#ea580c] text-white shadow-xs"
+                                  : "text-slate-400 hover:text-[#c56718] hover:bg-orange-50 dark:hover:bg-orange-950/40"
                               }`}
                               title={
                                 isCompared
@@ -1902,14 +1902,19 @@ export default function CategoryPage() {
                             />
                           </div>
 
-                          {/* Brand Name in Blue/Teal */}
-                          <span className="text-[11px] font-bold text-[#1d73b7] dark:text-sky-400 uppercase tracking-wider block mb-1">
-                            {prod.brand || "VOLAMP"}
-                          </span>
+                          {/* Brand Name & Volamp Authorized Dealer Badge */}
+                          <div className="flex items-center justify-between gap-1 mb-1">
+                            <span className="text-[11px] font-extrabold text-[#c56718] dark:text-[#f59e0b] uppercase tracking-wider block">
+                              {prod.brand || "Industrial"}
+                            </span>
+                            <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800 shrink-0">
+                              Volamp Authorized
+                            </span>
+                          </div>
 
                           {/* Product Title (2-3 lines clean) */}
                           <h3
-                            className="text-xs font-semibold text-slate-800 dark:text-slate-100 line-clamp-2 min-h-[2.5rem] leading-snug group-hover:text-[#1d73b7] transition-colors"
+                            className="text-xs font-semibold text-slate-800 dark:text-slate-100 line-clamp-2 min-h-[2.5rem] leading-snug group-hover:text-[#c56718] dark:group-hover:text-[#f59e0b] transition-colors"
                             title={prod.name}
                           >
                             {prod.name}
@@ -1956,7 +1961,7 @@ export default function CategoryPage() {
                                 <span className="text-[11px] text-slate-400 dark:text-slate-500 line-through">
                                   MRP: {listPrice}
                                 </span>
-                                <span className="text-[10px] font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-200 dark:border-amber-800">
+                                <span className="text-[10px] font-bold text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950/80 px-1.5 py-0.5 rounded border border-orange-200 dark:border-orange-800">
                                   {prod.discount} OFF
                                 </span>
                               </div>
@@ -1978,14 +1983,14 @@ export default function CategoryPage() {
                               e.stopPropagation();
                               navigate(`/product/${prod.productId}`);
                             }}
-                            className="py-1.5 px-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all text-center cursor-pointer"
+                            className="py-1.5 px-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-[#c56718] hover:text-[#c56718] dark:hover:text-[#f59e0b] text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all text-center cursor-pointer"
                           >
                             View Details
                           </button>
                           <button
                             type="button"
                             onClick={(e) => handleAddToCart(e, prod)}
-                            className="py-1.5 px-2 rounded-lg border border-[#1d73b7] bg-white dark:bg-transparent text-[#1d73b7] hover:bg-[#1d73b7] hover:text-white text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shadow-2xs active:scale-[0.98]"
+                            className="py-1.5 px-2 rounded-lg bg-gradient-to-r from-[#c56718] to-[#ea580c] hover:from-[#d97706] hover:to-[#f97316] text-white text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shadow-md shadow-orange-950/20 active:scale-[0.98]"
                           >
                             <ShoppingCart className="size-3" />
                             <span>Add To Cart</span>
@@ -2040,7 +2045,7 @@ export default function CategoryPage() {
                                 </div>
                               </td>
                               <td className="py-2.5 px-4">
-                                <span className="font-semibold text-slate-900 dark:text-white block hover:text-[#1d73b7]">
+                                <span className="font-semibold text-slate-900 dark:text-white block hover:text-[#c56718]">
                                   {prod.name}
                                 </span>
                                 <div className="flex flex-wrap gap-1 mt-1">
@@ -2061,8 +2066,8 @@ export default function CategoryPage() {
                                   )}
                                 </div>
                               </td>
-                              <td className="py-2.5 px-3 text-[#1d73b7] font-bold">
-                                {prod.brand || "VOLAMP"}
+                              <td className="py-2.5 px-3 text-[#c56718] font-bold">
+                                {prod.brand || "Industrial"}
                               </td>
                               <td className="py-2.5 px-3 font-mono text-slate-500 text-[11px]">
                                 {prod.sku || prod.productId}
@@ -2093,7 +2098,7 @@ export default function CategoryPage() {
                                     onClick={(e) => handleToggleCompare(e, prod)}
                                     className={`px-2.5 py-1.5 rounded-lg border text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors ${
                                       isProductInCompare(prod.productId)
-                                        ? "bg-[#1d73b7] border-[#1d73b7] text-white"
+                                        ? "bg-[#c56718] border-[#c56718] text-white"
                                         : "border-slate-200 dark:border-slate-700 hover:bg-slate-100 text-slate-700 dark:text-slate-200"
                                     }`}
                                     title="Compare Product (Same category only)"
@@ -2116,7 +2121,7 @@ export default function CategoryPage() {
                                   <button
                                     type="button"
                                     onClick={(e) => handleAddToCart(e, prod)}
-                                    className="px-3 py-1.5 rounded-lg bg-[#1d73b7] hover:bg-[#165a91] text-white text-xs font-bold transition-colors cursor-pointer"
+                                    className="px-3 py-1.5 rounded-lg bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold transition-colors cursor-pointer"
                                   >
                                     Add
                                   </button>
@@ -2144,7 +2149,7 @@ export default function CategoryPage() {
                   <Button variant="outline" size="sm" onClick={handleResetFilters} className="text-xs">
                     Clear Filters
                   </Button>
-                  <Button size="sm" onClick={() => setEnquireOpen(true)} className="text-xs bg-[#1d73b7]">
+                  <Button size="sm" onClick={() => setEnquireOpen(true)} className="text-xs bg-[#c56718]">
                     Request Custom Quote
                   </Button>
                 </div>
@@ -2166,7 +2171,7 @@ export default function CategoryPage() {
                   >
                     <ChevronLeft className="size-3.5" /> Previous
                   </button>
-                  <span className="px-3 py-1 rounded font-bold bg-[#1d73b7] text-white">
+                  <span className="px-3 py-1 rounded font-bold bg-[#c56718] text-white">
                     {page}
                   </span>
                   <button
@@ -2199,7 +2204,7 @@ export default function CategoryPage() {
             <button
               type="button"
               onClick={() => setEnquireOpen(true)}
-              className="px-4 py-2.5 rounded-lg bg-[#1d73b7] hover:bg-[#165a91] text-white text-xs font-bold transition-colors cursor-pointer"
+              className="px-4 py-2.5 rounded-lg bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold transition-colors cursor-pointer"
             >
               Upload Project BOQ →
             </button>
@@ -2250,8 +2255,12 @@ export default function CategoryPage() {
               <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
                 <div>
                   <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-xs font-bold text-[#1d73b7] dark:text-sky-400 uppercase tracking-wider">
-                      {prod.brand || "VOLAMP"}
+                    <span className="text-xs font-bold text-[#c56718] dark:text-sky-400 uppercase tracking-wider">
+                      {prod.brand || "Industrial"}
+                    </span>
+                    <span className="text-slate-300 dark:text-slate-600">•</span>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 dark:bg-amber-950 text-[#c56718] dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                      Volamp Authorized Dealer
                     </span>
                     <span className="text-slate-300 dark:text-slate-600">•</span>
                     <span className="text-xs text-slate-500 font-medium">
@@ -2337,7 +2346,7 @@ export default function CategoryPage() {
               {/* Complete Technical Specifications Grid from Master Sheet */}
               <div className="space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-[#1d73b7]" />
+                  <ShieldCheck className="size-4 text-[#c56718]" />
                   Master Technical Specifications
                 </h3>
 
@@ -2440,7 +2449,7 @@ export default function CategoryPage() {
                     }}
                     className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-lg border text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                       isProductInCompare(prod.productId)
-                        ? "bg-[#1d73b7] border-[#1d73b7] text-white"
+                        ? "bg-[#c56718] border-[#c56718] text-white"
                         : "border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
                     }`}
                   >
@@ -2463,7 +2472,7 @@ export default function CategoryPage() {
                       handleAddToCart(e, prod);
                       setViewProductSpecs(null);
                     }}
-                    className="flex-1 sm:flex-initial px-5 py-2.5 rounded-lg bg-[#1d73b7] hover:bg-[#165a91] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-[0.98]"
+                    className="flex-1 sm:flex-initial px-5 py-2.5 rounded-lg bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-[0.98]"
                   >
                     <ShoppingCart className="size-4" />
                     <span>Add To Cart</span>

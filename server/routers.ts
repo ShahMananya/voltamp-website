@@ -1,4 +1,5 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import { VOLAMP_JOB_ROLES } from "@shared/careersData";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -40,6 +41,12 @@ import {
   createCollaborateSubmission,
   getCollaborateSubmissions,
   getCollaborateSubmissionById,
+  createComplaintRecord,
+  getComplaints,
+  getComplaintByCaseId,
+  createPressInquiryRecord,
+  getPressInquiries,
+  getPressInquiryById,
   createEnquiry,
   getEnquiries,
   getEnquiryByNumber,
@@ -47,6 +54,11 @@ import {
   getCareerApplications,
   getCareerApplicationById,
 } from "./db";
+import {
+  dispatchCollaborationEmails,
+  dispatchGrievanceEmails,
+  dispatchPressEmails,
+} from "./services/emailService";
 import { parseVoiceOrderText } from "./services/voiceOrderParser";
 import { generateVolaResponse } from "./volaBrain";
 import {
@@ -71,6 +83,18 @@ const assistantSystemPrompt = `You are VOLA, the Senior Technical Advisor and Co
   - If a contractor or engineer speaks in casual English or slang ("how r uh", "sup", "plz rate"), be crisp, direct, and warm.
   - If they speak in Hindi / Hinglish ("kya haal hai bhai", "4 sqmm wire ka rate batao", "discount kitna milega"), respond like a true Ahmedabad electrical merchant & engineer in natural, professional Hinglish.
   - If they speak in Gujarati ("kem cho", "bhav shu che", "majama"), respond with pride and warmth in authentic Gujarati/Gujarati-English.
+
+### 🌍 UNIVERSAL INTELLIGENCE & WORLD KNOWLEDGE DIRECTIVE:
+- YOU CAN AND MUST ANSWER ANY QUESTION IN THE WORLD.
+- You are not limited to electrical cables. You possess comprehensive encyclopedic intelligence across all human knowledge:
+  1. Science & Physics (Quantum mechanics, thermodynamics, astronomy, chemistry, biology).
+  2. World History, Geography, Geopolitics, Countries, Capitals, and World Events.
+  3. Technology, Software Engineering & Coding (Python, TypeScript, React, algorithms, databases, AI).
+  4. Mathematics, Financial modeling, Business strategy, and Economics.
+  5. General life advice, everyday explanations, literature, sports, music, and culture.
+  6. Electrical engineering, industrial infrastructure, and Volamp's 3,385+ product catalog.
+- If a user asks about anything in the world (e.g., "What is photosynthesis?", "Who was Leonardo da Vinci?", "How does an airplane fly?", "Write a Python script"), ANSWER THEM THOROUGHLY, ACCURATELY, AND BRILLIANTLY.
+- NEVER say "I only know about electrical cables" or "I cannot answer that". Never force an electrical analogy when someone is asking about world history or science. Be universally helpful, sharp, and charismatic!
 
 ### 🏛️ VOLAMP ELEKTRIKALS HERITAGE & CORPORATE IDENTITY:
 - Official Entity: VOLAMP ELEKTRIKALS PRIVATE LIMITED
@@ -199,6 +223,78 @@ You can invoke the 'search_products', 'get_product_details', and 'list_categorie
 - Once gathered, invoke the 'place_order' tool immediately to register the order in the database!
 - After placement, provide the QO-2026-XXXXX Order Reference ID, itemized table, dispatch next steps, and a direct WhatsApp link to the Ahmedabad supply desk (+91 9512365582).
 - When a customer provides an Order ID to track, invoke 'lookup_order' to give them live status!
+
+### 🛑 CRITICAL AI RULE & FAQ ANSWER BANK (VOLAMP SALES CALL AGENT):
+The AI agent should NEVER invent a price, stock quantity, delivery date, discount, technical specification, credit limit, or commitment.
+If the required information is not available in the system, the AI MUST say:
+"Let me have our sales team confirm that for you. I don’t want to give you incorrect information."
+
+#### 1. COMPANY & PRODUCT RANGE:
+- Volamp Elektrikals Pvt. Ltd. is a supplier and distributor of electrical cables, wires and related electrical products for industrial, commercial and other applications.
+- Products: Power cables, control cables, flexible cables, shielded cables, armoured and unarmoured cables, FRLS cables, XLPE cables, copper and aluminium cables, along with switchgear products (MCBs, MCCBs).
+- Brands: Reputed brands including Polycab, Finolex, KEI, Havells, Schneider Electric, Legrand, LK (subject to product availability and customer requirement).
+- Business Types: Industrial, commercial, contractors, traders, OEMs, and government/EPC clients. Both bulk and small quantities handled.
+
+#### 2. ORDER, DISPATCH & LOGISTICS:
+- Delivery Timings & Dispatch Cutoff: Orders placed between 8:00 AM and 5:30 PM are considered for delivery/dispatch as per availability and logistics feasibility. Orders after 5:30 PM are generally handled for pickup or subsequent dispatch.
+- Same-day dispatch may be possible when required stock is available in our warehouse and order is received within the dispatch window.
+- B2B Delivery Timeline: For available stock, B2B delivery generally takes around 1–3 days depending on location and logistics.
+- Warehouse: Our warehouse is separate from our office. Customer pickup can be arranged after order confirmation.
+- Direct-to-site / Outside-city deliveries: Feasible depending on order size and location.
+
+#### 3. COMMERCIAL, PAYMENT & CREDIT:
+- Payment Methods: Direct NEFT/RTGS, advance payment, and approved corporate credit.
+- Credit Policy: Credit facilities are subject to customer eligibility, credit assessment, and company limits. New customer credit purchases require credit approval; advance payment is available as an alternative. PDC accepted under approved credit terms only.
+- Quotation Validity & Taxes: Quotations specify tax treatment (standard 18% GST with 100% ITC). Price validity depends on raw metal indices (copper/aluminium rates).
+
+#### 4. QUALITY & AUTHENTICITY:
+- 100% genuine products sourced from established manufacturers and authorized channels.
+- Manufacturer Test Certificates (MTC), datasheets, and ISI/BIS compliance documentation provided with applicable orders.
+
+#### 5. OBJECTION HANDLING:
+- "Why buy from you instead of IndiaMART?": IndiaMART is a directory connecting suppliers; Volamp directly handles quotation, stock availability, quality verification, GST invoicing, and fulfillment under our own supply warranty.
+- "I already have a supplier": We can remain an additional supply option whenever you need better availability, an alternative brand, urgent material, or competitive pricing.
+- "Your price is high / Competitor has lower price": Cable prices vary by brand, specification, metal rates, freight, and terms. Request competitor quotation details so our sales team can review whether we can offer a more competitive option.
+
+#### 6. WHEN THE AI MUST ESCALATE (20 SCENARIOS):
+The AI must NEVER resolve these independently:
+1. Customer asks for a price not available in the database.
+2. Customer asks for a special discount or negotiation.
+3. Customer wants to negotiate price.
+4. Customer requests credit beyond approved limits.
+5. Customer disputes an invoice.
+6. Customer claims shortage/damage.
+7. Customer claims defective material.
+8. Customer requests product replacement.
+9. Customer asks for technical approval/design certification.
+10. Customer asks for exact ampacity where required installation conditions are unknown.
+11. Customer asks for legal/compliance certification not available in the database.
+12. Customer wants to cancel an already processed or dispatched order.
+13. Customer wants to return cut or specially processed cable.
+14. Customer has an urgent project requiring immediate unverified stock confirmation.
+15. Customer asks for a delivery commitment that cannot be verified.
+16. Customer is angry or threatening.
+17. Customer asks for management intervention (CEO/Director).
+18. Customer asks for a customized commercial arrangement.
+19. Customer asks for a competitor price match.
+20. Customer requests something outside standard company policy.
+
+Recommended Escalation Response:
+"I understand your requirement. This needs confirmation from our sales team, and I don’t want to give you incorrect information. I’ll arrange for the concerned salesperson to get in touch with you."
+
+#### 7. STATEMENTS THE AI MUST NEVER SAY:
+❌ "We have 500 metres in stock."
+❌ "I can give you 15% discount."
+❌ "The price is ₹X." (unless verified in live database)
+❌ "Your material will definitely arrive tomorrow."
+❌ "Your credit limit is ₹10 lakh."
+❌ "This cable is definitely suitable for your load."
+❌ "We guarantee this product will work for your application."
+❌ "I have approved your credit."
+❌ "I have approved your discount."
+❌ "Your replacement is confirmed."
+❌ "Your refund is confirmed."
+Unless these details are available from a connected live system or explicitly approved by the sales team.
 `;
 
 const aiTools: Tool[] = [
@@ -1228,6 +1324,27 @@ export const appRouter = router({
       )
       .mutation(async ({ input }) => {
         const submission = await createCollaborateSubmission(input);
+
+        // Dispatch notification to collab@volampelektrikals.com AND ticket confirmation to user
+        dispatchCollaborationEmails({
+          applicationId: submission.applicationId,
+          companyName: input.companyName,
+          contactName: input.contactName,
+          designation: input.designation,
+          businessType: input.businessType,
+          collaborationTypes: input.collaborationTypes,
+          opportunityDetails: input.opportunityDetails,
+          partnershipStrengths: input.partnershipStrengths,
+          expectedBusinessPotential: input.expectedBusinessPotential,
+          expectedTimeline: input.expectedTimeline,
+          mobile: input.mobile,
+          email: input.email,
+          cityCountry: input.cityCountry,
+          notes: input.notes,
+        }).catch((err) => {
+          console.error("[COLLABORATE EMAIL ERROR]:", err);
+        });
+
         return {
           success: true as const,
           applicationId: submission.applicationId,
@@ -1257,6 +1374,130 @@ export const appRouter = router({
         }
         return sub;
       }),
+  }),
+
+  complaints: router({
+    submit: publicProcedure
+      .input(
+        z.object({
+          fullName: z.string().trim().min(2, "Your full name is required"),
+          companyName: z.string().trim().optional(),
+          email: z.string().trim().email("Please enter a valid email address for receiving case updates"),
+          phone: z.string().trim().min(7, "Please enter a valid mobile or WhatsApp number"),
+          caseType: z.string().trim().min(2, "Please select the nature of discrepancy"),
+          orderRef: z.string().trim().optional(),
+          urgency: z.string().trim().default("standard"),
+          details: z.string().trim().min(5, "Please explain the issue or discrepancy"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const record = await createComplaintRecord(input);
+
+        // Drop case to Grievances@volampelektrikals.com AND send ticket confirmation to complainant
+        dispatchGrievanceEmails({
+          caseId: record.caseId,
+          fullName: record.fullName,
+          companyName: record.companyName,
+          email: record.email,
+          phone: record.phone,
+          caseType: record.caseType,
+          orderRef: record.orderRef,
+          urgency: record.urgency,
+          details: record.details,
+        }).catch((err) => {
+          console.error("[GRIEVANCE EMAIL ERROR]:", err);
+        });
+
+        return {
+          success: true as const,
+          caseId: record.caseId,
+          complaint: record,
+        };
+      }),
+
+    getByCaseId: publicProcedure
+      .input(z.object({ caseId: z.string() }))
+      .query(async ({ input }) => {
+        const item = await getComplaintByCaseId(input.caseId);
+        if (!item) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Case not found.",
+          });
+        }
+        return item;
+      }),
+
+    list: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.accountType !== "employee") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only VOLAMP authorized personnel can view complaint dossiers.",
+        });
+      }
+      return getComplaints();
+    }),
+  }),
+
+  press: router({
+    submit: publicProcedure
+      .input(
+        z.object({
+          journalistName: z.string().trim().min(2, "Your name is required"),
+          mediaOutlet: z.string().trim().min(2, "Media outlet or publication name is required"),
+          email: z.string().trim().email("Please enter a valid work email address"),
+          phone: z.string().trim().min(7, "Please enter a valid phone or WhatsApp number"),
+          inquiryType: z.string().trim().min(2, "Please select the inquiry type"),
+          deadline: z.string().trim().min(2, "Please specify your editorial deadline"),
+          details: z.string().trim().min(5, "Please provide inquiry details or questions"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const record = await createPressInquiryRecord(input);
+
+        // Drop inquiry to pr@volampelektrikals.com AND send media ticket to journalist
+        dispatchPressEmails({
+          pressTicketId: record.pressTicketId,
+          journalistName: record.journalistName,
+          mediaOutlet: record.mediaOutlet,
+          email: record.email,
+          phone: record.phone,
+          inquiryType: record.inquiryType,
+          deadline: record.deadline,
+          details: record.details,
+        }).catch((err) => {
+          console.error("[PRESS EMAIL ERROR]:", err);
+        });
+
+        return {
+          success: true as const,
+          pressTicketId: record.pressTicketId,
+          inquiry: record,
+        };
+      }),
+
+    getByTicketId: publicProcedure
+      .input(z.object({ pressTicketId: z.string() }))
+      .query(async ({ input }) => {
+        const item = await getPressInquiryById(input.pressTicketId);
+        if (!item) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Press ticket not found.",
+          });
+        }
+        return item;
+      }),
+
+    list: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.accountType !== "employee") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only VOLAMP authorized personnel can view media inquiries.",
+        });
+      }
+      return getPressInquiries();
+    }),
   }),
 
   enquiry: router({
@@ -1503,206 +1744,7 @@ export const appRouter = router({
 
   careers: router({
     getOpenRoles: publicProcedure.query(() => {
-      return [
-        {
-          id: "ht-lt-cable-design-engineer",
-          title: "Senior HT / LT Power Cable Design Engineer",
-          department: "Engineering & R&D",
-          location: "Ahmedabad HQ (Gujarat)",
-          workMode: "Full-Time · On-Site",
-          experience: "4 – 8 Years",
-          education: "B.E. / B.Tech / M.Tech in Electrical or Polymer Engineering",
-          packageLpa: "₹9.5 – 15.0 LPA",
-          openingsCount: 2,
-          isFeatured: true,
-          overview: "Lead technical design and compound formulation for 1.1kV up to 33kV XLPE and PVC insulated power/control cables, ensuring compliance with IS 7098, IS 1554, and IEC 60502 standards.",
-          responsibilities: [
-            "Develop conductor stranding calculations, radial insulation thicknesses, screening, and armouring specifications.",
-            "Formulate and optimize flame-retardant (FRLS, LSZH) and high-temperature PVC/XLPE compounds.",
-            "Draft comprehensive Guaranteed Technical Particulars (GTP) and test documentation for CPRI, ERDA, and DISCOM vendor approvals.",
-            "Collaborate with plant extrusion teams during pilot runs and prototype validation.",
-          ],
-          requirements: [
-            "Proven track record in power cable design (up to 33kV HT / MV cables).",
-            "Deep comprehension of IS 694, IS 1554 (Part 1), IS 7098 (Part 1 & 2), and IEC 60502 standards.",
-            "Proficiency in AutoCAD for cable cross-sections and technical CAD modeling.",
-            "Familiarity with raw material cost optimization and conductor weight indices.",
-          ],
-          tags: ["33kV HT / LT", "XLPE Compounding", "CPRI / ERDA", "GTP Preparation"],
-        },
-        {
-          id: "qa-hv-test-lab-lead",
-          title: "Quality Assurance & High-Voltage Test Lab Lead",
-          department: "Quality & Testing",
-          location: "Sanand / Ahmedabad Plant (Gujarat)",
-          workMode: "Full-Time · On-Site",
-          experience: "3 – 7 Years",
-          education: "B.E. / B.Tech in Electrical Engineering or Diploma with QA Certification",
-          packageLpa: "₹7.5 – 12.0 LPA",
-          openingsCount: 1,
-          isFeatured: true,
-          overview: "Oversee the central High-Voltage test laboratory, type-testing protocols, and routine factory acceptance tests (FAT) ensuring 0-defect dispatches with Material Test Certificates ( MTC ).",
-          responsibilities: [
-            "Conduct and supervise high-voltage withstand testing, spark testing, insulation resistance (IR), and partial discharge (PD) measurements.",
-            "Inspect raw copper cathode, EC-grade aluminum wire rods, and polymer pellets for electrical conductivity and tensile elongation.",
-            "Issue official Material Test Certificates ( MTC ) for EPC contractors, railway authorities, and GeM supplies.",
-            "Maintain lab instrument calibration compliant with ISO 9001 and ISO/IEC 17025 testing norms.",
-          ],
-          requirements: [
-            "Hands-on experience running HV test sets, Kelvin double bridge, spark testers, and thermal aging ovens.",
-            "Direct interaction experience with third-party inspection agencies (RITES, BV, SGS, DNV).",
-            "Rigorous commitment to zero-compromise electrical safety standards.",
-          ],
-          tags: ["High Voltage Lab", "Partial Discharge", "NABL / ISO 17025", "MTC Certification"],
-        },
-        {
-          id: "plant-extrusion-supervisor",
-          title: "Plant Extrusion & Continuous Vulcanization Supervisor",
-          department: "Manufacturing & Plant",
-          location: "Ahmedabad Manufacturing Complex",
-          workMode: "Full-Time · On-Site",
-          experience: "3 – 6 Years",
-          education: "Diploma or B.E. in Mechanical / Electrical / Polymer Technology",
-          packageLpa: "₹6.0 – 9.5 LPA",
-          openingsCount: 3,
-          isFeatured: false,
-          overview: "Drive shop-floor operations across continuous vulcanization (CCV) lines and triple-extrusion lines, optimizing line speed, wall concentricity, and raw material yield.",
-          responsibilities: [
-            "Supervise extrusion operations for insulation, bedding, steel wire/strip armouring, and final PVC/LSZH outer sheathing.",
-            "Maintain strict wall thickness tolerances, eccentricity controls, and smooth jacket surface finish.",
-            "Enforce preventive maintenance schedules, rapid tooling changeovers, and compound scrap minimization.",
-            "Direct shift workforce in adherence to 5S methodology and plant safety protocols.",
-          ],
-          requirements: [
-            "Hands-on supervisory background in cable extrusion and compounding plants.",
-            "Thorough knowledge of temperature profiles and screw geometry for PVC, XLPE, and HDPE.",
-            "Strong team leadership and practical problem-solving capability under shift schedules.",
-          ],
-          tags: ["CCV Extrusion", "Armouring Lines", "Shop Floor 5S", "Yield Optimization"],
-        },
-        {
-          id: "b2b-epc-sales-manager",
-          title: "B2B Infrastructure & EPC Project Sales Manager",
-          department: "EPC & Project Sales",
-          location: "Mumbai Regional Office (Western Hub)",
-          workMode: "Full-Time · Hybrid / Field",
-          experience: "5 – 10 Years",
-          education: "B.Tech Electrical + MBA (Marketing or Supply Chain preferred)",
-          packageLpa: "₹12.0 – 18.0 LPA + Performance Bonus",
-          openingsCount: 2,
-          isFeatured: true,
-          overview: "Drive strategic institutional cable sales to infrastructure EPCs, metro railway packages, data centers, airports, and power transmission utilities across Western India.",
-          responsibilities: [
-            "Secure multi-crore annual rate contracts and project supply packages with Tier-1 EPC contractors (L&T, Tata Projects, Sterling & Wilson, KEC, Kalpataru).",
-            "Lead vendor pre-qualification and consultant approvals with EIL, Mecon, NTPC, PGCIL, and state electricity boards.",
-            "Coordinate with central Ahmedabad dispatch operations for production schedules, stage-wise inspections, and LC/BG commercial terms.",
-            "Manage client relationships and ensure seamless post-dispatch technical documentation.",
-          ],
-          requirements: [
-            "Proven track record in B2B electrical cables, switchgears, or electrical transmission equipment sales.",
-            "Active professional network with EPC procurement heads, PMC consultants, and chief electrical engineers.",
-            "Excellent commercial negotiation, proposal structuring, and presentation acumen.",
-          ],
-          tags: ["EPC Sales", "Metro Rail / Utilities", "Vendor Approval", "Rate Contracts"],
-        },
-        {
-          id: "solar-renewable-sales-lead",
-          title: "Solar & Renewable Energy Key Account Executive",
-          department: "EPC & Project Sales",
-          location: "Jaipur / Ahmedabad Corridor",
-          workMode: "Full-Time · Field / Client Facing",
-          experience: "2 – 5 Years",
-          education: "B.E. in Electrical / Renewable Energy Engineering or B.Sc",
-          packageLpa: "₹6.5 – 10.5 LPA + Incentives",
-          openingsCount: 2,
-          isFeatured: false,
-          overview: "Accelerate the adoption of Volamp's 1500V DC Solar Photovoltaic cables and renewable balance-of-plant cabling with IPPs, utility solar developers, and rooftop EPCs.",
-          responsibilities: [
-            "Cultivate key relationships with solar developers, IPPs, and turnkey EPC contractors across Gujarat, Rajasthan, and Western India.",
-            "Present technical value propositions of electron-beam cross-linked solar cables (EN 50618, TÜV 2 Pfg 1169 standards, UV & ozone resistance).",
-            "Monitor national and state solar park tender bids to capture cable supply requirements early.",
-          ],
-          requirements: [
-            "Experience selling into the solar EPC, wind balance-of-plant, or renewable contractor ecosystem.",
-            "Solid technical understanding of DC cable sizing, voltage drop mitigation, and MC4 connector compatibility.",
-            "Strong communication skills and proactive client engagement.",
-          ],
-          tags: ["Solar 1500V DC", "Renewable IPPs", "TÜV Rheinland", "Utility Solar"],
-        },
-        {
-          id: "tendering-boq-estimation-engineer",
-          title: "Tendering, BOQ & Cost Estimation Engineer",
-          department: "Procurement & Supply Chain",
-          location: "Ahmedabad Corporate HQ",
-          workMode: "Full-Time · On-Site",
-          experience: "2 – 5 Years",
-          education: "B.E. / B.Tech in Electrical Engineering",
-          packageLpa: "₹6.0 – 9.0 LPA",
-          openingsCount: 2,
-          isFeatured: false,
-          overview: "Scrutinize technical tender specifications, prepare accurate Bill of Quantities (BOQ) costings linked to raw metal indices, and manage GeM and public e-procurement bids.",
-          responsibilities: [
-            "Analyze commercial and technical tender requirements from State DISCOMs, Railway Boards, GeM portal, and PSU utilities.",
-            "Calculate conductor metal weights (Copper/Aluminum), compound volume, steel armouring wire, and machine hour costs per km.",
-            "Apply IEEMA price variation clauses (PV formulas) and formulate competitive bid proposals within deadline.",
-          ],
-          requirements: [
-            "Proven expertise in tender BOQ preparation and electrical cable cost estimation.",
-            "Familiarity with GeM portal bids, e-procurement platforms, and IEEMA circular indices.",
-            "Analytical rigor and sharp attention to technical detail.",
-          ],
-          tags: ["Tendering & BOQ", "IEEMA Formulas", "GeM Bids", "Cost Estimation"],
-        },
-        {
-          id: "metal-procurement-specialist",
-          title: "Metal Procurement & Raw Material Supply Chain Specialist",
-          department: "Procurement & Supply Chain",
-          location: "Ahmedabad Corporate HQ",
-          workMode: "Full-Time · On-Site",
-          experience: "3 – 6 Years",
-          education: "B.Com / B.E. + Supply Chain Certification or MBA",
-          packageLpa: "₹7.0 – 11.0 LPA",
-          openingsCount: 1,
-          isFeatured: false,
-          overview: "Manage strategic procurement of primary raw metals (Electrolytic Copper cathode/wire rod, EC Grade Aluminum) and masterbatch polymers tied to MCX and LME indices.",
-          responsibilities: [
-            "Source high-purity copper rods and aluminum wire rods from primary smelters (Hindalco, Vedanta, NALCO).",
-            "Track daily MCX and LME commodity trends to execute strategic forward hedging and physical metal bookings.",
-            "Negotiate volume purchase contracts for polymer compounds (XLPE, PVC resin, plasticizers, masterbatches).",
-            "Coordinate just-in-time delivery schedules to minimize holding costs while ensuring zero manufacturing downtime.",
-          ],
-          requirements: [
-            "Direct experience procuring copper/aluminum or raw materials for cable or conductor manufacturing.",
-            "Understanding of commodity futures, price hedging, and vendor contract management.",
-          ],
-          tags: ["MCX / LME Hedging", "Copper & Aluminum", "Polymer Sourcing", "Vendor Negotiation"],
-        },
-        {
-          id: "get-electrical-batch-2026",
-          title: "Graduate Engineer Trainee (GET) – Electrical (Batch 2026)",
-          department: "Early Careers",
-          location: "Ahmedabad HQ & Manufacturing Complex",
-          workMode: "Full-Time · 12-Month Rotation",
-          experience: "Fresh Graduate / 0 – 1 Year (Batch 2025/2026)",
-          education: "B.E. / B.Tech in Electrical / Electronics Engineering (Min 65% aggregate)",
-          packageLpa: "₹4.5 – 6.0 LPA + Medical Coverage",
-          openingsCount: 6,
-          isFeatured: true,
-          overview: "An accelerated 1-year rotational leadership program designed to groom future engineering leaders across Cable Design, High-Voltage QA Labs, Plant Extrusion, and Technical Estimations.",
-          responsibilities: [
-            "Rotate through 4 quarterly modules: Cable Design & Standards, Plant Extrusion & CCV Lines, High-Voltage Testing & Lab Protocols, and Technical Sizing & Client BOQs.",
-            "Work alongside Senior Technical Mentors on real infrastructure supply consignments.",
-            "Deliver a capstone technical project focused on compound optimization, testing automation, or energy efficiency.",
-            "Receive full-time absorption into R&D, Quality, or Plant Engineering upon successful program completion.",
-          ],
-          requirements: [
-            "Strong academic grounding in power systems, electrical materials, and high-voltage fundamentals.",
-            "Passion for hands-on industrial engineering and nation-building infrastructure.",
-            "Proactive learner with excellent communication and team collaboration skills.",
-          ],
-          tags: ["Fast-Track GET", "12-Month Rotation", "Full Mentorship", "Batch 2026"],
-        },
-      ];
+      return VOLAMP_JOB_ROLES;
     }),
 
     submitApplication: publicProcedure

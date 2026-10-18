@@ -173,7 +173,7 @@ export default function CalculatorPage() {
     ? realCableProduct.sku
     : activeNonCableProduct?.sku || "SKU-PROD";
 
-  const activeBrandName = isCable ? selectedBrand : (activeNonCableProduct?.brand || "Volamp");
+  const activeBrandName = isCable ? selectedBrand : (activeNonCableProduct?.brand || "Polycab");
 
   const activeCategoryName = isCable
     ? activeCableType.category

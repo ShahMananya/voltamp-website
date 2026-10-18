@@ -785,7 +785,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
       doc.roundedRect(12, heroBoxY, 186, heroBoxH, 2.5, 2.5, "FD");
 
       // Left Brand Tag Pill
-      const brandText = `[ ${(product.brand || "VOLAMP").toUpperCase()} ] · INDUSTRIAL CERTIFIED`;
+      const brandText = product.brand ? `[ ${product.brand.toUpperCase()} ] · OEM CERTIFIED` : `[ INDUSTRIAL GRADE ] · OEM CERTIFIED`;
       doc.setFillColor(197, 103, 24);
       doc.roundedRect(16, heroBoxY + 3.5, 62, 5, 1, 1, "F");
       doc.setTextColor(255, 255, 255);
@@ -1157,7 +1157,8 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
 
     // General product fields
     list.push(
-      { label: "Product Brand", value: product?.brand || "VOLAMP", category: "General Parameters" },
+      { label: "Product Brand", value: product?.brand || "Authorized Brand", category: "General Parameters" },
+      { label: "Authorized Dealer", value: "Volamp Elektrikals Pvt. Ltd. (Authorized Channel Partner)", category: "General Parameters" },
       { label: "Product Category", value: product?.category || "Electrical Supplies", category: "General Parameters" },
       { label: "Procurement Unit", value: product?.unit || "Per Piece", category: "General Parameters" },
       { label: "Minimum Order Quantity", value: String(product?.moq || "100 Units"), category: "General Parameters" },
@@ -1283,7 +1284,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             )}
             <Link
               href="/products"
-              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#1d73b7] to-[#0284c7] text-white text-xs font-bold hover:shadow-lg hover:shadow-sky-500/25 transition-all"
+              className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#c56718] to-[#0284c7] text-white text-xs font-bold hover:shadow-lg hover:shadow-sky-500/25 transition-all"
             >
               Browse Complete Catalog
             </Link>
@@ -1296,8 +1297,8 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] via-slate-50 to-[#f1f5f9] dark:from-[#090f17] dark:via-[#0c1522] dark:to-[#080d14] text-[#1e293b] dark:text-[#f1f5f9] flex flex-col font-sans transition-colors">
       <SeoHead
-        title={`${product.name} (${product.brand || "VOLAMP"}) | Wholesale Price & Specs`}
-        description={`Buy ${product.name} (${product.brand || "VOLAMP"}) online from Volamp Elektrikals. B2B contractor rates, certified specifications, MTC test certificates, fast dispatch from Ahmedabad.`}
+        title={`${product.name} | ${product.brand || "Industrial"} | Volamp Elektrikals Authorized Dealer`}
+        description={`Buy ${product.name} (${product.brand || "Industrial"}) from Volamp Elektrikals, Authorized Dealer & Distributor. B2B contractor rates, certified specifications, MTC test certificates, fast dispatch from Ahmedabad.`}
         keywords={`${product.name}, ${product.brand}, ${product.category}, buy ${product.name} online, electrical supplier Ahmedabad, Volamp Elektrikals wholesale, Polycab Havells distributor`}
         canonicalPath={`/product/${product.productId}`}
         ogImage={currentActiveImage.startsWith("http") ? currentActiveImage : `https://volampelektrikals.com${currentActiveImage}`}
@@ -1319,19 +1320,19 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             </Link>
 
             <nav className="hidden lg:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-slate-300">
-              <Link href="/" className="hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors">
+              <Link href="/" className="hover:text-[#c56718] dark:hover:text-sky-400 transition-colors">
                 Home
               </Link>
-              <Link href="/category/wires-cables" className="hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors">
+              <Link href="/category/wires-cables" className="hover:text-[#c56718] dark:hover:text-sky-400 transition-colors">
                 Products
               </Link>
-              <Link href="/about-volamp" className="hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors">
+              <Link href="/about-volamp" className="hover:text-[#c56718] dark:hover:text-sky-400 transition-colors">
                 About Us
               </Link>
-              <Link href="/branch-locations" className="hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors">
+              <Link href="/branch-locations" className="hover:text-[#c56718] dark:hover:text-sky-400 transition-colors">
                 Branches
               </Link>
-              <Link href="/calculator" className="hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors">
+              <Link href="/calculator" className="hover:text-[#c56718] dark:hover:text-sky-400 transition-colors">
                 Calculator
               </Link>
             </nav>
@@ -1344,9 +1345,9 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             {/* Track Order */}
             <Link
               href="/track"
-              className="flex items-center gap-1.5 hover:text-[#1d73b7] dark:hover:text-sky-400 transition-colors group"
+              className="flex items-center gap-1.5 hover:text-[#c56718] dark:hover:text-sky-400 transition-colors group"
             >
-              <Send className="size-4 text-[#1d73b7] group-hover:-translate-y-0.5 transition-transform" />
+              <Send className="size-4 text-[#c56718] group-hover:-translate-y-0.5 transition-transform" />
               <span className="hidden sm:inline">Track Order</span>
             </Link>
 
@@ -1354,7 +1355,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             <button
               type="button"
               onClick={() => setEnquireOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-[#1d73b7] dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors cursor-pointer group"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 text-[#c56718] dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors cursor-pointer group"
             >
               <FileText className="size-4 group-hover:-translate-y-0.5 transition-transform" />
               <span>Upload PO</span>
@@ -1393,17 +1394,17 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
       {/* 2. REFINED BREADCRUMB BAR */}
       <section className="bg-white/50 dark:bg-[#0c1522]/50 border-b border-slate-200/60 dark:border-slate-800/60 py-3">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 flex items-center gap-2 text-xs text-slate-500 overflow-x-auto whitespace-nowrap">
-          <Link href="/" className="hover:text-[#1d73b7] transition-colors">
+          <Link href="/" className="hover:text-[#c56718] transition-colors">
             Home
           </Link>
           <ChevronRight className="size-3 text-slate-400 shrink-0" />
-          <Link href="/category/wires-cables" className="hover:text-[#1d73b7] transition-colors">
+          <Link href="/category/wires-cables" className="hover:text-[#c56718] transition-colors">
             {product.category || "Electrical Supplies"}
           </Link>
           {product.subcategory && (
             <>
               <ChevronRight className="size-3 text-slate-400 shrink-0" />
-              <span className="hover:text-[#1d73b7] cursor-pointer">
+              <span className="hover:text-[#c56718] cursor-pointer">
                 {product.subcategory}
               </span>
             </>
@@ -1417,7 +1418,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             </>
           )}
           <ChevronRight className="size-3 text-slate-400 shrink-0" />
-          <span className="text-[#1d73b7] dark:text-sky-400 font-semibold truncate max-w-xs sm:max-w-md">
+          <span className="text-[#c56718] dark:text-sky-400 font-semibold truncate max-w-xs sm:max-w-md">
             {product.name}
           </span>
         </div>
@@ -1464,7 +1465,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                   <button
                     type="button"
                     onClick={handleShare}
-                    className="size-9 rounded-full bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-[#1d73b7] flex items-center justify-center transition-all cursor-pointer backdrop-blur-md shadow-2xs"
+                    className="size-9 rounded-full bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-[#c56718] flex items-center justify-center transition-all cursor-pointer backdrop-blur-md shadow-2xs"
                     title="Share Product"
                   >
                     <Share2 className="size-4" />
@@ -1473,7 +1474,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                   <button
                     type="button"
                     onClick={() => setLightboxOpen(true)}
-                    className="size-9 rounded-full bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-[#1d73b7] flex items-center justify-center transition-all cursor-pointer backdrop-blur-md shadow-2xs"
+                    className="size-9 rounded-full bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-[#c56718] flex items-center justify-center transition-all cursor-pointer backdrop-blur-md shadow-2xs"
                     title="Expand View"
                   >
                     <Maximize2 className="size-4" />
@@ -1489,7 +1490,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                     onClick={() => setMediaMode("2d")}
                     className={`px-3 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
                       mediaMode === "2d"
-                        ? "bg-white dark:bg-[#0e1726] text-[#1d73b7] dark:text-sky-400 shadow-xs"
+                        ? "bg-white dark:bg-[#0e1726] text-[#c56718] dark:text-sky-400 shadow-xs"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
@@ -1501,7 +1502,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                     onClick={() => setMediaMode("3d")}
                     className={`px-3 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
                       mediaMode === "3d"
-                        ? "bg-gradient-to-r from-[#1d73b7] to-sky-500 text-white shadow-sm"
+                        ? "bg-gradient-to-r from-[#c56718] to-sky-500 text-white shadow-sm"
                         : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
@@ -1704,7 +1705,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                     {/* Bottom Guide Pill */}
                     <div className="absolute bottom-2.5 inset-x-3 flex items-center justify-between pointer-events-none text-[10px] text-slate-500 dark:text-slate-400 font-medium bg-white/70 dark:bg-slate-900/70 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-slate-200/60 dark:border-slate-800/60">
                       <div className="flex items-center gap-1.5 truncate">
-                        <Eye className="size-3 text-[#1d73b7] dark:text-sky-400 shrink-0" />
+                        <Eye className="size-3 text-[#c56718] dark:text-sky-400 shrink-0" />
                         <span className="truncate font-semibold text-slate-700 dark:text-slate-300">
                           {galleryImages[selectedImageIndex]?.label || "Product Perspective"}
                         </span>
@@ -1720,7 +1721,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
               {/* Verified Quality Spec Footer */}
               <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
                 <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
-                  <ShieldCheck className="size-4 text-[#1d73b7] dark:text-sky-400" />
+                  <ShieldCheck className="size-4 text-[#c56718] dark:text-sky-400" />
                   <span className="font-semibold">Quality Verified Specification</span>
                 </div>
                 <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
@@ -1738,7 +1739,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                   onClick={() => setSelectedImageIndex(idx)}
                   className={`h-22 rounded-2xl bg-white dark:bg-[#0e1726] border p-2 flex flex-col items-center justify-center transition-all cursor-pointer relative overflow-hidden group ${
                     selectedImageIndex === idx
-                      ? "border-[#1d73b7] dark:border-sky-400 ring-3 ring-[#1d73b7]/15 dark:ring-sky-400/20 shadow-sm"
+                      ? "border-[#c56718] dark:border-sky-400 ring-3 ring-[#c56718]/15 dark:ring-sky-400/20 shadow-sm"
                       : "border-slate-200/90 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600"
                   }`}
                   title={item.label}
@@ -1757,7 +1758,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                     {item.label}
                   </span>
                   {selectedImageIndex === idx && (
-                    <span className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-[#1d73b7] to-sky-400" />
+                    <span className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-[#c56718] to-sky-400" />
                   )}
                 </button>
               ))}
@@ -1772,8 +1773,12 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             {/* Brand, Title & SKU */}
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-600/10 to-sky-600/10 text-[#1d73b7] dark:text-sky-400 border border-blue-500/20 text-xs font-black tracking-wider uppercase">
-                  {product.brand || "VOLAMP AUTHORIZED"}
+                <span className="px-2.5 py-1 rounded-lg bg-[#c56718]/10 text-[#c56718] dark:text-[#f59e0b] border border-[#c56718]/25 text-xs font-black tracking-wider uppercase">
+                  Brand: {product.brand || "Authorized Brand"}
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25 text-xs font-bold flex items-center gap-1">
+                  <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
+                  <span>Volamp Authorized Dealer</span>
                 </span>
                 <span className="text-slate-300 dark:text-slate-600">•</span>
                 <span className="text-xs text-slate-500 font-semibold">
@@ -1827,7 +1832,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                     }}
                     className={`py-2 px-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer text-center relative ${
                       selectedVariant === item.id || quantity === item.qty
-                        ? "bg-[#1d73b7] text-white border-[#1d73b7] shadow-md shadow-blue-500/20"
+                        ? "bg-[#c56718] text-white border-[#c56718] shadow-md shadow-blue-500/20"
                         : "bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-400"
                     }`}
                   >
@@ -1843,7 +1848,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             {/* Download Datasheet Banner Card */}
             <div className="p-4 rounded-2xl bg-gradient-to-r from-sky-500/5 via-blue-500/5 to-transparent border border-sky-500/20 dark:border-sky-500/30 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-[#1d73b7]/10 dark:bg-sky-400/10 text-[#1d73b7] dark:text-sky-400 flex items-center justify-center shrink-0">
+                <div className="size-10 rounded-xl bg-[#c56718]/10 dark:bg-sky-400/10 text-[#c56718] dark:text-sky-400 flex items-center justify-center shrink-0">
                   <FileText className="size-5" />
                 </div>
                 <div>
@@ -1858,7 +1863,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
               <button
                 type="button"
                 onClick={handleDownloadDatasheet}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#1d73b7] hover:bg-[#155a8f] text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 group"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#c56718] hover:bg-[#155a8f] text-white text-xs font-bold shadow-sm transition-all cursor-pointer shrink-0 group"
               >
                 <Download className="size-3.5 group-hover:-translate-y-0.5 transition-transform" />
                 <span>Download Brochure</span>
@@ -1917,7 +1922,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                 <button
                   type="button"
                   onClick={() => setActiveTab("specs")}
-                  className="text-xs text-[#1d73b7] dark:text-sky-400 font-bold hover:underline"
+                  className="text-xs text-[#c56718] dark:text-sky-400 font-bold hover:underline"
                 >
                   View All Specs →
                 </button>
@@ -1955,7 +1960,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-5 sm:p-6 shadow-xl shadow-slate-200/40 dark:shadow-black/50 space-y-5 relative overflow-hidden">
               
               {/* Premium Top Border Accent */}
-              <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#1d73b7] via-sky-400 to-[#c56718]" />
+              <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-[#c56718] via-sky-400 to-[#c56718]" />
 
               {/* Price Hero Section */}
               <div className="space-y-1.5 pt-1">
@@ -2003,7 +2008,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                 </div>
                 <div className="flex justify-between items-center text-[11px]">
                   <span className="text-slate-500">Standard Contractor Price</span>
-                  <span className="font-bold text-[#1d73b7] dark:text-sky-400">
+                  <span className="font-bold text-[#c56718] dark:text-sky-400">
                     ₹{unitPriceNum.toFixed(2)} / {product.unit ? product.unit.replace("Per ", "") : "unit"}
                   </span>
                 </div>
@@ -2078,7 +2083,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                   <span className="text-xs text-slate-600 dark:text-slate-300 font-semibold">
                     Estimated Subtotal:
                   </span>
-                  <span className="text-base font-black text-[#1d73b7] dark:text-sky-400 font-['Plus_Jakarta_Sans',sans-serif]">
+                  <span className="text-base font-black text-[#c56718] dark:text-sky-400 font-['Plus_Jakarta_Sans',sans-serif]">
                     ₹{totalPrice.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -2092,7 +2097,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
               <div className="space-y-2.5 pt-1">
                 <Button
                   onClick={handleAddToCart}
-                  className="w-full bg-gradient-to-r from-[#1d73b7] via-[#0284c7] to-[#1d73b7] hover:from-[#155a8f] hover:to-[#0369a1] text-white font-extrabold text-xs h-12 rounded-2xl shadow-lg shadow-sky-500/25 transition-all cursor-pointer flex items-center justify-center gap-2 group"
+                  className="w-full bg-gradient-to-r from-[#c56718] via-[#0284c7] to-[#c56718] hover:from-[#155a8f] hover:to-[#0369a1] text-white font-extrabold text-xs h-12 rounded-2xl shadow-lg shadow-sky-500/25 transition-all cursor-pointer flex items-center justify-center gap-2 group"
                 >
                   <ShoppingCart className="size-4 group-hover:-translate-y-0.5 transition-transform" />
                   <span>Add {quantity} {product.unit ? product.unit.replace("Per ", "") : "Units"} to Cart</span>
@@ -2132,7 +2137,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                   }}
                   className={`w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 border transition-all cursor-pointer ${
                     isCompared
-                      ? "bg-blue-50 border-[#1d73b7] text-[#1d73b7] dark:bg-blue-950/60 dark:border-sky-500 dark:text-sky-300"
+                      ? "bg-blue-50 border-[#c56718] text-[#c56718] dark:bg-blue-950/60 dark:border-sky-500 dark:text-sky-300"
                       : "border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400"
                   }`}
                 >
@@ -2173,7 +2178,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                 </span>
                 <a
                   href="tel:+919512365582"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1d73b7] dark:text-sky-400 hover:underline"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c56718] dark:text-sky-400 hover:underline"
                 >
                   <Phone className="size-3.5" />
                   <span>Direct Desk: +91 9512365582</span>
@@ -2205,7 +2210,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                     isActive
-                      ? "bg-[#1d73b7] text-white shadow-md shadow-blue-500/20"
+                      ? "bg-[#c56718] text-white shadow-md shadow-blue-500/20"
                       : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60"
                   }`}
                 >
@@ -2274,7 +2279,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                       <button
                         type="button"
                         onClick={() => handleCopySpec(item.label, item.value)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-[#1d73b7] cursor-pointer p-1"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-[#c56718] cursor-pointer p-1"
                         title="Copy attribute"
                       >
                         {copiedKey === item.label ? (
@@ -2361,7 +2366,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             <div className="space-y-3 animate-in fade-in duration-200">
               <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-[#0e1726] flex items-center justify-between hover:border-sky-300 dark:hover:border-sky-700 transition-colors">
                 <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-xl bg-[#1d73b7]/10 text-[#1d73b7] dark:text-sky-400 flex items-center justify-center">
+                  <div className="size-10 rounded-xl bg-[#c56718]/10 text-[#c56718] dark:text-sky-400 flex items-center justify-center">
                     <FileText className="size-5" />
                   </div>
                   <div>
@@ -2404,7 +2409,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             <div className="space-y-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed animate-in fade-in duration-200">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/80 dark:border-slate-800/80 space-y-1.5">
-                  <Truck className="size-5 text-[#1d73b7] dark:text-sky-400" />
+                  <Truck className="size-5 text-[#c56718] dark:text-sky-400" />
                   <h5 className="font-bold text-slate-900 dark:text-white text-xs">Pan-India Express Dispatch</h5>
                   <p className="text-[11px] text-slate-500">
                     Orders received before 3:00 PM are processed same-day with dedicated direct logistics corridors covering 28 states and major industrial zones.
@@ -2445,7 +2450,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
               </div>
               <Link
                 href="/category/wires-cables"
-                className="text-xs font-bold text-[#1d73b7] dark:text-sky-400 hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-[#c56718] dark:text-sky-400 hover:underline flex items-center gap-1"
               >
                 <span>View Full Catalog</span>
                 <ArrowRight className="size-3.5" />
@@ -2461,7 +2466,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                   <Link
                     key={rel.productId}
                     href={`/product/${rel.productId}`}
-                    className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between hover:shadow-xl hover:border-[#1d73b7] dark:hover:border-sky-500 transition-all duration-300 group"
+                    className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between hover:shadow-xl hover:border-[#c56718] dark:hover:border-sky-500 transition-all duration-300 group"
                   >
                     <div>
                       <div className="h-36 w-full flex items-center justify-center p-3 rounded-xl bg-slate-50/70 dark:bg-slate-900/50 mb-3 overflow-hidden">
@@ -2476,10 +2481,10 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                           className="max-h-full max-w-full object-contain group-hover:scale-108 transition-transform duration-300"
                         />
                       </div>
-                      <span className="text-[10px] font-black text-[#1d73b7] dark:text-sky-400 uppercase tracking-wider block mb-1">
-                        {rel.brand || "VOLAMP"}
+                      <span className="text-[10px] font-black text-[#c56718] dark:text-sky-400 uppercase tracking-wider block mb-1">
+                        {rel.brand || "Industrial"}
                       </span>
-                      <h3 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-[#1d73b7] dark:group-hover:text-sky-400 transition-colors">
+                      <h3 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-[#c56718] dark:group-hover:text-sky-400 transition-colors">
                         {rel.name}
                       </h3>
                     </div>
@@ -2487,7 +2492,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                       <span className="text-xs font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
                         {relPrice}
                       </span>
-                      <span className="text-[11px] text-[#1d73b7] dark:text-sky-400 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                      <span className="text-[11px] text-[#c56718] dark:text-sky-400 font-bold group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
                         Details →
                       </span>
                     </div>

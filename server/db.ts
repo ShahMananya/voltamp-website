@@ -3030,3 +3030,160 @@ export async function getCareerApplicationById(applicationId: string): Promise<C
   return memoryCareerApplications.find((app) => app.applicationId === applicationId) || null;
 }
 
+// ---------------------------------------------------------------------------
+// Grievances & Quality Complaints Desk (Grievances@volampelektrikals.com)
+// ---------------------------------------------------------------------------
+
+export function generateCaseNumber(): string {
+  const year = new Date().getFullYear();
+  const randomNum = Math.floor(10000 + Math.random() * 90000);
+  return `CASE-${year}-${randomNum}`;
+}
+
+export interface ComplaintRecord {
+  id: number;
+  caseId: string;
+  fullName: string;
+  companyName: string | null;
+  email: string;
+  phone: string;
+  caseType: string;
+  orderRef: string | null;
+  urgency: string;
+  details: string;
+  status: "received" | "under_technical_review" | "resolved" | "closed";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const memoryComplaints: Array<ComplaintRecord> = [];
+
+export async function createComplaintRecord(data: {
+  caseId?: string;
+  fullName: string;
+  companyName?: string | null;
+  email: string;
+  phone: string;
+  caseType: string;
+  orderRef?: string | null;
+  urgency: string;
+  details: string;
+}): Promise<ComplaintRecord> {
+  const caseId = data.caseId || generateCaseNumber();
+  const now = new Date();
+
+  const record: ComplaintRecord = {
+    id: memoryComplaints.length + 1,
+    caseId,
+    fullName: data.fullName.trim(),
+    companyName: data.companyName?.trim() || null,
+    email: data.email.trim().toLowerCase(),
+    phone: data.phone.trim(),
+    caseType: data.caseType.trim(),
+    orderRef: data.orderRef?.trim() || null,
+    urgency: data.urgency.trim(),
+    details: data.details.trim(),
+    status: "received",
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  memoryComplaints.unshift(record);
+
+  // Also bridge into enquiries table for staff visibility
+  try {
+    await createEnquiry({
+      enquiryNumber: caseId,
+      fullName: record.fullName,
+      companyName: record.companyName || undefined,
+      email: record.email,
+      phone: record.phone,
+      location: record.orderRef ? `Order/Inv Ref: ${record.orderRef}` : "Grievance Portal",
+      category: `COMPLAINT / DISPUTE: ${record.caseType}`,
+      urgency: record.urgency.toUpperCase(),
+      details: `[CASE ID: ${caseId}]\n[CASE TYPE: ${record.caseType}]\n[ORDER/INV REF: ${record.orderRef || "N/A"}]\n[URGENCY: ${record.urgency.toUpperCase()}]\n\n${record.details}`,
+    });
+  } catch (err) {
+    console.warn("[Grievance Bridge] Could not mirror to enquiries table:", err);
+  }
+
+  return record;
+}
+
+export async function getComplaints(): Promise<ComplaintRecord[]> {
+  return memoryComplaints;
+}
+
+export async function getComplaintByCaseId(caseId: string): Promise<ComplaintRecord | null> {
+  return memoryComplaints.find((c) => c.caseId === caseId) || null;
+}
+
+// ---------------------------------------------------------------------------
+// Press & Media Inquiries Desk (pr@volampelektrikals.com)
+// ---------------------------------------------------------------------------
+
+export function generatePressTicketId(): string {
+  const year = new Date().getFullYear();
+  const randomNum = Math.floor(10000 + Math.random() * 90000);
+  return `PRESS-${year}-${randomNum}`;
+}
+
+export interface PressInquiryRecord {
+  id: number;
+  pressTicketId: string;
+  journalistName: string;
+  mediaOutlet: string;
+  email: string;
+  phone: string;
+  inquiryType: string;
+  deadline: string;
+  details: string;
+  status: "received" | "in_review" | "answered";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const memoryPressInquiries: Array<PressInquiryRecord> = [];
+
+export async function createPressInquiryRecord(data: {
+  pressTicketId?: string;
+  journalistName: string;
+  mediaOutlet: string;
+  email: string;
+  phone: string;
+  inquiryType: string;
+  deadline: string;
+  details: string;
+}): Promise<PressInquiryRecord> {
+  const pressTicketId = data.pressTicketId || generatePressTicketId();
+  const now = new Date();
+
+  const record: PressInquiryRecord = {
+    id: memoryPressInquiries.length + 1,
+    pressTicketId,
+    journalistName: data.journalistName.trim(),
+    mediaOutlet: data.mediaOutlet.trim(),
+    email: data.email.trim().toLowerCase(),
+    phone: data.phone.trim(),
+    inquiryType: data.inquiryType.trim(),
+    deadline: data.deadline.trim(),
+    details: data.details.trim(),
+    status: "received",
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  memoryPressInquiries.unshift(record);
+
+  return record;
+}
+
+export async function getPressInquiries(): Promise<PressInquiryRecord[]> {
+  return memoryPressInquiries;
+}
+
+export async function getPressInquiryById(pressTicketId: string): Promise<PressInquiryRecord | null> {
+  return memoryPressInquiries.find((p) => p.pressTicketId === pressTicketId) || null;
+}
+
+

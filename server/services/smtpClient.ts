@@ -8,6 +8,9 @@ export interface SmtpSendOptions {
   user?: string;
   pass?: string;
   from: string;
+  fromName?: string;
+  replyTo?: string;
+  envelopeFrom?: string;
   to: string;
   subject: string;
   text: string;
@@ -26,6 +29,9 @@ export async function sendViaNativeSmtp(options: SmtpSendOptions): Promise<void>
     user,
     pass,
     from,
+    fromName = "VOLAMP Elektrikals",
+    replyTo,
+    envelopeFrom,
     to,
     subject,
     text,
@@ -132,7 +138,8 @@ export async function sendViaNativeSmtp(options: SmtpSendOptions): Promise<void>
       } else if (step === 6 && (code === 235 || code === 250)) {
         // Authenticated! Send MAIL FROM
         step = 7;
-        sendCommand(`MAIL FROM:<${from}>`);
+        const envelopeSender = envelopeFrom || user || from;
+        sendCommand(`MAIL FROM:<${envelopeSender}>`);
       } else if (step === 7 && code === 250) {
         // Mail from ok, send RCPT TO
         step = 8;
@@ -145,9 +152,10 @@ export async function sendViaNativeSmtp(options: SmtpSendOptions): Promise<void>
         // Send email message
         step = 10;
         const boundary = `volamp_mime_${Date.now()}`;
-        const message = [
-          `From: "VOLAMP Elektrikals" <${from}>`,
+        const headerLines = [
+          `From: "${fromName}" <${from}>`,
           `To: <${to}>`,
+          ...(replyTo ? [`Reply-To: <${replyTo}>`] : []),
           `Subject: ${subject}`,
           `Date: ${new Date().toUTCString()}`,
           `MIME-Version: 1.0`,
@@ -167,9 +175,9 @@ export async function sendViaNativeSmtp(options: SmtpSendOptions): Promise<void>
           ``,
           `--${boundary}--`,
           `.`,
-        ].join("\r\n");
+        ];
 
-        socket.write(message + "\r\n");
+        socket.write(headerLines.join("\r\n") + "\r\n");
       } else if (step === 10 && code === 250) {
         // Message queued/sent!
         step = 11;

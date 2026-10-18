@@ -4,6 +4,16 @@ import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
 import { useUserLocation } from "@/contexts/LocationContext";
 import { useCart } from "@/contexts/CartContext";
+import { trpc } from "@/lib/trpc";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Newspaper,
   Calendar,
@@ -20,12 +30,108 @@ import {
   Sparkles,
   ShieldCheck,
   Award,
+  Send,
+  CheckCircle2,
+  Copy,
+  Clock,
+  FileText,
+  MessageCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function InTheNews() {
   const [, navigate] = useLocation();
   const [copied, setCopied] = useState(false);
+
+  // Press Inquiry Form State
+  const [isPressModalOpen, setIsPressModalOpen] = useState(false);
+  const [journalistName, setJournalistName] = useState("");
+  const [mediaOutlet, setMediaOutlet] = useState("");
+  const [pressEmail, setPressEmail] = useState("");
+  const [pressPhone, setPressPhone] = useState("");
+  const [inquiryType, setInquiryType] = useState("Executive Commentary / Interview");
+  const [deadline, setDeadline] = useState("Today (Within 6-8 Hours)");
+  const [pressDetails, setPressDetails] = useState("");
+  const [submittedPressTicket, setSubmittedPressTicket] = useState<{
+    pressTicketId: string;
+    mediaOutlet: string;
+    email: string;
+    createdAt: string;
+  } | null>(null);
+  const [pressTicketCopied, setPressTicketCopied] = useState(false);
+
+  const pressMutation = trpc.press.submit.useMutation({
+    onSuccess: (res) => {
+      setSubmittedPressTicket({
+        pressTicketId: res.pressTicketId,
+        mediaOutlet: res.inquiry.mediaOutlet,
+        email: res.inquiry.email,
+        createdAt: new Date().toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        }),
+      });
+      toast.success("Media Inquiry Registered Successfully!", {
+        description: `Ticket Reference: ${res.pressTicketId}. Dropped to pr@volampelektrikals.com & confirmation emailed to ${res.inquiry.email}.`,
+      });
+    },
+    onError: (err) => {
+      toast.error("Inquiry Submission Failed", {
+        description: err.message || "Please check your inputs and try again.",
+      });
+    },
+  });
+
+  const handlePressSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!journalistName.trim()) {
+      toast.error("Please provide your name");
+      return;
+    }
+    if (!mediaOutlet.trim()) {
+      toast.error("Please provide your media publication or news outlet");
+      return;
+    }
+    if (!pressEmail.trim() || !pressEmail.includes("@")) {
+      toast.error("Please enter a valid work email address");
+      return;
+    }
+    if (!pressPhone.trim()) {
+      toast.error("Please enter your phone or WhatsApp number");
+      return;
+    }
+    if (!pressDetails.trim()) {
+      toast.error("Please share the details of your inquiry or story questions");
+      return;
+    }
+
+    pressMutation.mutate({
+      journalistName: journalistName.trim(),
+      mediaOutlet: mediaOutlet.trim(),
+      email: pressEmail.trim().toLowerCase(),
+      phone: pressPhone.trim(),
+      inquiryType,
+      deadline,
+      details: pressDetails.trim(),
+    });
+  };
+
+  const copyPressTicket = (ticketId: string) => {
+    navigator.clipboard.writeText(ticketId);
+    setPressTicketCopied(true);
+    toast.success("Press Ticket ID copied to clipboard!");
+    setTimeout(() => setPressTicketCopied(false), 2000);
+  };
+
+  const handleResetPressModal = () => {
+    setSubmittedPressTicket(null);
+    setJournalistName("");
+    setMediaOutlet("");
+    setPressEmail("");
+    setPressPhone("");
+    setPressDetails("");
+  };
 
   const articleUrl =
     "https://www.ahmedabadmirror.com/top-10-inspiring-entrepreneurs-in-ahmedabad-to-watch-in-2026/81922949.html";
@@ -349,6 +455,17 @@ export default function InTheNews() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                handleResetPressModal();
+                setIsPressModalOpen(true);
+              }}
+              className="px-5 py-2.5 rounded-xl bg-[#c56718] hover:bg-[#a9540e] text-xs font-bold text-white flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+            >
+              <Send className="size-4" />
+              <span>Submit Media Inquiry</span>
+            </button>
             <a
               href="mailto:pr@volampelektrikals.com"
               className="px-5 py-2.5 rounded-xl bg-white border border-[#ebd7c7] text-xs font-bold text-[#3d2b2d] hover:bg-[#faf7f3] flex items-center gap-2 transition-colors shadow-xs"
@@ -366,6 +483,219 @@ export default function InTheNews() {
           </div>
         </div>
       </section>
+
+      {/* Press Inquiry Modal Dialog */}
+      <Dialog open={isPressModalOpen} onOpenChange={setIsPressModalOpen}>
+        <DialogContent className="max-w-2xl bg-white dark:bg-slate-900 border-[#ebd7c7] dark:border-slate-800 p-0 overflow-hidden rounded-3xl">
+          <DialogHeader className="p-6 sm:p-8 bg-gradient-to-r from-[#102a40] to-[#1e3a5f] text-white">
+            <div className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[#f59e0b] mb-1">
+              <Mail className="size-3.5" />
+              <span>Volamp Corporate Communications & Media Desk</span>
+            </div>
+            <DialogTitle className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-white">
+              {submittedPressTicket ? "Media Inquiry Logged" : "Submit Media & Press Inquiry"}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-[#cbdbe7]">
+              {submittedPressTicket
+                ? "Your official media inquiry has been assigned to our corporate relations lead."
+                : "Submit your editorial request, interview questions, or asset inquiry. Direct dispatch to pr@volampelektrikals.com with automated ticket generation."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="p-6 sm:p-8 max-h-[75vh] overflow-y-auto">
+            {submittedPressTicket ? (
+              <div className="space-y-6 text-center">
+                <div className="size-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
+                  <CheckCircle2 className="size-9" />
+                </div>
+
+                <div className="space-y-2">
+                  <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                    Official Press Ticket Issued
+                  </span>
+                  <h3 className="text-2xl font-bold text-[#102a40] dark:text-white">
+                    {submittedPressTicket.pressTicketId}
+                  </h3>
+                  <p className="text-xs text-[#5d4a4b] dark:text-slate-300 max-w-md mx-auto">
+                    Inquiry registered for <strong>{submittedPressTicket.mediaOutlet}</strong>. Dropped directly to <span className="font-semibold text-[#102a40] dark:text-amber-300">pr@volampelektrikals.com</span>.
+                  </p>
+                  <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">
+                    ✓ A confirmation ticket has been dispatched to <strong>{submittedPressTicket.email}</strong>.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-[#faf7f3] dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 text-left space-y-2 max-w-md mx-auto text-xs">
+                  <div className="flex items-center justify-between pb-2 border-b border-[#ebd7c7] dark:border-slate-700">
+                    <span className="text-slate-500">Ticket Reference:</span>
+                    <button
+                      type="button"
+                      onClick={() => copyPressTicket(submittedPressTicket.pressTicketId)}
+                      className="font-mono font-bold text-[#c56718] flex items-center gap-1 hover:underline cursor-pointer"
+                    >
+                      {pressTicketCopied ? <Check className="size-3 text-emerald-600" /> : <Copy className="size-3" />}
+                      <span>{submittedPressTicket.pressTicketId}</span>
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Registered Date:</span>
+                    <span className="font-medium text-slate-800 dark:text-slate-200">{submittedPressTicket.createdAt}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Editorial Turnaround:</span>
+                    <span className="font-semibold text-emerald-700">Prioritized by deadline</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                  <a
+                    href={`mailto:pr@volampelektrikals.com?subject=${encodeURIComponent(
+                      `[PRESS TICKET ${submittedPressTicket.pressTicketId}] Follow up - ${submittedPressTicket.mediaOutlet}`
+                    )}`}
+                    className="px-5 py-2.5 rounded-xl bg-[#102a40] hover:bg-[#1a3e5c] text-white text-xs font-bold shadow-xs transition-colors"
+                  >
+                    Email Media Desk
+                  </a>
+                  <a
+                    href="https://wa.me/919512365582"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5"
+                  >
+                    <MessageCircle className="size-4" />
+                    <span>WhatsApp PR Desk</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setIsPressModalOpen(false)}
+                    className="px-4 py-2.5 rounded-xl border border-stone-300 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-stone-100 cursor-pointer"
+                  >
+                    Close Window
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handlePressSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Journalist / Contributor Name *
+                    </label>
+                    <Input
+                      placeholder="e.g. Rahul Mehta"
+                      value={journalistName}
+                      onChange={(e) => setJournalistName(e.target.value)}
+                      required
+                      className="bg-white dark:bg-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Media Outlet / Publication *
+                    </label>
+                    <Input
+                      placeholder="e.g. Economic Times, Livemint, CNBC"
+                      value={mediaOutlet}
+                      onChange={(e) => setMediaOutlet(e.target.value)}
+                      required
+                      className="bg-white dark:bg-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Work Email (receives confirmation ticket) *
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="rahul@publication.com"
+                      value={pressEmail}
+                      onChange={(e) => setPressEmail(e.target.value)}
+                      required
+                      className="bg-white dark:bg-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Phone / WhatsApp Number *
+                    </label>
+                    <Input
+                      placeholder="+91 98765 43210"
+                      value={pressPhone}
+                      onChange={(e) => setPressPhone(e.target.value)}
+                      required
+                      className="bg-white dark:bg-slate-800"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Inquiry Focus / Topic *
+                    </label>
+                    <select
+                      value={inquiryType}
+                      onChange={(e) => setInquiryType(e.target.value)}
+                      className="w-full text-xs rounded-md border border-input bg-white dark:bg-slate-800 px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-ring"
+                    >
+                      <option value="Executive Commentary / Interview">Executive Commentary / Interview</option>
+                      <option value="Industry & Market Analysis (Wires/Cables)">Industry & Market Analysis (Wires/Cables)</option>
+                      <option value="Company Performance & Expansion Story">Company Performance & Expansion Story</option>
+                      <option value="Brand Assets, Logos & Executive Bios">Brand Assets, Logos & Executive Bios</option>
+                      <option value="General Editorial Inquiry">General Editorial Inquiry</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Editorial Deadline *
+                    </label>
+                    <select
+                      value={deadline}
+                      onChange={(e) => setDeadline(e.target.value)}
+                      className="w-full text-xs rounded-md border border-input bg-white dark:bg-slate-800 px-3 py-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-ring"
+                    >
+                      <option value="Urgent (Within 4-6 Hours)">Urgent (Within 4-6 Hours)</option>
+                      <option value="Today by 6:00 PM IST">Today by 6:00 PM IST</option>
+                      <option value="Within 24 Hours">Within 24 Hours</option>
+                      <option value="Within 48 Hours">Within 48 Hours</option>
+                      <option value="Flexible / Feature Story">Flexible / Feature Story</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Inquiry Details & Questions *
+                  </label>
+                  <Textarea
+                    placeholder="Please specify your questions, requested quotes, or story background..."
+                    value={pressDetails}
+                    onChange={(e) => setPressDetails(e.target.value)}
+                    rows={4}
+                    required
+                    className="bg-white dark:bg-slate-800 text-xs"
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center justify-between">
+                  <p className="text-[11px] text-slate-500">
+                    Routed to <strong className="text-[#102a40] dark:text-slate-300">pr@volampelektrikals.com</strong>
+                  </p>
+                  <button
+                    type="submit"
+                    disabled={pressMutation.isPending}
+                    className="px-6 py-2.5 rounded-xl bg-[#c56718] hover:bg-[#a9540e] text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    <Send className="size-3.5" />
+                    <span>{pressMutation.isPending ? "Transmitting..." : "Submit Inquiry"}</span>
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Universal Footer (Matching Shared Screenshot Layout) */}
       <UniversalFooter showNewsletter={false} showJournalBar={false} forceLight={true} />

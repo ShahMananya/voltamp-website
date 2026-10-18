@@ -6,6 +6,7 @@ import { registerQuickOrderPdfRoute } from "../quickOrderPdfRoute";
 import { registerGoogleMerchantRoutes } from "../googleMerchantFeed";
 import { registerProductRestRoutes } from "../productRestRoutes";
 import { registerSeoRoutes } from "../seoRoutes";
+import { registerLiveMetalRoutes } from "../liveMetalRoutes";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 
@@ -23,6 +24,7 @@ export function createExpressApp() {
   registerGoogleMerchantRoutes(app);
   registerProductRestRoutes(app);
   registerSeoRoutes(app);
+  registerLiveMetalRoutes(app);
 
   // tRPC API - supports both /api/trpc and /trpc (for Vercel rewrites)
   const trpcHandler = createExpressMiddleware({

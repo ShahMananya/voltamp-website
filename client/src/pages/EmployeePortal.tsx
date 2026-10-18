@@ -170,14 +170,31 @@ export default function EmployeePortal() {
           </div>
 
           <div className="flex items-center gap-3">
+            <a
+              href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white transition-colors shadow-xs"
+              title="Open Official VOLAMP Employee Workspace"
+            >
+              <Briefcase className="size-3.5" />
+              <span>Workspace</span>
+              <ExternalLink className="size-3 opacity-80" />
+            </a>
             <ThemeToggle />
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#f0f4f8] dark:bg-[#102b42] text-xs">
+            <button
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("volamp:open-profile"));
+              }}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#f0f4f8] dark:bg-[#102b42] text-xs hover:opacity-80 transition-opacity cursor-pointer"
+              title="View & Edit Account"
+            >
               <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="font-semibold">{user.name || user.email}</span>
               <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[#1d73b7]/10 text-[#1d73b7] ml-1">
                 {user.role === "admin" ? "Admin" : "Staff"}
               </span>
-            </div>
+            </button>
             <Button
               variant="ghost"
               size="sm"

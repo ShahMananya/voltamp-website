@@ -42,7 +42,7 @@ export function loadProductsFromDisk(): Product[] {
         productId: item.productId,
         sku: item.sku || `SKU-${item.productId}`,
         name: item.name,
-        brand: item.brand || "Volamp",
+        brand: item.brand || "Polycab",
         category: item.category,
         subcategory: item.subcategory || null,
         description: item.description || null,
@@ -123,13 +123,12 @@ export function normalizeCategory(c: string): string {
 
 export function normalizeBrand(b: string): string {
   const lower = (b || "").toLowerCase().trim();
-  if (lower === "finolex" || lower === "finnolex") return "finnolex";
-  if (lower === "schneider" || lower === "schnieder" || lower === "schneider electric") return "schnieder";
-  if (lower === "l&t" || lower === "l & t" || lower === "lk" || lower === "larsen & toubro" || lower === "larsen and toubro") return "lk";
+  if (lower === "finolex" || lower === "finnolex") return "finolex";
+  if (lower.includes("schneider") || lower.includes("schnieder")) return "schneider electric";
+  if (lower === "l&t" || lower === "l & t" || lower === "lk" || lower === "l&t / lk" || lower.includes("larsen")) return "l&t / lk";
   if (lower === "polycab") return "polycab";
   if (lower === "kei") return "kei";
   if (lower === "legrand") return "legrand";
-  if (lower === "volamp" || lower === "voltamp") return "volamp";
   return lower;
 }
 
@@ -650,12 +649,21 @@ export function getCatalogBrands(category?: string) {
     if (targetCategory && normalizeCategory(p.category) !== targetCategory) {
       continue;
     }
-    if (p.brand) {
+    if (p.brand && !p.brand.toLowerCase().includes("volamp")) {
       brands.add(p.brand);
     }
   }
 
-  return Array.from(brands).sort();
+  // Canonical display order for authorized brands
+  const canonicalOrder = ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand"];
+  return Array.from(brands).sort((a, b) => {
+    const ia = canonicalOrder.indexOf(a);
+    const ib = canonicalOrder.indexOf(b);
+    if (ia !== -1 && ib !== -1) return ia - ib;
+    if (ia !== -1) return -1;
+    if (ib !== -1) return 1;
+    return a.localeCompare(b);
+  });
 }
 
 export function getCategoryFilterStats(category?: string, subcategory?: string) {

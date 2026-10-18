@@ -2,15 +2,30 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
 // @ts-ignore
 import * as THREE from "three";
 import {
-  ArrowRight,
-  ChevronRight,
-  ChevronLeft,
+  RotateCcw,
   Maximize2,
   Minimize2,
-  Zap,
   Layers,
+  Zap,
+  ChevronRight,
+  ArrowRight,
+  Sparkles,
+  Bot,
+  Thermometer,
+  Eye,
+  CheckCircle2,
+  Shield,
+  Activity,
+  Maximize,
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  FastForward,
+  Cpu,
+  Flame,
 } from "lucide-react";
-import { CATEGORIES, type Category } from "@/data/categories";
+import { AiElectricalViewerAssistant } from "./AiElectricalViewerAssistant";
 
 interface SpatialWonderlandCategoriesProps {
   onNavigate: (slug: string) => void;
@@ -18,49 +33,50 @@ interface SpatialWonderlandCategoriesProps {
   onOpenShowroomLab?: (catId: string) => void;
 }
 
-interface WonderlandCategoryItem {
-  id: string;
-  code: string;
-  number: number;
-  badgeTag: string;
-  categoryName: string;
-  slug: string;
-  categoryRef: Category;
-  color: string;
-  accent: string;
-  headline: string;
-  subheadline: string;
-  voltageSpec: string;
-  standardSpec: string;
-  materialSpec: string;
-  productCount: number;
-  featuredPills: string[];
-  subcategories: Array<{ name: string; slug: string }>;
-  image: string;
+export type ModelType = "panel-assembly" | "cable-cutaway" | "lug-gland" | "switchgear-mccb";
+export type VisionMode = "reality" | "thermal" | "blueprint";
+
+export interface TourStep {
+  title: string;
+  component: string;
+  narration: string;
+  cameraPos: { x: number; y: number; z: number };
+  targetRot: { x: number; y: number };
+  zoom: number;
+  explodeLevel: number;
+  visionMode: VisionMode;
+  hotspotId?: string;
+  durationMs: number;
 }
 
-// Cross-browser safe rounded rectangle helper
-function drawRoundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  r: number
-) {
-  if (typeof (ctx as any).roundRect === "function") {
-    (ctx as any).roundRect(x, y, w, h, r);
-  } else {
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    ctx.lineTo(x + r, y + h);
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
-  }
+export interface ModelPreset {
+  id: ModelType;
+  name: string;
+  badge: string;
+  subtitle: string;
+  categorySlug: string;
+  categoryName: string;
+  realImage: string;
+  specs: {
+    title: string;
+    role: string;
+    standard: string;
+    material: string;
+    price: string;
+    stock: string;
+    ampacity: string;
+    shortCircuit: string;
+    torque: string;
+  };
+  hotspots: Array<{
+    id: string;
+    title: string;
+    component: string;
+    desc: string;
+    technical: string;
+    pos: [number, number, number];
+  }>;
+  aiTour: TourStep[];
 }
 
 export function SpatialWonderlandCategories({
@@ -68,703 +84,456 @@ export function SpatialWonderlandCategories({
   onOpenARModal,
   onOpenShowroomLab,
 }: SpatialWonderlandCategoriesProps) {
-  // Category data mappings from master data
-  const cablesCat = CATEGORIES.find((c) => c.slug === "wire-cables") || CATEGORIES[0];
-  const switchgearCat = CATEGORIES.find((c) => c.slug === "switch-gears") || CATEGORIES[1];
-  const lugsCat = CATEGORIES.find((c) => c.slug === "lugs") || CATEGORIES[2];
-  const conduitCat = CATEGORIES.find((c) => c.slug === "conduit") || CATEGORIES[3];
-  const glandsCat = CATEGORIES.find((c) => c.slug === "glands") || CATEGORIES[4];
-  const wiringCat = CATEGORIES.find((c) => c.slug === "wiring-device") || CATEGORIES[5];
-  const earthingCat = CATEGORIES.find((c) => c.slug === "earthing-material") || CATEGORIES[6];
-  const solarCat = CATEGORIES.find((c) => c.slug === "solar") || CATEGORIES[7];
-
-  const items: WonderlandCategoryItem[] = useMemo(
+  // Master Real-World Industrial Presets with AI Guided 3D Animation Sequences
+  const modelPresets: ModelPreset[] = useMemo(
     () => [
       {
-        id: "cables",
-        code: "01",
-        number: 1,
-        badgeTag: "POWER TRANSMISSION",
-        categoryName: cablesCat.name,
-        slug: cablesCat.slug,
-        categoryRef: cablesCat,
-        color: "#0284c7",
-        accent: "#38bdf8",
-        headline: "Brand and digital engineering working to create meaningful value for power and infrastructure.",
-        subheadline: "LT/HT XLPE Armoured, Flexible FRLS Building Wires, Submersible & Screened Instrumentation Cables.",
-        voltageSpec: "1.1kV - 33kV HT XLPE",
-        standardSpec: "IS 7098 / IEC 60502 / CE",
-        materialSpec: "99.97% Pure Electrolytic Copper",
-        productCount: cablesCat.productCount,
-        featuredPills: cablesCat.featuredPills,
-        subcategories: cablesCat.subcategories.slice(0, 5).map((s) => ({ name: s.name, slug: s.slug })),
-        image: "/products/cable-cross-section.jpg",
+        id: "panel-assembly",
+        name: "Complete 400A Industrial Control Panel Assembly",
+        badge: "AI 3D INDUSTRIAL TWIN",
+        subtitle:
+          "Full Physical Assembly: Overhead GI Tray ➔ Armoured Feeder ➔ M63 Brass Glands ➔ DIN Copper Lugs ➔ 400A 3VA2 MCCB ➔ Solid Copper Busbars ➔ Earth Bar",
+        categorySlug: "switch-gears",
+        categoryName: "Industrial Switchgear",
+        realImage: "/products/mcc-panel-real.jpg",
+        specs: {
+          title: "Complete 400A MCC Control Panel Installation",
+          role: "Main high-current power distribution system connecting incoming transformer feed to motor control breakers",
+          standard: "IS 7098 / DIN 46235 / BS 6121 / IEC 60947-2 / IS 8623",
+          material: "CRCA Powder Coated Steel + 99.97% ETP Copper + CZ121 Naval Brass",
+          price: "Turnkey Engineered Package",
+          stock: "All Components Ready in Ahmedabad Warehouse",
+          ampacity: "400A Continuous Rated",
+          shortCircuit: "36kA / 1 sec (Icu)",
+          torque: "38 N·m on M12 Copper Busbar Studs",
+        },
+        hotspots: [
+          {
+            id: "cable-tray",
+            title: "Overhead GI Perforated Cable Tray",
+            component: "Cable Routing & Containment",
+            desc: "Hot-dip galvanized slotted ladder tray carrying heavy 4-core XLPE armoured feeder lines into the facility.",
+            technical: "Steel gauge: 2.0mm · Zinc coating: 80µm · Heavy load certified",
+            pos: [0.0, 1.25, 0.25],
+          },
+          {
+            id: "brass-glands",
+            title: "M63 Double Compression Brass Glands",
+            component: "CZ121 Naval Brass Cable Gland",
+            desc: "Clamps cable steel wire armour (SWA) for 100% grounding return and provides IP66 gas-tight environmental seal.",
+            technical: "Standard: BS 6121 / IS 12943 · Thread: M63 x 1.5mm · IP66 / IP68 Rated",
+            pos: [0.25, -0.72, 0.25],
+          },
+          {
+            id: "copper-lugs",
+            title: "DIN 46235 Pure Copper Crimp Lugs",
+            component: "Heavy Duty Tubular Cable Lugs",
+            desc: "Hydraulically crimped with hexagonal dies onto stripped XLPE cores; zero heating under 400A continuous load.",
+            technical: "Material: 99.97% Pure Copper · Electro-tinned 15µm · DIN 46235 stamped",
+            pos: [0.22, -0.15, 0.25],
+          },
+          {
+            id: "copper-busbars",
+            title: "99.97% Solid ETP Copper Busbars",
+            component: "Electrolytic Copper Busbars",
+            desc: "Heavy 50x6mm pure electrolytic copper busbars distributing power from incomer to feeder poles.",
+            technical: "Conductivity: 101% IACS · Max Temp: 90°C · Silver-plated contact palms",
+            pos: [0.22, 0.25, 0.25],
+          },
+          {
+            id: "mccb-breaker",
+            title: "400A Incomer MCCB (Siemens 3VA2)",
+            component: "Molded Case Circuit Breaker",
+            desc: "4-Pole high-breaking-capacity MCCB with electronic trip unit (ETU) and silver-alloy contacts.",
+            technical: "Rating: 400A · 36kA @ 415V · IEC 60947-2 · Sub-cycle arc extinction",
+            pos: [0.55, 0.55, 0.28],
+          },
+          {
+            id: "earth-busbar",
+            title: "Galvanized Gland Plate & Earth Bar",
+            component: "Grounding Continuity System",
+            desc: "Heavy 3mm galvanized steel gland plate bonded with multi-point green/yellow earth conductors.",
+            technical: "Ground fault withstand: 36kA · Bond resistance: < 0.1 mΩ · IS 3043",
+            pos: [-0.65, -0.45, 0.25],
+          },
+        ],
+        aiTour: [
+          {
+            title: "1. Overhead GI Cable Tray Feeder Entry",
+            component: "Overhead GI Cable Ladder Tray",
+            narration:
+              "Welcome to the VOLA AI 3D tour. Incoming 400A power arrives through heavy 4-core XLPE armoured cable routed across hot-dip galvanized cable ladder trays.",
+            cameraPos: { x: 0, y: 0.9, z: 4.6 },
+            targetRot: { x: -0.08, y: 0.05 },
+            zoom: 4.6,
+            explodeLevel: 0,
+            visionMode: "reality",
+            hotspotId: "cable-tray",
+            durationMs: 6500,
+          },
+          {
+            title: "2. M63 Double-Compression Brass Glands",
+            component: "Armour Clamping & Gas-Tight Glands",
+            narration:
+              "The feeder enters through dual M63 naval brass glands. Notice the internal conical ring clamping the steel wire armour to create a permanent 36 kiloamp earth fault path.",
+            cameraPos: { x: 0.25, y: -0.5, z: 3.8 },
+            targetRot: { x: 0.12, y: -0.12 },
+            zoom: 3.8,
+            explodeLevel: 30,
+            visionMode: "reality",
+            hotspotId: "brass-glands",
+            durationMs: 7000,
+          },
+          {
+            title: "3. DIN 46235 Pure Copper Crimp Lugs",
+            component: "Hydraulic Hexagonal Termination",
+            narration:
+              "Each phase conductor is terminated with DIN 46235 pure electrolytic copper lugs, hydraulically pressed at 120 kilonewtons. Electro-tinning ensures zero oxidation.",
+            cameraPos: { x: 0.22, y: -0.1, z: 3.4 },
+            targetRot: { x: 0.05, y: 0.08 },
+            zoom: 3.4,
+            explodeLevel: 20,
+            visionMode: "reality",
+            hotspotId: "copper-lugs",
+            durationMs: 7000,
+          },
+          {
+            title: "4. Solid Copper Busbars & 400A MCCB",
+            component: "Main Incomer Switchgear",
+            narration:
+              "Power feeds directly into solid 99.97% ETP copper busbars leading to the Siemens 3VA2 400A breaker. Fast de-ion arc chutes quench short circuits in milliseconds.",
+            cameraPos: { x: 0.45, y: 0.4, z: 3.6 },
+            targetRot: { x: 0.05, y: 0.18 },
+            zoom: 3.6,
+            explodeLevel: 10,
+            visionMode: "reality",
+            hotspotId: "mccb-breaker",
+            durationMs: 7500,
+          },
+          {
+            title: "5. FLIR Thermal Infrared Heat Dissipation",
+            component: "400A Full Load Thermal Scan",
+            narration:
+              "Switching to thermal scan: under full 400A load, solid copper busbars run at 68 degrees Celsius, well below the 90 degree IEC allowable limit.",
+            cameraPos: { x: 0, y: 0.1, z: 4.8 },
+            targetRot: { x: 0.1, y: 0.2 },
+            zoom: 4.8,
+            explodeLevel: 0,
+            visionMode: "thermal",
+            durationMs: 7000,
+          },
+        ],
       },
       {
-        id: "switchgear",
-        code: "02",
-        number: 2,
-        badgeTag: "CIRCUIT PROTECTION",
-        categoryName: switchgearCat.name,
-        slug: switchgearCat.slug,
-        categoryRef: switchgearCat,
-        color: "#0284c7",
-        accent: "#38bdf8",
-        headline: "Intelligent circuit protection, instantaneous arc-quenching and low-voltage distribution boards.",
-        subheadline: "10kA C-Curve MCBs, Molded Case Circuit Breakers (MCCB), ACBs, Power Contactors & Distribution Panels.",
-        voltageSpec: "415V AC / 10kA Breaking",
-        standardSpec: "IS/IEC 60898-1 / IEC 60947",
-        materialSpec: "High Ag-Ni Contact Tip Alloys",
-        productCount: switchgearCat.productCount,
-        featuredPills: switchgearCat.featuredPills,
-        subcategories: switchgearCat.subcategories.slice(0, 5).map((s) => ({ name: s.name, slug: s.slug })),
-        image: "/products/switchgear.jpg",
+        id: "cable-cutaway",
+        name: "1.1kV 4-Core XLPE Armoured Power Cable",
+        badge: "AI 3D LAYER CUTAWAY",
+        subtitle:
+          "Macro Cutaway: Electrolytic Copper Strands ➔ XLPE Insulation ➔ Inner Bedding ➔ Steel Wire Armour (GSWA) ➔ FRLS Outer Jacket",
+        categorySlug: "wire-cables",
+        categoryName: "Wire & Cables",
+        realImage: "/products/cable-cross-section.jpg",
+        specs: {
+          title: "1.1kV 4C x 185 sq.mm XLPE Armoured Copper Cable",
+          role: "Primary heavy power transmission feeder for underground trenches, industrial cable trays, and substations",
+          standard: "IS 7098 (Part 1) / IEC 60502-1 / BS 5467",
+          material: "99.97% Electrolytic Copper + Extruded XLPE + Galvanized Steel Wire Armour + FRLS PVC",
+          price: "₹1,480 / Mtr",
+          stock: "12,500+ Mtrs Ready in Ahmedabad",
+          ampacity: "415A in Air / 380A in Ground",
+          shortCircuit: "26.4kA / 1 sec",
+          torque: "Minimum Bending Radius: 12 x Outer Diameter",
+        },
+        hotspots: [
+          {
+            id: "copper-strands",
+            title: "Compacted Electrolytic Copper Strands",
+            component: "Class 2 Stranded Conductor",
+            desc: "99.97% pure oxygen-free high-conductivity copper strands compacted into sector-shaped cores to reduce cable diameter.",
+            technical: "Purity: 99.97% ETP · Resistivity: 0.017241 Ω·mm²/m @ 20°C",
+            pos: [0.08, 0.08, 0.25],
+          },
+          {
+            id: "xlpe-insulation",
+            title: "Cross-Linked Polyethylene (XLPE) Insulation",
+            component: "High-Dielectric Insulation",
+            desc: "Thermoset polymer providing 90°C continuous service temperature and high dielectric breakdown resistance.",
+            technical: "Voltage Grade: 1100V · Dielectric Strength: 30 kV/mm · IS 7098 Part 1",
+            pos: [-0.28, 0.22, 0.25],
+          },
+          {
+            id: "steel-armour",
+            title: "Galvanized Steel Wire Armour (GSWA)",
+            component: "Heavy Mechanical Armour Cage",
+            desc: "Continuous spiral galvanized steel wire cage protecting against crushing forces, backhoes, and rodent attacks.",
+            technical: "Tensile Strength: 390-540 N/mm² · Zinc mass: > 180 g/m²",
+            pos: [-0.52, -0.12, 0.25],
+          },
+          {
+            id: "outer-jacket",
+            title: "FRLS Heavy Duty Outer Jacket",
+            component: "Flame Retardant Low Smoke Jacket",
+            desc: "Special UV-stabilized zero-halogen thermoplastic polymer preventing flame propagation and emitting minimal smoke.",
+            technical: "Oxygen Index: > 30% · Temperature Index: > 250°C · Color: Jet Black",
+            pos: [0.52, 0.32, 0.25],
+          },
+        ],
+        aiTour: [
+          {
+            title: "1. Pure Copper Compacted Conductor Cores",
+            component: "99.97% ETP Copper Conductors",
+            narration:
+              "Inspecting the high-conductivity copper core. Notice the sector-shaped compaction that maximizes current density while minimizing total outer diameter.",
+            cameraPos: { x: 0.1, y: 0.1, z: 3.5 },
+            targetRot: { x: 0.05, y: 0.1 },
+            zoom: 3.5,
+            explodeLevel: 0,
+            visionMode: "reality",
+            hotspotId: "copper-strands",
+            durationMs: 6500,
+          },
+          {
+            title: "2. Cross-Linked XLPE Thermoset Insulation",
+            component: "90°C Continuous Service Insulation",
+            narration:
+              "Extruded cross-linked polyethylene insulation offers superior dielectric strength and withstands emergency short-circuit overloads up to 250 degrees.",
+            cameraPos: { x: -0.2, y: 0.2, z: 3.4 },
+            targetRot: { x: 0.1, y: -0.15 },
+            zoom: 3.4,
+            explodeLevel: 10,
+            visionMode: "reality",
+            hotspotId: "xlpe-insulation",
+            durationMs: 6500,
+          },
+        ],
       },
       {
-        id: "lugs",
-        code: "03",
-        number: 3,
-        badgeTag: "CRIMP TERMINALS",
-        categoryName: lugsCat.name,
-        slug: lugsCat.slug,
-        categoryRef: lugsCat,
-        color: "#ea580c",
-        accent: "#fb923c",
-        headline: "Pure electrolytic copper crimp terminals with zero-resistance busbar contact & electro-tin mirror plating.",
-        subheadline: "Heavy-Duty Copper Tubular Lugs, Bi-metallic Friction-Welded Lugs, Pin & Ring Terminals.",
-        voltageSpec: "High-Ampere Crimp Rated",
-        standardSpec: "DIN 46235 / IS 8309",
-        materialSpec: "100% ETP Copper + Tin Plating",
-        productCount: lugsCat.productCount,
-        featuredPills: lugsCat.featuredPills,
-        subcategories: lugsCat.subcategories.slice(0, 5).map((s) => ({ name: s.name, slug: s.slug })),
-        image: "/products/cable-lugs-macro.jpg",
+        id: "lug-gland",
+        name: "Pure Copper DIN Crimp Lugs & Brass Cable Glands",
+        badge: "AI 3D HARDWARE MACRO",
+        subtitle:
+          "DIN 46235 Pure ETP Copper Tubular Lugs & BS 6121 Double Compression High-Tensile Naval Brass Glands",
+        categorySlug: "lugs",
+        categoryName: "Cable Lugs & Glands",
+        realImage: "/products/cable-lugs-macro.jpg",
+        specs: {
+          title: "Heavy-Duty Copper Tubular Lug & Brass Gland Assembly",
+          role: "Guarantees zero-resistance electrical termination on switchgear busbars and weatherproof mechanical grip on cable armour",
+          standard: "DIN 46235 / IS 8309 / BS 6121 / IS 12943 / IEC 61238",
+          material: "100% Pure ETP Copper (15µm Tin Plated) + High-Tensile Naval Brass (CZ121)",
+          price: "₹142 (Lug) / ₹345 (Gland)",
+          stock: "8,400+ Lugs / 3,200+ Glands Ready",
+          ampacity: "Rated up to 500A Continuous",
+          shortCircuit: "Tested to 40kA / 1 sec",
+          torque: "Recommended Crimp Pressure: 120 kN",
+        },
+        hotspots: [
+          {
+            id: "lug-barrel",
+            title: "DIN 46235 Pure Copper Crimp Barrel",
+            component: "Heavy Gauge Copper Barrel",
+            desc: "Extra-heavy seamless electrolytic copper tube with stamped DIN markings indicating hexagonal crimp die size.",
+            technical: "Purity: 99.97% ETP · Tin Plating: 15µm · DIN 46235 / IS 8309 certified",
+            pos: [-0.32, 0.15, 0.25],
+          },
+          {
+            id: "lug-palm",
+            title: "M12 Bolted Contact Palm",
+            component: "Bolted Terminal Palm",
+            desc: "Mirror-flat electro-tinned palm with precision M12 bolt hole for maximum contact area against copper busbars.",
+            technical: "Contact Area: 420 mm² · Bolt Size: M12 · Contact Resistance: < 0.05 mΩ",
+            pos: [-0.32, 0.65, 0.25],
+          },
+          {
+            id: "gland-body",
+            title: "Double Compression Brass Gland Body",
+            component: "CZ121 Naval Brass Body",
+            desc: "Two-stage compression body that locks inner cable bedding and outer sheath simultaneously with armour clamp cone.",
+            technical: "Material: CZ121 Brass · Thread: Metric ISO · IP66 / IP68 Gas-Tight",
+            pos: [0.38, -0.15, 0.25],
+          },
+        ],
+        aiTour: [
+          {
+            title: "1. DIN 46235 Crimp Gauge & Markings",
+            component: "Seamless ETP Copper Tube",
+            narration:
+              "Examining the DIN 46235 lug barrel. The stamped rings guide the crimp operator on exact die positioning to produce gas-tight hexagonal compaction.",
+            cameraPos: { x: -0.3, y: 0.3, z: 3.3 },
+            targetRot: { x: 0.05, y: -0.1 },
+            zoom: 3.3,
+            explodeLevel: 0,
+            visionMode: "reality",
+            hotspotId: "lug-barrel",
+            durationMs: 6500,
+          },
+        ],
       },
       {
-        id: "conduit",
-        code: "04",
-        number: 4,
-        badgeTag: "CONTAINMENT DUCT",
-        categoryName: conduitCat.name,
-        slug: conduitCat.slug,
-        categoryRef: conduitCat,
-        color: "#94a3b8",
-        accent: "#cbd5e1",
-        headline: "Flame-retardant rigid and corrugated electrical containment for severe thermal & chemical environments.",
-        subheadline: "Heavy Mechanical Rigid PVC Conduit Pipes, GI Flexible Steel Ducts, Junction Boxes & Couplers.",
-        voltageSpec: "Mechanical Barrier / IP68",
-        standardSpec: "IS 9537 Part-3 / CE Certified",
-        materialSpec: "High-Impact Self-Extinguishing PVC",
-        productCount: conduitCat.productCount,
-        featuredPills: conduitCat.featuredPills,
-        subcategories: conduitCat.subcategories.slice(0, 5).map((s) => ({ name: s.name, slug: s.slug })),
-        image: "/products/pvc-pipe.jpg",
-      },
-      {
-        id: "glands",
-        code: "05",
-        number: 5,
-        badgeTag: "HAZARDOUS SEALS",
-        categoryName: glandsCat.name,
-        slug: glandsCat.slug,
-        categoryRef: glandsCat,
-        color: "#ca8a04",
-        accent: "#facc15",
-        headline: "Certified flameproof brass double compression cable glands with hermetic gas and vapor containment.",
-        subheadline: "Zone 1 & 2 Ex-d Flameproof Brass Glands, Weatherproof Cable Terminations & Polyamide Ex Seals.",
-        voltageSpec: "Zone 1 Ex-d Flameproof / IP66",
-        standardSpec: "IEC 60079-1 / BS 6121",
-        materialSpec: "High-Tensile Brass CuZn39Pb3",
-        productCount: glandsCat.productCount,
-        featuredPills: glandsCat.featuredPills,
-        subcategories: glandsCat.subcategories.slice(0, 5).map((s) => ({ name: s.name, slug: s.slug })),
-        image: "/products/gland-exploded.jpg",
-      },
-      {
-        id: "wiring",
-        code: "06",
-        number: 6,
-        badgeTag: "MODULAR DEVICES",
-        categoryName: wiringCat.name,
-        slug: wiringCat.slug,
-        categoryRef: wiringCat,
-        color: "#8b5cf6",
-        accent: "#a78bfa",
-        headline: "Architectural luxury modular switches, child-safe shuttered sockets, and glowing neon rocker plates.",
-        subheadline: "16A Modular Switch Plates, Dimmer Regulators, USB Fast Chargers & Heavy Metal Flush Boxes.",
-        voltageSpec: "250V AC / 16A Modular Rating",
-        standardSpec: "IS 3854 / RoHS Compliant",
-        materialSpec: "UV-Stabilized Polycarbonate",
-        productCount: wiringCat.productCount,
-        featuredPills: wiringCat.featuredPills,
-        subcategories: wiringCat.subcategories.slice(0, 5).map((s) => ({ name: s.name, slug: s.slug })),
-        image: "/products/wiring-devices.jpg",
-      },
-      {
-        id: "earthing",
-        code: "07",
-        number: 7,
-        badgeTag: "GROUNDING GRID",
-        categoryName: earthingCat.name,
-        slug: earthingCat.slug,
-        categoryRef: earthingCat,
-        color: "#059669",
-        accent: "#34d399",
-        headline: "Molecularly bonded copper grounding electrodes and chemical compounds delivering 30+ year maintenance-free life.",
-        subheadline: "254-Micron Copper Bonded Earth Rods, GI Earthing Strips, Backfill Soil Conductive Compounds & Lightning Spikes.",
-        voltageSpec: "Fault Current Capacity >25kA",
-        standardSpec: "IEEE 80 / IS 3043 / UL 467",
-        materialSpec: "254-Micron Electrolytic Copper Bond",
-        productCount: earthingCat.productCount,
-        featuredPills: earthingCat.featuredPills,
-        subcategories: earthingCat.subcategories.slice(0, 5).map((s) => ({ name: s.name, slug: s.slug })),
-        image: "/products/earthing-rods.png",
-      },
-      {
-        id: "solar",
-        code: "08",
-        number: 8,
-        badgeTag: "CLEAN ENERGY PV",
-        categoryName: solarCat.name,
-        slug: solarCat.slug,
-        categoryRef: solarCat,
-        color: "#2563eb",
-        accent: "#60a5fa",
-        headline: "TOPCon bifacial photovoltaic cables, MC4 connectors, and high-efficiency utility-scale solar balance-of-system.",
-        subheadline: "1500V DC Photovoltaic Double-Insulated Cables, MC4 Inline Connectors, Solar Array Junctions & String Inverters.",
-        voltageSpec: "1500V DC Solar Rated (EN 50618)",
-        standardSpec: "TUV 2PfG 1169 / IEC 62930",
-        materialSpec: "Cross-Linked Halogen-Free XLPO",
-        productCount: solarCat.productCount,
-        featuredPills: solarCat.featuredPills,
-        subcategories: solarCat.subcategories.slice(0, 5).map((s) => ({ name: s.name, slug: s.slug })),
-        image: "/products/solar-panel.jpg",
+        id: "switchgear-mccb",
+        name: "400A Incomer MCCB & Substation Vacuum Switchgear",
+        badge: "AI 3D SWITCHGEAR VCB",
+        subtitle:
+          "4-Pole 36kA Molded Case Circuit Breaker & 11kV Substation Vacuum Circuit Breaker with Arc Extinction Chambers",
+        categorySlug: "switch-gears",
+        categoryName: "Industrial Switchgear",
+        realImage: "/products/substation-vcb-real.jpg",
+        specs: {
+          title: "400A 4-Pole 36kA MCCB & Substation VCB Panel",
+          role: "High-voltage and low-voltage circuit protection capable of interrupting destructive short circuits in milliseconds",
+          standard: "IS/IEC 60947-2 / IEC 62271-100 / CE Certified",
+          material: "Thermoset DMC Molded Housing + Electrolytic Copper Palms + Ceramic Vacuum Bottles",
+          price: "₹16,850 / Unit",
+          stock: "140+ Units Ready in Ahmedabad",
+          ampacity: "400A Low Voltage / 1250A Medium Voltage",
+          shortCircuit: "36kA Low Voltage / 25kA @ 11kV",
+          torque: "Closing Time: < 45 ms · Tripping Time: < 35 ms",
+        },
+        hotspots: [
+          {
+            id: "vacuum-bottle",
+            title: "Vacuum Interrupter Arc Quenching Bottle",
+            component: "Sealed Ceramic Vacuum Bottle",
+            desc: "High-vacuum ceramic chamber where circuit contacts separate; the absolute vacuum eliminates electric arcs instantly.",
+            technical: "Dielectric Withstand: 28kV RMS / 75kV Peak · Contact Material: CuCr alloy",
+            pos: [0.02, 0.12, 0.25],
+          },
+          {
+            id: "busbar-stabs",
+            title: "Solid Copper Primary Disconnecting Contacts",
+            component: "Silver-Plated Tulip Contacts",
+            desc: "Heavy spring-loaded copper tulip contacts that rack into the energized substation busbar spouts.",
+            technical: "Continuous Current: 1250A · Contact Finger Pressure: 180 N · Silver Plated",
+            pos: [0.02, 0.68, 0.25],
+          },
+        ],
+        aiTour: [
+          {
+            title: "1. 11kV Ceramic Vacuum Interrupter",
+            component: "High-Vacuum Arc Extinction",
+            narration:
+              "Inspecting the sealed vacuum interrupter. Contact separation occurs inside a deep vacuum, quenching destructive 25 kiloamp arcs at the first current zero.",
+            cameraPos: { x: 0, y: 0.3, z: 3.5 },
+            targetRot: { x: 0.05, y: 0.1 },
+            zoom: 3.5,
+            explodeLevel: 10,
+            visionMode: "reality",
+            hotspotId: "vacuum-bottle",
+            durationMs: 7000,
+          },
+        ],
       },
     ],
-    [cablesCat, switchgearCat, lugsCat, conduitCat, glandsCat, wiringCat, earthingCat, solarCat]
+    []
   );
 
   // States
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<"runway" | "showroom">("runway");
-  const [isAudioActive, setIsAudioActive] = useState(false);
-  const [isAnimationActive, setIsAnimationActive] = useState(true);
+  const [activeModelId, setActiveModelId] = useState<ModelType>("panel-assembly");
+  const [visionMode, setVisionMode] = useState<VisionMode>("reality");
+  const [autoRotate, setAutoRotate] = useState(true);
+  const [explodeLevel, setExplodeLevel] = useState(0);
+  const [selectedHotspot, setSelectedHotspot] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [currentTimeStr, setCurrentTimeStr] = useState("");
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [inspectedItem, setInspectedItem] = useState<WonderlandCategoryItem | null>(null);
+  const [showHud, setShowHud] = useState(true);
+  const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"specs" | "hotspots" | "ai-tour">("ai-tour");
 
-  const canvasMountRef = useRef<HTMLDivElement>(null);
+  // AI 3D Guided Animation Tour States
+  const [isAiTourPlaying, setIsAiTourPlaying] = useState(false);
+  const [currentTourStepIdx, setCurrentTourStepIdx] = useState(0);
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState(true);
+  const [isCurrentFlowActive, setIsCurrentFlowActive] = useState(true);
+
+  // Screen-space hotspot coords calculated each frame
+  const [screenHotspots, setScreenHotspots] = useState<
+    Array<{ id: string; x: number; y: number; visible: boolean }>
+  >([]);
+
   const containerRef = useRef<HTMLDivElement>(null);
-  const isAnimationActiveRef = useRef(isAnimationActive);
-  useEffect(() => {
-    isAnimationActiveRef.current = isAnimationActive;
-  }, [isAnimationActive]);
-
-  const inspectedItemRef = useRef(inspectedItem);
-  useEffect(() => {
-    inspectedItemRef.current = inspectedItem;
-  }, [inspectedItem]);
-
-  // Virtual Continuous Scroll Trajectory Engine
-  const runwaySpacing = 10.0;
-  const maxRunwayZ = 0;
-  const minRunwayZ = -(items.length - 1) * runwaySpacing;
-
-  const currentScrollZRef = useRef(0);
-  const targetScrollZRef = useRef(0);
-
-  // Drag Refs
+  const canvasMountRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
-  const dragStartY = useRef(0);
-  const dragStartX = useRef(0);
+  const prevMouseRef = useRef({ x: 0, y: 0 });
+  const rotationRef = useRef({ x: 0.12, y: 0.22 });
+  const zoomRef = useRef(5.2);
+  const mouseParallaxRef = useRef({ x: 0, y: 0 });
 
-  // Three.js State Ref
+  // Camera animation target refs for smooth cinematic tweening
+  const targetCamPosRef = useRef<THREE.Vector3>(new THREE.Vector3(0, 0.2, 5.2));
+  const targetRotRef = useRef<{ x: number; y: number }>({ x: 0.12, y: 0.22 });
+  const targetZoomRef = useRef(5.2);
+
+  const currentPreset = modelPresets.find((m) => m.id === activeModelId) || modelPresets[0];
+  const activeHotspotData = currentPreset.hotspots.find((h) => h.id === selectedHotspot);
+  const currentTourStep = currentPreset.aiTour[currentTourStepIdx] || currentPreset.aiTour[0];
+
+  // Speech synthesis helper
+  const speakNarration = useCallback(
+    (text: string) => {
+      if (!isVoiceEnabled || typeof window === "undefined" || !("speechSynthesis" in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1.05;
+        utterance.pitch = 1.0;
+        const voices = window.speechSynthesis.getVoices();
+        const engVoice = voices.find(
+          (v) =>
+            v.lang.startsWith("en") &&
+            (v.name.includes("Google") || v.name.includes("Natural") || v.name.includes("David"))
+        );
+        if (engVoice) utterance.voice = engVoice;
+        window.speechSynthesis.speak(utterance);
+      } catch (e) {
+        console.warn("Speech synthesis error", e);
+      }
+    },
+    [isVoiceEnabled]
+  );
+
+  // Stop voice on unmount or pause
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  // Three.js instances ref
   const threeRef = useRef<{
     scene: THREE.Scene;
     camera: THREE.PerspectiveCamera;
     renderer: THREE.WebGLRenderer;
-    boards: Array<{ group: THREE.Group; mesh: THREE.Mesh; index: number }>;
-    activeLight: THREE.PointLight;
-    mouseX: number;
-    mouseY: number;
-    raycaster: THREE.Raycaster;
-    mouseVec: THREE.Vector2;
+    modelGroup: THREE.Group;
+    layerMeshes: THREE.Object3D[];
+    currentFlowPoints: THREE.Points | null;
     animFrame: number | null;
   } | null>(null);
 
-  // Web Audio Synthesizer
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const audioGainRef = useRef<GainNode | null>(null);
-
-  const activeItem = items[activeIndex];
-
-  // Glide to specific category index
-  const handleSelectIndex = useCallback(
-    (idx: number) => {
-      if (idx < 0 || idx >= items.length) return;
-      setActiveIndex(idx);
-      targetScrollZRef.current = -idx * runwaySpacing;
-      if (threeRef.current) {
-        threeRef.current.activeLight.color.set(items[idx].color);
-      }
-      // If gallery section is partially scrolled out of view, keep it visible
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        if (rect.top < -60 || rect.top > 140) {
-          containerRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }
-      }
-    },
-    [items, runwaySpacing]
-  );
-
-  const handleNext = () => handleSelectIndex((activeIndex + 1) % items.length);
-  const handlePrev = () => handleSelectIndex((activeIndex - 1 + items.length) % items.length);
-
-  // Keyboard navigation through corridor
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName || "")) return;
-      if (e.key === "Escape") {
-        if (inspectedItem) {
-          setInspectedItem(null);
-          return;
-        }
-      }
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
-        e.preventDefault();
-        handleNext();
-      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
-        e.preventDefault();
-        handlePrev();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [items.length, inspectedItem, activeIndex]);
-
-  // Live Ahmedabad IST Clock (Matches "AMSTERDAM CET 1:55")
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setCurrentTimeStr(
-        now.toLocaleTimeString("en-IN", {
-          timeZone: "Asia/Kolkata",
-          hour12: false,
-          hour: "2-digit",
-          minute: "2-digit",
-        })
-      );
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Web Audio Synthesizer (Ambient 55Hz warm drone)
-  const toggleAudio = useCallback(() => {
-    if (!isAudioActive) {
-      try {
-        const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-        const ctx = new AudioCtx();
-        const osc1 = ctx.createOscillator();
-        const osc2 = ctx.createOscillator();
-        const filter = ctx.createBiquadFilter();
-        const gain = ctx.createGain();
-
-        osc1.type = "sine";
-        osc1.frequency.setValueAtTime(55, ctx.currentTime);
-
-        osc2.type = "triangle";
-        osc2.frequency.setValueAtTime(110.2, ctx.currentTime);
-
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(260, ctx.currentTime);
-
-        gain.gain.setValueAtTime(0.001, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.06, ctx.currentTime + 1.2);
-
-        osc1.connect(filter);
-        osc2.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc1.start();
-        osc2.start();
-
-        audioCtxRef.current = ctx;
-        audioGainRef.current = gain;
-        setIsAudioActive(true);
-      } catch (e) {
-        console.warn("Web audio unavailable", e);
-      }
-    } else {
-      if (audioGainRef.current && audioCtxRef.current) {
-        audioGainRef.current.gain.linearRampToValueAtTime(0.001, audioCtxRef.current.currentTime + 0.4);
-        setTimeout(() => {
-          audioCtxRef.current?.close();
-          audioCtxRef.current = null;
-          audioGainRef.current = null;
-        }, 400);
-      }
-      setIsAudioActive(false);
-    }
-  }, [isAudioActive]);
-
-  useEffect(() => {
-    return () => {
-      audioCtxRef.current?.close().catch(() => {});
-    };
-  }, []);
-
   // -------------------------------------------------------------
-  // HIGH-DPI CANVAS TEXTURE GENERATOR
-  // 1:1 match to Screenshot 1 (Board 1) & Screenshot 2 (Board 2 Electric Blue Insignia)
-  // Guarantees zero black frames: always renders complete vector layout instantly!
-  // -------------------------------------------------------------
-  const createWonderlandCanvasTexture = useCallback(
-    (item: WonderlandCategoryItem) => {
-      const canvas = document.createElement("canvas");
-      canvas.width = 1024;
-      canvas.height = 1024;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return new THREE.CanvasTexture(canvas);
-
-      const texture = new THREE.CanvasTexture(canvas);
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.minFilter = THREE.LinearFilter;
-      texture.generateMipmaps = false;
-
-      const renderCard = (imgObj?: HTMLImageElement) => {
-        // ============================================================
-        // BOARD 1 (Index 0): EXACT RECREATION OF WONDERLAND SCREENSHOT 1
-        // ============================================================
-        if (item.number === 1) {
-          ctx.fillStyle = "#181719";
-          ctx.fillRect(0, 0, 1024, 1024);
-
-          ctx.strokeStyle = "#38373b";
-          ctx.lineWidth = 4;
-          ctx.strokeRect(20, 20, 984, 984);
-
-          // Top Header: Orange 'V' icon badge + "WELCOME    TO    VOLAMP"
-          ctx.fillStyle = "#ec6437";
-          ctx.fillRect(60, 60, 48, 48);
-          ctx.fillStyle = "#ffffff";
-          ctx.font = "bold 28px 'Space Grotesk', system-ui, sans-serif";
-          ctx.fillText("V", 75, 95);
-
-          ctx.fillStyle = "#9d958b";
-          ctx.font = "bold 18px monospace";
-          try { (ctx as any).letterSpacing = "6px"; } catch {}
-          ctx.fillText("WELCOME", 200, 92);
-          ctx.fillText("TO", 450, 92);
-          ctx.fillStyle = "#ded6cb";
-          ctx.fillText("VOLAMP", 680, 92);
-
-          // Editorial Headline (Exact Wonderland typographic statement)
-          ctx.fillStyle = "#ded6cb";
-          ctx.font = "bold 44px 'Space Grotesk', 'Syne', system-ui, sans-serif";
-          try { (ctx as any).letterSpacing = "-0.5px"; } catch {}
-          ctx.fillText("Brand and digital", 60, 240);
-          ctx.fillText("studio working to", 60, 305);
-          ctx.fillText("create meaningful", 60, 370);
-          ctx.fillText("value for people", 60, 435);
-          ctx.fillText("and planet.", 60, 500);
-
-          // Interactive Bullet Link: ● READ MORE / EXPLORE CATALOG
-          ctx.fillStyle = "#ded6cb";
-          ctx.beginPath();
-          ctx.arc(72, 600, 7, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.font = "bold 22px 'Space Grotesk', system-ui, sans-serif";
-          try { (ctx as any).letterSpacing = "2px"; } catch {}
-          ctx.fillText("EXPLORE CATALOG", 95, 607);
-          ctx.strokeStyle = "#ded6cb";
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.moveTo(95, 618);
-          ctx.lineTo(320, 618);
-          ctx.stroke();
-
-          // Orange Monogram Watermark on bottom right
-          ctx.fillStyle = "#ec6437";
-          ctx.font = "bold 32px 'Space Grotesk', system-ui, sans-serif";
-          ctx.fillText("V·E", 880, 607);
-
-          // Bottom Metadata Footer Strip
-          ctx.strokeStyle = "#2f2e33";
-          ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(60, 880);
-          ctx.lineTo(964, 880);
-          ctx.stroke();
-
-          ctx.fillStyle = "#78716c";
-          ctx.font = "bold 15px monospace";
-          try { (ctx as any).letterSpacing = "1px"; } catch {}
-          ctx.fillText("VOLAMP CENTRAL STUDIO", 60, 930);
-          ctx.fillText("16-25", 420, 930);
-          ctx.fillText("AHMEDABAD HUB / 3,385+ READY SKUs", 620, 930);
-
-          texture.needsUpdate = true;
-          return;
-        }
-
-        // ============================================================
-        // BOARD 2 (Index 1): EXACT RECREATION OF WONDERLAND SCREENSHOT 2
-        // Glowing Electric Blue Chevron Insignia on Deep Blue Radial Gradient
-        // ============================================================
-        if (item.number === 2) {
-          const blueGrad = ctx.createRadialGradient(512, 512, 80, 512, 512, 650);
-          blueGrad.addColorStop(0, "#09225e");
-          blueGrad.addColorStop(0.5, "#041135");
-          blueGrad.addColorStop(1, "#020718");
-          ctx.fillStyle = blueGrad;
-          ctx.fillRect(0, 0, 1024, 1024);
-
-          ctx.strokeStyle = "#0d2b63";
-          ctx.lineWidth = 4;
-          ctx.strokeRect(20, 20, 984, 984);
-
-          // Draw the iconic Glowing Electric Blue Chevron Emblem
-          ctx.save();
-          const drawEmblemPath = () => {
-            ctx.beginPath();
-            ctx.moveTo(580, 310);
-            ctx.lineTo(650, 430);
-            ctx.quadraticCurveTo(630, 600, 560, 770);
-            ctx.lineTo(460, 730);
-            ctx.quadraticCurveTo(530, 560, 545, 450);
-            ctx.closePath();
-          };
-
-          // 1. Wide Ambient Electric Blue Bloom Glow
-          ctx.shadowColor = "#00c3ff";
-          ctx.shadowBlur = 65;
-          ctx.strokeStyle = "#0077ff";
-          ctx.lineWidth = 32;
-          drawEmblemPath();
-          ctx.stroke();
-
-          // 2. Mid Vibrant Cyan Stroke
-          ctx.shadowColor = "#38bdf8";
-          ctx.shadowBlur = 30;
-          ctx.strokeStyle = "#00d2ff";
-          ctx.lineWidth = 18;
-          drawEmblemPath();
-          ctx.stroke();
-
-          // 3. Crisp Inner Cyan Stroke
-          ctx.shadowBlur = 10;
-          ctx.strokeStyle = "#7dd3fc";
-          ctx.lineWidth = 8;
-          drawEmblemPath();
-          ctx.stroke();
-
-          // 4. White High-Voltage Electric Core
-          ctx.shadowBlur = 4;
-          ctx.shadowColor = "#ffffff";
-          ctx.strokeStyle = "#ffffff";
-          ctx.lineWidth = 3;
-          drawEmblemPath();
-          ctx.stroke();
-          ctx.restore();
-
-          // Subtle Technical Monospace Watermark
-          ctx.fillStyle = "#38bdf8";
-          ctx.font = "bold 16px monospace";
-          try { (ctx as any).letterSpacing = "3px"; } catch {}
-          ctx.fillText("02 · SWITCHGEARS & ARC PROTECTION · 10kA BREAKING", 120, 940);
-
-          texture.needsUpdate = true;
-          return;
-        }
-
-        // ============================================================
-        // BOARDS 3 TO 8: EDITORIAL MONOLITHIC SHOWCASES
-        // High-contrast, immediately legible, never pitch-black
-        // ============================================================
-        ctx.fillStyle = "#161518";
-        ctx.fillRect(0, 0, 1024, 1024);
-
-        if (imgObj && imgObj.complete && imgObj.naturalWidth > 0) {
-          ctx.save();
-          ctx.drawImage(imgObj, 40, 140, 944, 400);
-          const imgGrad = ctx.createLinearGradient(0, 140, 0, 540);
-          imgGrad.addColorStop(0, "rgba(22, 21, 24, 0.2)");
-          imgGrad.addColorStop(0.7, "rgba(22, 21, 24, 0.75)");
-          imgGrad.addColorStop(1, "rgba(22, 21, 24, 1.0)");
-          ctx.fillStyle = imgGrad;
-          ctx.fillRect(40, 140, 944, 400);
-          ctx.restore();
-        } else {
-          // Dynamic tech gradient with category accent tint
-          const dummyGrad = ctx.createLinearGradient(0, 140, 0, 540);
-          dummyGrad.addColorStop(0, "rgba(45, 43, 52, 0.8)");
-          dummyGrad.addColorStop(1, "rgba(22, 21, 24, 1.0)");
-          ctx.fillStyle = dummyGrad;
-          ctx.fillRect(40, 140, 944, 400);
-
-          // Technical grid lines across placeholder
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
-          ctx.lineWidth = 1;
-          for (let gy = 160; gy < 520; gy += 40) {
-            ctx.beginPath();
-            ctx.moveTo(40, gy);
-            ctx.lineTo(984, gy);
-            ctx.stroke();
-          }
-        }
-
-        // Outer Border
-        ctx.strokeStyle = "#38373b";
-        ctx.lineWidth = 4;
-        ctx.strokeRect(20, 20, 984, 984);
-
-        // Header Bar
-        ctx.fillStyle = "#ec6437";
-        ctx.fillRect(60, 60, 48, 48);
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 28px 'Space Grotesk', system-ui, sans-serif";
-        ctx.fillText("V", 75, 95);
-
-        ctx.fillStyle = "#a8a29e";
-        ctx.font = "bold 20px 'Space Grotesk', system-ui, sans-serif";
-        try { (ctx as any).letterSpacing = "4px"; } catch {}
-        ctx.fillText("VOLAMP", 130, 92);
-
-        ctx.fillStyle = "#ec6437";
-        ctx.font = "bold 18px monospace";
-        try { (ctx as any).letterSpacing = "2px"; } catch {}
-        ctx.fillText(`MASTER SERIES · ${item.code}`, 700, 92);
-
-        // Category Name Over Image
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 38px 'Space Grotesk', system-ui, sans-serif";
-        try { (ctx as any).letterSpacing = "1px"; } catch {}
-        ctx.fillText(item.categoryName, 60, 480);
-
-        // Editorial Headline
-        ctx.fillStyle = "#ded6cb";
-        ctx.font = "bold 32px 'Space Grotesk', system-ui, sans-serif";
-        try { (ctx as any).letterSpacing = "-0.3px"; } catch {}
-
-        const words = item.headline.split(" ");
-        let line = "";
-        let y = 550;
-        const maxLineW = 904;
-        for (let i = 0; i < words.length; i++) {
-          const testLine = line + words[i] + " ";
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > maxLineW && i > 0) {
-            ctx.fillText(line, 60, y);
-            line = words[i] + " ";
-            y += 46;
-          } else {
-            line = testLine;
-          }
-        }
-        ctx.fillText(line, 60, y);
-
-        // Engineering Specification Strip
-        const specY = Math.max(y + 35, 690);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.04)";
-        ctx.fillRect(60, specY, 904, 100);
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(60, specY, 904, 100);
-
-        ctx.fillStyle = "#f59e0b";
-        ctx.font = "bold 16px monospace";
-        ctx.fillText("RATING / CAPACITY", 90, specY + 36);
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 22px 'Space Grotesk', system-ui, sans-serif";
-        ctx.fillText(item.voltageSpec, 90, specY + 74);
-
-        ctx.fillStyle = "#38bdf8";
-        ctx.font = "bold 16px monospace";
-        ctx.fillText("CERTIFICATION", 420, specY + 36);
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 22px 'Space Grotesk', system-ui, sans-serif";
-        ctx.fillText(item.standardSpec, 420, specY + 74);
-
-        ctx.fillStyle = "#34d399";
-        ctx.font = "bold 16px monospace";
-        ctx.fillText("MATERIAL PURITY", 740, specY + 36);
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 22px 'Space Grotesk', system-ui, sans-serif";
-        ctx.fillText("100% Electrolytic", 740, specY + 74);
-
-        // Pill Button: ● EXPLORE CATEGORY ↗
-        const btnY = specY + 130;
-        ctx.fillStyle = "#ec6437";
-        ctx.beginPath();
-        drawRoundRect(ctx, 60, btnY, 340, 64, 32);
-        ctx.fill();
-
-        ctx.fillStyle = "#ffffff";
-        ctx.beginPath();
-        ctx.arc(100, btnY + 32, 6, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 20px 'Space Grotesk', system-ui, sans-serif";
-        ctx.fillText("EXPLORE CATEGORY", 125, btnY + 40);
-        ctx.fillText("↗", 355, btnY + 40);
-
-        // Footer Live Catalog Metadata
-        ctx.fillStyle = "#78716c";
-        ctx.font = "bold 17px monospace";
-        ctx.fillText(`VOLAMP CENTRAL HUB · AHMEDABAD · 24H DISPATCH`, 60, 960);
-        ctx.fillText(`${item.productCount.toLocaleString("en-IN")}+ READY SKUs`, 750, 960);
-
-        texture.needsUpdate = true;
-      };
-
-      // 1. Initial complete synchronous render
-      renderCard();
-
-      // 2. Preload photograph asynchronously and re-render seamlessly
-      if (item.number > 2) {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => renderCard(img);
-        img.onerror = () => renderCard();
-        img.src = item.image;
-      }
-
-      return texture;
-    },
-    []
-  );
-
-  // -------------------------------------------------------------
-  // THREE.JS 3D WONDERLAND VAULTED CORRIDOR ENGINE
-  // Wide architectural runway perspective (solving the 80% viewport defect)
+  // THREE.JS 3D ENGINE WITH TRUE 3D PHYSICAL ASSEMBLY & BRIGHT LIGHTING
   // -------------------------------------------------------------
   useEffect(() => {
     const mount = canvasMountRef.current;
     if (!mount) return;
 
-    const width = mount.clientWidth || window.innerWidth || 1200;
-    const height = mount.clientHeight || Math.round(window.innerHeight * 0.88) || 750;
+    const width = mount.clientWidth || 1000;
+    const height = mount.clientHeight || 750;
 
-    // 1. Scene & Deep Warm Atmosphere Fog (Matching Image 1 reference)
+    // 1. Scene with High-Quality Ambient Lighting & Fog
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1d1713);
-    scene.fog = new THREE.FogExp2(0x1c1612, 0.015);
+    scene.background = new THREE.Color(0x070b14);
+    scene.fog = new THREE.Fog(0x070b14, 16, 42);
 
-    // 2. Camera Setup: 48° FoV for expansive architectural depth
-    const camera = new THREE.PerspectiveCamera(48, width / height, 0.1, 140);
-    camera.position.set(0.0, 1.62, 7.2);
+    // 2. Camera centered precisely at the panel
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 100);
+    camera.position.set(0, 0.2, zoomRef.current);
+    camera.lookAt(0, 0, 0);
 
-    // 3. Renderer with ACES Tone Mapping & sRGB
+    // 3. Renderer with High-Performance Tone Mapping
     const renderer = new THREE.WebGLRenderer({
-      alpha: false,
       antialias: true,
+      alpha: false,
       powerPreference: "high-performance",
     });
     renderer.setSize(width, height);
@@ -772,1074 +541,1391 @@ export function SpatialWonderlandCategories({
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.45;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-
     mount.replaceChildren(renderer.domElement);
 
-    // 4. Lighting System: Warm ambient + warm hemisphere + overhead fill
-    const ambientLight = new THREE.AmbientLight(0xffdfb8, 2.2);
+    // 4. Bright, Radiant Studio Lighting Suite (Eliminates all dark/black shadows)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.6);
     scene.add(ambientLight);
 
-    const hemiLight = new THREE.HemisphereLight(0xffeedd, 0x443020, 1.8);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 2.0);
     scene.add(hemiLight);
 
-    const overheadDirectional = new THREE.DirectionalLight(0xfffaed, 2.2);
-    overheadDirectional.position.set(2, 16, 4);
-    scene.add(overheadDirectional);
+    const frontKeyLight = new THREE.DirectionalLight(0xfffaed, 3.0);
+    frontKeyLight.position.set(0, 2, 6);
+    scene.add(frontKeyLight);
 
-    // Warm cove uplight along walls
-    const leftWallLight = new THREE.DirectionalLight(0xff9900, 1.4);
-    leftWallLight.position.set(-6.5, 0.5, -30);
-    scene.add(leftWallLight);
+    const studioKeyLight = new THREE.DirectionalLight(0xfff8ee, 2.8);
+    studioKeyLight.position.set(5, 7, 4);
+    scene.add(studioKeyLight);
 
-    const rightWallLight = new THREE.DirectionalLight(0xff9900, 1.4);
-    rightWallLight.position.set(6.5, 0.5, -30);
-    scene.add(rightWallLight);
+    const coolRimLight = new THREE.DirectionalLight(0x38bdf8, 2.4);
+    coolRimLight.position.set(-6, 3, -2);
+    scene.add(coolRimLight);
 
-    const activePointLight = new THREE.PointLight(new THREE.Color(items[0].color), 3.0, 20);
-    activePointLight.position.set(-3.2, 2.2, 0);
-    scene.add(activePointLight);
+    const warmCopperRim = new THREE.DirectionalLight(0xf97316, 2.4);
+    warmCopperRim.position.set(6, -1, 3);
+    scene.add(warmCopperRim);
 
-    // -------------------------------------------------------------
-    // 5. THE VAULTED ARCHED MASONRY TUNNEL CEILING & WALLS
-    // Warm sandstone crypt with aged masonry blocks and mossy weathering
-    // -------------------------------------------------------------
-    const vaultRadius = 10.5;
-    const vaultLength = 160;
-    const vaultGeo = new THREE.CylinderGeometry(
-      vaultRadius,
-      vaultRadius,
-      vaultLength,
-      48,
-      1,
-      true,
-      0,
-      Math.PI
+    // 5. 3D Animated Cable Store Background Group
+    const bgStoreGroup = new THREE.Group();
+    scene.add(bgStoreGroup);
+
+    const animStoreData: {
+      backdropMesh: THREE.Mesh | null;
+      energyPoints: THREE.Points | null;
+      dustPoints: THREE.Points | null;
+    } = {
+      backdropMesh: null,
+      energyPoints: null,
+      dustPoints: null,
+    };
+
+    buildAnimatedCableStoreBackground3D(bgStoreGroup, animStoreData);
+
+    // 6. Foreground True 3D Physical Assembly Model
+    const modelGroup = new THREE.Group();
+    scene.add(modelGroup);
+
+    const layerMeshes: THREE.Object3D[] = [];
+
+    // Build the Physical 3D Digital Twin Assembly
+    const twinResult = buildSolid3DIndustrialTwin(
+      modelGroup,
+      layerMeshes,
+      currentPreset,
+      renderer
     );
-    vaultGeo.rotateZ(Math.PI / 2);
-    vaultGeo.rotateY(Math.PI / 2);
 
-    const vaultCanvas = document.createElement("canvas");
-    vaultCanvas.width = 1024;
-    vaultCanvas.height = 1024;
-    const vctx = vaultCanvas.getContext("2d");
-    if (vctx) {
-      // Warm earthen sandstone crypt base
-      vctx.fillStyle = "#342c23";
-      vctx.fillRect(0, 0, 1024, 1024);
+    // 7. Animation Loop with Parallax & Camera LookAt
+    let animFrame: number;
+    const clock = new THREE.Clock();
 
-      // Masonry stone blocks with natural stone variation
-      const rows = 18;
-      const cols = 9;
-      const rowH = 1024 / rows;
-      const colW = 1024 / cols;
-      for (let r = 0; r < rows; r++) {
-        const y = r * rowH;
-        const offset = (r % 2) * (colW / 2);
+    const animate = () => {
+      animFrame = requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
 
-        // Mortar joint
-        vctx.strokeStyle = "#1a1510";
-        vctx.lineWidth = 3;
-        vctx.beginPath();
-        vctx.moveTo(0, y);
-        vctx.lineTo(1024, y);
-        vctx.stroke();
-
-        for (let c = -1; c <= cols + 1; c++) {
-          const x = c * colW + offset;
-          vctx.beginPath();
-          vctx.moveTo(x, y);
-          vctx.lineTo(x, y + rowH);
-          vctx.stroke();
-
-          // Stone block color variation: warm ochre, sandy brown, aged stone
-          const hash = Math.sin(r * 4.3 + c * 7.1) * 10000;
-          const rnd = hash - Math.floor(hash);
-          const rVal = Math.floor(48 + rnd * 28);
-          const gVal = Math.floor(40 + rnd * 24);
-          const bVal = Math.floor(32 + rnd * 18);
-          vctx.fillStyle = `rgb(${rVal}, ${gVal}, ${bVal})`;
-          vctx.fillRect(x + 2, y + 2, colW - 4, rowH - 4);
+      // Smooth Cinematic Camera Tweening during AI Tour
+      if (isAiTourPlaying) {
+        rotationRef.current.x += (targetRotRef.current.x - rotationRef.current.x) * 0.06;
+        rotationRef.current.y += (targetRotRef.current.y - rotationRef.current.y) * 0.06;
+        zoomRef.current += (targetZoomRef.current - zoomRef.current) * 0.06;
+        camera.position.x += (targetCamPosRef.current.x - camera.position.x) * 0.06;
+        camera.position.y += (targetCamPosRef.current.y - camera.position.y) * 0.06;
+        camera.position.z += (targetCamPosRef.current.z - camera.position.z) * 0.06;
+      } else {
+        if (autoRotate && !isDraggingRef.current) {
+          rotationRef.current.y += 0.0035;
         }
+        camera.position.x += (0 - camera.position.x) * 0.08;
+        camera.position.y += (0.2 - camera.position.y) * 0.08;
+        camera.position.z += (zoomRef.current - camera.position.z) * 0.08;
       }
 
-      // Organic stone weathering, damp vertical moss streaks & aged stains
-      for (let s = 0; s < 45; s++) {
-        const sx = (s * 73) % 1024;
-        const sy = (s * 137) % 1024;
-        const sr = 35 + (s % 30);
-        const grad = vctx.createRadialGradient(sx, sy, 4, sx, sy, sr);
-        if (s % 2 === 0) {
-          grad.addColorStop(0, "rgba(35, 45, 25, 0.45)"); // mossy green
-        } else {
-          grad.addColorStop(0, "rgba(22, 16, 12, 0.55)"); // dark earth
+      // CRITICAL: Always look directly at the center of the panel
+      camera.lookAt(0, 0, 0);
+
+      modelGroup.rotation.x = rotationRef.current.x;
+      modelGroup.rotation.y = rotationRef.current.y;
+
+      // Parallax Shift on 3D Cable Store Backdrop
+      bgStoreGroup.position.x += (mouseParallaxRef.current.x * 0.7 - bgStoreGroup.position.x) * 0.08;
+      bgStoreGroup.position.y += (-mouseParallaxRef.current.y * 0.4 - bgStoreGroup.position.y) * 0.08;
+      bgStoreGroup.rotation.y += (mouseParallaxRef.current.x * 0.06 - bgStoreGroup.rotation.y) * 0.08;
+
+      // Electrical Sparks along ceiling trays
+      if (animStoreData.energyPoints && animStoreData.energyPoints.geometry) {
+        const positions = animStoreData.energyPoints.geometry.attributes.position.array as Float32Array;
+        for (let i = 2; i < positions.length; i += 3) {
+          positions[i] += 0.12;
+          if (positions[i] > 3.0) {
+            positions[i] = -14.0;
+          }
         }
-        grad.addColorStop(1, "transparent");
-        vctx.fillStyle = grad;
-        vctx.beginPath();
-        vctx.arc(sx, sy, sr, 0, Math.PI * 2);
-        vctx.fill();
+        animStoreData.energyPoints.geometry.attributes.position.needsUpdate = true;
       }
-    }
-    const vaultTex = new THREE.CanvasTexture(vaultCanvas);
-    vaultTex.wrapS = THREE.RepeatWrapping;
-    vaultTex.wrapT = THREE.RepeatWrapping;
-    vaultTex.repeat.set(4, 14);
-    vaultTex.colorSpace = THREE.SRGBColorSpace;
 
-    const vaultMat = new THREE.MeshStandardMaterial({
-      map: vaultTex,
-      side: THREE.BackSide,
-      roughness: 0.75,
-      metalness: 0.12,
-    });
-    const vaultMesh = new THREE.Mesh(vaultGeo, vaultMat);
-    vaultMesh.position.set(0, 0, -40);
-    scene.add(vaultMesh);
-
-    // -------------------------------------------------------------
-    // 6. HIGH-GLOSS WET REFLECTIVE MIRROR FLOOR (Matching Image 1)
-    // -------------------------------------------------------------
-    const floorGeo = new THREE.PlaneGeometry(42, 170, 32, 32);
-    const floorMat = new THREE.MeshStandardMaterial({
-      color: 0x1a1614,
-      roughness: 0.12,
-      metalness: 0.85,
-      transparent: true,
-      opacity: 0.92,
-    });
-    const floorMesh = new THREE.Mesh(floorGeo, floorMat);
-    floorMesh.rotation.x = -Math.PI / 2;
-    floorMesh.position.set(0, -0.05, -40);
-    scene.add(floorMesh);
-
-    // -------------------------------------------------------------
-    // 7. CLASSICAL FLUTED SANDSTONE COLUMNS WITH CLIMBING IVY
-    // Warm sandstone pillars with stone plinths (Matching Image 1)
-    // -------------------------------------------------------------
-    const columnCount = 16;
-    const columnSpacing = 7.5;
-    const colPlinthGeo = new THREE.BoxGeometry(1.2, 0.5, 1.2);
-    const colShaftGeo = new THREE.CylinderGeometry(0.42, 0.48, 7.4, 32);
-    const colCapitalGeo = new THREE.BoxGeometry(1.15, 0.4, 1.15);
-    const stoneColMat = new THREE.MeshStandardMaterial({
-      color: 0x6e6254,
-      roughness: 0.65,
-      metalness: 0.15,
-    });
-
-    const ivyMat1 = new THREE.MeshStandardMaterial({
-      color: 0x1e3318,
-      roughness: 0.8,
-      side: THREE.DoubleSide,
-    });
-    const ivyMat2 = new THREE.MeshStandardMaterial({
-      color: 0x2b4a24,
-      roughness: 0.7,
-      side: THREE.DoubleSide,
-    });
-    const leafGeo = new THREE.PlaneGeometry(0.18, 0.22);
-
-    // Overhead suspended golden glowing lanterns
-    const ceilingLampGeo = new THREE.BoxGeometry(1.9, 0.18, 0.5);
-    const ceilingLampMat = new THREE.MeshStandardMaterial({
-      color: 0xffaa20,
-      emissive: 0xff9900,
-      emissiveIntensity: 4.5,
-    });
-    const cableGeo = new THREE.CylinderGeometry(0.015, 0.015, 2.6);
-    const cableMat = new THREE.MeshBasicMaterial({ color: 0x0a090b });
-
-    // Diagonal amber neon wall strips
-    const diagNeonGeo = new THREE.BoxGeometry(0.05, 3.6, 0.05);
-    const diagNeonMat = new THREE.MeshBasicMaterial({ color: 0xff9f1c });
-
-    // Continuous floor cove uplights along wall bases
-    const coveGeo = new THREE.BoxGeometry(0.06, 0.04, 160);
-    const coveMat = new THREE.MeshBasicMaterial({ color: 0xff9900 });
-
-    const leftCove = new THREE.Mesh(coveGeo, coveMat);
-    leftCove.position.set(-6.2, 0.04, -40);
-    scene.add(leftCove);
-
-    const rightCove = new THREE.Mesh(coveGeo, coveMat);
-    rightCove.position.set(6.2, 0.04, -40);
-    scene.add(rightCove);
-
-    for (let i = 0; i < columnCount; i++) {
-      const zPos = 10 - i * columnSpacing;
-
-      const buildColumnWithIvy = (xPos: number, isRight: boolean) => {
-        const colGroup = new THREE.Group();
-
-        const plinth = new THREE.Mesh(colPlinthGeo, stoneColMat);
-        plinth.position.set(0, 0.25, 0);
-        colGroup.add(plinth);
-
-        const shaft = new THREE.Mesh(colShaftGeo, stoneColMat);
-        shaft.position.set(0, 3.95, 0);
-        colGroup.add(shaft);
-
-        const capital = new THREE.Mesh(colCapitalGeo, stoneColMat);
-        capital.position.set(0, 7.85, 0);
-        colGroup.add(capital);
-
-        // Climbing Ivy wrapping tightly around lower 2.5m (Dense organic foliage matching Image 1)
-        const stemGeo = new THREE.CylinderGeometry(0.015, 0.02, 2.6, 6);
-        const stemMat = new THREE.MeshStandardMaterial({ color: 0x241a12, roughness: 0.9 });
-        const vineStem = new THREE.Mesh(stemGeo, stemMat);
-        vineStem.position.set(isRight ? -0.46 : 0.46, 1.75, 0);
-        vineStem.rotation.z = isRight ? 0.08 : -0.08;
-        colGroup.add(vineStem);
-
-        const leafCount = 42;
-        for (let l = 0; l < leafCount; l++) {
-          const t = l / leafCount;
-          const leafY = 0.5 + t * 2.3;
-          const angle = t * Math.PI * 4.2 + (isRight ? Math.PI : 0);
-          const r = 0.49 + Math.random() * 0.03; // Hugs outside of fluted stone shaft
-          const leaf = new THREE.Mesh(leafGeo, l % 3 === 0 ? ivyMat1 : ivyMat2);
-          leaf.position.set(Math.cos(angle) * r, leafY, Math.sin(angle) * r);
-          leaf.rotation.set(
-            Math.random() * 0.4 - 0.2,
-            -angle + Math.PI / 2,
-            Math.random() * 0.5 - 0.25
-          );
-          colGroup.add(leaf);
+      // 400A Live Current Flow Particles
+      if (twinResult.currentFlowPoints && twinResult.currentFlowPoints.geometry) {
+        twinResult.currentFlowPoints.visible = isCurrentFlowActive;
+        const cpos = twinResult.currentFlowPoints.geometry.attributes.position.array as Float32Array;
+        for (let i = 1; i < cpos.length; i += 3) {
+          cpos[i] += 0.025;
+          if (cpos[i] > 0.8) {
+            cpos[i] = -0.9;
+          }
         }
-
-        colGroup.position.set(xPos, 0, zPos);
-        return colGroup;
-      };
-
-      scene.add(buildColumnWithIvy(-6.2, false));
-      scene.add(buildColumnWithIvy(6.2, true));
-
-      // Overhead Suspended Glowing Amber Lantern on Centerline
-      const lamp = new THREE.Mesh(ceilingLampGeo, ceilingLampMat);
-      lamp.position.set(0, 7.0, zPos);
-      scene.add(lamp);
-
-      // Floor Reflection of Ceiling Lantern (Creates the glistening golden pools on wet floor)
-      const lampReflect = new THREE.Mesh(ceilingLampGeo, ceilingLampMat);
-      lampReflect.position.set(0, -7.0, zPos);
-      scene.add(lampReflect);
-
-      const leftCable = new THREE.Mesh(cableGeo, cableMat);
-      leftCable.position.set(-0.6, 8.3, zPos);
-      scene.add(leftCable);
-
-      const rightCable = new THREE.Mesh(cableGeo, cableMat);
-      rightCable.position.set(0.6, 8.3, zPos);
-      scene.add(rightCable);
-
-      // Warm overhead point light pool washing columns and floor
-      const lampLight = new THREE.PointLight(0xff9911, 3.2, 18, 1.2);
-      lampLight.position.set(0, 6.6, zPos);
-      scene.add(lampLight);
-
-      // Diagonal glowing neon wall strips between column bays
-      if (i < columnCount - 1) {
-        const bayZ = zPos - columnSpacing * 0.5;
-
-        const leftDiag = new THREE.Mesh(diagNeonGeo, diagNeonMat);
-        leftDiag.position.set(-6.8, 4.0, bayZ);
-        leftDiag.rotation.z = -0.55;
-        scene.add(leftDiag);
-
-        const rightDiag = new THREE.Mesh(diagNeonGeo, diagNeonMat);
-        rightDiag.position.set(6.8, 4.0, bayZ);
-        rightDiag.rotation.z = 0.55;
-        scene.add(rightDiag);
+        twinResult.currentFlowPoints.geometry.attributes.position.needsUpdate = true;
       }
-    }
 
-    // -------------------------------------------------------------
-    // 8. ATMOSPHERIC SPARK PARTICLES
-    // -------------------------------------------------------------
-    const particleCount = 200;
-    const particleGeo = new THREE.BufferGeometry();
-    const particlePositions = new Float32Array(particleCount * 3);
-    for (let p = 0; p < particleCount; p++) {
-      particlePositions[p * 3] = (Math.random() - 0.5) * 16;
-      particlePositions[p * 3 + 1] = Math.random() * 6.5;
-      particlePositions[p * 3 + 2] = (Math.random() - 0.5) * 110 - 20;
-    }
-    particleGeo.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
-    const particleMat = new THREE.PointsMaterial({
-      color: 0xffaa44,
-      size: 0.04,
-      transparent: true,
-      opacity: 0.55,
-      blending: THREE.AdditiveBlending,
-    });
-    const sparkParticles = new THREE.Points(particleGeo, particleMat);
-    scene.add(sparkParticles);
+      // Dust motes
+      if (animStoreData.dustPoints && animStoreData.dustPoints.geometry) {
+        const dustPos = animStoreData.dustPoints.geometry.attributes.position.array as Float32Array;
+        for (let i = 1; i < dustPos.length; i += 3) {
+          dustPos[i] += Math.sin(elapsed * 1.4 + i) * 0.0022;
+        }
+        animStoreData.dustPoints.geometry.attributes.position.needsUpdate = true;
+      }
 
-    // -------------------------------------------------------------
-    // 9. FREESTANDING 3D PRODUCT DISPLAYS
-    // Placed on Left (x = -3.2) and Right (x = +3.2)
-    // Angled naturally toward runway (matching Image 1)
-    // -------------------------------------------------------------
-    const boardGroups: Array<{ group: THREE.Group; mesh: THREE.Mesh; index: number }> = [];
+      // Project Hotspots into 2D Screen Space
+      if (mount) {
+        const w = mount.clientWidth;
+        const h = mount.clientHeight;
+        const projected: Array<{ id: string; x: number; y: number; visible: boolean }> = [];
 
-    const neonFootMat = new THREE.MeshBasicMaterial({ color: 0xff8c00 });
-    const neonFootGeo = new THREE.BoxGeometry(3.04, 0.04, 0.04);
+        currentPreset.hotspots.forEach((spot) => {
+          const v = new THREE.Vector3(spot.pos[0], spot.pos[1], spot.pos[2]);
+          v.applyMatrix4(modelGroup.matrixWorld);
 
-    items.forEach((item, idx) => {
-      const boardGroup = new THREE.Group();
+          const isFacing = v.z < camera.position.z;
+          v.project(camera);
 
-      const isLeft = idx % 2 === 0;
-      const xOffset = isLeft ? -3.2 : 3.2;
-      const zOffset = -idx * runwaySpacing;
+          const screenX = (v.x * 0.5 + 0.5) * w;
+          const screenY = (-(v.y * 0.5) + 0.5) * h;
 
-      // Board Dimensions: Width 2.8m, Height 2.8m
-      const boardGeo = new THREE.PlaneGeometry(2.8, 2.8);
-      const texture = createWonderlandCanvasTexture(item);
-      const boardMat = new THREE.MeshBasicMaterial({
-        map: texture,
-        toneMapped: false,
-      });
+          projected.push({
+            id: spot.id,
+            x: screenX,
+            y: screenY,
+            visible: isFacing && v.z >= -1 && v.z <= 1,
+          });
+        });
 
-      const boardMesh = new THREE.Mesh(boardGeo, boardMat);
-      boardMesh.position.set(0, 1.48, 0.02);
-      boardGroup.add(boardMesh);
+        setScreenHotspots(projected);
+      }
 
-      // Back Enclosure Casing
-      const casingGeo = new THREE.BoxGeometry(2.86, 2.86, 0.12);
-      const casingMat = new THREE.MeshStandardMaterial({
-        color: 0x161517,
-        roughness: 0.45,
-        metalness: 0.75,
-      });
-      const casing = new THREE.Mesh(casingGeo, casingMat);
-      casing.position.set(0, 1.48, -0.06);
-      boardGroup.add(casing);
+      renderer.render(scene, camera);
+    };
 
-      // Pedestal Base Stand
-      const footGeo = new THREE.BoxGeometry(3.08, 0.08, 0.4);
-      const footMat = new THREE.MeshStandardMaterial({
-        color: 0x181719,
-        roughness: 0.4,
-        metalness: 0.6,
-      });
-      const foot = new THREE.Mesh(footGeo, footMat);
-      foot.position.set(0, 0.04, 0);
-      boardGroup.add(foot);
-
-      // Glowing Amber Neon Strip Along Baseline Foot (Screenshot 1 & 2 signature)
-      const neonFoot = new THREE.Mesh(neonFootGeo, neonFootMat);
-      neonFoot.position.set(0, 0.06, 0.18);
-      boardGroup.add(neonFoot);
-
-      // WET FLOOR MIRROR REFLECTION OF BOARD
-      const reflectGeo = new THREE.PlaneGeometry(2.8, 2.8);
-      const reflectMat = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        opacity: idx === 1 ? 0.48 : 0.35,
-        blending: THREE.AdditiveBlending,
-      });
-      const reflectMesh = new THREE.Mesh(reflectGeo, reflectMat);
-      reflectMesh.scale.y = -1;
-      reflectMesh.position.set(0, -1.48, 0.02);
-      boardGroup.add(reflectMesh);
-
-      // Floor Reflection of Glowing Foot Strip
-      const reflectFoot = new THREE.Mesh(neonFootGeo, neonFootMat);
-      reflectFoot.position.set(0, -0.06, 0.18);
-      boardGroup.add(reflectFoot);
-
-      boardGroup.position.set(xOffset, 0, zOffset);
-      // Angle slightly toward central runway (Image 1 signature)
-      boardGroup.rotation.y = isLeft ? 0.14 : -0.14;
-      scene.add(boardGroup);
-
-      boardGroups.push({ group: boardGroup, mesh: boardMesh, index: idx });
-    });
+    animFrame = requestAnimationFrame(animate);
 
     threeRef.current = {
       scene,
       camera,
       renderer,
-      boards: boardGroups,
-      activeLight: activePointLight,
-      mouseX: 0,
-      mouseY: 0,
-      raycaster: new THREE.Raycaster(),
-      mouseVec: new THREE.Vector2(),
-      animFrame: null,
+      modelGroup,
+      layerMeshes,
+      currentFlowPoints: twinResult.currentFlowPoints,
+      animFrame,
     };
-
-    // -------------------------------------------------------------
-    // RENDER LOOP & VIRTUAL CAMERA RUNWAY CONTROLLER
-    // -------------------------------------------------------------
-    let clock = new THREE.Clock();
-
-    const animate = () => {
-      const state = threeRef.current;
-      if (!state) return;
-
-      const delta = clock.getDelta();
-
-      // Particle drifting
-      const positions = sparkParticles.geometry.attributes.position.array as Float32Array;
-      for (let i = 1; i < positions.length; i += 3) {
-        positions[i] -= delta * 0.12;
-        if (positions[i] < 0) positions[i] = 6.5;
-      }
-      sparkParticles.geometry.attributes.position.needsUpdate = true;
-
-      // Smooth runway scroll momentum lerp
-      if (isAnimationActiveRef.current) {
-        currentScrollZRef.current += (targetScrollZRef.current - currentScrollZRef.current) * 0.08;
-
-        const currentZ = currentScrollZRef.current;
-        state.camera.position.z = currentZ + 7.5;
-        state.camera.position.x = state.mouseX * 0.25;
-        state.camera.position.y = 1.68 + state.mouseY * 0.12;
-
-        // Look straight down the gallery runway toward the distant horizon
-        state.camera.lookAt(state.mouseX * 0.3, 1.55, currentZ - 12.0);
-
-        // Update active index based on current scroll position
-        const nearestIndex = Math.min(
-          items.length - 1,
-          Math.max(0, Math.round(-currentZ / runwaySpacing))
-        );
-        setActiveIndex((prev) => (prev !== nearestIndex ? nearestIndex : prev));
-
-        // Position active spotlight over the nearest exhibit
-        const activeBoard = state.boards[nearestIndex];
-        if (activeBoard) {
-          state.activeLight.position.set(
-            activeBoard.group.position.x,
-            2.2,
-            activeBoard.group.position.z
-          );
-        }
-      }
-
-      state.renderer.render(state.scene, state.camera);
-      state.animFrame = requestAnimationFrame(animate);
-    };
-
-    animate();
 
     const handleResize = () => {
-      if (!mount || !threeRef.current) return;
-      const newW = mount.clientWidth || window.innerWidth;
-      const newH = mount.clientHeight || Math.round(window.innerHeight * 0.88);
-      if (newW > 0 && newH > 0) {
-        threeRef.current.camera.aspect = newW / newH;
-        threeRef.current.camera.updateProjectionMatrix();
-        threeRef.current.renderer.setSize(newW, newH);
-      }
+      if (!mount) return;
+      const w = mount.clientWidth;
+      const h = mount.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
     };
     window.addEventListener("resize", handleResize);
 
-    const resizeObserver = new ResizeObserver(() => {
-      handleResize();
-    });
-    resizeObserver.observe(mount);
-
     return () => {
       window.removeEventListener("resize", handleResize);
-      resizeObserver.disconnect();
-      if (threeRef.current?.animFrame) {
-        cancelAnimationFrame(threeRef.current.animFrame);
-      }
+      cancelAnimationFrame(animFrame);
       renderer.dispose();
-      if (mount && renderer.domElement) {
-        mount.removeChild(renderer.domElement);
-      }
+      mount.replaceChildren();
       threeRef.current = null;
     };
-  }, [items, createWonderlandCanvasTexture, runwaySpacing]);
+  }, [activeModelId, currentPreset, isCurrentFlowActive]);
 
-  // -------------------------------------------------------------
-  // RAYCASTING & CLICK INTERACTIONS
-  // -------------------------------------------------------------
-  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!threeRef.current || !canvasMountRef.current) return;
-    const rect = canvasMountRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-
-    const state = threeRef.current;
-    state.mouseVec.set(x, y);
-    state.raycaster.setFromCamera(state.mouseVec, state.camera);
-
-    const boardMeshes = state.boards.map((b) => b.mesh);
-    const intersects = state.raycaster.intersectObjects(boardMeshes, false);
-
-    if (intersects.length > 0) {
-      const hitMesh = intersects[0].object as THREE.Mesh;
-      const hitItem = state.boards.find((b) => b.mesh === hitMesh);
-      if (hitItem) {
-        if (hitItem.index === activeIndex) {
-          // Open detail inspect overlay (matching user video 00:04 & 00:43)
-          setInspectedItem(items[hitItem.index]);
-        } else {
-          // Glide camera smoothly to the clicked board
-          handleSelectIndex(hitItem.index);
-        }
-      }
-    }
-  };
-
-  // Mouse Parallax & Hover
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!threeRef.current || !canvasMountRef.current) return;
-    const rect = canvasMountRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
-
-    const state = threeRef.current;
-    state.mouseX = x;
-    state.mouseY = y;
-
-    state.mouseVec.set(x, y);
-    state.raycaster.setFromCamera(state.mouseVec, state.camera);
-    const boardMeshes = state.boards.map((b) => b.mesh);
-    const intersects = state.raycaster.intersectObjects(boardMeshes, false);
-
-    if (intersects.length > 0) {
-      const hitMesh = intersects[0].object as THREE.Mesh;
-      const hitItem = state.boards.find((b) => b.mesh === hitMesh);
-      if (hitItem) setHoveredIndex(hitItem.index);
-    } else {
-      setHoveredIndex(null);
-    }
-  };
-
-  // Native non-passive continuous virtual runway wheel listener
+  // Update Exploded Layers view in real-time
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    if (!threeRef.current) return;
+    const factor = explodeLevel / 100;
+    threeRef.current.layerMeshes.forEach((mesh) => {
+      const offsetX = (mesh.userData?.explodeX || 0) * factor;
+      const offsetY = (mesh.userData?.explodeY || 0) * factor;
+      const offsetZ = (mesh.userData?.explodeZ || 0) * factor;
 
-    const onNativeWheel = (e: WheelEvent) => {
-      // If modal inspection popup is open, don't hijack wheel (let modal scroll its text)
-      if (inspectedItemRef.current) return;
+      mesh.position.x = (mesh.userData?.initialX || 0) + offsetX;
+      mesh.position.y = (mesh.userData?.initialY || 0) + offsetY;
+      mesh.position.z = (mesh.userData?.initialZ || 0) + offsetZ;
+    });
+  }, [explodeLevel]);
 
-      const dy = e.deltaY;
-      if (Math.abs(dy) < 0.1) return;
+  // AI 3D Guided Tour Execution Engine
+  const executeTourStep = useCallback(
+    (stepIdx: number) => {
+      if (!currentPreset.aiTour[stepIdx]) return;
+      const step = currentPreset.aiTour[stepIdx];
 
-      const isScrollingDown = dy > 0;
-      const isScrollingUp = dy < 0;
+      setCurrentTourStepIdx(stepIdx);
+      targetCamPosRef.current.set(step.cameraPos.x, step.cameraPos.y, step.cameraPos.z);
+      targetRotRef.current = { x: step.targetRot.x, y: step.targetRot.y };
+      targetZoomRef.current = step.zoom;
+      setExplodeLevel(step.explodeLevel);
+      setVisionMode(step.visionMode);
+      setSelectedHotspot(step.hotspotId || null);
 
-      const currentTargetZ = targetScrollZRef.current;
-      const atStart = currentTargetZ >= maxRunwayZ - 0.2;
-      const atEnd = currentTargetZ <= minRunwayZ + 0.2;
+      speakNarration(step.narration);
+    },
+    [currentPreset, speakNarration]
+  );
 
-      // Allow natural outer page scrolling only when user scrolls past boundaries
-      if ((isScrollingUp && atStart) || (isScrollingDown && atEnd)) {
-        return; // Don't prevent default, allow page to scroll up/down
+  // Auto-advance AI Tour when playing
+  useEffect(() => {
+    if (!isAiTourPlaying) return;
+
+    executeTourStep(currentTourStepIdx);
+
+    const stepDuration = currentPreset.aiTour[currentTourStepIdx]?.durationMs || 7000;
+    const timer = setTimeout(() => {
+      if (currentTourStepIdx < currentPreset.aiTour.length - 1) {
+        setCurrentTourStepIdx((prev) => prev + 1);
+      } else {
+        setIsAiTourPlaying(false);
+        setCameraPreset("front");
       }
+    }, stepDuration);
 
-      // Inside gallery runway: PREVENT DEFAULT so browser DOES NOT scroll the page!
-      e.preventDefault();
-      e.stopPropagation();
+    return () => clearTimeout(timer);
+  }, [isAiTourPlaying, currentTourStepIdx, currentPreset, executeTourStep]);
 
-      // Normalize delta across browsers and devices
-      let normalizedDy = dy;
-      if (e.deltaMode === 1) normalizedDy *= 33; // line mode
-      else if (e.deltaMode === 2) normalizedDy *= 300; // page mode
-
-      // Responsive sensitivity: feels silky smooth like Wonderland Studio
-      const scrollStep = normalizedDy * 0.015;
-      targetScrollZRef.current = Math.max(
-        minRunwayZ,
-        Math.min(maxRunwayZ, targetScrollZRef.current - scrollStep)
+  // Trigger Instant AI Actions
+  const handleTriggerAiAction = (action: "flow" | "explode" | "thermal" | "macro") => {
+    setAutoRotate(false);
+    if (action === "flow") {
+      setIsCurrentFlowActive((prev) => !prev);
+      speakNarration(
+        isCurrentFlowActive
+          ? "Halting 400A current simulation."
+          : "Simulating 400 Ampere power flow through incoming XLPE feeder, brass glands, copper lugs, and MCCB contacts."
       );
-    };
+    } else if (action === "explode") {
+      setIsAiTourPlaying(false);
+      const nextLevel = explodeLevel > 0 ? 0 : 65;
+      setExplodeLevel(nextLevel);
+      speakNarration(
+        nextLevel > 0
+          ? "Exploding 3D physical enclosure to inspect internal busbar routing, gland plate, and crimp lugs."
+          : "Reassembling 3D industrial enclosure."
+      );
+    } else if (action === "thermal") {
+      setIsAiTourPlaying(false);
+      const nextMode = visionMode === "thermal" ? "reality" : "thermal";
+      setVisionMode(nextMode);
+      speakNarration(
+        nextMode === "thermal"
+          ? "Activating FLIR thermal infrared scan: copper busbar junctions running at 68 degrees Celsius under 400A continuous load."
+          : "Restoring photorealistic reality mode."
+      );
+    } else if (action === "macro") {
+      setIsAiTourPlaying(false);
+      setCameraPreset("focus");
+      setSelectedHotspot("copper-lugs");
+      speakNarration(
+        "Focusing macro 3D camera on DIN 46235 heavy pure copper crimp lugs and M12 high-tensile bolted palms."
+      );
+    }
+  };
 
-    el.addEventListener("wheel", onNativeWheel, { passive: false });
-    return () => {
-      el.removeEventListener("wheel", onNativeWheel);
-    };
-  }, [minRunwayZ, maxRunwayZ]);
-
-  // Mouse drag navigation
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (inspectedItem) return;
-    const target = e.target as HTMLElement;
-    if (target.closest("button") || target.closest("a") || target.closest("input")) return;
+  // Mouse & Touch 360 Orbit Controls
+  const handleMouseDown = (e: React.MouseEvent) => {
     isDraggingRef.current = true;
-    dragStartY.current = e.clientY;
-    dragStartX.current = e.clientX;
+    prevMouseRef.current = { x: e.clientX, y: e.clientY };
+    if (isAiTourPlaying) {
+      setIsAiTourPlaying(false);
+    }
   };
 
-  const handleMouseUp = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const normX = (e.clientX - rect.left) / rect.width - 0.5;
+      const normY = (e.clientY - rect.top) / rect.height - 0.5;
+      mouseParallaxRef.current = { x: normX, y: normY };
+    }
+
     if (!isDraggingRef.current) return;
-    const deltaY = e.clientY - dragStartY.current;
-    const deltaX = e.clientX - dragStartX.current;
-    isDraggingRef.current = false;
-    if (Math.abs(deltaY) > 30) {
-      targetScrollZRef.current = Math.max(
-        minRunwayZ,
-        Math.min(maxRunwayZ, targetScrollZRef.current + deltaY * 0.04)
-      );
-    } else if (Math.abs(deltaX) > 40) {
-      if (deltaX < 0) handleNext();
-      else handlePrev();
-    }
+    const deltaX = e.clientX - prevMouseRef.current.x;
+    const deltaY = e.clientY - prevMouseRef.current.y;
+
+    rotationRef.current.y += deltaX * 0.007;
+    rotationRef.current.x += deltaY * 0.007;
+    rotationRef.current.x = Math.max(-Math.PI / 2.6, Math.min(Math.PI / 2.6, rotationRef.current.x));
+
+    prevMouseRef.current = { x: e.clientX, y: e.clientY };
   };
 
-  // Touch swipe
-  const touchStartY = useRef<number | null>(null);
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (inspectedItem) return;
-    touchStartY.current = e.touches[0].clientY;
+  const handleMouseUp = () => {
+    isDraggingRef.current = false;
   };
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (touchStartY.current === null) return;
-    const delta = e.changedTouches[0].clientY - touchStartY.current;
-    if (Math.abs(delta) > 25) {
-      targetScrollZRef.current = Math.max(
-        minRunwayZ,
-        Math.min(maxRunwayZ, targetScrollZRef.current + delta * 0.05)
-      );
+
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    zoomRef.current = Math.max(3.2, Math.min(8.0, zoomRef.current + e.deltaY * 0.0035));
+  };
+
+  // View Preset Camera Angles
+  const setCameraPreset = (type: "front" | "iso" | "top" | "focus") => {
+    setAutoRotate(false);
+    setIsAiTourPlaying(false);
+    if (type === "front") {
+      rotationRef.current = { x: 0, y: 0 };
+      zoomRef.current = 5.2;
+    } else if (type === "iso") {
+      rotationRef.current = { x: 0.22, y: 0.35 };
+      zoomRef.current = 5.4;
+    } else if (type === "top") {
+      rotationRef.current = { x: Math.PI / 2.3, y: 0 };
+      zoomRef.current = 5.6;
+    } else if (type === "focus") {
+      rotationRef.current = { x: 0.05, y: 0.1 };
+      zoomRef.current = 3.4;
     }
-    touchStartY.current = null;
   };
 
   return (
     <div
       ref={containerRef}
-      className={`relative w-full bg-[#131215] text-[#ded6cb] border-y border-[#2e2d31] shadow-2xl overflow-hidden select-none transition-all duration-300 font-sans ${
-        isFullscreen
-          ? "fixed inset-0 z-50 rounded-none h-screen w-screen"
-          : "w-full h-[88vh] min-h-[740px] max-h-[950px] rounded-none"
-      }`}
       onMouseMove={handleMouseMove}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onClick={handleCanvasClick}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      style={{ cursor: hoveredIndex !== null ? "pointer" : "grab" }}
+      className={`relative w-full select-none overflow-hidden transition-all duration-300 ${
+        isFullscreen ? "fixed inset-0 z-50 h-screen" : "h-[800px] sm:h-[880px] lg:h-[940px]"
+      } bg-[#070b14]`}
     >
-      {/* 1. THREE.JS 3D WONDERLAND CORRIDOR CANVAS */}
-      <div ref={canvasMountRef} className="absolute inset-0 w-full h-full z-0" />
+      {/* 3D WEBGL CANVAS VIEWPORT */}
+      <div
+        ref={canvasMountRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onWheel={handleWheel}
+        className={`absolute inset-0 z-10 cursor-grab active:cursor-grabbing touch-none transition-filter duration-300 ${
+          visionMode === "thermal"
+            ? "hue-rotate-[180deg] saturate-[2.4] contrast-[1.3]"
+            : visionMode === "blueprint"
+            ? "invert hue-rotate-[190deg] saturate-[2.0] contrast-[1.4]"
+            : ""
+        }`}
+      />
 
-      {/* 2. TOP-LEFT WONDERLAND STUDIO BRAND & NUMBERED CHAPTERS (Exact Screenshot 1 & 2 HUD) */}
-      <div className="absolute left-5 sm:left-8 top-5 sm:top-8 z-20 flex flex-col pointer-events-auto">
-        <div className="mb-4">
-          <h2 className="text-base sm:text-lg font-black uppercase tracking-widest text-[#ded6cb]">
-            VOLAMP
-          </h2>
-          <p className="text-[10px] sm:text-[11px] uppercase tracking-wider text-[#9d958b] leading-tight">
-            ELECTRICAL SUPPLY DESIGN<br />
-            INC 1998 | BASED IN AHMEDABAD
-          </p>
-        </div>
+      {/* FLOATING 3D SCREEN-SPACE HOTSPOT PINS */}
+      {showHud && (
+        <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden">
+          {screenHotspots.map((spot) => {
+            if (!spot.visible) return null;
+            const hotspotData = currentPreset.hotspots.find((h) => h.id === spot.id);
+            if (!hotspotData) return null;
+            const isSelected = selectedHotspot === spot.id;
 
-        {/* Wonderland Studio Numbered Chapter Menu with Oval Pill Border on Active */}
-        <div className="flex flex-col gap-1 mt-1 max-w-[240px]">
-          {items.map((cat, idx) => {
-            const isActive = idx === activeIndex;
             return (
-              <div key={cat.id} className="flex flex-col">
+              <div
+                key={spot.id}
+                style={{
+                  left: `${spot.x}px`,
+                  top: `${spot.y}px`,
+                  transform: "translate(-50%, -50%)",
+                }}
+                className="absolute pointer-events-auto transition-transform hover:scale-110"
+              >
                 <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSelectIndex(idx);
+                  onClick={() => {
+                    setIsAiTourPlaying(false);
+                    setSelectedHotspot(isSelected ? null : spot.id);
+                    if (!isSelected) {
+                      speakNarration(hotspotData.desc);
+                    }
                   }}
-                  className={`text-left text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer ${
-                    isActive
-                      ? "px-3 py-1 rounded-full border border-[#ded6cb] text-[#ded6cb] font-bold bg-white/5 shadow-xs"
-                      : "text-[#8d857b] hover:text-[#ded6cb] px-3 py-1 rounded-full border border-transparent font-medium"
-                  }`}
+                  className="relative group flex items-center justify-center cursor-pointer"
+                  title={hotspotData.title}
                 >
-                  <span className="text-[11px] font-mono">{cat.number}</span>
-                  <span className="truncate">{cat.categoryName}</span>
+                  <span
+                    className={`absolute size-8 rounded-full animate-ping opacity-60 ${
+                      isSelected ? "bg-[#ec6437]" : "bg-cyan-400"
+                    }`}
+                  />
+                  <span
+                    className={`relative size-5 rounded-full border-2 border-white flex items-center justify-center shadow-lg transition-colors ${
+                      isSelected
+                        ? "bg-[#ec6437] shadow-[#ec6437]/80"
+                        : "bg-cyan-500 group-hover:bg-[#ec6437] shadow-cyan-500/80"
+                    }`}
+                  >
+                    <span className="size-1.5 rounded-full bg-white" />
+                  </span>
+
+                  {!isSelected && (
+                    <span className="absolute left-6 whitespace-nowrap px-2.5 py-1 rounded-md bg-black/85 border border-white/20 text-[10px] font-mono font-bold text-white shadow-xl backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                      {hotspotData.title}
+                    </span>
+                  )}
                 </button>
-                {/* Indented 1.1 OVERVIEW subline under active chapter (Smooth transition, zero layout jumping) */}
-                <div
-                  className={`overflow-hidden transition-all duration-200 text-[10px] text-[#8d857b] font-mono pl-6 tracking-wider ${
-                    isActive ? "max-h-5 opacity-100 pt-0.5" : "max-h-0 opacity-0 pt-0 pointer-events-none"
-                  }`}
-                >
-                  {cat.number}.1 OVERVIEW
-                </div>
               </div>
             );
           })}
         </div>
+      )}
 
-        {/* Animation & Time Ticker (Exact Wonderland HUD) */}
-        <div className="mt-5 text-[11px] uppercase tracking-wider text-[#8d857b] font-mono space-y-1">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsAnimationActive(!isAnimationActive);
-            }}
-            className="hover:text-[#ded6cb] cursor-pointer transition-colors block text-left"
-          >
-            ANIMATION {isAnimationActive ? "ON" : "OFF"}
-          </button>
-          <div>AHMEDABAD IST {currentTimeStr || "LIVE"}</div>
-        </div>
-      </div>
-
-      {/* 3. TOP-RIGHT CONTROLS: Golden Spinning Asterisk Glyph (Exact Screenshot 1 & 2) */}
-      <div className="absolute right-4 sm:right-8 top-4 sm:top-8 z-20 flex items-center gap-2 pointer-events-auto">
-        <div className="flex items-center gap-1 bg-black/70 backdrop-blur-md p-1 rounded-full border border-white/10 text-[11px] font-mono mr-1">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setViewMode("runway");
-            }}
-            className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-              viewMode === "runway"
-                ? "bg-[#ec6437] text-white font-bold shadow-md"
-                : "text-[#8d857b] hover:text-[#ded6cb]"
-            }`}
-          >
-            ✦ 3D RUNWAY
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setViewMode("showroom");
-            }}
-            className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-              viewMode === "showroom"
-                ? "bg-[#ec6437] text-white font-bold shadow-md"
-                : "text-[#8d857b] hover:text-[#ded6cb]"
-            }`}
-          >
-            ☷ SHOWROOM
-          </button>
-        </div>
-
-        {onOpenShowroomLab && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenShowroomLab(activeItem.id);
-            }}
-            className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 hover:border-[#ec6437] text-white text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer"
-            title="Inspect 360° AR Digital Twin"
-          >
-            <Zap className="size-3.5 text-amber-400" />
-            <span className="hidden sm:inline">360° AR</span>
-          </button>
-        )}
-
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsFullscreen(!isFullscreen);
-          }}
-          className="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-all cursor-pointer"
-          title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Spatial Mode"}
-        >
-          {isFullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
-        </button>
-
-        {/* THE SPINNING GOLDEN ASTERISK GLYPH (Screenshot 1 & 2 signature top-right element) */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleAudio();
-          }}
-          className="relative p-1 rounded-full hover:bg-white/10 transition-transform active:scale-90 cursor-pointer text-yellow-400 group"
-          title={isAudioActive ? "Mute Ambient Spatial Drone" : "Enable Ambient Spatial Drone (55Hz)"}
-        >
-          <span className="inline-block text-2xl font-bold leading-none animate-[spin_8s_linear_infinite] select-none text-[#eab308]">
-            ✱
-          </span>
-          {isAudioActive && (
-            <span className="absolute bottom-1 right-1 size-2 rounded-full bg-green-400 ring-2 ring-black" />
-          )}
-        </button>
-      </div>
-
-      {/* 4. BOTTOM CENTER "SCROLL TO DISCOVER" (Exact match to User Video 00:01) */}
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-6 sm:bottom-8 z-20 flex flex-col items-center gap-2 pointer-events-auto">
-        <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-widest text-[#9d958b]">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handlePrev();
-            }}
-            className="p-1 rounded-full hover:bg-white/10 transition-colors cursor-pointer text-[#ded6cb]"
-            title="Previous Exhibit"
-          >
-            <ChevronLeft className="size-4" />
-          </button>
-
-          <span className="animate-pulse text-[#ded6cb] font-semibold text-[11px] tracking-widest">
-            SCROLL TO DISCOVER · 0{activeIndex + 1} / 08
-          </span>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleNext();
-            }}
-            className="p-1 rounded-full hover:bg-white/10 transition-colors cursor-pointer text-[#ded6cb]"
-            title="Next Exhibit"
-          >
-            <ChevronRight className="size-4" />
-          </button>
-        </div>
-
-        {/* Minimal Progress Line */}
-        <div className="flex items-center gap-1.5 mt-0.5">
-          {items.map((_, i) => (
-            <button
-              key={i}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleSelectIndex(i);
-              }}
-              className={`h-1 rounded-full transition-all cursor-pointer ${
-                i === activeIndex ? "w-6 bg-[#ec6437]" : "w-1.5 bg-[#484749] hover:bg-[#8d857b]"
-              }`}
-              title={`Jump to ${items[i].categoryName}`}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* 5. ACTIVE CATEGORY QUICK EXPLORER STRIP (Bottom-Right, safe margins away from floating WhatsApp) */}
-      <div className="absolute right-4 sm:right-24 bottom-4 sm:bottom-8 z-20 flex flex-col items-center sm:items-end gap-2.5 max-w-lg pointer-events-auto">
-        <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onNavigate(activeItem.slug);
-            }}
-            className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-[#ec6437] hover:bg-[#ff7d50] text-white font-bold text-xs uppercase tracking-wider shadow-xl transition-all flex items-center gap-2 cursor-pointer"
-          >
-            <span>Explore {activeItem.categoryName}</span>
-            <ArrowRight className="size-4" />
-          </button>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setInspectedItem(activeItem);
-            }}
-            className="px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer"
-            title="Inspect Specifications"
-          >
-            <Layers className="size-4 text-amber-400" />
-            <span>Inspect</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 6. DETAIL INSPECT SCREEN WITH <- BACK BUTTON (Exact match to User Video 00:05 & 00:43) */}
-      {inspectedItem && (
-        <div className="absolute inset-0 z-40 bg-[#131215]/96 backdrop-blur-2xl flex flex-col pointer-events-auto overflow-y-auto animate-in fade-in zoom-in-95 duration-200 p-6 sm:p-12">
-          {/* Top Bar with <- BACK and Golden Asterisk */}
-          <div className="flex items-center justify-between mb-8 max-w-6xl w-full mx-auto">
-            <button
-              onClick={() => setInspectedItem(null)}
-              className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 text-[#ded6cb] font-mono text-xs uppercase tracking-wider transition-all cursor-pointer shadow-lg"
-            >
-              <ChevronLeft className="size-4" />
-              <span>BACK</span>
-            </button>
-
-            <div className="flex items-center gap-4">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#ec6437]">
-                SERIES · {inspectedItem.code}
-              </span>
-              <button
-                onClick={toggleAudio}
-                className="text-yellow-400 hover:text-yellow-300 transition-transform active:scale-90 cursor-pointer"
-                title="Toggle Ambient Audio"
-              >
-                <span className="inline-block text-2xl leading-none animate-[spin_8s_linear_infinite] select-none text-[#eab308]">
-                  ✱
+      {/* TOP HEADER: BRAND + PRESETS + AI ACTIONS */}
+      <div className="absolute top-0 inset-x-0 z-30 p-4 sm:p-6 flex flex-col gap-3 pointer-events-none">
+        <div className="flex items-center justify-between pointer-events-auto">
+          {/* Logo & Headline */}
+          <div className="flex items-center gap-3">
+            <div className="size-9 rounded-xl bg-gradient-to-br from-[#ec6437] to-[#d94819] flex items-center justify-center font-black text-white text-lg shadow-lg shadow-[#ec6437]/40 ring-1 ring-white/20">
+              V
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-extrabold text-white text-sm tracking-wider uppercase">
+                  VOLAMP 3D AI ELECTRICAL TWIN
                 </span>
-              </button>
+                <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#ec6437]/25 text-[#ec6437] border border-[#ec6437]/40 flex items-center gap-1">
+                  <Cpu className="size-3" /> AI 3D CO-PILOT
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 font-mono hidden sm:block">
+                AI-Driven 3D Physical Assembly Animation · Live 400A Current Simulation · Voice Guided Tour
+              </p>
             </div>
           </div>
 
-          {/* Inspect Body Content */}
-          <div className="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 my-auto">
-            {/* Left: Showcase Hero Image */}
-            <div className="lg:col-span-6 relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-2xl flex items-center justify-center min-h-[360px] max-h-[480px]">
-              <img
-                src={inspectedItem.image}
-                alt={inspectedItem.categoryName}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#131215] via-transparent to-black/30" />
-              <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-black/70 border border-white/15 text-xs font-mono text-white uppercase tracking-wider">
-                {inspectedItem.badgeTag}
-              </span>
+          {/* Right Action Controls */}
+          <div className="flex items-center gap-2">
+            {/* Quick AI Action Pills */}
+            <div className="hidden lg:flex items-center gap-1.5 p-1 rounded-full bg-black/70 border border-white/15 backdrop-blur-md shadow-md">
+              <button
+                onClick={() => handleTriggerAiAction("flow")}
+                className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isCurrentFlowActive
+                    ? "bg-cyan-500/25 text-cyan-300 border border-cyan-400/50 shadow-md shadow-cyan-500/30"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title="Toggle 400A Live Electrical Current Flow Particles"
+              >
+                <Zap className="size-3 text-cyan-400 animate-pulse" />
+                <span>400A FLOW</span>
+              </button>
+
+              <button
+                onClick={() => handleTriggerAiAction("explode")}
+                className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  explodeLevel > 0
+                    ? "bg-amber-500/25 text-amber-300 border border-amber-400/50 shadow-md shadow-amber-500/30"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title="AI 3D Exploded Layer Disassembly"
+              >
+                <Layers className="size-3 text-amber-400" />
+                <span>EXPLODE 3D</span>
+              </button>
+
+              <button
+                onClick={() => handleTriggerAiAction("thermal")}
+                className={`px-3 py-1 rounded-full text-[11px] font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  visionMode === "thermal"
+                    ? "bg-red-500/25 text-red-300 border border-red-400/50 shadow-md shadow-red-500/30"
+                    : "text-slate-400 hover:text-white"
+                }`}
+                title="FLIR Thermal Infrared Heat Dissipation Scan"
+              >
+                <Flame className="size-3 text-red-400" />
+                <span>THERMAL SCAN</span>
+              </button>
             </div>
 
-            {/* Right: Technical Specifications & Actions */}
-            <div className="lg:col-span-6 flex flex-col justify-center space-y-5">
-              <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-[#ec6437]">
-                  VOLAMP INDUSTRIAL SPECIFICATION
+            {/* AI Assistant Button */}
+            <button
+              onClick={() => setIsAiAssistantOpen(true)}
+              className="px-3.5 py-1.5 rounded-full bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer shadow-md hover:scale-[1.02]"
+              title="Open AI Electrical Cable Sizer & Hardware Calculator"
+            >
+              <Bot className="size-3.5 text-emerald-400" />
+              <span className="hidden sm:inline">AI CABLE SIZER</span>
+            </button>
+
+            {/* Focus / HUD Toggle */}
+            <button
+              onClick={() => setShowHud((prev) => !prev)}
+              className={`px-3 py-1.5 rounded-full border text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer shadow-md ${
+                showHud
+                  ? "bg-white/10 hover:bg-white/20 border-white/20 text-white"
+                  : "bg-[#ec6437] border-[#ec6437] text-white shadow-[#ec6437]/40 font-bold"
+              }`}
+              title={showHud ? "Hide HUD Overlays for Clean View" : "Show HUD Technical Overlays"}
+            >
+              <Eye className="size-3.5" />
+              <span className="hidden sm:inline">{showHud ? "CLEAN" : "HUD"}</span>
+            </button>
+
+            {onOpenShowroomLab && (
+              <button
+                onClick={() => onOpenShowroomLab(currentPreset.id)}
+                className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 hover:border-[#ec6437] text-white text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                title="Inspect in 360° AR Lab"
+              >
+                <Zap className="size-3.5 text-amber-400" />
+                <span className="hidden sm:inline">360° AR</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setIsFullscreen(!isFullscreen)}
+              className="p-2 rounded-full bg-black/60 hover:bg-white/15 border border-white/10 text-white transition-all cursor-pointer"
+              title={isFullscreen ? "Exit Fullscreen" : "Fullscreen View"}
+            >
+              {isFullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+            </button>
+          </div>
+        </div>
+
+        {/* 4 Real Hardware Model Presets */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 pointer-events-auto scrollbar-none">
+          {modelPresets.map((preset) => {
+            const isActive = preset.id === activeModelId;
+            return (
+              <button
+                key={preset.id}
+                onClick={() => {
+                  setActiveModelId(preset.id);
+                  setExplodeLevel(0);
+                  setSelectedHotspot(null);
+                  setIsAiTourPlaying(false);
+                  setCurrentTourStepIdx(0);
+                }}
+                className={`px-4 py-2 rounded-xl text-xs font-mono font-bold tracking-wider uppercase transition-all whitespace-nowrap cursor-pointer flex items-center gap-2 border backdrop-blur-md ${
+                  isActive
+                    ? "bg-gradient-to-r from-[#ec6437] to-[#d94819] text-white border-[#ec6437] shadow-lg shadow-[#ec6437]/30 scale-[1.02]"
+                    : "bg-black/60 hover:bg-white/10 text-slate-300 border-white/10 hover:border-white/20"
+                }`}
+              >
+                <span
+                  className={`size-2 rounded-full ${
+                    isActive ? "bg-white animate-pulse" : "bg-[#ec6437]"
+                  }`}
+                />
+                <span>{preset.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* CENTER TOP: AI 3D GUIDED TOUR CONTROLLER & SPEECH BANNER */}
+      {showHud && (
+        <div className="absolute top-28 sm:top-24 inset-x-4 sm:inset-x-0 mx-auto max-w-xl z-30 pointer-events-none">
+          <div className="p-3 sm:p-4 rounded-2xl bg-black/85 backdrop-blur-2xl border border-cyan-500/30 shadow-2xl shadow-cyan-500/20 space-y-2 pointer-events-auto">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="size-2 rounded-full bg-cyan-400 animate-ping" />
+                <span className="text-[11px] font-mono font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Bot className="size-3.5 text-cyan-400" />
+                  <span>AI 3D CO-PILOT: {currentTourStep.title}</span>
                 </span>
-                <h2 className="text-3xl sm:text-5xl font-black text-[#ded6cb] uppercase tracking-tight mt-1 mb-2">
-                  {inspectedItem.categoryName}
-                </h2>
-                <p className="text-sm sm:text-base text-[#b8b0a5] leading-relaxed">
-                  {inspectedItem.headline}
-                </p>
               </div>
 
-              {/* Technical Specifications Table */}
-              <div className="grid grid-cols-2 gap-3 bg-black/40 p-4 rounded-xl border border-white/5 text-xs font-mono">
-                <div>
-                  <span className="text-[#8d857b] block mb-1">VOLTAGE / CAPACITY</span>
-                  <span className="text-white font-bold">{inspectedItem.voltageSpec}</span>
-                </div>
-                <div>
-                  <span className="text-[#8d857b] block mb-1">CERTIFIED STANDARD</span>
-                  <span className="text-white font-bold">{inspectedItem.standardSpec}</span>
-                </div>
-                <div>
-                  <span className="text-[#8d857b] block mb-1">MATERIAL GRADE</span>
-                  <span className="text-white font-bold">{inspectedItem.materialSpec}</span>
-                </div>
-                <div>
-                  <span className="text-[#8d857b] block mb-1">DISPATCH READY</span>
-                  <span className="text-[#ec6437] font-bold">
-                    {inspectedItem.productCount.toLocaleString("en-IN")}+ SKUs
-                  </span>
-                </div>
-              </div>
-
-              {/* Subcategories */}
-              <div>
-                <span className="text-[11px] font-mono text-[#8d857b] uppercase block mb-2">
-                  SUBDIVISIONS & SYSTEMS:
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {inspectedItem.subcategories.map((sub) => (
-                    <button
-                      key={sub.slug}
-                      onClick={() => onNavigate(sub.slug)}
-                      className="px-3 py-1 rounded-lg bg-white/5 hover:bg-[#ec6437] border border-white/10 hover:border-transparent text-xs text-[#ded6cb] hover:text-white transition-colors cursor-pointer"
-                    >
-                      {sub.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-3 pt-2">
+              <div className="flex items-center gap-1.5">
                 <button
-                  onClick={() => onNavigate(inspectedItem.slug)}
-                  className="flex-1 py-3.5 px-6 rounded-full bg-[#ec6437] hover:bg-[#ff7d50] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={() => setIsVoiceEnabled(!isVoiceEnabled)}
+                  className={`p-1.5 rounded-lg border text-xs transition-colors cursor-pointer ${
+                    isVoiceEnabled
+                      ? "bg-cyan-500/20 text-cyan-300 border-cyan-400/40"
+                      : "bg-white/5 text-slate-500 border-white/10"
+                  }`}
+                  title={isVoiceEnabled ? "Mute Voice Narration" : "Enable Voice Narration"}
                 >
-                  <span>Open {inspectedItem.categoryName} Catalog</span>
-                  <ArrowRight className="size-4" />
+                  {isVoiceEnabled ? <Volume2 className="size-3.5" /> : <VolumeX className="size-3.5" />}
                 </button>
 
                 <button
                   onClick={() => {
-                    if (onOpenShowroomLab) onOpenShowroomLab(inspectedItem.id);
-                    else onOpenARModal(inspectedItem.categoryRef);
+                    if (isAiTourPlaying) {
+                      setIsAiTourPlaying(false);
+                      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+                        window.speechSynthesis.cancel();
+                      }
+                    } else {
+                      setIsAiTourPlaying(true);
+                      executeTourStep(currentTourStepIdx);
+                    }
                   }}
-                  className="py-3.5 px-5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer"
+                  className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-md ${
+                    isAiTourPlaying
+                      ? "bg-amber-500 text-black shadow-amber-500/40"
+                      : "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-cyan-500/40 hover:scale-[1.02]"
+                  }`}
                 >
-                  <Zap className="size-4 text-amber-400" />
-                  <span>3D AR Twin</span>
+                  {isAiTourPlaying ? (
+                    <>
+                      <Pause className="size-3 fill-current" />
+                      <span>PAUSE AI TOUR</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="size-3 fill-current" />
+                      <span>START 3D AI TOUR</span>
+                    </>
+                  )}
                 </button>
+
+                <button
+                  onClick={() => {
+                    const next = (currentTourStepIdx + 1) % currentPreset.aiTour.length;
+                    setCurrentTourStepIdx(next);
+                    executeTourStep(next);
+                  }}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                  title="Next AI Tour Step"
+                >
+                  <FastForward className="size-3.5" />
+                </button>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-200 leading-relaxed font-sans bg-white/5 p-2 rounded-xl border border-white/10">
+              "{currentTourStep.narration}"
+            </p>
+
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-[10px] font-mono text-slate-400">
+                STEP {currentTourStepIdx + 1} OF {currentPreset.aiTour.length} ·{" "}
+                {currentTourStep.component}
+              </span>
+              <div className="flex items-center gap-1.5">
+                {currentPreset.aiTour.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setCurrentTourStepIdx(idx);
+                      executeTourStep(idx);
+                    }}
+                    className={`size-2 rounded-full transition-all cursor-pointer ${
+                      idx === currentTourStepIdx
+                        ? "bg-cyan-400 w-4 shadow-sm shadow-cyan-400"
+                        : "bg-white/20 hover:bg-white/40"
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* 7. LUXURY SHOWROOM VIEW OVERLAY */}
-      {viewMode === "showroom" && (
-        <div className="absolute inset-0 z-30 bg-[#131215]/95 backdrop-blur-xl overflow-y-auto p-4 sm:p-10 pointer-events-auto">
-          <div className="max-w-7xl mx-auto pt-16 pb-12">
-            <div className="text-center max-w-2xl mx-auto mb-10">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#ec6437]">
-                VOLAMP DIGITAL SPECIFICATION ROTUNDA
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-black text-[#ded6cb] uppercase tracking-tight mt-1 mb-3">
-                8 Master Industrial Categories
-              </h2>
-              <p className="text-xs sm:text-sm text-[#9d958b]">
-                Select any series to inspect factory specifications, instant inventory, and certified industrial dispatches.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-              {items.map((cat) => (
-                <div
-                  key={cat.id}
-                  className="bg-[#1c1b1e] border border-[#2e2d31] hover:border-[#ec6437] rounded-2xl overflow-hidden transition-all duration-300 flex flex-col group hover:-translate-y-1 shadow-xl"
-                >
-                  <div className="relative h-48 overflow-hidden bg-black/40">
-                    <img
-                      src={cat.image}
-                      alt={cat.categoryName}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1c1b1e] via-black/30 to-transparent" />
-                    <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-black/70 border border-white/15 text-[10px] font-mono text-[#ded6cb] uppercase">
-                      SERIES {cat.code}
-                    </span>
-                    <span className="absolute bottom-3 left-3 text-lg font-bold text-white tracking-wide">
-                      {cat.categoryName}
-                    </span>
+      {/* LEFT FLOATING ENGINEERING HUD */}
+      {showHud && (
+        <div className="absolute left-4 sm:left-6 bottom-16 sm:bottom-20 z-30 max-w-sm sm:max-w-md w-full space-y-3 pointer-events-none">
+          {activeHotspotData ? (
+            <div className="p-4 sm:p-5 rounded-2xl bg-black/90 backdrop-blur-2xl border-2 border-[#ec6437] shadow-2xl shadow-[#ec6437]/30 space-y-3 pointer-events-auto animate-in fade-in slide-in-from-bottom-4 duration-200">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-[#ec6437] uppercase tracking-wider">
+                    <span className="size-1.5 rounded-full bg-[#ec6437]" />
+                    <span>PIN INSPECTION · {activeHotspotData.component}</span>
                   </div>
+                  <h4 className="text-base font-extrabold text-white mt-0.5">
+                    {activeHotspotData.title}
+                  </h4>
+                </div>
+                <button
+                  onClick={() => setSelectedHotspot(null)}
+                  className="size-6 rounded-lg bg-white/10 hover:bg-white/20 text-slate-400 hover:text-white flex items-center justify-center text-xs cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
 
-                  <div className="p-4 flex flex-col flex-1">
-                    <p className="text-xs text-[#b8b0a5] line-clamp-2 mb-3">
-                      {cat.subheadline}
-                    </p>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                {activeHotspotData.desc}
+              </p>
 
-                    <div className="bg-black/30 p-2.5 rounded-lg border border-white/5 space-y-1.5 text-[11px] font-mono mb-4">
-                      <div className="flex justify-between text-[#8d857b]">
-                        <span>CAPACITY:</span>
-                        <span className="text-[#ded6cb] font-semibold">{cat.voltageSpec}</span>
-                      </div>
-                      <div className="flex justify-between text-[#8d857b]">
-                        <span>STANDARD:</span>
-                        <span className="text-[#ded6cb] font-semibold">{cat.standardSpec}</span>
-                      </div>
-                      <div className="flex justify-between text-[#8d857b]">
-                        <span>READY SKUs:</span>
-                        <span className="text-[#ec6437] font-semibold">{cat.productCount.toLocaleString("en-IN")}+</span>
-                      </div>
-                    </div>
+              <div className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-[11px] font-mono text-cyan-300 space-y-1">
+                <span className="text-slate-400 block text-[10px] font-bold uppercase tracking-wider">
+                  ENGINEERING RATINGS:
+                </span>
+                <p>{activeHotspotData.technical}</p>
+              </div>
 
-                    <div className="mt-auto flex items-center gap-2">
-                      <button
-                        onClick={() => onNavigate(cat.slug)}
-                        className="flex-1 py-2.5 rounded-xl bg-[#ec6437] hover:bg-[#ff7d50] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                      >
-                        <span>Explore</span>
-                        <ArrowRight className="size-3.5" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (onOpenShowroomLab) onOpenShowroomLab(cat.id);
-                          else onOpenARModal(cat.categoryRef);
-                        }}
-                        className="p-2.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-amber-400 transition-colors cursor-pointer"
-                        title="3D Twin"
-                      >
-                        <Zap className="size-4" />
-                      </button>
-                    </div>
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  onClick={() => setIsAiAssistantOpen(true)}
+                  className="flex-1 py-2 px-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                >
+                  <Bot className="size-3.5" />
+                  <span>CALCULATE CABLE & LUGS</span>
+                </button>
+                <button
+                  onClick={() => onNavigate(currentPreset.categorySlug)}
+                  className="py-2 px-3 rounded-xl bg-[#ec6437] hover:bg-[#d94819] text-white text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shadow-[#ec6437]/30"
+                >
+                  <span>BROWSE SPEC</span>
+                  <ArrowRight className="size-3" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 sm:p-5 rounded-2xl bg-black/85 backdrop-blur-xl border border-white/15 shadow-2xl space-y-3 pointer-events-auto">
+              <div className="flex items-start justify-between">
+                <div>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#ec6437]/20 text-[#ec6437] border border-[#ec6437]/30 uppercase">
+                    {currentPreset.badge}
+                  </span>
+                  <h3 className="text-base sm:text-lg font-black text-white mt-1">
+                    {currentPreset.specs.title}
+                  </h3>
+                  <p className="text-xs text-slate-400 leading-relaxed mt-0.5 line-clamp-2">
+                    {currentPreset.subtitle}
+                  </p>
+                </div>
+              </div>
+
+              {/* Tabs */}
+              <div className="flex border-b border-white/10 text-xs font-mono font-bold">
+                <button
+                  onClick={() => setActiveTab("ai-tour")}
+                  className={`pb-2 px-3 transition-colors cursor-pointer border-b-2 flex items-center gap-1.5 ${
+                    activeTab === "ai-tour"
+                      ? "border-cyan-400 text-cyan-300"
+                      : "border-transparent text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  <Bot className="size-3 text-cyan-400" />
+                  <span>AI TOUR ({currentPreset.aiTour.length})</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("hotspots")}
+                  className={`pb-2 px-3 transition-colors cursor-pointer border-b-2 ${
+                    activeTab === "hotspots"
+                      ? "border-[#ec6437] text-white"
+                      : "border-transparent text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  HOTSPOTS
+                </button>
+                <button
+                  onClick={() => setActiveTab("specs")}
+                  className={`pb-2 px-3 transition-colors cursor-pointer border-b-2 ${
+                    activeTab === "specs"
+                      ? "border-[#ec6437] text-white"
+                      : "border-transparent text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  RATINGS
+                </button>
+              </div>
+
+              {/* Tab Contents */}
+              {activeTab === "ai-tour" && (
+                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1 scrollbar-thin">
+                  {currentPreset.aiTour.map((step, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setCurrentTourStepIdx(idx);
+                        executeTourStep(idx);
+                      }}
+                      className={`w-full p-2 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between group ${
+                        idx === currentTourStepIdx
+                          ? "bg-cyan-500/20 border-cyan-400/50 text-white shadow-md shadow-cyan-500/20"
+                          : "bg-white/5 hover:bg-white/10 border-white/10 text-slate-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <span
+                          className={`size-2 rounded-full ${
+                            idx === currentTourStepIdx ? "bg-cyan-400 animate-pulse" : "bg-slate-500"
+                          }`}
+                        />
+                        <span className="text-xs font-bold truncate">{step.title}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-cyan-400 group-hover:translate-x-0.5 transition-transform">
+                        PLAY ➔
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === "hotspots" && (
+                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1 scrollbar-thin">
+                  {currentPreset.hotspots.map((h) => (
+                    <button
+                      key={h.id}
+                      onClick={() => setSelectedHotspot(h.id)}
+                      className="w-full p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-all cursor-pointer flex items-center justify-between group"
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <span className="size-2 rounded-full bg-[#ec6437] group-hover:scale-125 transition-transform" />
+                        <span className="text-xs font-bold text-white truncate">{h.title}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-slate-400 group-hover:text-[#ec6437]">
+                        INSPECT ➔
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === "specs" && (
+                <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                  <div className="p-2 rounded-lg bg-white/5 border border-white/10">
+                    <span className="text-slate-400 text-[10px] block">RATED CURRENT</span>
+                    <span className="text-emerald-400 font-bold">{currentPreset.specs.ampacity}</span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-white/5 border border-white/10">
+                    <span className="text-slate-400 text-[10px] block">SHORT CIRCUIT (1s)</span>
+                    <span className="text-amber-400 font-bold">{currentPreset.specs.shortCircuit}</span>
+                  </div>
+                  <div className="p-2 rounded-lg bg-white/5 border border-white/10 col-span-2">
+                    <span className="text-slate-400 text-[10px] block">TORQUE / BENDING SPEC</span>
+                    <span className="text-cyan-300 font-bold">{currentPreset.specs.torque}</span>
                   </div>
                 </div>
-              ))}
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  onClick={() => setIsAiAssistantOpen(true)}
+                  className="flex-1 py-2 px-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                >
+                  <Bot className="size-3.5 text-emerald-400" />
+                  <span>AI CABLE SIZER</span>
+                </button>
+                <button
+                  onClick={() => onNavigate(currentPreset.categorySlug)}
+                  className="py-2 px-3.5 rounded-xl bg-[#ec6437] hover:bg-[#d94819] text-white text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-md shadow-[#ec6437]/30"
+                >
+                  <span>ORDER CATALOG</span>
+                  <ArrowRight className="size-3" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* RIGHT FLOATING CAD CONTROLS: EXPLODE SLIDER + CAMERA PRESETS */}
+      {showHud && (
+        <div className="absolute right-4 sm:right-6 bottom-16 sm:bottom-20 z-30 max-w-[240px] sm:max-w-[280px] w-full space-y-2.5 pointer-events-auto">
+          {/* Camera Angles Toolbar */}
+          <div className="p-2 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/15 flex items-center justify-between text-xs font-mono shadow-xl">
+            <button
+              onClick={() => setCameraPreset("front")}
+              className="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 font-bold transition-colors cursor-pointer"
+            >
+              FRONT
+            </button>
+            <button
+              onClick={() => setCameraPreset("iso")}
+              className="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 font-bold transition-colors cursor-pointer"
+            >
+              ISO 3D
+            </button>
+            <button
+              onClick={() => setCameraPreset("top")}
+              className="px-2.5 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 font-bold transition-colors cursor-pointer"
+            >
+              TOP
+            </button>
+            <button
+              onClick={() => setCameraPreset("focus")}
+              className="px-2.5 py-1.5 rounded-lg text-amber-400 hover:bg-white/10 font-bold transition-colors cursor-pointer"
+              title="Close-Up Macro Focus"
+            >
+              MACRO
+            </button>
+            <div className="w-px h-4 bg-white/15 mx-0.5" />
+            <button
+              onClick={() => setAutoRotate((prev) => !prev)}
+              title={autoRotate ? "Pause 360° Auto-Rotate" : "Start 360° Auto-Rotate"}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                autoRotate ? "bg-[#ec6437]/20 text-[#ec6437]" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <RotateCcw className="size-3.5" />
+            </button>
+          </div>
+
+          {/* Explode 3D Physical Assembly Slider */}
+          <div className="p-3.5 rounded-2xl bg-black/85 backdrop-blur-xl border border-white/15 space-y-1.5 text-xs shadow-xl">
+            <div className="flex items-center justify-between text-[11px] font-mono">
+              <span className="flex items-center gap-1.5 text-amber-400 font-bold">
+                <Layers className="size-3.5" /> EXPLODE ASSEMBLY:
+              </span>
+              <span className="text-[#ec6437] font-bold">{explodeLevel}%</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={explodeLevel}
+              onChange={(e) => {
+                setIsAiTourPlaying(false);
+                setExplodeLevel(Number(e.target.value));
+              }}
+              className="w-full accent-[#ec6437] cursor-pointer h-2 bg-slate-800 rounded-lg"
+            />
+            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400">
+              <span>ASSEMBLED</span>
+              <span>50% DISASSEMBLE</span>
+              <span>FULL EXPLODE</span>
             </div>
           </div>
         </div>
       )}
+
+      {/* BOTTOM CENTER: USER HINT */}
+      <div className="absolute bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+        <span className="px-4 py-1.5 rounded-full bg-black/80 text-slate-300 text-xs font-mono border border-white/15 backdrop-blur-md shadow-2xl flex items-center gap-2">
+          <Sparkles className="size-3.5 text-cyan-400" />
+          <span>DRAG TO ROTATE 360° · AI 3D TOUR ACTIVE · CLICK HOTSPOTS TO INSPECT</span>
+        </span>
+      </div>
+
+      {/* AI ELECTRICAL ASSISTANT & CABLE SIZER MODAL */}
+      <AiElectricalViewerAssistant
+        isOpen={isAiAssistantOpen}
+        onClose={() => setIsAiAssistantOpen(false)}
+        activeModelName={currentPreset.name}
+        activeModelSlug={currentPreset.categorySlug}
+        onNavigateCategory={onNavigate}
+        onOpenARModal={onOpenARModal}
+      />
     </div>
   );
+}
+
+// ============================================================================
+// SOLID 3D INDUSTRIAL PHYSICAL DIGITAL TWIN BUILDER (GENUINE DEPTH & REAL HARDWARE)
+// ============================================================================
+
+function buildSolid3DIndustrialTwin(
+  group: THREE.Group,
+  layerMeshes: THREE.Object3D[],
+  preset: ModelPreset,
+  renderer: THREE.WebGLRenderer
+): { currentFlowPoints: THREE.Points | null } {
+  const panelW = 2.8;
+  const panelH = 1.95;
+  const panelD = 0.42;
+
+  // Materials with vibrant, crystal-clear reflectance (no dark shadows)
+  const steelCabinetMat = new THREE.MeshStandardMaterial({
+    color: 0x222e42, // Siemens Blue-Grey powder coat
+    metalness: 0.5,
+    roughness: 0.35,
+  });
+
+  const galvanizedMat = new THREE.MeshStandardMaterial({
+    color: 0x94a3b8,
+    metalness: 0.85,
+    roughness: 0.25,
+  });
+
+  const copperMat = new THREE.MeshStandardMaterial({
+    color: 0xdf6936, // Gleaming 99.97% ETP Copper
+    metalness: 0.92,
+    roughness: 0.18,
+  });
+
+  const brassMat = new THREE.MeshStandardMaterial({
+    color: 0xd4af37, // Naval Brass CZ121
+    metalness: 0.9,
+    roughness: 0.2,
+  });
+
+  const silverMat = new THREE.MeshStandardMaterial({
+    color: 0xe2e8f0,
+    metalness: 0.95,
+    roughness: 0.12,
+  });
+
+  const cableJacketMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.5,
+  });
+
+  // 1. Heavy Industrial Steel Plinth Base
+  const plinth = new THREE.Mesh(
+    new THREE.BoxGeometry(panelW + 0.3, 0.22, panelD + 0.1),
+    new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4 })
+  );
+  plinth.position.set(0, -panelH / 2 - 0.15, 0);
+  group.add(plinth);
+
+  // 2. Heavy Solid 3D Enclosure Outer Cabinet Box (Back, Left, Right, Top, Bottom)
+  const cabinetBack = new THREE.Mesh(
+    new THREE.BoxGeometry(panelW + 0.16, panelH + 0.16, 0.05),
+    steelCabinetMat
+  );
+  cabinetBack.position.set(0, 0, -panelD / 2);
+  cabinetBack.userData = { initialZ: -panelD / 2, explodeZ: -0.5 };
+  group.add(cabinetBack);
+  layerMeshes.push(cabinetBack);
+
+  const cabinetTop = new THREE.Mesh(
+    new THREE.BoxGeometry(panelW + 0.2, 0.06, panelD),
+    steelCabinetMat
+  );
+  cabinetTop.position.set(0, panelH / 2 + 0.03, 0);
+  cabinetTop.userData = { initialY: panelH / 2 + 0.03, explodeY: 0.4 };
+  group.add(cabinetTop);
+  layerMeshes.push(cabinetTop);
+
+  const cabinetBot = new THREE.Mesh(
+    new THREE.BoxGeometry(panelW + 0.2, 0.06, panelD),
+    steelCabinetMat
+  );
+  cabinetBot.position.set(0, -panelH / 2 - 0.03, 0);
+  cabinetBot.userData = { initialY: -panelH / 2 - 0.03, explodeY: -0.4 };
+  group.add(cabinetBot);
+  layerMeshes.push(cabinetBot);
+
+  const cabinetLeft = new THREE.Mesh(
+    new THREE.BoxGeometry(0.06, panelH + 0.16, panelD),
+    steelCabinetMat
+  );
+  cabinetLeft.position.set(-panelW / 2 - 0.03, 0, 0);
+  cabinetLeft.userData = { initialX: -panelW / 2 - 0.03, explodeX: -0.4 };
+  group.add(cabinetLeft);
+  layerMeshes.push(cabinetLeft);
+
+  const cabinetRight = new THREE.Mesh(
+    new THREE.BoxGeometry(0.06, panelH + 0.16, panelD),
+    steelCabinetMat
+  );
+  cabinetRight.position.set(panelW / 2 + 0.03, 0, 0);
+  cabinetRight.userData = { initialX: panelW / 2 + 0.03, explodeX: 0.4 };
+  group.add(cabinetRight);
+  layerMeshes.push(cabinetRight);
+
+  // 3. Overhead Galvanized Cable Tray with slot perforations
+  const tray = new THREE.Mesh(
+    new THREE.BoxGeometry(panelW + 0.35, 0.06, 0.45),
+    galvanizedMat
+  );
+  tray.position.set(0, panelH / 2 + 0.25, 0.08);
+  tray.userData = { initialY: panelH / 2 + 0.25, explodeY: 0.6 };
+  group.add(tray);
+  layerMeshes.push(tray);
+
+  for (let tx = -panelW / 2; tx <= panelW / 2; tx += 0.32) {
+    const slot = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, 0.08, 0.25),
+      new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.3 })
+    );
+    slot.position.set(tx, panelH / 2 + 0.25, 0.08);
+    group.add(slot);
+  }
+
+  // 4. Internal Realistic Photographic Equipment Plate
+  // We apply the texture with DoubleSide and subtle emissive so it NEVER goes black from any angle!
+  const textureLoader = new THREE.TextureLoader();
+  const plateGeo = new THREE.PlaneGeometry(panelW, panelH, 16, 16);
+  const plateMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    metalness: 0.08, // Low metalness keeps texture vibrant and bright
+    roughness: 0.55,
+    side: THREE.DoubleSide,
+    emissive: 0x182030,
+    emissiveIntensity: 0.25,
+  });
+
+  const plateMesh = new THREE.Mesh(plateGeo, plateMat);
+  plateMesh.position.set(0, 0, -0.05);
+  plateMesh.userData = { initialZ: -0.05, explodeZ: -0.2 };
+  group.add(plateMesh);
+  layerMeshes.push(plateMesh);
+
+  textureLoader.load(
+    preset.realImage,
+    (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.generateMipmaps = true;
+      texture.minFilter = THREE.LinearMipmapLinearFilter;
+      // @ts-ignore
+      texture.anisotropy = renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 8;
+      plateMat.map = texture;
+      plateMat.needsUpdate = true;
+    },
+    undefined,
+    (err) => console.warn("Could not load hardware texture", err)
+  );
+
+  // 5. Solid 3D Physical Hardware Components in Foreground
+
+  // A. 400A Siemens 3VA2 MCCB Switchgear (3D Body, Face, Toggle)
+  const mccbBody = new THREE.Mesh(
+    new THREE.BoxGeometry(0.92, 0.68, 0.24),
+    new THREE.MeshStandardMaterial({ color: 0x1c2436, roughness: 0.35, metalness: 0.6 })
+  );
+  mccbBody.position.set(0.55, 0.55, 0.12);
+  mccbBody.userData = { initialZ: 0.12, explodeZ: 0.5 };
+  group.add(mccbBody);
+  layerMeshes.push(mccbBody);
+
+  const toggle = new THREE.Mesh(
+    new THREE.BoxGeometry(0.12, 0.18, 0.12),
+    new THREE.MeshStandardMaterial({ color: 0xec6437, roughness: 0.25 })
+  );
+  toggle.position.set(0.55, 0.55, 0.25);
+  group.add(toggle);
+
+  // B. 4 Solid 99.97% ETP Copper Busbars connecting to MCCB
+  const phaseX = [0.26, 0.44, 0.64, 0.82];
+  phaseX.forEach((bx) => {
+    const busbar = new THREE.Mesh(
+      new THREE.BoxGeometry(0.065, 0.42, 0.025),
+      copperMat
+    );
+    busbar.position.set(bx, 0.15, 0.1);
+    busbar.userData = { initialZ: 0.1, explodeZ: 0.35 };
+    group.add(busbar);
+    layerMeshes.push(busbar);
+
+    // M12 Silver Bolted Studs on Busbars
+    const bolt = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.024, 0.024, 0.05, 6),
+      silverMat
+    );
+    bolt.rotateX(Math.PI / 2);
+    bolt.position.set(bx, 0.15, 0.13);
+    group.add(bolt);
+  });
+
+  // C. DIN 46235 Pure Copper Crimp Lugs (Barrels + Palms)
+  phaseX.forEach((lx) => {
+    const lugBarrel = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.042, 0.042, 0.16, 16),
+      copperMat
+    );
+    lugBarrel.position.set(lx, -0.15, 0.1);
+    lugBarrel.userData = { initialZ: 0.1, explodeZ: 0.25 };
+    group.add(lugBarrel);
+    layerMeshes.push(lugBarrel);
+
+    const lugPalm = new THREE.Mesh(
+      new THREE.BoxGeometry(0.08, 0.1, 0.025),
+      copperMat
+    );
+    lugPalm.position.set(lx, -0.05, 0.1);
+    group.add(lugPalm);
+  });
+
+  // D. Bottom Gland Plate & M63 Double-Compression Naval Brass Glands
+  const glandPlate = new THREE.Mesh(
+    new THREE.BoxGeometry(panelW - 0.2, 0.04, 0.3),
+    galvanizedMat
+  );
+  glandPlate.position.set(0, -panelH / 2 + 0.12, 0.06);
+  glandPlate.userData = { initialY: -panelH / 2 + 0.12, explodeY: -0.3 };
+  group.add(glandPlate);
+  layerMeshes.push(glandPlate);
+
+  phaseX.forEach((gx) => {
+    const glandNut = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.085, 0.085, 0.14, 6),
+      brassMat
+    );
+    glandNut.position.set(gx, -panelH / 2 + 0.16, 0.1);
+    glandNut.userData = { initialY: -panelH / 2 + 0.16, explodeY: -0.35 };
+    group.add(glandNut);
+    layerMeshes.push(glandNut);
+  });
+
+  // E. 4 Heavy Black XLPE Feeder Cables entering from the bottom
+  const cableColors = [0xdc2626, 0xeab308, 0x2563eb, 0x1e293b]; // Red, Yellow, Blue, Black
+  phaseX.forEach((cx, idx) => {
+    const cableCurve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(cx, -panelH / 2 - 0.3, 0.1),
+      new THREE.Vector3(cx, -panelH / 2 + 0.16, 0.1),
+      new THREE.Vector3(cx, -0.5, 0.09),
+      new THREE.Vector3(cx, -0.24, 0.1),
+    ]);
+    const cableTube = new THREE.Mesh(
+      new THREE.TubeGeometry(cableCurve, 20, 0.038, 12, false),
+      new THREE.MeshStandardMaterial({ color: cableColors[idx], roughness: 0.45 })
+    );
+    cableTube.userData = { initialZ: 0.1, explodeZ: -0.15 };
+    group.add(cableTube);
+    layerMeshes.push(cableTube);
+  });
+
+  // F. Solid Copper Earth Busbar & Grounding Conductor
+  const earthBar = new THREE.Mesh(
+    new THREE.BoxGeometry(1.2, 0.04, 0.02),
+    copperMat
+  );
+  earthBar.position.set(-0.55, -panelH / 2 + 0.35, 0.08);
+  group.add(earthBar);
+
+  const earthLead = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.025, 0.025, 0.9, 10),
+    new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.4 })
+  );
+  earthLead.position.set(-0.55, -panelH / 2 - 0.1, 0.08);
+  group.add(earthLead);
+
+  // 6. Live 400A Electrical Current Particle Simulation
+  const currentParticleCount = 180;
+  const currentGeo = new THREE.BufferGeometry();
+  const currentPos = new Float32Array(currentParticleCount * 3);
+
+  for (let i = 0; i < currentParticleCount; i++) {
+    const lineX = phaseX[i % 4];
+    currentPos[i * 3] = lineX + (Math.random() - 0.5) * 0.025;
+    currentPos[i * 3 + 1] = -panelH / 2 + Math.random() * 1.5;
+    currentPos[i * 3 + 2] = 0.12 + (Math.random() - 0.5) * 0.02;
+  }
+
+  currentGeo.setAttribute("position", new THREE.BufferAttribute(currentPos, 3));
+  const currentMat = new THREE.PointsMaterial({
+    color: 0x38bdf8,
+    size: 0.085,
+    transparent: true,
+    opacity: 0.9,
+    blending: THREE.AdditiveBlending,
+  });
+  const currentFlowPoints = new THREE.Points(currentGeo, currentMat);
+  group.add(currentFlowPoints);
+
+  return { currentFlowPoints };
+}
+
+// ============================================================================
+// 3D ANIMATED CABLE STORE & WAREHOUSE BACKGROUND
+// ============================================================================
+
+function buildAnimatedCableStoreBackground3D(
+  bgGroup: THREE.Group,
+  animData: {
+    backdropMesh: THREE.Mesh | null;
+    energyPoints: THREE.Points | null;
+    dustPoints: THREE.Points | null;
+  }
+) {
+  const textureLoader = new THREE.TextureLoader();
+  textureLoader.load(
+    "/products/cable-store-background.jpg",
+    (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.generateMipmaps = true;
+      texture.minFilter = THREE.LinearMipmapLinearFilter;
+
+      const backdropGeo = new THREE.PlaneGeometry(30, 15, 32, 16);
+      const pos = backdropGeo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        pos.setZ(i, -(x * x) * 0.016);
+      }
+      backdropGeo.computeVertexNormals();
+
+      const backdropMat = new THREE.MeshBasicMaterial({
+        map: texture,
+        depthWrite: false,
+      });
+
+      const backdropMesh = new THREE.Mesh(backdropGeo, backdropMat);
+      backdropMesh.position.set(0, 1.8, -10.5);
+      bgGroup.add(backdropMesh);
+      animData.backdropMesh = backdropMesh;
+    },
+    undefined,
+    (err) => {
+      console.warn("Could not load cable store texture", err);
+    }
+  );
+
+  // Polished Industrial Showroom Floor
+  const floorGeo = new THREE.PlaneGeometry(28, 24);
+  floorGeo.rotateX(-Math.PI / 2);
+  const floorMat = new THREE.MeshStandardMaterial({
+    color: 0x090e18,
+    metalness: 0.7,
+    roughness: 0.3,
+    transparent: true,
+    opacity: 0.9,
+  });
+  const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+  floorMesh.position.set(0, -1.5, -2);
+  bgGroup.add(floorMesh);
+
+  // Reflective Floor Grid Accent
+  const grid = new THREE.GridHelper(18, 24, 0xec6437, 0x1e293b);
+  grid.position.set(0, -1.49, -2);
+  // @ts-ignore
+  grid.material.opacity = 0.35;
+  // @ts-ignore
+  grid.material.transparent = true;
+  bgGroup.add(grid);
+
+  // Overhead GI Cable Ladder Trays Suspended from Ceiling
+  const trayMat = new THREE.MeshStandardMaterial({
+    color: 0x64748b,
+    metalness: 0.85,
+    roughness: 0.25,
+  });
+
+  const trayRailL = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.08, 16.0), trayMat);
+  trayRailL.position.set(-0.55, 3.2, -4.0);
+  bgGroup.add(trayRailL);
+
+  const trayRailR = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.08, 16.0), trayMat);
+  trayRailR.position.set(0.55, 3.2, -4.0);
+  bgGroup.add(trayRailR);
+
+  for (let rz = 3.0; rz >= -12.0; rz -= 0.6) {
+    const rung = new THREE.Mesh(new THREE.BoxGeometry(1.06, 0.02, 0.035), trayMat);
+    rung.position.set(0, 3.17, rz);
+    bgGroup.add(rung);
+  }
+
+  // 4 Power Feeder Cables in the Tray (Red, Yellow, Blue, Green)
+  const cableColors = [0xdc2626, 0xeab308, 0x2563eb, 0x16a34a];
+  [-0.38, -0.12, 0.12, 0.38].forEach((cx, i) => {
+    const cableGeo = new THREE.CylinderGeometry(0.035, 0.035, 16.0, 8);
+    cableGeo.rotateX(Math.PI / 2);
+    const cableMesh = new THREE.Mesh(
+      cableGeo,
+      new THREE.MeshStandardMaterial({ color: cableColors[i], roughness: 0.5 })
+    );
+    cableMesh.position.set(cx, 3.22, -4.0);
+    bgGroup.add(cableMesh);
+  });
+
+  // Flowing High-Speed Electrical Energy Spark Particles along Cable Tray
+  const energyCount = 100;
+  const energyGeo = new THREE.BufferGeometry();
+  const energyPos = new Float32Array(energyCount * 3);
+
+  for (let i = 0; i < energyCount; i++) {
+    const wireX = [-0.38, -0.12, 0.12, 0.38][i % 4];
+    energyPos[i * 3] = wireX + (Math.random() - 0.5) * 0.025;
+    energyPos[i * 3 + 1] = 3.22 + (Math.random() - 0.5) * 0.025;
+    energyPos[i * 3 + 2] = -14.0 + Math.random() * 17.0;
+  }
+
+  energyGeo.setAttribute("position", new THREE.BufferAttribute(energyPos, 3));
+  const energyMat = new THREE.PointsMaterial({
+    color: 0x38bdf8,
+    size: 0.14,
+    transparent: true,
+    opacity: 0.95,
+    blending: THREE.AdditiveBlending,
+  });
+  const energyPoints = new THREE.Points(energyGeo, energyMat);
+  bgGroup.add(energyPoints);
+  animData.energyPoints = energyPoints;
+
+  // Atmospheric Floating Light Sparks & Dust in Store Air
+  const dustCount = 140;
+  const dustGeo = new THREE.BufferGeometry();
+  const dustPos = new Float32Array(dustCount * 3);
+
+  for (let i = 0; i < dustCount; i++) {
+    dustPos[i * 3] = (Math.random() - 0.5) * 12.0;
+    dustPos[i * 3 + 1] = -1.2 + Math.random() * 4.8;
+    dustPos[i * 3 + 2] = -12.0 + Math.random() * 15.0;
+  }
+
+  dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3));
+  const dustMat = new THREE.PointsMaterial({
+    color: 0xfbbf24,
+    size: 0.065,
+    transparent: true,
+    opacity: 0.75,
+    blending: THREE.AdditiveBlending,
+  });
+  const dustPoints = new THREE.Points(dustGeo, dustMat);
+  bgGroup.add(dustPoints);
+  animData.dustPoints = dustPoints;
 }

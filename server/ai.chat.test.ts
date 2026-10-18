@@ -264,5 +264,102 @@ describe("ai.chat", () => {
       expect(response).not.toContain("As an AI");
       mockInvoke.mockRestore();
     });
+
+    it("correctly answers product inquiries that start with casual greeting words like 'hey vola can you let me know how much is charge for solar cable'", async () => {
+      const caller = appRouter.createCaller(context);
+      const mockInvoke = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+
+      const response = await caller.ai.chat({
+        messages: [{ role: "user", content: "hey vola can you let me know how much is charge for solar cable" }],
+      });
+
+      expect(response).toContain("Solar Cable");
+      expect(response).toContain("₹");
+      expect(response).not.toContain("Doing fantastic and ready to roll");
+      mockInvoke.mockRestore();
+    });
+
+    it("correctly handles typo queries like 'hey whats price of sollar cabk=le' and returns solar cables instead of PVC pipes", async () => {
+      const caller = appRouter.createCaller(context);
+      const mockInvoke = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+
+      const response = await caller.ai.chat({
+        messages: [{ role: "user", content: "hey whats price of sollar cabk=le" }],
+      });
+
+      expect(response).toContain("Solar Cable");
+      expect(response).toContain("₹");
+      expect(response).not.toContain("PVC PIPE");
+      mockInvoke.mockRestore();
+    });
+
+    it("accurately answers FAQ Bank questions (Q1: company info, Q26: copper vs aluminium, Q27: FRLS, Q62: delivery timing, Q107: IndiaMART)", async () => {
+      const caller = appRouter.createCaller(context);
+
+      // Q1: What does Volamp Elektrikals do?
+      const mockInvoke1 = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+      const r1 = await caller.ai.chat({
+        messages: [{ role: "user", content: "What does Volamp Elektrikals do?" }],
+      });
+      expect(r1).toContain("Volamp Elektrikals Pvt. Ltd. is a supplier and distributor of electrical cables");
+      mockInvoke1.mockRestore();
+
+      // Q26: Copper vs Aluminium
+      const mockInvoke2 = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+      const r2 = await caller.ai.chat({
+        messages: [{ role: "user", content: "What is the difference between copper and aluminium cable?" }],
+      });
+      expect(r2).toContain("higher conductivity");
+      expect(r2).toContain("economical");
+      mockInvoke2.mockRestore();
+
+      // Q27: FRLS
+      const mockInvoke3 = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+      const r3 = await caller.ai.chat({
+        messages: [{ role: "user", content: "What is FRLS?" }],
+      });
+      expect(r3).toContain("Flame Retardant Low Smoke");
+      mockInvoke3.mockRestore();
+
+      // Q62: Delivery Timing
+      const mockInvoke4 = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+      const r4 = await caller.ai.chat({
+        messages: [{ role: "user", content: "What is your delivery timing?" }],
+      });
+      expect(r4).toContain("8:00 AM and 5:30 PM");
+      mockInvoke4.mockRestore();
+
+      // Q107: Why buy from you instead of IndiaMART?
+      const mockInvoke5 = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+      const r5 = await caller.ai.chat({
+        messages: [{ role: "user", content: "Why should I buy from you instead of IndiaMART?" }],
+      });
+      expect(r5).toContain("IndiaMART is a directory");
+      mockInvoke5.mockRestore();
+    });
+
+    it("triggers standard escalation response when competitor price matching or negotiation is requested", async () => {
+      const caller = appRouter.createCaller(context);
+      const mockInvoke = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+
+      const response = await caller.ai.chat({
+        messages: [{ role: "user", content: "Can you match their price and give me a lower rate?" }],
+      });
+
+      expect(response).toContain("This needs confirmation from our sales team, and I don't want to give you incorrect information");
+      mockInvoke.mockRestore();
+    });
+
+    it("strictly adheres to the mandatory rule when an unlisted technical specification or price is requested", async () => {
+      const caller = appRouter.createCaller(context);
+      const mockInvoke = vi.spyOn(llmModule, "invokeLLM").mockRejectedValueOnce(new Error("LLM offline"));
+
+      const response = await caller.ai.chat({
+        messages: [{ role: "user", content: "What is the price of 1000 sqmm submarine optical power cable?" }],
+      });
+
+      expect(response).toContain("Let me have our sales team confirm that for you. I don't want to give you incorrect information.");
+      mockInvoke.mockRestore();
+    });
   });
 });

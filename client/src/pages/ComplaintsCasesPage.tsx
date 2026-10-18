@@ -46,7 +46,8 @@ export default function ComplaintsCasesPage() {
   // Form State
   const [fullName, setFullName] = useState("");
   const [companyName, setCompanyName] = useState("");
-  const [contact, setContact] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [orderRef, setOrderRef] = useState("");
   const [caseType, setCaseType] = useState(CASE_TYPES[0].id);
   const [urgency, setUrgency] = useState<"standard" | "high" | "critical">("high");
@@ -55,6 +56,7 @@ export default function ComplaintsCasesPage() {
     caseId: string;
     type: string;
     createdAt: string;
+    email: string;
   } | null>(null);
 
   // Track State
@@ -68,20 +70,20 @@ export default function ComplaintsCasesPage() {
   } | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const submitMutation = trpc.enquiry.submit.useMutation({
+  const submitMutation = trpc.complaints.submit.useMutation({
     onSuccess: (data) => {
-      const generatedId = data.enquiryNumber.replace("ENQ-", "CASE-");
       setSubmittedCase({
-        caseId: generatedId,
+        caseId: data.caseId,
         type: CASE_TYPES.find((t) => t.id === caseType)?.label || "Commercial Case",
         createdAt: new Date().toLocaleDateString("en-IN", {
           day: "numeric",
           month: "short",
           year: "numeric",
         }),
+        email: email.trim().toLowerCase(),
       });
       toast.success("Case Registered Successfully", {
-        description: `Case ID: ${generatedId}. Assigned to Senior Quality & Grievance Desk.`,
+        description: `Case ID: ${data.caseId}. Details dropped to Grievances@volampelektrikals.com and ticket confirmation sent to your email.`,
       });
       window.scrollTo({ top: 300, behavior: "smooth" });
     },
@@ -98,8 +100,12 @@ export default function ComplaintsCasesPage() {
       toast.error("Please provide your name");
       return;
     }
-    if (!contact.trim()) {
-      toast.error("Please enter your phone number or email");
+    if (!email.trim() || !email.includes("@")) {
+      toast.error("Please provide a valid email address to receive your official Case Ticket");
+      return;
+    }
+    if (!phone.trim()) {
+      toast.error("Please enter your mobile or WhatsApp phone number");
       return;
     }
     if (!details.trim()) {
@@ -108,17 +114,16 @@ export default function ComplaintsCasesPage() {
     }
 
     const selectedType = CASE_TYPES.find((t) => t.id === caseType)?.label || caseType;
-    const isEmail = contact.includes("@");
 
     submitMutation.mutate({
       fullName: fullName.trim(),
       companyName: companyName.trim() || undefined,
-      email: isEmail ? contact.trim().toLowerCase() : `${contact.replace(/[^0-9]/g, "") || "user"}@volamp-case.com`,
-      phone: isEmail ? "+91 9512365582" : contact.trim(),
-      category: `COMPLAINT / DISPUTE: ${selectedType}`,
-      location: orderRef.trim() ? `Order/Invoice Ref: ${orderRef.trim()}` : "Not Provided",
-      urgency: urgency.toUpperCase(),
-      details: `[CASE TYPE: ${selectedType}] [URGENCY: ${urgency.toUpperCase()}] [ORDER/INV REF: ${orderRef.trim() || "N/A"}]\n\nDISCREPANCY DETAILS:\n${details.trim()}`,
+      email: email.trim().toLowerCase(),
+      phone: phone.trim(),
+      caseType: selectedType,
+      orderRef: orderRef.trim() || undefined,
+      urgency,
+      details: details.trim(),
     });
   };
 
@@ -280,7 +285,10 @@ export default function ComplaintsCasesPage() {
                         Case ID: {submittedCase.caseId}
                       </h2>
                       <p className="text-xs text-slate-600 dark:text-slate-300">
-                        Assigned to Senior Grievance & Technical Dispatch Cell on {submittedCase.createdAt}.
+                        Assigned to Senior Grievance & Technical Dispatch Cell on {submittedCase.createdAt}. Case dossier dropped to <span className="font-semibold text-[#4d1217] dark:text-amber-300">Grievances@volampelektrikals.com</span>.
+                      </p>
+                      <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">
+                        ✓ An official ticket confirmation email has been dispatched to <strong>{submittedCase.email}</strong>.
                       </p>
                     </div>
                   </div>
@@ -416,12 +424,13 @@ export default function ComplaintsCasesPage() {
 
                     <div className="space-y-1">
                       <label className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-                        Mobile Number or Email *
+                        Work Email (for Ticket Confirmation) *
                       </label>
                       <Input
-                        placeholder="+91 98765 43210 or email@domain.com"
-                        value={contact}
-                        onChange={(e) => setContact(e.target.value)}
+                        type="email"
+                        placeholder="ramesh@company.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                         className="bg-white dark:bg-slate-800"
                       />
@@ -429,7 +438,20 @@ export default function ComplaintsCasesPage() {
 
                     <div className="space-y-1">
                       <label className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-                        Invoice / Order / LR Number
+                        Mobile / WhatsApp Number *
+                      </label>
+                      <Input
+                        placeholder="+91 98765 43210"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        required
+                        className="bg-white dark:bg-slate-800"
+                      />
+                    </div>
+
+                    <div className="sm:col-span-2 space-y-1">
+                      <label className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                        Invoice / Order / LR Number (Optional)
                       </label>
                       <Input
                         placeholder="e.g. VLP-INV-8492 or LR-7489"

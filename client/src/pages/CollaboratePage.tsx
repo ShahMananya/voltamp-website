@@ -142,6 +142,7 @@ export default function CollaboratePage() {
     applicationId: string;
     companyName: string;
     contactName: string;
+    email: string;
   } | null>(null);
 
   // tRPC Mutation
@@ -151,9 +152,10 @@ export default function CollaboratePage() {
         applicationId: res.applicationId,
         companyName: res.submission.companyName,
         contactName: res.submission.contactName,
+        email: email.trim().toLowerCase(),
       });
       toast.success("Partnership proposal submitted successfully!", {
-        description: `Application Reference: ${res.applicationId}`,
+        description: `Ticket Reference: ${res.applicationId}. Emailed to ${email.trim()}.`,
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
     },
@@ -391,19 +393,21 @@ export default function CollaboratePage() {
               {/* Application Details Card */}
               <div className="p-5 sm:p-6 rounded-2xl bg-[#faf7f3] border border-[#ebd7c7] max-w-md mx-auto text-left space-y-3">
                 <div className="flex items-center justify-between text-xs pb-3 border-b border-[#ebd7c7]">
-                  <span className="text-[#5d4a4b]">Application Reference:</span>
+                  <span className="text-[#5d4a4b]">Application Ticket:</span>
                   <span className="font-mono font-bold text-[#c56718] bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
                     {submittedData.applicationId}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#5d4a4b]">Review Status:</span>
-                  <span className="font-semibold text-emerald-700 flex items-center gap-1">
-                    <span className="size-2 rounded-full bg-emerald-500 animate-pulse" /> Under Executive Review
-                  </span>
+                  <span className="text-[#5d4a4b]">Dispatched To:</span>
+                  <span className="font-medium text-[#4d1217]">collab@volampelektrikals.com</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#5d4a4b]">Expected SLA:</span>
+                  <span className="text-[#5d4a4b]">Confirmation Emailed To:</span>
+                  <span className="font-medium text-emerald-700 truncate max-w-[200px]">{submittedData.email}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-[#5d4a4b]">Executive Review SLA:</span>
                   <span className="font-medium text-[#3d2b2d]">24 to 48 business hours</span>
                 </div>
               </div>

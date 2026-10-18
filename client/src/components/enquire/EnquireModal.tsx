@@ -254,11 +254,14 @@ export function EnquireModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-[680px] max-h-[92vh] overflow-y-auto rounded-2xl bg-white text-[#102b42] border border-stone-200 shadow-2xl transition-all"
+        className="relative w-full max-w-[680px] max-h-[92vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#0c2235] text-[#102b42] dark:text-white border border-slate-200 dark:border-slate-700/80 shadow-2xl shadow-slate-900/10 transition-all"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Top ambient brand highlight line */}
+        <div className="absolute top-0 inset-x-8 h-1 bg-gradient-to-r from-transparent via-[#c56718] to-transparent rounded-t-3xl z-20 pointer-events-none" />
+
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-gradient-to-r from-[#4d1217] via-[#5c161d] to-[#6b2024] text-white border-b border-[#822a31]">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-white dark:bg-[#091a29] text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-xl bg-gradient-to-br from-[#c56718] to-[#9a3412] text-white flex items-center justify-center shadow-[0_4px_12px_rgba(197,103,24,0.4)]">
               <Headphones className="size-5" />
@@ -269,14 +272,14 @@ export function EnquireModal({
                   VOLAMP SUPPLY & EXPORT DESK
                 </span>
               </div>
-              <h2 className="text-lg sm:text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-white">
+              <h2 className="text-lg sm:text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-slate-900 dark:text-white">
                 Enquire Now · Direct RFQ
               </h2>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="size-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+            className="size-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Close dialog"
           >
             <X className="size-4" />
@@ -366,7 +369,7 @@ export function EnquireModal({
               <button
                 type="button"
                 onClick={handleReset}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#1d73b7] hover:bg-[#165a8f] text-white text-xs font-bold transition-colors shadow-xs"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#c56718] via-[#d97706] to-[#b45309] hover:from-[#d97706] hover:to-[#a04a0a] text-white text-xs font-bold transition-all shadow-md shadow-orange-600/20 cursor-pointer"
               >
                 Done / Close
               </button>

@@ -30,16 +30,22 @@ import {
   Calendar,
   X,
   Share2,
-  Compass,
   Zap,
-  HardHat,
   HeartHandshake,
   BookOpen,
   DollarSign,
   UserCheck,
   Headphones,
+  Target,
+  Rocket,
+  BarChart3,
+  PackageCheck,
+  Truck,
+  FileSpreadsheet,
+  UserPlus,
+  TableProperties,
+  LayoutGrid,
 } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,277 +56,39 @@ import { useUserLocation } from "@/contexts/LocationContext";
 import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
 
-interface JobRole {
-  id: string;
-  title: string;
-  department: string;
-  location: string;
-  workMode: string;
-  experience: string;
-  education: string;
-  packageLpa: string;
-  openingsCount: number;
-  isFeatured?: boolean;
-  overview: string;
-  responsibilities: string[];
-  requirements: string[];
-  tags: string[];
-}
-
-const FALLBACK_ROLES: JobRole[] = [
-  {
-    id: "ht-lt-cable-design-engineer",
-    title: "Senior HT / LT Power Cable Design Engineer",
-    department: "Engineering & R&D",
-    location: "Ahmedabad HQ (Gujarat)",
-    workMode: "Full-Time · On-Site",
-    experience: "4 – 8 Years",
-    education: "B.E. / B.Tech / M.Tech in Electrical or Polymer Engineering",
-    packageLpa: "₹9.5 – 15.0 LPA",
-    openingsCount: 2,
-    isFeatured: true,
-    overview:
-      "Lead technical design and compound formulation for 1.1kV up to 33kV XLPE and PVC insulated power/control cables, ensuring compliance with IS 7098, IS 1554, and IEC 60502 standards.",
-    responsibilities: [
-      "Develop conductor stranding calculations, radial insulation thicknesses, screening, and armouring specifications.",
-      "Formulate and optimize flame-retardant (FRLS, LSZH) and high-temperature PVC/XLPE compounds.",
-      "Draft comprehensive Guaranteed Technical Particulars (GTP) and test documentation for CPRI, ERDA, and DISCOM vendor approvals.",
-      "Collaborate with plant extrusion teams during pilot runs and prototype validation.",
-    ],
-    requirements: [
-      "Proven track record in power cable design (up to 33kV HT / MV cables).",
-      "Deep comprehension of IS 694, IS 1554 (Part 1), IS 7098 (Part 1 & 2), and IEC 60502 standards.",
-      "Proficiency in AutoCAD for cable cross-sections and technical CAD modeling.",
-      "Familiarity with raw material cost optimization and conductor weight indices.",
-    ],
-    tags: ["33kV HT / LT", "XLPE Compounding", "CPRI / ERDA", "GTP Preparation"],
-  },
-  {
-    id: "qa-hv-test-lab-lead",
-    title: "Quality Assurance & High-Voltage Test Lab Lead",
-    department: "Quality & Testing",
-    location: "Sanand / Ahmedabad Plant (Gujarat)",
-    workMode: "Full-Time · On-Site",
-    experience: "3 – 7 Years",
-    education: "B.E. / B.Tech in Electrical Engineering or Diploma with QA Certification",
-    packageLpa: "₹7.5 – 12.0 LPA",
-    openingsCount: 1,
-    isFeatured: true,
-    overview:
-      "Oversee the central High-Voltage test laboratory, type-testing protocols, and routine factory acceptance tests (FAT) ensuring 0-defect dispatches with Material Test Certificates ( MTC ).",
-    responsibilities: [
-      "Conduct and supervise high-voltage withstand testing, spark testing, insulation resistance (IR), and partial discharge (PD) measurements.",
-      "Inspect raw copper cathode, EC-grade aluminum wire rods, and polymer pellets for electrical conductivity and tensile elongation.",
-      "Issue official Material Test Certificates ( MTC ) for EPC contractors, railway authorities, and GeM supplies.",
-      "Maintain lab instrument calibration compliant with ISO 9001 and ISO/IEC 17025 testing norms.",
-    ],
-    requirements: [
-      "Hands-on experience running HV test sets, Kelvin double bridge, spark testers, and thermal aging ovens.",
-      "Direct interaction experience with third-party inspection agencies (RITES, BV, SGS, DNV).",
-      "Rigorous commitment to zero-compromise electrical safety standards.",
-    ],
-    tags: ["High Voltage Lab", "Partial Discharge", "NABL / ISO 17025", "MTC Certification"],
-  },
-  {
-    id: "plant-extrusion-supervisor",
-    title: "Plant Extrusion & Continuous Vulcanization Supervisor",
-    department: "Manufacturing & Plant",
-    location: "Ahmedabad Manufacturing Complex",
-    workMode: "Full-Time · On-Site",
-    experience: "3 – 6 Years",
-    education: "Diploma or B.E. in Mechanical / Electrical / Polymer Technology",
-    packageLpa: "₹6.0 – 9.5 LPA",
-    openingsCount: 3,
-    isFeatured: false,
-    overview:
-      "Drive shop-floor operations across continuous vulcanization (CCV) lines and triple-extrusion lines, optimizing line speed, wall concentricity, and raw material yield.",
-    responsibilities: [
-      "Supervise extrusion operations for insulation, bedding, steel wire/strip armouring, and final PVC/LSZH outer sheathing.",
-      "Maintain strict wall thickness tolerances, eccentricity controls, and smooth jacket surface finish.",
-      "Enforce preventive maintenance schedules, rapid tooling changeovers, and compound scrap minimization.",
-      "Direct shift workforce in adherence to 5S methodology and plant safety protocols.",
-    ],
-    requirements: [
-      "Hands-on supervisory background in cable extrusion and compounding plants.",
-      "Thorough knowledge of temperature profiles and screw geometry for PVC, XLPE, and HDPE.",
-      "Strong team leadership and practical problem-solving capability under shift schedules.",
-    ],
-    tags: ["CCV Extrusion", "Armouring Lines", "Shop Floor 5S", "Yield Optimization"],
-  },
-  {
-    id: "b2b-epc-sales-manager",
-    title: "B2B Infrastructure & EPC Project Sales Manager",
-    department: "EPC & Project Sales",
-    location: "Mumbai Regional Office (Western Hub)",
-    workMode: "Full-Time · Hybrid / Field",
-    experience: "5 – 10 Years",
-    education: "B.Tech Electrical + MBA (Marketing or Supply Chain preferred)",
-    packageLpa: "₹12.0 – 18.0 LPA + Performance Bonus",
-    openingsCount: 2,
-    isFeatured: true,
-    overview:
-      "Drive strategic institutional cable sales to infrastructure EPCs, metro railway packages, data centers, airports, and power transmission utilities across Western India.",
-    responsibilities: [
-      "Secure multi-crore annual rate contracts and project supply packages with Tier-1 EPC contractors (L&T, Tata Projects, Sterling & Wilson, KEC, Kalpataru).",
-      "Lead vendor pre-qualification and consultant approvals with EIL, Mecon, NTPC, PGCIL, and state electricity boards.",
-      "Coordinate with central Ahmedabad dispatch operations for production schedules, stage-wise inspections, and LC/BG commercial terms.",
-      "Manage client relationships and ensure seamless post-dispatch technical documentation.",
-    ],
-    requirements: [
-      "Proven track record in B2B electrical cables, switchgears, or electrical transmission equipment sales.",
-      "Active professional network with EPC procurement heads, PMC consultants, and chief electrical engineers.",
-      "Excellent commercial negotiation, proposal structuring, and presentation acumen.",
-    ],
-    tags: ["EPC Sales", "Metro Rail / Utilities", "Vendor Approval", "Rate Contracts"],
-  },
-  {
-    id: "solar-renewable-sales-lead",
-    title: "Solar & Renewable Energy Key Account Executive",
-    department: "EPC & Project Sales",
-    location: "Jaipur / Ahmedabad Corridor",
-    workMode: "Full-Time · Field / Client Facing",
-    experience: "2 – 5 Years",
-    education: "B.E. in Electrical / Renewable Energy Engineering or B.Sc",
-    packageLpa: "₹6.5 – 10.5 LPA + Incentives",
-    openingsCount: 2,
-    isFeatured: false,
-    overview:
-      "Accelerate the adoption of Volamp's 1500V DC Solar Photovoltaic cables and renewable balance-of-plant cabling with IPPs, utility solar developers, and rooftop EPCs.",
-    responsibilities: [
-      "Cultivate key relationships with solar developers, IPPs, and turnkey EPC contractors across Gujarat, Rajasthan, and Western India.",
-      "Present technical value propositions of electron-beam cross-linked solar cables (EN 50618, TÜV 2 Pfg 1169 standards, UV & ozone resistance).",
-      "Monitor national and state solar park tender bids to capture cable supply requirements early.",
-    ],
-    requirements: [
-      "Experience selling into the solar EPC, wind balance-of-plant, or renewable contractor ecosystem.",
-      "Solid technical understanding of DC cable sizing, voltage drop mitigation, and MC4 connector compatibility.",
-      "Strong communication skills and proactive client engagement.",
-    ],
-    tags: ["Solar 1500V DC", "Renewable IPPs", "TÜV Rheinland", "Utility Solar"],
-  },
-  {
-    id: "tendering-boq-estimation-engineer",
-    title: "Tendering, BOQ & Cost Estimation Engineer",
-    department: "Procurement & Supply Chain",
-    location: "Ahmedabad Corporate HQ",
-    workMode: "Full-Time · On-Site",
-    experience: "2 – 5 Years",
-    education: "B.E. / B.Tech in Electrical Engineering",
-    packageLpa: "₹6.0 – 9.0 LPA",
-    openingsCount: 2,
-    isFeatured: false,
-    overview:
-      "Scrutinize technical tender specifications, prepare accurate Bill of Quantities (BOQ) costings linked to raw metal indices, and manage GeM and public e-procurement bids.",
-    responsibilities: [
-      "Analyze commercial and technical tender requirements from State DISCOMs, Railway Boards, GeM portal, and PSU utilities.",
-      "Calculate conductor metal weights (Copper/Aluminum), compound volume, steel armouring wire, and machine hour costs per km.",
-      "Apply IEEMA price variation clauses (PV formulas) and formulate competitive bid proposals within deadline.",
-    ],
-    requirements: [
-      "Proven expertise in tender BOQ preparation and electrical cable cost estimation.",
-      "Familiarity with GeM portal bids, e-procurement platforms, and IEEMA circular indices.",
-      "Analytical rigor and sharp attention to technical detail.",
-    ],
-    tags: ["Tendering & BOQ", "IEEMA Formulas", "GeM Bids", "Cost Estimation"],
-  },
-  {
-    id: "metal-procurement-specialist",
-    title: "Metal Procurement & Raw Material Supply Chain Specialist",
-    department: "Procurement & Supply Chain",
-    location: "Ahmedabad Corporate HQ",
-    workMode: "Full-Time · On-Site",
-    experience: "3 – 6 Years",
-    education: "B.Com / B.E. + Supply Chain Certification or MBA",
-    packageLpa: "₹7.0 – 11.0 LPA",
-    openingsCount: 1,
-    isFeatured: false,
-    overview:
-      "Manage strategic procurement of primary raw metals (Electrolytic Copper cathode/wire rod, EC Grade Aluminum) and masterbatch polymers tied to MCX and LME indices.",
-    responsibilities: [
-      "Source high-purity copper rods and aluminum wire rods from primary smelters (Hindalco, Vedanta, NALCO).",
-      "Track daily MCX and LME commodity trends to execute strategic forward hedging and physical metal bookings.",
-      "Negotiate volume purchase contracts for polymer compounds (XLPE, PVC resin, plasticizers, masterbatches).",
-      "Coordinate just-in-time delivery schedules to minimize holding costs while ensuring zero manufacturing downtime.",
-    ],
-    requirements: [
-      "Direct experience procuring copper/aluminum or raw materials for cable or conductor manufacturing.",
-      "Understanding of commodity futures, price hedging, and vendor contract management.",
-    ],
-    tags: ["MCX / LME Hedging", "Copper & Aluminum", "Polymer Sourcing", "Vendor Negotiation"],
-  },
-  {
-    id: "get-electrical-batch-2026",
-    title: "Graduate Engineer Trainee (GET) – Electrical (Batch 2026)",
-    department: "Early Careers",
-    location: "Ahmedabad HQ & Manufacturing Complex",
-    workMode: "Full-Time · 12-Month Rotation",
-    experience: "Fresh Graduate / 0 – 1 Year (Batch 2025/2026)",
-    education: "B.E. / B.Tech in Electrical / Electronics Engineering (Min 65% aggregate)",
-    packageLpa: "₹4.5 – 6.0 LPA + Medical Coverage",
-    openingsCount: 6,
-    isFeatured: true,
-    overview:
-      "An accelerated 1-year rotational leadership program designed to groom future engineering leaders across Cable Design, High-Voltage QA Labs, Plant Extrusion, and Technical Estimations.",
-    responsibilities: [
-      "Rotate through 4 quarterly modules: Cable Design & Standards, Plant Extrusion & CCV Lines, High-Voltage Testing & Lab Protocols, and Technical Sizing & Client BOQs.",
-      "Work alongside Senior Technical Mentors on real infrastructure supply consignments.",
-      "Deliver a capstone technical project focused on compound optimization, testing automation, or energy efficiency.",
-      "Receive full-time absorption into R&D, Quality, or Plant Engineering upon successful program completion.",
-    ],
-    requirements: [
-      "Strong academic grounding in power systems, electrical materials, and high-voltage fundamentals.",
-      "Passion for hands-on industrial engineering and nation-building infrastructure.",
-      "Proactive learner with excellent communication and team collaboration skills.",
-    ],
-    tags: ["Fast-Track GET", "12-Month Rotation", "Full Mentorship", "Batch 2026"],
-  },
-];
-
-const DEPARTMENTS = [
-  "All Departments",
-  "Engineering & R&D",
-  "Quality & Testing",
-  "Manufacturing & Plant",
-  "EPC & Project Sales",
-  "Procurement & Supply Chain",
-  "Early Careers",
-];
-
-const LOCATIONS = [
-  "All Locations",
-  "Ahmedabad HQ (Gujarat)",
-  "Sanand / Ahmedabad Plant (Gujarat)",
-  "Ahmedabad Manufacturing Complex",
-  "Mumbai Regional Office (Western Hub)",
-  "Jaipur / Ahmedabad Corridor",
-];
-
-const EXPERIENCES = ["All Experience", "Freshers / 0–1 Year", "2–5 Years", "5+ Years"];
+import {
+  VOLAMP_JOB_ROLES,
+  CAREERS_COMPANY_INFO,
+  CAREER_DEPARTMENTS,
+  CAREER_LOCATIONS,
+  CAREER_EXPERIENCES,
+  JobRole,
+} from "@/data/careersData";
 
 const FAQS = [
   {
-    q: "Can fresh engineering graduates apply for positions at Volamp?",
-    a: "Yes! Our flagship Graduate Engineer Trainee (GET) Program for the 2025/2026 batch offers fresh electrical and electronics engineers an accelerated 12-month rotational program with direct mentorship from senior plant directors, competitive stipends, full medical insurance, and permanent placement into core technical departments.",
+    q: "What products and brands does Volamp Elektrikals distribute?",
+    a: "Volamp Elektrikals Pvt. Ltd. is a PAN India electrical distribution leader supplying industry-gold standards including Polycab, Finolex, and KEI to dealers, electricians, contractors, builders, and large industrial buyers nationwide.",
   },
   {
-    q: "What is the typical hiring turnaround time at Volamp Elektrikals?",
-    a: "Our Talent Acquisition Committee reviews every application within 48 business hours. Shortlisted candidates are invited to an initial virtual technical discussion, followed by a second-round plant/office walkthrough and leadership interview. The entire process typically completes within 7 to 10 business days.",
+    q: "Can fresh graduates or candidates with 0-2 years experience apply?",
+    a: "Absolutely! We welcome fresh talent across roles such as Inside Sales Executive (Tele-sales), Customer Support Executive, Business Development Associates, and Junior Operations Coordinators with structured onboarding and mentorship.",
   },
   {
-    q: "Does Volamp provide relocation assistance for candidates moving to Ahmedabad?",
-    a: "Yes. For mid to senior engineering and leadership roles requiring relocation to our Ahmedabad Headquarters or Sanand Manufacturing Complex, we offer transit accommodation, moving cost subsidies, and local settlement guidance.",
+    q: "Where are the roles based?",
+    a: "Most operational, warehouse, finance, CRM, and executive positions are based at our Ahmedabad, Gujarat headquarters and central warehouse facility. Field sales and Regional Sales Manager roles cover strategic PAN India territories.",
   },
   {
-    q: "What are the core technical competencies Volamp values most?",
-    a: "We deeply value strong fundamentals in electrical engineering, familiarity with IS / IEC cable standards (such as IS 7098, IS 1554, and IEC 60502), a safety-first mindset on the manufacturing floor, and an entrepreneurial approach to solving infrastructure challenges.",
+    q: "What is the typical hiring turnaround time at Volamp?",
+    a: "Our recruitment desk reviews applications within 48 business hours. Shortlisted candidates are invited for an exploratory discussion, followed by a departmental interview. The entire cycle is completed transparently and promptly.",
   },
   {
-    q: "What if my domain (e.g. Finance, Legal, HR, Logistics) is not currently listed?",
-    a: "We actively maintain a Talent Community database! You can select 'General Application (Talent Pool)' in our application form. When specialized corporate openings arise, our talent desk reviews pre-submitted profiles before opening public requisitions.",
+    q: "What if my exact skill set is not listed in the 20 open positions?",
+    a: "You can submit a 'General Application (Talent Pool)'. As our PAN India distribution footprint expands into new regions and hubs, pre-screened talent community profiles are reviewed first.",
   },
   {
-    q: "How can I track the status of my submitted application?",
-    a: "Upon submission, you receive a unique Application Tracking ID (e.g., VOL-HR-2026-XXXXX). You can reach out directly to our HR desk via WhatsApp or phone with this ID for an immediate status update from your assigned recruiter.",
+    q: "How can I follow up on an application I submitted?",
+    a: "Upon submission, you receive an official Application Reference ID. You can instantly message our HR desk on WhatsApp or call us directly with your ID for immediate tracking.",
   },
 ];
 
@@ -331,13 +99,14 @@ export default function CareersPage() {
 
   // tRPC query for open roles
   const openRolesQuery = trpc.careers.getOpenRoles.useQuery();
-  const roles: JobRole[] = (openRolesQuery.data as JobRole[]) || FALLBACK_ROLES;
+  const roles: JobRole[] = (openRolesQuery.data as unknown as JobRole[]) || VOLAMP_JOB_ROLES;
 
   // Filter state
-  const [selectedDept, setSelectedDept] = useState("All Departments");
-  const [selectedLocation, setSelectedLocation] = useState("All Locations");
-  const [selectedExp, setSelectedExp] = useState("All Experience");
+  const [selectedDept, setSelectedDept] = useState<string>("All Departments");
+  const [selectedLocation, setSelectedLocation] = useState<string>("All Locations");
+  const [selectedExp, setSelectedExp] = useState<string>("All Experience");
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
   // Modals state
   const [selectedRoleDetail, setSelectedRoleDetail] = useState<JobRole | null>(null);
@@ -352,8 +121,8 @@ export default function CareersPage() {
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
-  const [experienceYears, setExperienceYears] = useState("0-1 Years");
-  const [highestQualification, setHighestQualification] = useState("B.E. / B.Tech");
+  const [experienceYears, setExperienceYears] = useState("1-3 Years");
+  const [highestQualification, setHighestQualification] = useState("Graduate");
   const [currentCompany, setCurrentCompany] = useState("");
   const [currentCtc, setCurrentCtc] = useState("");
   const [expectedCtc, setExpectedCtc] = useState("");
@@ -385,21 +154,48 @@ export default function CareersPage() {
       const matchLoc = selectedLocation === "All Locations" || role.location === selectedLocation;
 
       let matchExp = true;
-      if (selectedExp === "Freshers / 0–1 Year") {
-        matchExp = role.experience.toLowerCase().includes("fresh") || role.experience.includes("0 – 1") || role.experience.includes("0-1");
-      } else if (selectedExp === "2–5 Years") {
-        matchExp = role.experience.includes("2") || role.experience.includes("3") || role.experience.includes("4");
-      } else if (selectedExp === "5+ Years") {
-        matchExp = role.experience.includes("5") || role.experience.includes("8") || role.experience.includes("10");
+      if (selectedExp === "Freshers / 0 to 2 years") {
+        matchExp =
+          role.experience.includes("0 to 2") ||
+          role.experience.toLowerCase().includes("fresh") ||
+          role.experience.includes("0 – 2") ||
+          role.experience.includes("1 to 3");
+      } else if (selectedExp === "1 to 4 years") {
+        matchExp =
+          role.experience.includes("1 to 4") ||
+          role.experience.includes("1 to 3") ||
+          role.experience.includes("2 to 4") ||
+          role.experience.includes("2 to 5");
+      } else if (selectedExp === "2 to 5 years") {
+        matchExp =
+          role.experience.includes("2 to 5") ||
+          role.experience.includes("2 to 4") ||
+          role.experience.includes("1 to 4");
+      } else if (selectedExp === "4 to 8 years") {
+        matchExp =
+          role.experience.includes("4 to 8") ||
+          role.experience.includes("6 to 10") ||
+          role.experience.includes("7 to 12");
+      } else if (selectedExp === "6 to 12 years") {
+        matchExp =
+          role.experience.includes("6 to 10") ||
+          role.experience.includes("7 to 12") ||
+          role.experience.includes("4 to 8");
       }
 
+      const searchLower = searchQuery.toLowerCase().trim();
       const matchSearch =
-        !searchQuery.trim() ||
-        role.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        role.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        role.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        role.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        role.overview.toLowerCase().includes(searchQuery.toLowerCase());
+        !searchLower ||
+        role.title.toLowerCase().includes(searchLower) ||
+        role.department.toLowerCase().includes(searchLower) ||
+        role.location.toLowerCase().includes(searchLower) ||
+        role.experience.toLowerCase().includes(searchLower) ||
+        (role.aboutRole && role.aboutRole.toLowerCase().includes(searchLower)) ||
+        (role.overview && role.overview.toLowerCase().includes(searchLower)) ||
+        (role.qualification && role.qualification.toLowerCase().includes(searchLower)) ||
+        (role.skillsRequired && role.skillsRequired.some((s) => s.toLowerCase().includes(searchLower))) ||
+        (role.responsibilities && role.responsibilities.some((r) => r.toLowerCase().includes(searchLower))) ||
+        (role.tags && role.tags.some((t) => t.toLowerCase().includes(searchLower)));
 
       return matchDept && matchLoc && matchExp && matchSearch;
     });
@@ -408,15 +204,15 @@ export default function CareersPage() {
   // Open apply modal for a specific role
   const handleOpenApply = (role?: JobRole) => {
     if (role) {
-      setApplicantRole(role.title);
+      setApplicantRole(`${role.no ? `#${role.no} ` : ""}${role.title}`);
       setApplicantDept(role.department);
-      if (role.experience.includes("0 – 1") || role.experience.toLowerCase().includes("fresh") || role.experience.includes("0-1")) {
+      if (role.experience.includes("0 to 2") || role.experience.toLowerCase().includes("fresh")) {
         setExperienceYears("Fresh Graduate (0-1 Yrs)");
-      } else if (role.experience.includes("4 – 8") || role.experience.includes("4-8")) {
-        setExperienceYears("4-8 Years");
-      } else if (role.experience.includes("3 – 7") || role.experience.includes("3 – 6") || role.experience.includes("3-6")) {
+      } else if (role.experience.includes("1 to 4") || role.experience.includes("1 to 3")) {
+        setExperienceYears("1-3 Years");
+      } else if (role.experience.includes("2 to 5") || role.experience.includes("4 to 8")) {
         setExperienceYears("3-6 Years");
-      } else if (role.experience.includes("5 – 10") || role.experience.includes("5-10")) {
+      } else if (role.experience.includes("6 to 10") || role.experience.includes("7 to 12")) {
         setExperienceYears("6-10 Years");
       }
     } else {
@@ -488,42 +284,50 @@ export default function CareersPage() {
 
   return (
     <div className="volamp-marketplace careers-page min-h-screen bg-[#faf7f3] text-[#3d2b2d] transition-colors">
-      {/* Universal Header (Matching Home Page White Palette) */}
+      {/* Universal Header */}
       <UniversalHeader currentPage="careers" />
 
-      {/* Hero Section (Matching Main Page Warm Light Theme) */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf8f5] to-[#faf7f3] text-[#3d2b2d] py-16 sm:py-24 border-b border-[#ebd7c7]">
-        {/* Subtle dot pattern background matching Home */}
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#fbf8f5] to-[#faf7f3] text-[#3d2b2d] py-14 sm:py-20 border-b border-[#ebd7c7]">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#4d1217_1px,transparent_1px)] [background-size:24px_24px]" />
 
         <div className="market-container relative z-10 max-w-5xl text-center space-y-6">
           <div className="flex items-center justify-center gap-3 flex-wrap">
-            <div className="inline-flex items-center justify-center bg-white px-3 py-1.5 rounded-xl border border-[#ebd7c7] shadow-xs">
+            <div className="inline-flex items-center justify-center bg-white px-3.5 py-1.5 rounded-xl border border-[#ebd7c7] shadow-xs">
               <img src="/volamp-logo.png" alt="VOLAMP Elektrikals" className="h-7 sm:h-8 w-auto object-contain" />
             </div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f7ede6] border border-[#ebd4c2] text-[#c56718] text-xs font-extrabold tracking-wider uppercase shadow-xs">
               <Sparkles className="size-3.5 text-[#ef7d19]" />
-              <span>WE ARE HIRING · 2026 INFRASTRUCTURE EXPANSION</span>
+              <span>CAREERS AT VOLAMP · 20 OPEN POSITIONS</span>
             </div>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] tracking-tight leading-tight">
-            Power Your Career With an <br />
-            <span className="text-[#c56718]">Engineering Legacy</span> That Powers India.
-          </h1>
+          <div className="space-y-3">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] tracking-tight leading-tight">
+              Grow Your Career With <br />
+              <span className="text-[#c56718]">Volamp Elektrikals</span> Pvt. Ltd.
+            </h1>
+            <p className="text-base sm:text-lg text-[#5d4a4b] max-w-3xl mx-auto leading-relaxed">
+              {CAREERS_COMPANY_INFO.about}
+            </p>
+          </div>
 
-          <p className="text-base sm:text-lg text-[#5d4a4b] max-w-3xl mx-auto leading-relaxed">
-            Join 4 generations of electrical engineering leadership. From high-voltage underground transmission
-            grids and metro rail networks to renewable solar farms, our team designs, compounds, and manufactures the
-            critical cables energizing 28 states and 14+ export nations.
-          </p>
+          {/* Trusted Brand Partnerships Strip */}
+          <div className="pt-2 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-[#5d4a4b]">
+            <span className="text-[#c56718] font-bold uppercase tracking-wider text-[11px]">Authorized Distribution:</span>
+            <span className="px-3 py-1 bg-white border border-[#ebd7c7] rounded-full text-[#4d1217] font-bold shadow-2xs">Polycab</span>
+            <span className="px-3 py-1 bg-white border border-[#ebd7c7] rounded-full text-[#4d1217] font-bold shadow-2xs">Finolex</span>
+            <span className="px-3 py-1 bg-white border border-[#ebd7c7] rounded-full text-[#4d1217] font-bold shadow-2xs">KEI</span>
+            <span className="text-stone-400">|</span>
+            <span className="text-[#5d4a4b]">Serving Dealers, Electricians, Contractors, Builders & Industrial Buyers PAN India</span>
+          </div>
 
           <div className="pt-4 flex flex-wrap items-center justify-center gap-4">
             <a
-              href="#open-roles"
+              href="#open-positions-glance"
               className="px-6 py-3.5 rounded-lg bg-[#c56718] hover:bg-[#b45309] text-white font-bold text-sm shadow-md flex items-center gap-2 transition-all cursor-pointer"
             >
-              <span>Explore Open Positions ({roles.length})</span>
+              <span>View Open Positions (20 Roles)</span>
               <ArrowRight className="size-4" />
             </a>
             <Button
@@ -532,444 +336,405 @@ export default function CareersPage() {
               className="px-6 py-3.5 rounded-lg border-[#ebd7c7] bg-white text-[#4d1217] hover:bg-[#f7ede6] font-semibold text-sm transition-all shadow-xs cursor-pointer"
             >
               <FileCheck2 className="size-4 mr-2 text-[#c56718]" />
-              <span>Join Talent Community / Submit CV</span>
+              <span>Submit General Application / CV</span>
             </Button>
           </div>
 
-          {/* Metric Highlights Strip */}
-          <div className="pt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 border-t border-[#ebd7c7] mt-12 text-left">
-            <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Plus_Jakarta_Sans',sans-serif] block">
-                60+ Years
-              </span>
-              <span className="text-xs text-[#5d4a4b] font-semibold">Engineering Heritage (Est. 1964)</span>
-            </div>
-            <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Plus_Jakarta_Sans',sans-serif] block">
-                28 States
-              </span>
-              <span className="text-xs text-[#5d4a4b] font-semibold">Pan-India Dispatches & 14+ Export Nations</span>
-            </div>
-            <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Plus_Jakarta_Sans',sans-serif] block">
-                100% In-House
-              </span>
-              <span className="text-xs text-[#5d4a4b] font-semibold">CPRI & ERDA Certified Test Laboratories</span>
-            </div>
-            <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#c56718] font-['Plus_Jakarta_Sans',sans-serif] block">
-                4.8 / 5.0
-              </span>
-              <span className="text-xs text-[#5d4a4b] font-semibold">Team Growth & Job Security Index</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Build Your Career at Volamp (Values & Benefits - Warm Home Theme) */}
-      <section className="py-16 sm:py-20 market-container space-y-12">
-        <div className="text-center max-w-2xl mx-auto space-y-3">
-          <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
-            THE VOLAMP WORK CULTURE
-          </span>
-          <h2 className="text-2xl sm:text-4xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
-            Why Electrical Engineers & Leaders Choose Volamp
-          </h2>
-          <p className="text-sm text-[#5d4a4b]">
-            We provide the stability of a 60-year industrial foundation combined with the velocity of India's rapid
-            infrastructure buildout.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
-              <Zap className="size-6" />
-            </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
-              Nation-Building Impact
-            </h3>
-            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
-              Every cable you design, test, or dispatch carries electricity to metro rails, solar parks, critical
-              hospitals, and smart cities across India.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
-              <Factory className="size-6" />
-            </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
-              World-Class Manufacturing Tech
-            </h3>
-            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
-              Work with state-of-the-art continuous vulcanization (CCV) lines, triple extrusion heads, high-voltage partial
-              discharge test sets, and specialized polymer formulations.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
-              <Award className="size-6" />
-            </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
-              Competitive CTC & Performance Bonuses
-            </h3>
-            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
-              Above-industry fixed compensation, structured annual appraisals, performance milestone bonuses, and
-              long-term wealth-building security.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
-              <ShieldCheck className="size-6" />
-            </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
-              Comprehensive Health & Safety
-            </h3>
-            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
-              Group Mediclaim family insurance, personal accident coverage, routine wellness camps, and a zero-compromise
-              plant safety mandate.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
-              <TrendingUp className="size-6" />
-            </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
-              Accelerated Career Progression
-            </h3>
-            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
-              Clear internal promotion ladders. Graduate Engineer Trainees (GET) consistently advance into Project Leads,
-              Lab Heads, and Branch Directors.
-            </p>
-          </div>
-
-          <div className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all space-y-3">
-            <div className="size-12 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
-              <BookOpen className="size-6" />
-            </div>
-            <h3 className="text-lg font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
-              Continuous Technical Mentorship
-            </h3>
-            <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
-              Learn directly from senior cable technologists with decades of experience preparing CPRI type tests,
-              DISCOM tender GTPs, and international IEC specifications.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Open Positions Section with Filters */}
-      <section id="open-roles" className="py-16 bg-[#fbf8f5] border-y border-[#ebd7c7]">
-        <div className="market-container space-y-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <span className="text-xs font-bold text-[#c25e0a] uppercase tracking-widest">
-                CURRENT OPPORTUNITIES
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
-                Explore Open Positions at Volamp
-              </h2>
-              <p className="text-sm text-[#5d4a4b] mt-1">
-                Showing {filteredRoles.length} of {roles.length} published positions across engineering, manufacturing,
-                and business development.
+          {/* Why Join Us - 4 Core Pillars */}
+          <div className="pt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-[#ebd7c7] mt-10 text-left">
+            <div className="p-5 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] transition-all space-y-2">
+              <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
+                <Award className="size-5" />
+              </div>
+              <h3 className="text-sm font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
+                India's Leading Brands
+              </h3>
+              <p className="text-xs text-[#5d4a4b] leading-relaxed">
+                Work with India's leading electrical brands in a fast-growing PAN India business.
               </p>
             </div>
 
-            <Button
-              onClick={() => handleOpenApply()}
-              variant="outline"
-              className="self-start md:self-auto rounded-lg border-[#c56718] text-[#c56718] font-bold hover:bg-[#c56718] hover:text-white transition-all text-xs cursor-pointer"
-            >
-              <Send className="size-3.5 mr-1.5" />
-              <span>Can't find your role? Submit General Application</span>
-            </Button>
-          </div>
-
-          {/* Filter Bar */}
-          <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {/* Search input */}
-              <div className="relative">
-                <Search className="size-4 absolute left-3 top-3 text-[#5d4a4b]" />
-                <Input
-                  placeholder="Search role, keyword, or standard (e.g. XLPE, CPRI)..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9 rounded-lg border-[#ebd7c7] bg-[#fdfbf9] text-xs h-10 text-[#3d2b2d] placeholder:text-stone-400"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-3 text-stone-400 hover:text-[#4d1217]"
-                  >
-                    <X className="size-4" />
-                  </button>
-                )}
+            <div className="p-5 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] transition-all space-y-2">
+              <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
+                <Users className="size-5" />
               </div>
-
-              {/* Department Dropdown */}
-              <div>
-                <select
-                  value={selectedDept}
-                  onChange={(e) => setSelectedDept(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#3d2b2d] font-medium outline-none focus:border-[#c56718]"
-                >
-                  {DEPARTMENTS.map((dept) => (
-                    <option key={dept} value={dept}>
-                      {dept}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Location Dropdown */}
-              <div>
-                <select
-                  value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#3d2b2d] font-medium outline-none focus:border-[#c56718]"
-                >
-                  {LOCATIONS.map((loc) => (
-                    <option key={loc} value={loc}>
-                      {loc}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Experience Dropdown */}
-              <div>
-                <select
-                  value={selectedExp}
-                  onChange={(e) => setSelectedExp(e.target.value)}
-                  className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#3d2b2d] font-medium outline-none focus:border-[#c56718]"
-                >
-                  {EXPERIENCES.map((exp) => (
-                    <option key={exp} value={exp}>
-                      {exp}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <h3 className="text-sm font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
+                Direct Leadership Access
+              </h3>
+              <p className="text-xs text-[#5d4a4b] leading-relaxed">
+                Direct access to leadership and real responsibility from day one.
+              </p>
             </div>
 
-            {/* Department Quick Filter Pills */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#ebd7c7]">
-              <span className="text-[11px] font-bold text-[#5d4a4b] mr-1 flex items-center gap-1">
-                <Filter className="size-3 text-[#c56718]" /> Quick Filter:
-              </span>
-              {DEPARTMENTS.map((dept) => {
-                const isSelected = selectedDept === dept;
-                return (
-                  <button
-                    key={dept}
-                    onClick={() => setSelectedDept(dept)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
-                      isSelected
-                        ? "bg-[#c56718] text-white shadow-xs"
-                        : "bg-[#f7ede6] text-[#5d4a4b] hover:bg-[#ebd4c2] border border-[#ebd4c2]"
-                    }`}
-                  >
-                    {dept}
-                  </button>
-                );
-              })}
-              {(selectedDept !== "All Departments" ||
-                selectedLocation !== "All Locations" ||
-                selectedExp !== "All Experience" ||
-                searchQuery) && (
+            <div className="p-5 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] transition-all space-y-2">
+              <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
+                <TrendingUp className="size-5" />
+              </div>
+              <h3 className="text-sm font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
+                Clear Growth Path
+              </h3>
+              <p className="text-xs text-[#5d4a4b] leading-relaxed">
+                Clear growth path as we expand into new regions, territories and teams.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] transition-all space-y-2">
+              <div className="size-10 rounded-lg bg-[#f7ede6] flex items-center justify-center text-[#c56718]">
+                <Rocket className="size-5" />
+              </div>
+              <h3 className="text-sm font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
+                Performance Culture
+              </h3>
+              <p className="text-xs text-[#5d4a4b] leading-relaxed">
+                A performance-driven culture that rewards effort, ownership and measurable results.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Open Positions at a Glance Section (Interactive Table) */}
+      <section id="open-positions-glance" className="py-14 market-container space-y-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f7ede6] text-[#c25e0a] text-xs font-bold uppercase tracking-wider border border-[#ebd4c2] mb-2">
+              <TableProperties className="size-3.5 text-[#c56718]" />
+              <span>OFFICIAL REQUISITIONS</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
+              Open Positions at a Glance
+            </h2>
+            <p className="text-xs sm:text-sm text-[#5d4a4b] mt-1">
+              Complete index of 20 positions across 5 core business departments at Volamp Elektrikals Pvt. Ltd.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant={viewMode === "cards" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("cards")}
+              className={`text-xs font-bold rounded-lg cursor-pointer ${
+                viewMode === "cards" ? "bg-[#c56718] text-white hover:bg-[#b45309]" : "border-[#ebd7c7] text-[#4d1217]"
+              }`}
+            >
+              <LayoutGrid className="size-3.5 mr-1.5" />
+              <span>Cards View</span>
+            </Button>
+            <Button
+              variant={viewMode === "table" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("table")}
+              className={`text-xs font-bold rounded-lg cursor-pointer ${
+                viewMode === "table" ? "bg-[#c56718] text-white hover:bg-[#b45309]" : "border-[#ebd7c7] text-[#4d1217]"
+              }`}
+            >
+              <TableProperties className="size-3.5 mr-1.5" />
+              <span>Table View</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Filter Bar */}
+        <div className="p-4 rounded-xl bg-white border border-[#ebd7c7] shadow-xs space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Search */}
+            <div className="relative">
+              <Search className="size-4 absolute left-3 top-3 text-[#5d4a4b]" />
+              <Input
+                placeholder="Search position, skill, department..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 rounded-lg border-[#ebd7c7] bg-[#fdfbf9] text-xs h-10 text-[#3d2b2d] placeholder:text-stone-400"
+              />
+              {searchQuery && (
                 <button
-                  onClick={() => {
-                    setSelectedDept("All Departments");
-                    setSelectedLocation("All Locations");
-                    setSelectedExp("All Experience");
-                    setSearchQuery("");
-                  }}
-                  className="px-2 py-1 text-[11px] font-bold text-[#c56718] hover:underline ml-auto cursor-pointer"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-3 text-stone-400 hover:text-[#4d1217]"
                 >
-                  Reset All Filters
+                  <X className="size-4" />
                 </button>
               )}
             </div>
+
+            {/* Department */}
+            <div>
+              <select
+                value={selectedDept}
+                onChange={(e) => setSelectedDept(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#3d2b2d] font-medium outline-none focus:border-[#c56718]"
+              >
+                {CAREER_DEPARTMENTS.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Location */}
+            <div>
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#3d2b2d] font-medium outline-none focus:border-[#c56718]"
+              >
+                {CAREER_LOCATIONS.map((loc) => (
+                  <option key={loc} value={loc}>
+                    {loc}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Experience */}
+            <div>
+              <select
+                value={selectedExp}
+                onChange={(e) => setSelectedExp(e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs text-[#3d2b2d] font-medium outline-none focus:border-[#c56718]"
+              >
+                {CAREER_EXPERIENCES.map((exp) => (
+                  <option key={exp} value={exp}>
+                    {exp}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* Job Cards Grid */}
-          {filteredRoles.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-xl border border-dashed border-[#ebd7c7] space-y-4">
-              <Briefcase className="size-12 text-[#ebd4c2] mx-auto" />
-              <h3 className="text-lg font-bold text-[#4d1217]">
-                No matching open positions found
-              </h3>
-              <p className="text-xs text-[#5d4a4b] max-w-md mx-auto">
-                We couldn't find an open role matching your exact filter criteria. Try adjusting your filters or submit a
-                spontaneous CV to our talent database.
-              </p>
-              <Button
-                onClick={() => handleOpenApply()}
-                className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold rounded-lg cursor-pointer"
-              >
-                Submit General Application
-              </Button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredRoles.map((role) => (
-                <div
-                  key={role.id}
-                  className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all flex flex-col justify-between group"
+          {/* Quick Filter Department Pills */}
+          <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#ebd7c7]">
+            <span className="text-[11px] font-bold text-[#5d4a4b] mr-1 flex items-center gap-1">
+              <Filter className="size-3 text-[#c56718]" /> Department:
+            </span>
+            {CAREER_DEPARTMENTS.map((dept) => {
+              const isSelected = selectedDept === dept;
+              return (
+                <button
+                  key={dept}
+                  onClick={() => setSelectedDept(dept)}
+                  className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
+                    isSelected
+                      ? "bg-[#c56718] text-white shadow-xs"
+                      : "bg-[#f7ede6] text-[#5d4a4b] hover:bg-[#ebd4c2] border border-[#ebd4c2]"
+                  }`}
                 >
-                  <div className="space-y-4">
-                    {/* Header badges */}
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2]">
-                        {role.department}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        {role.isFeatured && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#c56718] text-white flex items-center gap-1 shadow-xs">
-                            <Sparkles className="size-2.5" /> PRIORITY
-                          </span>
-                        )}
-                        <span className="text-[11px] font-semibold text-[#5d4a4b]">
-                          {role.openingsCount} {role.openingsCount === 1 ? "opening" : "openings"}
-                        </span>
-                      </div>
-                    </div>
+                  {dept}
+                </button>
+              );
+            })}
+            {(selectedDept !== "All Departments" ||
+              selectedLocation !== "All Locations" ||
+              selectedExp !== "All Experience" ||
+              searchQuery) && (
+              <button
+                onClick={() => {
+                  setSelectedDept("All Departments");
+                  setSelectedLocation("All Locations");
+                  setSelectedExp("All Experience");
+                  setSearchQuery("");
+                }}
+                className="px-2 py-1 text-[11px] font-bold text-[#c56718] hover:underline ml-auto cursor-pointer"
+              >
+                Reset All Filters
+              </button>
+            )}
+          </div>
+        </div>
 
-                    {/* Role Title */}
-                    <div>
-                      <h3 className="text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] group-hover:text-[#c56718] transition-colors">
-                        {role.title}
-                      </h3>
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-[#5d4a4b] mt-2">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="size-3.5 text-[#c56718]" />
-                          {role.location}
+        {/* Table View (Open Positions at a Glance) */}
+        {viewMode === "table" && (
+          <div className="bg-white rounded-xl border border-[#ebd7c7] overflow-hidden shadow-xs">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-[#f7ede6] border-b border-[#ebd7c7] text-[#4d1217]">
+                    <th className="py-3 px-4 font-bold text-center w-14">No.</th>
+                    <th className="py-3 px-4 font-bold">Position</th>
+                    <th className="py-3 px-4 font-bold">Department</th>
+                    <th className="py-3 px-4 font-bold">Experience</th>
+                    <th className="py-3 px-4 font-bold">Location</th>
+                    <th className="py-3 px-4 font-bold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#f0e3d8]">
+                  {filteredRoles.map((role) => (
+                    <tr key={role.id} className="hover:bg-[#fbf8f5] transition-colors group">
+                      <td className="py-3.5 px-4 font-bold text-[#c56718] text-center">
+                        <span className="inline-flex items-center justify-center size-6 rounded-full bg-[#f7ede6] text-xs">
+                          {role.no}
                         </span>
-                        <span>·</span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="size-3.5 text-[#5d4a4b]" />
+                      </td>
+                      <td className="py-3.5 px-4 font-bold text-[#4d1217]">
+                        <div className="flex flex-col">
+                          <span className="text-sm group-hover:text-[#c56718] transition-colors">{role.title}</span>
+                          <span className="text-[11px] text-[#5d4a4b] font-normal">{role.workMode}</span>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2]">
+                          {role.department}
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 font-medium text-[#5d4a4b]">{role.experience}</td>
+                      <td className="py-3.5 px-4 text-[#5d4a4b]">{role.location}</td>
+                      <td className="py-3.5 px-4 text-right space-x-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedRoleDetail(role)}
+                          className="px-2.5 py-1 text-xs font-semibold text-[#c56718] hover:bg-[#f7ede6] rounded-md transition-colors cursor-pointer"
+                        >
+                          Details
+                        </button>
+                        <Button
+                          size="sm"
+                          onClick={() => handleOpenApply(role)}
+                          className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold px-3 py-1 rounded-md shadow-2xs cursor-pointer"
+                        >
+                          Apply
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Cards View */}
+        {viewMode === "cards" && (
+          <div>
+            {filteredRoles.length === 0 ? (
+              <div className="text-center py-16 bg-white rounded-xl border border-dashed border-[#ebd7c7] space-y-4">
+                <Briefcase className="size-12 text-[#ebd4c2] mx-auto" />
+                <h3 className="text-lg font-bold text-[#4d1217]">
+                  No matching open positions found
+                </h3>
+                <p className="text-xs text-[#5d4a4b] max-w-md mx-auto">
+                  Try adjusting your department or experience filters, or submit your CV to our talent database.
+                </p>
+                <Button
+                  onClick={() => handleOpenApply()}
+                  className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold rounded-lg cursor-pointer"
+                >
+                  Submit General Application
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredRoles.map((role) => (
+                  <div
+                    key={role.id}
+                    className="p-6 rounded-xl bg-white border border-[#ebd7c7] shadow-xs hover:border-[#c56718] hover:shadow-md transition-all flex flex-col justify-between group"
+                  >
+                    <div className="space-y-4">
+                      {/* Badge bar */}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <span className="size-6 rounded-full bg-[#c56718] text-white text-xs font-bold flex items-center justify-center shadow-2xs">
+                            {role.no}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2]">
+                            {role.department}
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-semibold text-[#5d4a4b]">
                           {role.workMode}
                         </span>
-                        <span>·</span>
-                        <span className="flex items-center gap-1">
-                          <GraduationCap className="size-3.5 text-[#5d4a4b]" />
-                          {role.experience}
-                        </span>
                       </div>
-                    </div>
 
-                    {/* Overview snippet */}
-                    <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed line-clamp-2">
-                      {role.overview}
-                    </p>
-
-                    {/* Package & Key requirement */}
-                    <div className="p-3 rounded-lg bg-[#f7ede6] border border-[#ebd4c2] flex items-center justify-between text-xs">
+                      {/* Title */}
                       <div>
-                        <span className="text-[10px] font-bold text-[#5d4a4b] uppercase tracking-wider block">
-                          INDICATIVE CTC PACKAGE
-                        </span>
-                        <span className="font-bold text-[#4d1217]">{role.packageLpa}</span>
+                        <h3 className="text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] group-hover:text-[#c56718] transition-colors">
+                          {role.title}
+                        </h3>
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-[#5d4a4b] mt-2">
+                          <span className="flex items-center gap-1">
+                            <MapPin className="size-3.5 text-[#c56718]" />
+                            {role.location}
+                          </span>
+                          <span>·</span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="size-3.5 text-[#5d4a4b]" />
+                            {role.experience}
+                          </span>
+                        </div>
                       </div>
-                      <div className="text-right">
+
+                      {/* About Role snippet */}
+                      <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed line-clamp-2">
+                        {role.aboutRole || role.overview}
+                      </p>
+
+                      {/* Key Responsibilities Snippet */}
+                      {role.responsibilities && role.responsibilities.length > 0 && (
+                        <div className="space-y-1.5 pt-1">
+                          <span className="text-[10px] font-bold text-[#c25e0a] uppercase tracking-wider block">
+                            KEY RESPONSIBILITIES:
+                          </span>
+                          <ul className="space-y-1 text-xs text-[#5d4a4b]">
+                            {role.responsibilities.slice(0, 2).map((resp, i) => (
+                              <li key={i} className="flex items-start gap-1.5 line-clamp-1">
+                                <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                                <span>{resp}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Qualification info strip */}
+                      <div className="p-3 rounded-lg bg-[#f7ede6] border border-[#ebd4c2] text-xs">
                         <span className="text-[10px] font-bold text-[#5d4a4b] uppercase tracking-wider block">
-                          EDUCATION
+                          QUALIFICATION & BACKGROUND:
                         </span>
-                        <span className="font-semibold text-[#4d1217] max-w-[150px] truncate block">
-                          {role.education.split("/")[0]}
+                        <span className="font-semibold text-[#4d1217] text-xs block truncate mt-0.5">
+                          {role.qualification}
                         </span>
                       </div>
+
+                      {/* Tags */}
+                      {role.tags && role.tags.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                          {role.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#fdfbf9] text-[#5d4a4b] border border-[#ebd7c7]"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Tech Tags */}
-                    <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                      {role.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#fdfbf9] text-[#5d4a4b] border border-[#ebd7c7]"
-                        >
-                          {tag}
-                        </span>
-                      ))}
+                    {/* Actions */}
+                    <div className="pt-5 mt-5 border-t border-[#ebd7c7] flex items-center justify-between gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedRoleDetail(role)}
+                        className="text-xs font-bold text-[#c56718] hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>View Full Job Spec</span>
+                        <ArrowRight className="size-3.5" />
+                      </button>
+
+                      <Button
+                        onClick={() => handleOpenApply(role)}
+                        className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs cursor-pointer"
+                      >
+                        <span>Apply for this Role</span>
+                        <ArrowRight className="size-3 ml-1" />
+                      </Button>
                     </div>
                   </div>
-
-                  {/* Actions */}
-                  <div className="pt-5 mt-5 border-t border-[#ebd7c7] flex items-center justify-between gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedRoleDetail(role)}
-                      className="text-xs font-bold text-[#c56718] hover:underline flex items-center gap-1 cursor-pointer"
-                    >
-                      <span>View Full Job Spec</span>
-                      <ArrowRight className="size-3.5" />
-                    </button>
-
-                    <Button
-                      onClick={() => handleOpenApply(role)}
-                      className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs cursor-pointer"
-                    >
-                      <span>Apply for this Role</span>
-                      <ArrowRight className="size-3 ml-1" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Early Careers & GET Spotlight Banner (Matching Home Callout Banner Styling) */}
-      <section className="py-14 market-container">
-        <div className="p-8 sm:p-10 rounded-2xl bg-white text-[#3d2b2d] shadow-xs border-2 border-[#ef7d19]/40 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-4 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f7ede6] text-[#c25e0a] text-xs font-bold uppercase tracking-wider border border-[#ebd4c2]">
-              <GraduationCap className="size-4 text-[#ef7d19]" />
-              <span>COLLEGE GRADUATES · 2026 BATCH</span>
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-bold font-['Plus_Jakarta_Sans',sans-serif] leading-tight text-[#4d1217]">
-              Graduate Engineer Trainee (GET) Program
-            </h3>
-            <p className="text-sm text-[#5d4a4b] leading-relaxed">
-              Are you a graduating electrical or electronics engineer looking to master power transmission, cable design,
-              high-voltage lab testing, and extrusion engineering? Our 12-month accelerated rotational program provides full
-              mentorship, live project exposure, and permanent absorption into Volamp leadership.
-            </p>
-            <div className="flex flex-wrap items-center gap-4 text-xs text-[#c25e0a] font-semibold pt-1">
-              <span>✓ 4 Rotational Modules</span>
-              <span>✓ Direct Executive Mentorship</span>
-              <span>✓ Fixed CTC + Full Health Cover</span>
-            </div>
+                ))}
+              </div>
+            )}
           </div>
-
-          <div className="shrink-0 flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-auto">
-            <Button
-              onClick={() => {
-                const getRole = roles.find((r) => r.id === "get-electrical-batch-2026");
-                handleOpenApply(getRole);
-              }}
-              className="px-6 py-3.5 bg-[#c56718] hover:bg-[#b45309] text-white font-extrabold text-sm rounded-lg shadow-md cursor-pointer"
-            >
-              <span>Apply for GET 2026 Batch</span>
-              <ArrowRight className="size-4 ml-1.5" />
-            </Button>
-            <button
-              onClick={() => {
-                const getRole = roles.find((r) => r.id === "get-electrical-batch-2026");
-                if (getRole) setSelectedRoleDetail(getRole);
-              }}
-              className="text-xs text-center font-bold text-[#5d4a4b] hover:text-[#c25e0a] hover:underline py-2 cursor-pointer transition-colors"
-            >
-              Review GET Syllabus & Details →
-            </button>
-          </div>
-        </div>
+        )}
       </section>
 
       {/* The 4-Step Hiring Process */}
@@ -1011,11 +776,10 @@ export default function CareersPage() {
               <Headphones className="size-5" />
             </div>
             <h4 className="text-base font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
-              Technical Discussion
+              Initial Discussion
             </h4>
             <p className="text-xs text-[#5d4a4b] leading-relaxed">
-              A 30–45 minute virtual or in-person technical conversation with our Chief Engineer or Department Head
-              discussing your past projects.
+              A 20–30 minute conversation discussing your core experience, commercial or technical strengths, and territory familiarity.
             </p>
           </div>
 
@@ -1027,11 +791,10 @@ export default function CareersPage() {
               <Building2 className="size-5" />
             </div>
             <h4 className="text-base font-bold text-[#4d1217] font-['Plus_Jakarta_Sans',sans-serif]">
-              Plant / Office Walkthrough
+              Department Walkthrough
             </h4>
             <p className="text-xs text-[#5d4a4b] leading-relaxed">
-              Visit our Ahmedabad headquarters or manufacturing plant. Meet the team, tour the testing lab, and discuss
-              mutual culture fit.
+              Visit our Ahmedabad headquarters, meet the leadership team, and understand the workflow systems and market opportunities.
             </p>
           </div>
 
@@ -1046,14 +809,13 @@ export default function CareersPage() {
               Fast-Track Offer
             </h4>
             <p className="text-xs text-[#5d4a4b] leading-relaxed">
-              Transparent compensation breakdown, formal offer letter rollout within <strong>48 hours</strong> of final
-              round, and a structured onboarding roadmap.
+              Transparent compensation breakdown, formal offer letter rollout within <strong>48 hours</strong>, and a structured onboarding roadmap.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Candidate FAQs Section (Warm Sand Styling) */}
+      {/* Candidate FAQs Section */}
       <section className="py-16 bg-[#fbf8f5] border-t border-[#ebd7c7]">
         <div className="market-container max-w-3xl space-y-8">
           <div className="text-center space-y-2">
@@ -1105,8 +867,7 @@ export default function CareersPage() {
             Don't see your specific expertise listed?
           </h3>
           <p className="text-xs sm:text-sm text-[#5d4a4b] max-w-xl mx-auto leading-relaxed">
-            We are continuously building our leadership talent pipeline across Corporate Finance, Supply Chain Logistics,
-            IT Systems, and International Export Operations. Join our Talent Community and get notified first.
+            We are continuously building our talent pool across Sales, Supply Chain, Logistics, Accounts, CRM and Operations. Join our Talent Community and get notified first as new territory positions open.
           </p>
           <div className="pt-2">
             <Button
@@ -1132,65 +893,86 @@ export default function CareersPage() {
             </button>
 
             <div className="space-y-3">
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2]">
-                {selectedRoleDetail.department}
-              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="size-6 rounded-full bg-[#c56718] text-white text-xs font-bold flex items-center justify-center">
+                  #{selectedRoleDetail.no}
+                </span>
+                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#f7ede6] text-[#c56718] border border-[#ebd4c2]">
+                  {selectedRoleDetail.department}
+                </span>
+              </div>
               <h3 className="text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217]">
                 {selectedRoleDetail.title}
               </h3>
-              <div className="flex flex-wrap items-center gap-3 text-xs text-[#5d4a4b]">
-                <span className="flex items-center gap-1">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-[#5d4a4b] bg-[#fbf8f5] p-3 rounded-lg border border-[#ebd7c7]">
+                <span className="flex items-center gap-1 font-semibold text-[#4d1217]">
+                  <Clock className="size-3.5 text-[#c56718]" />
+                  Type: {selectedRoleDetail.workMode}
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1 font-semibold text-[#4d1217]">
+                  <Briefcase className="size-3.5 text-[#c56718]" />
+                  Experience: {selectedRoleDetail.experience}
+                </span>
+                <span>·</span>
+                <span className="flex items-center gap-1 font-semibold text-[#4d1217]">
                   <MapPin className="size-3.5 text-[#c56718]" />
-                  {selectedRoleDetail.location}
-                </span>
-                <span>·</span>
-                <span className="flex items-center gap-1">
-                  <Clock className="size-3.5 text-stone-400" />
-                  {selectedRoleDetail.workMode}
-                </span>
-                <span>·</span>
-                <span className="flex items-center gap-1">
-                  <Award className="size-3.5 text-stone-400" />
-                  {selectedRoleDetail.packageLpa}
+                  Location: {selectedRoleDetail.location}
                 </span>
               </div>
             </div>
 
-            {/* Overview */}
+            {/* About Role */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">ROLE OVERVIEW</h4>
+              <h4 className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">ABOUT THE ROLE</h4>
               <p className="text-xs sm:text-sm text-[#5d4a4b] leading-relaxed">
-                {selectedRoleDetail.overview}
+                {selectedRoleDetail.aboutRole || selectedRoleDetail.overview}
               </p>
             </div>
 
             {/* Responsibilities */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">KEY RESPONSIBILITIES</h4>
-              <ul className="space-y-2 text-xs sm:text-sm text-[#5d4a4b]">
-                {selectedRoleDetail.responsibilities.map((res, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="size-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{res}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {selectedRoleDetail.responsibilities && selectedRoleDetail.responsibilities.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">KEY RESPONSIBILITIES</h4>
+                <ul className="space-y-2 text-xs sm:text-sm text-[#5d4a4b]">
+                  {selectedRoleDetail.responsibilities.map((res, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <CheckCircle2 className="size-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span>{res}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-            {/* Requirements */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">
-                QUALIFICATIONS & TECHNICAL SKILLS
-              </h4>
-              <ul className="space-y-2 text-xs sm:text-sm text-[#5d4a4b]">
-                {selectedRoleDetail.requirements.map((req, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 className="size-4 text-[#c56718] shrink-0 mt-0.5" />
-                    <span>{req}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* Skills Required */}
+            {selectedRoleDetail.skillsRequired && selectedRoleDetail.skillsRequired.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">
+                  SKILLS REQUIRED
+                </h4>
+                <ul className="space-y-2 text-xs sm:text-sm text-[#5d4a4b]">
+                  {selectedRoleDetail.skillsRequired.map((req, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <CheckCircle2 className="size-4 text-[#c56718] shrink-0 mt-0.5" />
+                      <span>{req}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Qualification */}
+            {selectedRoleDetail.qualification && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-[#c25e0a] uppercase tracking-wider">
+                  QUALIFICATION
+                </h4>
+                <p className="text-xs sm:text-sm font-semibold text-[#4d1217] bg-[#f7ede6] p-3 rounded-lg border border-[#ebd4c2]">
+                  {selectedRoleDetail.qualification}
+                </p>
+              </div>
+            )}
 
             {/* Footer action */}
             <div className="pt-4 border-t border-[#ebd7c7] flex items-center justify-between gap-4">
@@ -1242,7 +1024,7 @@ export default function CareersPage() {
                   </h3>
                   <p className="text-xs sm:text-sm text-[#5d4a4b] max-w-md mx-auto">
                     Your application for <strong>{applicantRole}</strong> has been logged with our central Talent
-                    Acquisition Desk.
+                    Acquisition Desk at Volamp Elektrikals Pvt. Ltd.
                   </p>
                 </div>
 
@@ -1304,7 +1086,7 @@ export default function CareersPage() {
                     value={applicantRole}
                     onChange={(e) => {
                       setApplicantRole(e.target.value);
-                      const matchingRole = roles.find((r) => r.title === e.target.value);
+                      const matchingRole = roles.find((r) => `${r.no ? `#${r.no} ` : ""}${r.title}` === e.target.value || r.title === e.target.value);
                       if (matchingRole) setApplicantDept(matchingRole.department);
                     }}
                     className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#3d2b2d] outline-none focus:border-[#c56718]"
@@ -1314,8 +1096,8 @@ export default function CareersPage() {
                       General Application (Talent Pool)
                     </option>
                     {roles.map((r) => (
-                      <option key={r.id} value={r.title}>
-                        {r.title} ({r.department})
+                      <option key={r.id} value={`${r.no ? `#${r.no} ` : ""}${r.title}`}>
+                        #{r.no} {r.title} ({r.department})
                       </option>
                     ))}
                   </select>
@@ -1423,12 +1205,12 @@ export default function CareersPage() {
                       className="w-full h-10 px-3 rounded-lg border border-[#ebd7c7] bg-[#fdfbf9] text-xs font-medium text-[#3d2b2d] outline-none focus:border-[#c56718]"
                       required
                     >
-                      <option value="B.E. / B.Tech (Electrical)">B.E. / B.Tech (Electrical)</option>
-                      <option value="B.E. / B.Tech (Mechanical / Other)">B.E. / B.Tech (Mechanical / Other)</option>
-                      <option value="M.E. / M.Tech">M.E. / M.Tech</option>
-                      <option value="Diploma in Electrical / Mechanical">Diploma in Engineering</option>
-                      <option value="MBA / Post Graduate">MBA / Post Graduate</option>
-                      <option value="B.Sc / B.Com / Graduate">B.Sc / B.Com / Graduate</option>
+                      <option value="Graduate (Any Stream)">Graduate (Any Stream)</option>
+                      <option value="B.Com / M.Com">B.Com / M.Com</option>
+                      <option value="BBA / MBA">BBA / MBA</option>
+                      <option value="B.E. / B.Tech / Diploma (Electrical)">B.E. / B.Tech / Diploma (Electrical)</option>
+                      <option value="Higher Secondary (12th)">Higher Secondary (12th)</option>
+                      <option value="Post Graduate / CA / CS Inter">Post Graduate / CA / CS Inter</option>
                       <option value="Other Certification">Other Certification</option>
                     </select>
                   </div>
@@ -1450,10 +1232,10 @@ export default function CareersPage() {
 
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-[#4d1217]">
-                      Expected CTC (LPA)
+                      Expected CTC
                     </label>
                     <Input
-                      placeholder="e.g. ₹8.5 LPA"
+                      placeholder="e.g. As per company norms"
                       value={expectedCtc}
                       onChange={(e) => setExpectedCtc(e.target.value)}
                       className="rounded-lg text-xs h-10 border-[#ebd7c7] bg-[#fdfbf9] text-[#3d2b2d]"
@@ -1474,7 +1256,6 @@ export default function CareersPage() {
                       <option value="15 Days">15 Days</option>
                       <option value="30 Days">30 Days</option>
                       <option value="60 Days">60 Days</option>
-                      <option value="90 Days">90 Days</option>
                     </select>
                   </div>
                 </div>
@@ -1495,7 +1276,7 @@ export default function CareersPage() {
 
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-[#4d1217]">
-                      Resume Link (Google Drive / Dropbox / Cloud CV)
+                      Resume Link (Google Drive / Cloud CV)
                     </label>
                     <Input
                       placeholder="https://drive.google.com/..."
@@ -1512,7 +1293,7 @@ export default function CareersPage() {
                     Brief Statement / Why Volamp? (Optional)
                   </label>
                   <Textarea
-                    placeholder="Tell us briefly about your core technical accomplishments or why you want to build your career with Volamp..."
+                    placeholder="Tell us briefly about your experience with electrical products, dealer networks, or operations..."
                     value={coverNote}
                     onChange={(e) => setCoverNote(e.target.value)}
                     rows={2}
@@ -1552,13 +1333,8 @@ export default function CareersPage() {
         </div>
       )}
 
-      {/* Universal Warm Cream Footer (Matching Home Page) */}
+      {/* Universal Footer */}
       <UniversalFooter />
     </div>
   );
 }
-
-
-
-
-

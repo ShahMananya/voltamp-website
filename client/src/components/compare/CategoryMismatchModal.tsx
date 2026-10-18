@@ -63,7 +63,7 @@ export function CategoryMismatchModal() {
         <div className="bg-slate-50 dark:bg-slate-800/60 rounded-xl p-3.5 border border-slate-200 dark:border-slate-700/80 space-y-3 text-xs">
           <div className="flex items-center justify-between">
             <span className="text-slate-500 font-medium">Current Shortlist:</span>
-            <span className="px-2 py-0.5 rounded-full font-bold bg-[#1d73b7]/10 text-[#1d73b7] dark:text-sky-400">
+            <span className="px-2 py-0.5 rounded-full font-bold bg-amber-500/10 text-[#c56718] dark:text-amber-400">
               {compareCategory}
             </span>
           </div>
@@ -98,7 +98,7 @@ export function CategoryMismatchModal() {
           <button
             type="button"
             onClick={handleSwitch}
-            className="w-full sm:w-auto flex-1 px-4 py-2.5 rounded-xl bg-[#1d73b7] hover:bg-[#165a91] text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+            className="w-full sm:w-auto flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#c56718] via-[#d97706] to-[#b45309] hover:from-[#d97706] hover:to-[#a04a0a] text-white text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-md shadow-orange-600/20 cursor-pointer"
           >
             <span>Switch to {pendingMismatchProduct.category}</span>
             <ArrowRight className="size-3.5" />

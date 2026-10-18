@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowLeft, ArrowRight, Globe2, Menu, PhoneCall, X, User, LogIn } from "lucide-react";
+import { ArrowLeft, ArrowRight, Globe2, Menu, PhoneCall, X, User, LogIn, Boxes, Briefcase, ExternalLink, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -72,7 +72,7 @@ export default function UniversalHeader({
           </div>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-6 text-xs font-bold text-[#4d1217]">
+          <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 text-xs font-bold text-[#4d1217] whitespace-nowrap shrink-0">
             <Link
               href="/"
               className={`hover:text-[#c56718] transition-colors ${
@@ -137,10 +137,39 @@ export default function UniversalHeader({
             >
               Journal
             </Link>
+
+            {/* Show only after login: Workspace (for Employees) or Check Stock (for Customers) */}
+            {user && (
+              user.accountType === "employee" ? (
+                <a
+                  href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-300 transition-colors shadow-2xs ml-1"
+                  title="Open Official VOLAMP Employee Workspace"
+                >
+                  <Briefcase className="size-3 text-purple-700" />
+                  <span>Workspace</span>
+                  <ExternalLink className="size-2.5 opacity-70" />
+                </a>
+              ) : (
+                <a
+                  href="https://script.google.com/macros/s/AKfycby_LZjD_6KFK33CCaCrV4Xxgbav0HceiHg1YL0U1iVEnnHMHYbrdXIFhwRILa8VFuuV/exec"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-cyan-50 hover:bg-cyan-100 text-[#0d6e6e] border border-cyan-300 transition-colors shadow-2xs ml-1"
+                  title="Real-Time Factory & Warehouse Stock Availability"
+                >
+                  <Boxes className="size-3 text-[#0d6e6e]" />
+                  <span>Check Stock</span>
+                  <ExternalLink className="size-2.5 opacity-70" />
+                </a>
+              )
+            )}
           </nav>
 
           {/* Header Actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 flex-nowrap">
             <button
               onClick={openLanguagePicker}
               className="flex items-center gap-1.5 text-xs font-bold text-[#4d1217] hover:text-[#c56718] px-2.5 py-1.5 rounded-lg border border-[#ebd7c7] bg-white hover:bg-[#f7ede6] transition-colors cursor-pointer shadow-2xs"
@@ -154,11 +183,19 @@ export default function UniversalHeader({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate("/portal")}
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent("volamp:open-profile"));
+                }}
                 className="text-xs font-bold border-[#ebd7c7] bg-white text-[#4d1217] hover:bg-[#f7ede6] flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                title="View & Edit Profile Details"
               >
-                <User className="size-3.5 text-[#c56718]" />
-                <span className="hidden sm:inline">My Account</span>
+                <div className="size-4 rounded-full bg-[#c56718] text-white flex items-center justify-center font-bold text-[9px]">
+                  {(user.name || user.email || "V").charAt(0).toUpperCase()}
+                </div>
+                <span className="max-w-[120px] truncate hidden sm:inline">
+                  {user.name || user.email?.split("@")[0]}
+                </span>
+                <span className="text-[10px] text-slate-400 font-normal hidden md:inline">· Profile</span>
               </Button>
             ) : (
               <Button
@@ -198,13 +235,44 @@ export default function UniversalHeader({
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-[#ebd7c7] bg-[#fdfbf9] p-4 space-y-3 text-sm font-semibold text-[#4d1217]">
             {user ? (
-              <Link
-                href="/portal"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-[#c56718] font-bold border-b border-[#ebd7c7]"
-              >
-                My Account ({user.name || user.email})
-              </Link>
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    window.dispatchEvent(new CustomEvent("volamp:open-profile"));
+                  }}
+                  className="w-full text-left py-2 text-[#c56718] font-bold border-b border-[#ebd7c7] cursor-pointer flex items-center gap-2"
+                >
+                  <User className="size-4" />
+                  <span>My Profile ({user.name || user.email?.split("@")[0]})</span>
+                </button>
+                {user.accountType === "employee" ? (
+                  <a
+                    href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2 text-purple-700 font-bold border-b border-[#ebd7c7] flex items-center gap-2"
+                  >
+                    <Briefcase className="size-4 text-purple-600" />
+                    <span>Open Employee Workspace</span>
+                    <ExternalLink className="size-3 opacity-70" />
+                  </a>
+                ) : (
+                  <a
+                    href="https://script.google.com/macros/s/AKfycby_LZjD_6KFK33CCaCrV4Xxgbav0HceiHg1YL0U1iVEnnHMHYbrdXIFhwRILa8VFuuV/exec"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="py-2 text-[#0d6e6e] font-bold border-b border-[#ebd7c7] flex items-center gap-2"
+                  >
+                    <Boxes className="size-4 text-[#0d6e6e]" />
+                    <span>Check Live Stock</span>
+                    <ExternalLink className="size-3 opacity-70" />
+                  </a>
+                )}
+              </>
             ) : (
               <button
                 type="button"

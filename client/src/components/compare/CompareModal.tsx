@@ -255,7 +255,7 @@ export function CompareModal() {
         <div className="bg-slate-900 text-white px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 shrink-0">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="p-1 rounded bg-[#1d73b7] text-white">
+              <span className="p-1 rounded bg-[#c56718] text-white">
                 <Scale className="size-4" />
               </span>
               <span className="text-xs font-bold text-sky-400 uppercase tracking-wider">
@@ -277,7 +277,7 @@ export function CompareModal() {
               onClick={() => setHighlightDiffs(!highlightDiffs)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
                 highlightDiffs
-                  ? "bg-[#1d73b7] text-white"
+                  ? "bg-[#c56718] text-white"
                   : "bg-slate-800 text-slate-300 hover:bg-slate-700"
               }`}
             >
@@ -349,7 +349,7 @@ export function CompareModal() {
                       </div>
 
                       {/* Brand */}
-                      <span className="text-[11px] font-bold text-[#1d73b7] dark:text-sky-400 uppercase tracking-wider block mb-1">
+                      <span className="text-[11px] font-bold text-[#c56718] dark:text-sky-400 uppercase tracking-wider block mb-1">
                         {prod.brand || "VOLAMP"}
                       </span>
 
@@ -382,7 +382,7 @@ export function CompareModal() {
                       <button
                         type="button"
                         onClick={() => handleAddToCart(prod)}
-                        className="w-full py-1.5 rounded-lg bg-[#1d73b7] hover:bg-[#165a91] text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                        className="w-full py-1.5 rounded-lg bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                       >
                         <ShoppingCart className="size-3.5" />
                         <span>Add to Order</span>

@@ -577,29 +577,7 @@ export default function AboutVolamp() {
           }
         }}
       />
-      {/* Top Utility Bar (Consistent with Home page) */}
-      <div className="market-utility">
-        <div className="market-container utility-inner">
-          <div className="flex items-center gap-2">
-            <span className="status-dot" />
-            <Globe2 className="size-3.5 text-[#c56718] dark:text-amber-400 shrink-0" />
-            <span className="font-semibold text-[#4d1217] dark:text-white">Ahmedabad HQ · Pan-India & Global Supply Desk</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="desktop-only text-[#5d4a4b] dark:text-slate-300">60+ Years Engineering Heritage · Est. 1964</span>
-            <Link href="/careers" className="text-[#c56718] dark:text-amber-400 font-bold hover:underline">
-              Careers & Hiring
-            </Link>
-            <Link href="/collaborate" className="utility-collaborate">
-              Collaborate with us <ArrowRight className="inline size-3" />
-            </Link>
-            <a href="tel:+919512365582" className="text-[#c56718] dark:text-amber-400 font-bold hover:underline">
-              +91 9512365582
-            </a>
-          </div>
-        </div>
-      </div>
-
+      {/* Single Line Header matching user screenshot */}
       <header className="about-header">
         <div className="about-header-inner">
           <Link href="/">
@@ -607,7 +585,6 @@ export default function AboutVolamp() {
           </Link>
           <nav aria-label="About Volamp navigation">
             <a href="#story">Our story</a>
-            <a href="#operations">Operations & Hub</a>
             <a href="#leadership">Leadership</a>
             <a href="#footprint">Global Presence & Footprint</a>
             <Link href="/where-volamp-contributed" className="hover:text-[#c56718] transition-colors">
@@ -652,7 +629,7 @@ export default function AboutVolamp() {
                 </em>
               </h1>
               <p>
-                From our historic Khadia commercial headquarters to high-tonnage pan-India project sites, Volamp supplies primary mill-direct LT/HT power cables, solar DC cabling, and switchgear with certified conductor purity and complete technical clarity.
+                From our historic Khadia commercial headquarters to high-tonnage pan-India project sites, Volamp supplies primary plant-direct LT/HT power cables, solar DC cabling, and switchgear with certified conductor purity and complete technical clarity.
               </p>
               <div className="about-hero-actions">
                 <a className="about-primary-cta group/cta" href="#story">

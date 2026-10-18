@@ -45,9 +45,17 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialAccountType?: "employee" | "customer";
+  customerRedirectUrl?: string;
+  employeeRedirectUrl?: string;
 }
 
-export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProps) {
+export function AuthModal({
+  isOpen,
+  onClose,
+  initialAccountType,
+  customerRedirectUrl = "/",
+  employeeRedirectUrl = "/employee-portal",
+}: AuthModalProps) {
   const [, setLocation] = useLocation();
   const utils = trpc.useUtils();
 
@@ -109,9 +117,9 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
         });
         onClose();
         if (data.user.accountType === "employee") {
-          setLocation("/employee-portal");
+          setLocation(employeeRedirectUrl || "/employee-portal");
         } else {
-          setLocation("/portal");
+          setLocation(customerRedirectUrl || "/");
         }
       }
     },
@@ -128,9 +136,9 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
       });
       onClose();
       if (data.user.accountType === "employee") {
-        setLocation("/employee-portal");
+        setLocation(employeeRedirectUrl || "/employee-portal");
       } else {
-        setLocation("/portal");
+        setLocation(customerRedirectUrl || "/");
       }
     },
     onError: (err) => {
@@ -199,7 +207,7 @@ export function AuthModal({ isOpen, onClose, initialAccountType }: AuthModalProp
         utils.auth.me.setData(undefined, data.user);
         toast.success("Account active!", { description: "Welcome to VOLAMP customer portal." });
         onClose();
-        setLocation("/portal");
+        setLocation(customerRedirectUrl || "/");
       }
     },
     onError: (err) => {
