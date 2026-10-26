@@ -4079,6 +4079,7 @@ function normalizeBrand(b) {
   if (lower === "polycab") return "polycab";
   if (lower === "kei") return "kei";
   if (lower === "legrand") return "legrand";
+  if (lower.includes("dowell")) return "dowells";
   return lower;
 }
 function parseItemSpecs(specifications) {
@@ -4096,6 +4097,7 @@ function getProductHaystack(p) {
   if (brandNorm === "finnolex") brandAliases += " finolex finnolex";
   if (brandNorm === "schnieder") brandAliases += " schneider schnieder schneider electric";
   if (brandNorm === "lk") brandAliases += " lk l&t l and t larsen toubro";
+  if (brandNorm.includes("dowell")) brandAliases += " dowells dowell dowell's";
   const size = (p.size || "").toLowerCase();
   const sizeNum = size.replace(/[^\d\.]/g, "");
   let sizeAliases = size;
@@ -4553,7 +4555,7 @@ function getCatalogBrands(category) {
       brands.add(p.brand);
     }
   }
-  const canonicalOrder = ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand"];
+  const canonicalOrder = ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand", "Dowells"];
   return Array.from(brands).sort((a, b) => {
     const ia = canonicalOrder.indexOf(a);
     const ib = canonicalOrder.indexOf(b);
@@ -9081,6 +9083,7 @@ function parseProductQuery(q) {
   else if (/schneider|schnieder/i.test(lower)) brand = "schnieder";
   else if (/legrand/i.test(lower)) brand = "legrand";
   else if (/lk|l&t|larsen/i.test(lower)) brand = "lk";
+  else if (/dowell/i.test(lower)) brand = "dowells";
   else if (/(?:volamp|voltamp)\s+(?:products?|brand|cables?|wires?|switchgear|lugs?|glands?|earthing|conduits?)|brand\s*[:=]?\s*(?:volamp|voltamp)/i.test(lower)) brand = "volamp";
   let material = null;
   if (/copper|cu\b/i.test(lower)) material = "copper";

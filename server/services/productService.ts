@@ -143,6 +143,7 @@ export function normalizeBrand(b: string): string {
   if (lower === "polycab") return "polycab";
   if (lower === "kei") return "kei";
   if (lower === "legrand") return "legrand";
+  if (lower.includes("dowell")) return "dowells";
   return lower;
 }
 
@@ -162,6 +163,7 @@ export function getProductHaystack(p: Product): string {
   if (brandNorm === "finnolex") brandAliases += " finolex finnolex";
   if (brandNorm === "schnieder") brandAliases += " schneider schnieder schneider electric";
   if (brandNorm === "lk") brandAliases += " lk l&t l and t larsen toubro";
+  if (brandNorm.includes("dowell")) brandAliases += " dowells dowell dowell's";
 
   const size = (p.size || "").toLowerCase();
   const sizeNum = size.replace(/[^\d\.]/g, "");
@@ -669,7 +671,7 @@ export function getCatalogBrands(category?: string) {
   }
 
   // Canonical display order for authorized brands
-  const canonicalOrder = ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand"];
+  const canonicalOrder = ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand", "Dowells"];
   return Array.from(brands).sort((a, b) => {
     const ia = canonicalOrder.indexOf(a);
     const ib = canonicalOrder.indexOf(b);
