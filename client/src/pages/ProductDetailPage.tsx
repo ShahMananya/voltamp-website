@@ -171,19 +171,28 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
   useEffect(() => {
     if (productId && !staticProductFallback) {
       setIsStaticLoading(true);
-      fetch("/products_db.json")
+      fetch("/products_db.json?v=" + Date.now(), { cache: "no-store" })
         .then((res) => (res.ok ? res.json() : null))
         .then((items: any[]) => {
           if (Array.isArray(items)) {
             const pIdLower = productId.toLowerCase();
-            const found = items.find(
+            let found = items.find(
               (p) =>
                 p.productId === productId ||
                 p.sku === productId ||
                 (p.productId && p.productId.toLowerCase() === pIdLower) ||
                 (p.sku && p.sku.toLowerCase() === pIdLower)
             );
-            if (found) setStaticProductFallback(found);
+            if (found) {
+              if (found.category === "Lugs" || (found.productId && found.productId.startsWith("LUG-"))) {
+                found = {
+                  ...found,
+                  brand: "Dowells",
+                  sku: (found.sku || "").replace(/POLYCAB/g, "DOWELLS"),
+                };
+              }
+              setStaticProductFallback(found);
+            }
           }
         })
         .catch(() => {})

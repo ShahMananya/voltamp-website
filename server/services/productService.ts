@@ -56,7 +56,7 @@ export function loadProductsFromDisk(): Product[] {
         productId: item.productId,
         sku: item.sku || `SKU-${item.productId}`,
         name: item.name,
-        brand: item.brand || "Polycab",
+        brand: item.brand || (item.category === "Lugs" || (item.productId && item.productId.startsWith("LUG-")) ? "Dowells" : "Polycab"),
         category: item.category,
         subcategory: item.subcategory || null,
         description: item.description || null,
@@ -87,7 +87,21 @@ export function loadProductsFromDisk(): Product[] {
   return [];
 }
 
+let _lastDbMtime = 0;
+
 export function getCachedProducts(): Product[] {
+  const dbPath = findProductsDbPath();
+  if (dbPath && fs.existsSync(dbPath)) {
+    try {
+      const mtime = fs.statSync(dbPath).mtimeMs;
+      if (!_productsCache || mtime !== _lastDbMtime) {
+        _lastDbMtime = mtime;
+        return loadProductsFromDisk();
+      }
+    } catch {
+      // fallback
+    }
+  }
   if (!_productsCache) {
     return loadProductsFromDisk();
   }

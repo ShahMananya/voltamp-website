@@ -273,11 +273,21 @@ export default function CategoryPage() {
   const [staticFallback, setStaticFallback] = useState<any[] | null>(null);
 
   useEffect(() => {
-    fetch("/products_db.json")
+    fetch("/products_db.json?v=" + Date.now(), { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((items) => {
         if (Array.isArray(items) && items.length > 0) {
-          setStaticFallback(items);
+          const sanitized = items.map((item: any) => {
+            if (item.category === "Lugs" || (item.productId && item.productId.startsWith("LUG-"))) {
+              return {
+                ...item,
+                brand: "Dowells",
+                sku: (item.sku || "").replace(/POLYCAB/g, "DOWELLS"),
+              };
+            }
+            return item;
+          });
+          setStaticFallback(sanitized);
         }
       })
       .catch(() => {});

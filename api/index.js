@@ -4023,7 +4023,7 @@ function loadProductsFromDisk() {
         productId: item.productId,
         sku: item.sku || `SKU-${item.productId}`,
         name: item.name,
-        brand: item.brand || "Polycab",
+        brand: item.brand || (item.category === "Lugs" || item.productId && item.productId.startsWith("LUG-") ? "Dowells" : "Polycab"),
         category: item.category,
         subcategory: item.subcategory || null,
         description: item.description || null,
@@ -4053,7 +4053,19 @@ function loadProductsFromDisk() {
   }
   return [];
 }
+var _lastDbMtime = 0;
 function getCachedProducts() {
+  const dbPath = findProductsDbPath();
+  if (dbPath && fs2.existsSync(dbPath)) {
+    try {
+      const mtime = fs2.statSync(dbPath).mtimeMs;
+      if (!_productsCache || mtime !== _lastDbMtime) {
+        _lastDbMtime = mtime;
+        return loadProductsFromDisk();
+      }
+    } catch {
+    }
+  }
   if (!_productsCache) {
     return loadProductsFromDisk();
   }
