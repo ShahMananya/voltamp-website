@@ -526,26 +526,20 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
                 <h2 className="text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans',sans-serif] leading-tight">
                   Quick Order
                 </h2>
-                <p className="text-xs text-[#5a6b78] mt-1">
-                  Add products, adjust quantities, and instantly create an official B2B requisition on WhatsApp (+91 9512365582).
-                </p>
               </div>
             </div>
 
             {/* AUTHENTICATION GATE / REQUIREMENT */}
             {!user ? (
               <div className="mb-5 p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
-                <div className="flex items-start gap-3">
-                  <div className="size-8 rounded-lg bg-amber-500/20 text-[#c56718] flex items-center justify-center shrink-0 mt-0.5">
+                <div className="flex items-center gap-3">
+                  <div className="size-8 rounded-lg bg-amber-500/20 text-[#c56718] flex items-center justify-center shrink-0">
                     <Lock className="size-4" />
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-amber-950 font-['Plus_Jakarta_Sans',sans-serif]">
-                      Account Login Required to Place Orders
+                      Account Login Required to Place Online Orders
                     </h4>
-                    <p className="text-[11px] text-amber-800 leading-relaxed mt-0.5">
-                      To generate your official PDF invoice, lock in wholesale pricing, and track consignment dispatch, you must be logged into your Volamp customer account.
-                    </p>
                   </div>
                 </div>
                 <Button
@@ -589,9 +583,6 @@ _Please review the attached/linked PDF Invoice and confirm dispatch schedule._`;
                   <h3 className="text-xs font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#102a40] uppercase tracking-wider">
                     Requisition Product List
                   </h3>
-                  <p className="text-[11px] text-[#6b7c88]">
-                    Enter product name, specify quantity, or remove any row.
-                  </p>
                 </div>
                 <span className="text-[11px] font-mono font-bold text-[#c56718] bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
                   {rows.length} {rows.length === 1 ? "Product" : "Products"}
