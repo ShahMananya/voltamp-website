@@ -79,28 +79,15 @@ export default function FloatingActions({
           aria-label="Chat with Vola · Instant Sizing, Pricing & Quotations"
           onMouseEnter={() => setHoveredButton("chat")}
           onMouseLeave={() => setHoveredButton(null)}
-          className="group relative flex items-center justify-center w-12 h-12 md:w-[50px] md:h-[50px] rounded-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white shadow-[0_4px_16px_rgba(37,99,235,0.45)] hover:shadow-[0_8px_24px_rgba(37,99,235,0.65)] hover:scale-108 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-3 focus:ring-[#2563EB]/40 border-none"
+          className="group relative flex items-center justify-center w-12 h-12 md:w-[52px] md:h-[52px] rounded-full bg-gradient-to-tr from-[#c46b19] to-amber-500 shadow-[0_6px_20px_rgba(196,107,25,0.45)] hover:shadow-[0_8px_26px_rgba(196,107,25,0.65)] hover:scale-108 active:scale-95 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-3 focus:ring-amber-500/40 p-0.5 overflow-hidden border-2 border-white dark:border-slate-800"
         >
-          {/* Exact Speech Bubble Icon with 3 Dots from Reference Picture */}
-          <svg
-            viewBox="0 0 24 24"
-            className="w-6 h-6 text-white drop-shadow-xs relative z-10"
-            fill="none"
-            aria-hidden="true"
-          >
-            {/* Outlined Speech Bubble with Pointer at Bottom-Left */}
-            <path
-              d="M20 3.5H4C2.9 3.5 2 4.4 2 5.5v9c0 1.1.9 2 2 2h2v4l4.5-4H20c1.1 0 2-.9 2-2v-9c0-1.1-.9-2-2-2z"
-              stroke="white"
-              strokeWidth="2.1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {/* Three Centered Dots */}
-            <circle cx="8" cy="10" r="1.15" fill="white" />
-            <circle cx="12" cy="10" r="1.15" fill="white" />
-            <circle cx="16" cy="10" r="1.15" fill="white" />
-          </svg>
+          <img
+            src="/vola-avatar.jpg"
+            alt="VOLA"
+            className="w-full h-full object-cover rounded-full"
+          />
+          {/* Green Online Dot Badge */}
+          <span className="absolute bottom-0 right-0 size-3.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-800 shadow-xs" />
         </button>
       </div>
     </aside>

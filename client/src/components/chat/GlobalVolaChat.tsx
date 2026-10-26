@@ -69,8 +69,13 @@ export default function GlobalVolaChat() {
       {/* Chat Window Head */}
       <div className="bg-gradient-to-r from-[#4d1217] via-[#5c161d] to-[#6b2024] text-white px-4 py-3 flex items-center justify-between border-b border-[#822a31] shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="size-8 rounded-lg bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-400">
-            <Sparkles className="size-4" />
+          <div className="relative size-9 rounded-full overflow-hidden border-2 border-amber-400/80 shadow-xs shrink-0 bg-amber-50">
+            <img
+              src="/vola-avatar.jpg"
+              alt="VOLA"
+              className="size-full object-cover"
+            />
+            <span className="absolute bottom-0 right-0 size-2.5 rounded-full bg-emerald-500 border border-white" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">

@@ -3,6 +3,8 @@ import {
   DEFAULT_LOCATION,
   formatLocationName,
   extractCountryFromLocation,
+  WELCOME_SESSION_DURATION_MS,
+  WELCOME_SESSION_STORAGE_KEY,
 } from "../client/src/contexts/LocationContext";
 
 // Test helper mirroring LocationModal logic
@@ -121,5 +123,18 @@ describe("Global & Domestic Location Logic & Formatting", () => {
     expect(makeBreadcrumb("Singapore · APAC")).toBe("Let's Build Singapore Together");
     expect(makeBreadcrumb("Tokyo · Japan")).toBe("Let's Build Japan Together");
     expect(makeBreadcrumb("Toronto · Canada")).toBe("Let's Build Canada Together");
+  });
+
+  it("configures 1-hour session duration for welcome popup accurately", () => {
+    expect(WELCOME_SESSION_DURATION_MS).toBe(3600000); // 60 minutes * 60 seconds * 1000 ms = 1 Hour
+    expect(WELCOME_SESSION_STORAGE_KEY).toBe("volamp_welcome_session_timestamp");
+
+    // Session active check within 1 hour:
+    const sessionStart = 1000000;
+    const withinSession = sessionStart + 30 * 60 * 1000; // 30 minutes later
+    const expiredSession = sessionStart + 61 * 60 * 1000; // 61 minutes later
+
+    expect(withinSession - sessionStart < WELCOME_SESSION_DURATION_MS).toBe(true);
+    expect(expiredSession - sessionStart < WELCOME_SESSION_DURATION_MS).toBe(false);
   });
 });

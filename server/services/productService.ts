@@ -957,3 +957,94 @@ export function commitProducts(updatedList: any[]) {
   _productsCache = null; // Flush cache
   return loadProductsFromDisk();
 }
+
+export function updateProductPrice(input: {
+  productId: string;
+  price?: string;
+  numericPrice?: number;
+  discountedPrice?: string;
+  discount?: string;
+  status?: "Active" | "Inactive" | "Out of Stock" | "Discontinued";
+}) {
+  const all = loadProductsFromDisk();
+  const target = all.find((p) => p.productId === input.productId);
+  if (!target) {
+    throw new Error(`Product with ID '${input.productId}' was not found.`);
+  }
+
+  if (input.price !== undefined) target.price = input.price;
+  if (input.numericPrice !== undefined) target.numericPrice = input.numericPrice;
+  if (input.discountedPrice !== undefined) target.discountedPrice = input.discountedPrice;
+  if (input.discount !== undefined) target.discount = input.discount;
+  if (input.status !== undefined) target.status = input.status;
+  target.lastUpdated = new Date();
+
+  fs.writeFileSync(DB_PATH, JSON.stringify(all, null, 2), "utf-8");
+  _productsCache = all;
+  return target;
+}
+
+export function addNewProduct(input: {
+  name: string;
+  category: string;
+  subcategory?: string;
+  brand: string;
+  price: string;
+  numericPrice?: number;
+  discountedPrice?: string;
+  discount?: string;
+  unit?: string;
+  size?: string;
+  material?: string;
+  description?: string;
+  specifications?: any;
+  status?: "Active" | "Inactive" | "Out of Stock" | "Discontinued";
+  imageUrl?: string;
+}) {
+  const all = loadProductsFromDisk();
+  const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+  const prefix = input.category.toUpperCase().includes("WIRE") || input.category.toUpperCase().includes("CABLE")
+    ? "CAB"
+    : input.category.toUpperCase().includes("SOLAR")
+    ? "SOL"
+    : input.category.toUpperCase().includes("SWITCH")
+    ? "SWG"
+    : "PRD";
+
+  const productId = `${prefix}-${Date.now().toString().slice(-6)}-${randomSuffix}`;
+  const sku = `VOL-${productId}`;
+
+  const newProd: Product = {
+    id: all.length + 1,
+    productId,
+    sku,
+    name: input.name,
+    brand: input.brand || "Volamp",
+    category: input.category,
+    subcategory: input.subcategory || null,
+    description: input.description || null,
+    size: input.size || null,
+    material: input.material || null,
+    unit: input.unit || "Per Metre",
+    price: input.price,
+    numericPrice: input.numericPrice ?? (parseFloat(input.price.replace(/[^0-9.]/g, "")) || null),
+    discount: input.discount || null,
+    discountedPrice: input.discountedPrice || null,
+    currency: "INR",
+    availability: "IN STOCK",
+    moq: "Standard Roll / Reel",
+    imageUrl: input.imageUrl || "/products/cables.jpg",
+    threeDImageUrl: null,
+    productUrl: null,
+    status: input.status || "Active",
+    specifications: typeof input.specifications === "string" ? input.specifications : JSON.stringify(input.specifications || {}),
+    sheetSource: "Manual Employee Entry",
+    lastUpdated: new Date(),
+    createdAt: new Date(),
+  };
+
+  all.unshift(newProd);
+  fs.writeFileSync(DB_PATH, JSON.stringify(all, null, 2), "utf-8");
+  _productsCache = all;
+  return newProd;
+}

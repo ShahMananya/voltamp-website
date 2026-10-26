@@ -15,3 +15,7 @@ User-agent: Google-Extended
 Allow: /
 
 Sitemap: https://volampelektrikals.com/sitemap.xml
+
+# AI Engine Knowledge Manifests (AEO & GEO)
+# https://volampelektrikals.com/llms.txt
+# https://volampelektrikals.com/llms-full.txt

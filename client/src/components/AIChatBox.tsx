@@ -264,8 +264,18 @@ export function AIChatBox({
                     }
                   >
                     {message.role === "assistant" && (
-                      <div className="size-8 shrink-0 mt-1 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Sparkles className="size-4 text-primary" />
+                      <div className="flex flex-col items-center shrink-0 mt-0.5 select-none">
+                        <div className="size-9 sm:size-10 rounded-full overflow-hidden border-2 border-amber-500/50 shadow-xs bg-amber-50 shrink-0">
+                          <img
+                            src="/vola-avatar.jpg"
+                            alt="VOLA"
+                            className="size-full object-cover"
+                          />
+                        </div>
+                        <div className="flex items-center gap-1 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span>Online</span>
+                        </div>
                       </div>
                     )}
 

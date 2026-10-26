@@ -18,7 +18,53 @@ export interface LocationContextType {
 const LocationContext = createContext<LocationContextType | undefined>(undefined);
 
 const STORAGE_KEY = "volamp_user_location";
-const SESSION_WELCOME_KEY = "volamp_welcome_dismissed";
+
+// 1-Hour Session Configuration (60 minutes = 3,600,000 ms)
+export const WELCOME_SESSION_DURATION_MS = 60 * 60 * 1000;
+export const WELCOME_SESSION_STORAGE_KEY = "volamp_welcome_session_timestamp";
+
+/**
+ * Returns true if an active 1-hour session exists and the welcome popup has already appeared.
+ */
+export function isWelcomeSessionActive(customNow?: number): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const raw = localStorage.getItem(WELCOME_SESSION_STORAGE_KEY);
+    if (!raw) return false;
+    const timestamp = parseInt(raw, 10);
+    if (isNaN(timestamp)) return false;
+    const now = customNow ?? Date.now();
+    const elapsed = now - timestamp;
+    return elapsed >= 0 && elapsed < WELCOME_SESSION_DURATION_MS;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Records the start of a 1-hour session upon displaying the welcome popup.
+ */
+export function recordWelcomeSession(customNow?: number): void {
+  if (typeof window === "undefined") return;
+  try {
+    const now = customNow ?? Date.now();
+    localStorage.setItem(WELCOME_SESSION_STORAGE_KEY, now.toString());
+  } catch (err) {
+    console.warn("Unable to store welcome session timestamp:", err);
+  }
+}
+
+/**
+ * Clears the welcome session timestamp (for testing or manual reset).
+ */
+export function clearWelcomeSession(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(WELCOME_SESSION_STORAGE_KEY);
+  } catch (err) {
+    console.warn("Unable to clear welcome session timestamp:", err);
+  }
+}
 
 export function formatLocationName(
   city?: string,
@@ -168,9 +214,23 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Silently detect visitor location in the background without intrusive popup
+  const hasDismissedWelcomeRef = React.useRef(false);
+
+  // Visitor location detection and welcome popup
+  // Configured to trigger EVERY TIME someone visits the website
   useEffect(() => {
     let isMounted = true;
+    let welcomeTriggered = false;
+    const initialLoc = location && location !== DEFAULT_LOCATION ? location : null;
+
+    if (initialLoc && !hasDismissedWelcomeRef.current) {
+      welcomeTriggered = true;
+      const timer = setTimeout(() => {
+        if (isMounted && !hasDismissedWelcomeRef.current) {
+          setWelcomeLocation(initialLoc);
+        }
+      }, 300);
+    }
 
     detectVisitorLocation()
       .then((detected) => {
@@ -178,12 +238,20 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         setIsDetecting(false);
         if (detected) {
           setLocation(detected);
+          if (!welcomeTriggered && !hasDismissedWelcomeRef.current) {
+            welcomeTriggered = true;
+            setWelcomeLocation(detected);
+          }
         }
       })
       .catch((err) => {
         if (!isMounted) return;
         setIsDetecting(false);
         console.warn("Auto location detection fallback:", err);
+        if (!welcomeTriggered && !hasDismissedWelcomeRef.current) {
+          welcomeTriggered = true;
+          setWelcomeLocation(location || DEFAULT_LOCATION);
+        }
       });
 
     return () => {
@@ -192,6 +260,9 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleSetWelcomeLocation = (loc: string | null) => {
+    if (loc === null) {
+      hasDismissedWelcomeRef.current = true;
+    }
     setWelcomeLocation(loc);
   };
 

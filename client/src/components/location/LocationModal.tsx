@@ -74,14 +74,33 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
   const [isInteracted, setIsInteracted] = useState(false);
   const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const dismissWelcome = () => {
+  const dismissWelcome = (e?: React.MouseEvent | React.TouchEvent | KeyboardEvent) => {
+    if (e && typeof e.stopPropagation === "function") {
+      e.stopPropagation();
+    }
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = null;
+    }
     setWelcomeLocation(null);
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("volamp:welcome-finished"));
     }
   };
 
-  // Auto-close welcome popup after 1.5 seconds if user does not press it
+  // Close on Escape key press
+  useEffect(() => {
+    if (!welcomeLocation) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        dismissWelcome(e);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [welcomeLocation]);
+
+  // Auto-close welcome popup after 1.5 seconds if user does not interact or hover
   useEffect(() => {
     if (welcomeLocation) {
       setIsInteracted(false);
@@ -368,10 +387,11 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
               e.stopPropagation();
               handleUserPress();
             }}
+            onMouseEnter={handleUserPress}
             onMouseDown={handleUserPress}
             onTouchStart={handleUserPress}
           >
-            {/* 1.5s Auto-dismiss timer indicator */}
+            {/* 1.5s Auto-dismiss timer indicator (pauses on hover) */}
             {!isInteracted && (
               <div className="absolute top-0 left-0 right-0 h-1 bg-amber-100 overflow-hidden rounded-t-2xl">
                 <div
@@ -391,8 +411,11 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
 
             {/* Close Button */}
             <button
-              onClick={() => dismissWelcome()}
-              className="absolute right-5 top-5 rounded-full p-2 text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
+              type="button"
+              onClick={(e) => dismissWelcome(e)}
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              className="absolute right-4 top-4 z-50 rounded-full p-2.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer flex items-center justify-center"
               aria-label="Close welcome popup"
             >
               <X className="size-5" />

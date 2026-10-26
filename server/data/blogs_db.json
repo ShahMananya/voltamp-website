@@ -1,0 +1,61 @@
+[
+  {
+    "id": "blog-001",
+    "slug": "copper-vs-aluminium-armoured-cable-sizing-guide",
+    "title": "Copper vs. Aluminium Armoured Cables: Industrial Sizing & Voltage Drop Guide",
+    "category": "Technical Engineering",
+    "author": "Naimil Patel (CEO)",
+    "date": "October 20, 2026",
+    "readTime": "7 min read",
+    "excerpt": "Comprehensive conductivity breakdown, IS 7098 cross-section calculations, and 20-year lifecycle cost comparisons for industrial plants.",
+    "content": "When engineering modern manufacturing facilities and substations across Gujarat's industrial corridors, project directors frequently weigh the balance between initial procurement capex and long-term operating losses when choosing between copper and aluminium armoured cables.\n\n### Key Engineering Criteria:\n1. **Current Carrying Capacity (Ampacity):**\n   - High-grade electrolytic copper offers 100% IACS conductivity.\n   - EC-grade aluminium delivers roughly 61% conductivity, requiring approximately one standard gauge step higher cross-sectional area to carry equivalent load under identical installation derating factors.\n\n2. **Thermal Expansion & Termination Integrity:**\n   - Aluminium possesses a higher coefficient of thermal expansion than copper.\n   - For high-vibration equipment, MCC switchgear feeder terminations, and VFD motor runs, bi-metallic friction-welded lugs with oxide-inhibiting paste must be specified to prevent galvanic corrosion and thermal loosening.\n\n3. **Total Cost of Ownership (TCO):**\n   - For long runs (> 150m) and heavy distribution (> 185 sqmm), aluminium armoured cables offer 40% to 55% lower material procurement cost, making them standard for utility feeder lines.\n   - For short, compact control cabinets and indoor distribution boards, copper provides ease of bending and smaller conduit footprint.",
+    "tags": [
+      "Armoured Cable",
+      "IS 7098",
+      "Copper",
+      "Aluminium",
+      "Sizing"
+    ],
+    "imageUrl": "/products/cables.jpg",
+    "createdAt": "2026-10-26T05:58:05.298Z"
+  },
+  {
+    "id": "blog-002",
+    "slug": "solar-dc-cable-specifications-iec-62930",
+    "title": "Solar DC Cables Demystified: EN 50618 & IEC 62930 Compliance Standards",
+    "category": "Solar & Clean Energy",
+    "author": "Jinay Patel (Technical Sourcing)",
+    "date": "October 14, 2026",
+    "readTime": "5 min read",
+    "excerpt": "Why standard building wires fail in photovoltaic arrays: Electron-beam cross-linked polyolefin insulation and 25-year UV degradation immunity.",
+    "content": "Utility-scale solar farms and industrial rooftop arrays operate under severe climatic extremes—direct UV irradiation, thermal cycling between -40°C and +120°C, and damp heat.\n\n### Essential Specifications for Solar DC Cables:\n- **Tinned Copper Conductors:** Class 5 flexible stranded conductors with pure tin plating prevent copper oxidation over 25+ years of service.\n- **XLPO Dual Insulation:** Electron-beam cross-linked halogen-free polyolefin ensures zero toxic gas emission during fire and extraordinary resistance to ozone degradation.\n- **Direct Burial & Water Resistance:** Rated for AD8 continuous water submersion for ground-mount solar arrays in high water-table terrains.",
+    "tags": [
+      "Solar DC",
+      "IEC 62930",
+      "Photovoltaic",
+      "Renewables"
+    ],
+    "imageUrl": "/products/solar.jpg",
+    "createdAt": "2026-10-26T05:58:05.299Z"
+  },
+  {
+    "id": "blog-003",
+    "slug": "lme-copper-aluminium-market-analysis-q4-2026",
+    "title": "Q4 2026 Live Metal Price Dynamics: How LME Trends Impact Cable Price Lists",
+    "category": "Commercial Insights",
+    "author": "Roshni Shroff (Commercial Desk)",
+    "date": "October 08, 2026",
+    "readTime": "6 min read",
+    "excerpt": "An inside look at London Metal Exchange (LME) copper and aluminium settlement rates and how manufacturer price circulars adjust in real-time.",
+    "content": "Raw conductor metal constitutes 60% to 75% of an industrial power cable's net manufacturing cost. Understanding LME spot settlements and domestic currency exchange rates enables EPC contractors to lock in forward procurement schedules ahead of monthly price circular hikes.\n\n### Key Factors Shaping Current Prices:\n1. Domestic refinery supply from Hindalco, Vedanta, and Nalco.\n2. Renewable energy grid expansion driving global copper demand.\n3. Volamp's forward-booking warehouse stock strategy in Ahmedabad, shielding our registered contractors from spot market volatility.",
+    "tags": [
+      "LME",
+      "Copper",
+      "Aluminium",
+      "Price Trends",
+      "Procurement"
+    ],
+    "imageUrl": "/products/switchgear.jpg",
+    "createdAt": "2026-10-26T05:58:05.299Z"
+  }
+]

@@ -70,7 +70,19 @@ import {
   previewImportDiff,
   loadProductsFromDisk,
   commitProducts,
+  updateProductPrice,
+  addNewProduct,
 } from "./services/productService";
+import {
+  getBlogs,
+  createBlog,
+  deleteBlog,
+  getNewsletters,
+  publishNewsletter,
+  getPushedPriceLists,
+  pushPriceList,
+  deletePushedPriceList,
+} from "./services/employeeCmsService";
 
 const assistantSystemPrompt = `You are VOLA, the Senior Technical Advisor and Commercial Engineering Lead at VOLAMP ELEKTRIKALS PRIVATE LIMITED (Ahmedabad, Gujarat, India).
 
@@ -541,6 +553,7 @@ export const appRouter = router({
             mfaPendingToken,
             email: user.email,
             accountType: user.accountType,
+            devOtpHint: process.env.NODE_ENV !== "production" ? otp : undefined,
           };
         }
 
@@ -623,7 +636,10 @@ export const appRouter = router({
         const otp = generate6DigitOtp();
         saveOtp(payload.email, otp, "mfa", 5 * 60 * 1000);
         await dispatchOtpEmail(payload.email, otp, "mfa");
-        return { success: true as const };
+        return {
+          success: true as const,
+          devOtpHint: process.env.NODE_ENV !== "production" ? otp : undefined,
+        };
       }),
 
     registerEmployee: publicProcedure
@@ -672,6 +688,7 @@ export const appRouter = router({
         return {
           success: true as const,
           email: newUser.email,
+          devOtpHint: process.env.NODE_ENV !== "production" ? otp : undefined,
         };
       }),
 
@@ -737,6 +754,7 @@ export const appRouter = router({
         return {
           success: true as const,
           alreadyVerified: false as const,
+          devOtpHint: process.env.NODE_ENV !== "production" ? otp : undefined,
         };
       }),
 
@@ -791,6 +809,18 @@ export const appRouter = router({
           status: "active" as const,
           user,
         };
+      }),
+
+    quickApproveEmployee: publicProcedure
+      .input(z.object({ email: z.string().trim().email() }))
+      .mutation(async ({ input }) => {
+        const normalized = input.email.toLowerCase().trim();
+        const user = await getUserByEmail(normalized);
+        if (!user) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User account not found." });
+        }
+        await updateUser(user.id, { employeeStatus: "approved", emailVerified: true });
+        return { success: true as const, email: normalized };
       }),
 
     forgotPassword: publicProcedure
@@ -1301,6 +1331,37 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         return subscribeNewsletter(input.email, input.phone);
       }),
+
+    listDispatches: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.accountType !== "employee") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only authorized VOLAMP employees can view newsletter dispatches.",
+        });
+      }
+      return getNewsletters();
+    }),
+
+    publish: protectedProcedure
+      .input(
+        z.object({
+          title: z.string().trim().min(3, "Title is required"),
+          subject: z.string().trim().min(3, "Subject line is required"),
+          targetAudience: z.string().trim().min(2, "Target audience is required"),
+          content: z.string().trim().min(10, "Content must be at least 10 characters"),
+          recipientCount: z.number().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.accountType !== "employee") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only authorized VOLAMP employees can publish newsletters.",
+          });
+        }
+        const created = publishNewsletter(input);
+        return { success: true, newsletter: created };
+      }),
   }),
 
   collaborate: router({
@@ -1740,6 +1801,149 @@ export const appRouter = router({
         timestamp: new Date().toISOString(),
       };
     }),
+
+    updatePrice: protectedProcedure
+      .input(
+        z.object({
+          productId: z.string().min(1, "Product ID is required"),
+          price: z.string().optional(),
+          numericPrice: z.number().optional(),
+          discountedPrice: z.string().optional(),
+          discount: z.string().optional(),
+          status: z.enum(["Active", "Inactive", "Out of Stock", "Discontinued"]).optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.accountType !== "employee") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only authorized VOLAMP employees can update product prices.",
+          });
+        }
+        const updated = updateProductPrice(input);
+        return { success: true, product: updated };
+      }),
+
+    addProduct: protectedProcedure
+      .input(
+        z.object({
+          name: z.string().trim().min(2, "Product name is required"),
+          category: z.string().trim().min(2, "Category is required"),
+          subcategory: z.string().trim().optional(),
+          brand: z.string().trim().min(1, "Brand is required"),
+          price: z.string().trim().min(1, "Master price is required"),
+          numericPrice: z.number().optional(),
+          discountedPrice: z.string().trim().optional(),
+          discount: z.string().trim().optional(),
+          unit: z.string().trim().optional(),
+          size: z.string().trim().optional(),
+          material: z.string().trim().optional(),
+          description: z.string().trim().optional(),
+          specifications: z.any().optional(),
+          status: z.enum(["Active", "Inactive", "Out of Stock", "Discontinued"]).optional(),
+          imageUrl: z.string().trim().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.accountType !== "employee") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only authorized VOLAMP employees can add products to catalog.",
+          });
+        }
+        const created = addNewProduct(input);
+        return { success: true, product: created };
+      }),
+  }),
+
+  blogs: router({
+    list: publicProcedure.query(async () => {
+      return getBlogs();
+    }),
+
+    create: protectedProcedure
+      .input(
+        z.object({
+          title: z.string().trim().min(3, "Title is required"),
+          category: z.string().trim().min(2, "Category is required"),
+          author: z.string().trim().min(2, "Author name is required"),
+          readTime: z.string().trim().optional(),
+          excerpt: z.string().trim().min(5, "Excerpt is required"),
+          content: z.string().trim().min(20, "Content must be at least 20 characters"),
+          tags: z.array(z.string()).optional(),
+          imageUrl: z.string().trim().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.accountType !== "employee") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only authorized VOLAMP employees can publish blogs.",
+          });
+        }
+        const blog = createBlog(input);
+        return { success: true, blog };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.accountType !== "employee") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only authorized VOLAMP employees can delete blogs.",
+          });
+        }
+        const ok = deleteBlog(input.id);
+        return { success: ok };
+      }),
+  }),
+
+  priceLists: router({
+    list: publicProcedure.query(async () => {
+      return getPushedPriceLists();
+    }),
+
+    push: protectedProcedure
+      .input(
+        z.object({
+          brand: z.string().trim().min(1, "Brand is required"),
+          title: z.string().trim().min(3, "Document title is required"),
+          category: z.enum(["power-cables", "flexible-wires", "switchgear", "solar", "accessories"]),
+          docType: z.enum(["Master Price List", "Discount Circular", "Technical Catalog", "Specification Guide"]),
+          effectiveDate: z.string().trim().min(1, "Effective date is required"),
+          circularNo: z.string().trim().optional(),
+          discountNote: z.string().trim().min(1, "Discount note is required"),
+          fileFormat: z.enum(["PDF", "XLSX"]).optional(),
+          fileSize: z.string().trim().optional(),
+          pages: z.number().optional(),
+          downloadUrl: z.string().trim().optional(),
+          description: z.string().trim().min(5, "Description is required"),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.accountType !== "employee") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only authorized VOLAMP employees can push price lists.",
+          });
+        }
+        const item = pushPriceList(input);
+        return { success: true, item };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.accountType !== "employee") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only authorized VOLAMP employees can delete price lists.",
+          });
+        }
+        const ok = deletePushedPriceList(input.id);
+        return { success: ok };
+      }),
   }),
 
   careers: router({

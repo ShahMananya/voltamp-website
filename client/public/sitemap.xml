@@ -211,8 +211,13 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://volampelektrikals.com/volamp-logo.png</image:loc>
       <image:title>VOLAMP Solar DC Cable (1500V UV &amp; Ozone Resistant)</image:title>
     </image:image>
+  </url>
+  <url>
+    <loc>https://volampelektrikals.com/price-list</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
   </url>
 </urlset>

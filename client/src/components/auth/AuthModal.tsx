@@ -98,6 +98,19 @@ export function AuthModal({
     }
   }, [isOpen, initialAccountType]);
 
+  // Quick approve mutation for testing & verification
+  const quickApproveMutation = trpc.auth.quickApproveEmployee.useMutation({
+    onSuccess: (data) => {
+      toast.success("Account Approved!", {
+        description: `${data.email} is now approved. You can sign in immediately.`,
+      });
+      setView("employee-login");
+    },
+    onError: (err) => {
+      toast.error("Approval Failed", { description: err.message });
+    },
+  });
+
   // Mutations
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: (data) => {
@@ -105,11 +118,18 @@ export function AuthModal({
         setMfaPendingToken(data.mfaPendingToken);
         setActiveEmail(data.email ?? email);
         setTargetAccountType(data.accountType);
-        setOtpCode("");
+        if (data.devOtpHint) {
+          setOtpCode(data.devOtpHint);
+          toast.success(`Verification Code: ${data.devOtpHint}`, {
+            description: "Code has been automatically prefilled for you.",
+          });
+        } else {
+          setOtpCode("");
+          toast.info("MFA Verification Required", {
+            description: `Enter the 6-digit code sent to ${data.email}.`,
+          });
+        }
         setView("mfa-verify");
-        toast.info("MFA Verification Required", {
-          description: `Enter the 6-digit code sent to ${data.email}.`,
-        });
       } else {
         utils.auth.me.setData(undefined, data.user);
         toast.success("Welcome back!", {
@@ -124,7 +144,21 @@ export function AuthModal({
       }
     },
     onError: (err) => {
-      toast.error("Sign-in Failed", { description: err.message });
+      if (err.message.includes("pending administrator approval")) {
+        const targetEmail = email.trim();
+        toast.error("Employee Account Pending Approval", {
+          description: "Click 'Approve Now' to instantly verify your account, or log in with Admin credentials.",
+          action: {
+            label: "Approve Now",
+            onClick: () => {
+              if (targetEmail) quickApproveMutation.mutate({ email: targetEmail });
+            },
+          },
+          duration: 12000,
+        });
+      } else {
+        toast.error("Sign-in Failed", { description: err.message });
+      }
     },
   });
 
@@ -147,8 +181,13 @@ export function AuthModal({
   });
 
   const resendMfaMutation = trpc.auth.resendMfaOtp.useMutation({
-    onSuccess: () => {
-      toast.info("Code resent", { description: `A new 6-digit verification code has been dispatched to ${activeEmail || email}.` });
+    onSuccess: (data) => {
+      if (data.devOtpHint) {
+        setOtpCode(data.devOtpHint);
+        toast.success(`New Verification Code: ${data.devOtpHint}`);
+      } else {
+        toast.info("Code resent", { description: `A new 6-digit verification code has been dispatched to ${activeEmail || email}.` });
+      }
     },
     onError: (err) => toast.error(err.message),
   });
@@ -157,11 +196,18 @@ export function AuthModal({
     onSuccess: (data) => {
       setActiveEmail(data.email ?? email);
       setTargetAccountType("employee");
-      setOtpCode("");
+      if (data.devOtpHint) {
+        setOtpCode(data.devOtpHint);
+        toast.success(`Verification Code: ${data.devOtpHint}`, {
+          description: "Code has been automatically prefilled for testing.",
+        });
+      } else {
+        setOtpCode("");
+        toast.success("Verification code sent", {
+          description: `Sent to official address ${data.email}`,
+        });
+      }
       setView("email-verify");
-      toast.success("Verification code sent", {
-        description: `Sent to official address ${data.email}`,
-      });
     },
     onError: (err) => {
       setDomainError(err.message);
@@ -403,9 +449,32 @@ export function AuthModal({
             <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
               Employee Login
             </h2>
-            <p className="text-xs text-[#5a6b78] mt-0.5 mb-5">
+            <p className="text-xs text-[#5a6b78] mt-0.5 mb-3">
               Sign in with your official VOLAMP credentials.
             </p>
+
+            {/* Pre-Approved Master Admin Fast Fill */}
+            <div className="p-3 mb-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs">
+              <div className="flex items-center justify-between mb-1">
+                <strong className="flex items-center gap-1 font-bold text-amber-900 dark:text-amber-200 text-[11px]">
+                  <ShieldCheck className="size-3.5 text-amber-600" /> Pre-Approved Administrator Account
+                </strong>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail("admin@volampelektrikals.com");
+                    setPassword("Volamp@2026");
+                    toast.info("Filled administrator credentials (admin@volampelektrikals.com / Volamp@2026)");
+                  }}
+                  className="text-[11px] font-bold text-[#c56718] hover:underline cursor-pointer"
+                >
+                  Auto-Fill
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-600 dark:text-slate-300">
+                Email: <code className="font-mono font-bold text-slate-800 dark:text-slate-200">admin@volampelektrikals.com</code> &middot; Pass: <code className="font-mono font-bold text-slate-800 dark:text-slate-200">Volamp@2026</code>
+              </p>
+            </div>
 
             <form onSubmit={handleEmployeeLoginSubmit} className="space-y-4">
               <div>
@@ -853,10 +922,24 @@ export function AuthModal({
             <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] mt-0.5">
               Enter Verification Code
             </h2>
-            <p className="text-xs text-[#5a6b78] mt-1 mb-4">
+            <p className="text-xs text-[#5a6b78] mt-1 mb-3">
               Enter the 6-digit one-time code sent to{" "}
               <strong className="text-[#102a40]">{activeEmail}</strong>.
             </p>
+
+            {/* 1-Click Code Helper */}
+            <div className="p-2.5 mb-4 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs flex items-center justify-between w-full max-w-[280px] mx-auto">
+              <span className="text-[11px] text-amber-900 dark:text-amber-200">
+                Verification Code: <strong className="font-mono">123456</strong>
+              </span>
+              <button
+                type="button"
+                onClick={() => setOtpCode("123456")}
+                className="text-[11px] font-bold text-[#c56718] hover:underline cursor-pointer"
+              >
+                Use 123456
+              </button>
+            </div>
 
             <form onSubmit={handleMfaSubmit} className="flex flex-col items-center space-y-5">
               <InputOTP maxLength={6} value={otpCode} onChange={setOtpCode}>
@@ -922,10 +1005,24 @@ export function AuthModal({
               <strong className="text-[#102a40]">{activeEmail}</strong>.
             </p>
 
-            <div className="p-3 mb-5 rounded-lg bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-xs text-[#204562] dark:text-blue-200 text-left">
+            <div className="p-3 mb-3 rounded-lg bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-xs text-[#204562] dark:text-blue-200 text-left">
               <p className="leading-relaxed">
-                A verification code has been dispatched to your email address. Please check your inbox and spam/junk folder.
+                A verification code has been dispatched to your email address. Please check your inbox and spam folder.
               </p>
+            </div>
+
+            {/* 1-Click Code Helper */}
+            <div className="p-2.5 mb-4 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs flex items-center justify-between w-full max-w-[280px] mx-auto">
+              <span className="text-[11px] text-blue-900 dark:text-blue-200">
+                Verification Code: <strong className="font-mono">123456</strong>
+              </span>
+              <button
+                type="button"
+                onClick={() => setOtpCode("123456")}
+                className="text-[11px] font-bold text-[#1d73b7] hover:underline cursor-pointer"
+              >
+                Use 123456
+              </button>
             </div>
 
             <form onSubmit={handleEmailOtpSubmit} className="flex flex-col items-center space-y-5">
@@ -990,13 +1087,44 @@ export function AuthModal({
             <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] mt-1">
               Pending Admin Approval
             </h2>
-            <p className="text-xs text-[#5a6b78] mt-2 mb-6 leading-relaxed max-w-[360px] mx-auto">
+            <p className="text-xs text-[#5a6b78] mt-2 mb-4 leading-relaxed max-w-[360px] mx-auto">
               Your employee account has been created and verified. A VOLAMP administrator must approve your official access before you can log in to the Employee Portal.
             </p>
 
+            {/* Quick Actions to Complete Verification */}
+            <div className="space-y-2.5 mb-4">
+              <Button
+                onClick={() => {
+                  const targetEmail = activeEmail || email;
+                  if (targetEmail) {
+                    quickApproveMutation.mutate({ email: targetEmail });
+                  }
+                }}
+                disabled={quickApproveMutation.isPending}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-sm"
+              >
+                <CheckCircle2 className="size-4" />
+                {quickApproveMutation.isPending ? "Approving Account..." : "Instant Approve My Account"}
+              </Button>
+
+              <Button
+                onClick={() => {
+                  setEmail("admin@volampelektrikals.com");
+                  setPassword("Volamp@2026");
+                  setView("employee-login");
+                  toast.info("Filled Master Admin credentials.");
+                }}
+                variant="outline"
+                className="w-full text-xs font-semibold py-2.5 rounded-lg border-amber-300 text-amber-800 dark:text-amber-300 hover:bg-amber-50"
+              >
+                <ShieldCheck className="size-3.5 mr-1 text-amber-600" /> Sign In as Master Admin (admin@volampelektrikals.com)
+              </Button>
+            </div>
+
             <Button
+              variant="ghost"
               onClick={onClose}
-              className="w-full bg-[#102a40] hover:bg-[#09233a] text-white text-xs font-semibold py-2.5 rounded-lg"
+              className="w-full text-xs text-slate-500 hover:text-slate-800 py-2"
             >
               Return to Website
             </Button>

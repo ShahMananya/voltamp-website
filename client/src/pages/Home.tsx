@@ -180,7 +180,7 @@ export default function Home() {
       {/* 1. Full-bleed Background Facility Video covering Header and Hero */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
         <video
-          key="hero-video-1536-v5"
+          key="hero-video-remastered-no-ceo-v7"
           autoPlay
           loop
           muted={heroVideoMuted}
@@ -188,32 +188,52 @@ export default function Home() {
           preload="auto"
           className="w-full h-full object-cover object-center"
         >
-          <source src="/videos/volamp-operations-hero.mp4?v=5" type="video/mp4" />
-          <source src="/videos/IMG_1536.mp4?v=5" type="video/mp4" />
-          <source src="/videos/IMG_1536.MOV" type="video/quicktime" />
+          <source src="/videos/volamp-operations-hero.mp4?v=no-ceo-v7" type="video/mp4" />
+          <source src="/videos/IMG_1536.mp4?v=no-ceo-v7" type="video/mp4" />
+          <source src="/videos/VolampIMG_1104.mp4?v=no-ceo-v7" type="video/mp4" />
         </video>
         {/* Crisp cinematic gradient overlay - keeps video vibrant while ensuring text legibility */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70 z-1" />
       </div>
 
       {/* 2. Top utility row (overlaid on top of video, 100% transparent) */}
+      {/* 2. Top utility row (overlaid on top of video, 100% transparent, responsive) */}
       <div className="relative z-20 border-b border-white/10 bg-transparent">
-        <div className="market-container flex items-center justify-between py-2 text-xs gap-3 sm:gap-4">
-          <button
-            onClick={openLocationPicker}
-            className="flex items-center gap-2 text-left text-amber-300 hover:text-amber-200 transition-colors cursor-pointer group shrink-0"
-            title="Click to view or change your detected project location"
-          >
-            <span className={`size-2 rounded-full bg-emerald-400 ${isDetecting ? "animate-ping" : ""}`} />
-            <Globe2 className="size-3.5 text-amber-400 shrink-0" />
-            <span className="font-semibold text-white group-hover:underline text-[11px] sm:text-xs">
-              {isDetecting && !location ? "Detecting location..." : location}
-            </span>
-            <ChevronDown className="inline size-3 text-amber-400 opacity-80 group-hover:translate-y-0.5 transition-transform" />
-          </button>
+        <div className="market-container py-1.5 md:py-2 text-xs flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">
+          {/* Top row on Mobile / Left on Desktop: Location picker & Quick Mobile Action */}
+          <div className="flex items-center justify-between w-full md:w-auto shrink-0">
+            <button
+              onClick={openLocationPicker}
+              className="flex items-center gap-1.5 sm:gap-2 text-left text-amber-300 hover:text-amber-200 transition-colors cursor-pointer group min-w-0"
+              title="Click to view or change your detected project location"
+            >
+              <span className={`size-2 rounded-full bg-emerald-400 shrink-0 ${isDetecting ? "animate-ping" : ""}`} />
+              <Globe2 className="size-3.5 text-amber-400 shrink-0" />
+              <span className="font-semibold text-white group-hover:underline text-[11px] sm:text-xs truncate max-w-[190px] sm:max-w-[260px] md:max-w-[220px] lg:max-w-none">
+                {isDetecting && !location ? "Detecting location..." : location}
+              </span>
+              <ChevronDown className="inline size-3 text-amber-400 opacity-80 group-hover:translate-y-0.5 transition-transform shrink-0" />
+            </button>
 
-          {/* Centered Search Bar in place of Live Metal Price */}
-          <div className="flex-1 max-w-lg mx-1 sm:mx-3 relative">
+            {/* Mobile-only quick contact so user can easily reach desk */}
+            <div className="flex md:hidden items-center gap-2 text-slate-300 shrink-0 ml-2">
+              <a href="tel:+919512365582" className="flex items-center gap-1 text-white/90 hover:text-white text-[11px]" title="Call: +91 9512365582">
+                <Phone className="size-3 text-amber-400" />
+                <span className="font-medium">Call</span>
+              </a>
+              <span className="text-white/20">|</span>
+              <button
+                onClick={() => navigate("/collaborate")}
+                className="inline-flex items-center gap-0.5 text-amber-300 hover:text-amber-200 font-semibold cursor-pointer whitespace-nowrap text-[11px]"
+              >
+                <span>Collab</span>
+                <ArrowUpRight className="size-3 text-amber-400" />
+              </button>
+            </div>
+          </div>
+
+          {/* Search Bar: 100% width on mobile (< md), centered flex-1 on tablet & desktop (md+) */}
+          <div className="w-full md:flex-1 md:max-w-md lg:max-w-lg md:mx-2 relative">
             <div className="flex items-center gap-2 bg-black/25 hover:bg-black/35 focus-within:bg-black/50 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/20 text-white transition-all shadow-xs">
               <Search className="size-3.5 text-amber-400 shrink-0" />
               <input
@@ -263,7 +283,8 @@ export default function Home() {
             )}
           </div>
 
-          <div className="flex items-center gap-2.5 sm:gap-3 text-slate-300 shrink-0">
+          {/* Desktop Contact Right Actions */}
+          <div className="hidden md:flex items-center gap-2.5 sm:gap-3 text-slate-300 shrink-0">
             <span className="hidden xl:inline text-[11px]">Global electrical supply & export desk</span>
             <a href="tel:+919512365582" className="hidden md:flex items-center gap-1.5 text-white/90 hover:text-white text-xs">
               <Phone className="size-3 text-amber-400" />
@@ -283,13 +304,13 @@ export default function Home() {
 
       {/* 3. Main Transparent Navigation Header directly over the video (Cleveland Cable style) */}
       <header className="relative z-20 w-full border-b border-white/10">
-        <div className="market-container flex items-center justify-between py-3 gap-2 xl:gap-4 flex-nowrap">
-          <a href="#top" className="shrink-0">
+        <div className="market-container flex items-center justify-between py-2.5 sm:py-3 gap-2 xl:gap-4 flex-nowrap">
+          <a href="#top" className="shrink-0 flex items-center">
             <BrandMark />
           </a>
 
-          {/* Navigation links: PRODUCT RANGE, ABOUT, SEGMENTS, METAL PRICES, QUICK ORDER, CHECK STOCK / WORKSPACE */}
-          <nav className="hidden lg:flex items-center gap-2.5 xl:gap-4 2xl:gap-6 flex-nowrap shrink-0">
+          {/* Navigation links for Desktop (xl: 1280px+) */}
+          <nav className="hidden xl:flex items-center gap-3 xl:gap-4 2xl:gap-6 flex-nowrap shrink-0">
             <button
               onClick={() => {
                 setActiveMegaCategory(activeMegaCategory ? null : "WIRE CABLES");
@@ -330,20 +351,30 @@ export default function Home() {
               <ChevronDown className="size-3 text-red-500 shrink-0" />
             </button>
 
-            {/* Show only after login: Workspace (for Employees) or Check Stock (for Customers) */}
+            {/* Show only after login: Options 1 & 2 for Employees, or Check Stock for Customers */}
             {user && (
               user.accountType === "employee" ? (
-                <a
-                  href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 border border-purple-500/50 px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs whitespace-nowrap shrink-0"
-                  title="Open Official VOLAMP Employee Workspace"
-                >
-                  <Briefcase className="size-3 text-purple-300 shrink-0" />
-                  <span>WORKSPACE</span>
-                  <ExternalLink className="size-2.5 opacity-70 shrink-0" />
-                </a>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <a
+                    href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 border border-purple-500/50 px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs whitespace-nowrap shrink-0"
+                    title="1) Go to Workspace (Official Google Apps Script)"
+                  >
+                    <Briefcase className="size-3 text-purple-300 shrink-0" />
+                    <span>WORKSPACE</span>
+                    <ExternalLink className="size-2.5 opacity-70 shrink-0" />
+                  </a>
+                  <button
+                    onClick={() => navigate("/employee-portal")}
+                    className="bg-amber-500 hover:bg-amber-600 text-white border border-amber-600 px-2.5 py-1 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs whitespace-nowrap shrink-0"
+                    title="2) Website Maintenance (Product Prices, Add Products, Blogs, Newsletter, Price Lists)"
+                  >
+                    <Zap className="size-3 text-white shrink-0" />
+                    <span>MAINTENANCE</span>
+                  </button>
+                </div>
               ) : (
                 <a
                   href="https://script.google.com/macros/s/AKfycby_LZjD_6KFK33CCaCrV4Xxgbav0HceiHg1YL0U1iVEnnHMHYbrdXIFhwRILa8VFuuV/exec"
@@ -360,21 +391,23 @@ export default function Home() {
             )}
           </nav>
 
-          {/* Right Header Action Icons matching Cleveland Cable */}
-          <div className="flex items-center gap-2 sm:gap-3 xl:gap-4 shrink-0 flex-nowrap">
+          {/* Right Header Action Icons - Dynamically refined for Mobile, iPad, and Big Screens */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 xl:gap-3 shrink-0 flex-nowrap">
+            {/* Language picker: flag only on small mobile, flag + name on sm+ */}
             <button
               onClick={openLanguagePicker}
-              className="flex items-center gap-1 text-xs text-white/90 hover:text-white font-semibold cursor-pointer group whitespace-nowrap shrink-0"
-              title={`Change language & translate site (Current: ${currentLanguageObj.name} · ${currentLanguageObj.nativeName})`}
+              className="flex items-center gap-1 text-xs text-white/90 hover:text-white font-semibold cursor-pointer group whitespace-nowrap shrink-0 px-1 py-1 rounded hover:bg-white/10 transition-colors"
+              title={`Change language (Current: ${currentLanguageObj.name} · ${currentLanguageObj.nativeName})`}
             >
               <span>{currentLanguageObj.flag}</span>
-              <span className="hidden sm:inline uppercase whitespace-nowrap">{currentLanguageObj.nativeName}</span>
-              <ChevronDown className="size-3 text-red-500 group-hover:translate-y-0.5 transition-transform shrink-0" />
+              <span className="hidden sm:inline uppercase text-[11px] whitespace-nowrap">{currentLanguageObj.nativeName}</span>
+              <ChevronDown className="hidden sm:inline size-3 text-red-500 group-hover:translate-y-0.5 transition-transform shrink-0" />
             </button>
 
+            {/* Quick Tools Icons: Hidden on tiny mobile screens, accessible inside the mobile drawer */}
             <a
               href="tel:+919512365582"
-              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
+              className="hidden sm:inline-flex p-1.5 text-white/90 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
               title="Call Central Supply Desk: 9512365582"
             >
               <Phone className="size-4" />
@@ -382,7 +415,7 @@ export default function Home() {
 
             <button
               onClick={openCalculator}
-              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
+              className="hidden sm:inline-flex p-1.5 text-white/90 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
               title="Cable Sizing & Wattage Calculator"
               aria-label="Cable Calculator"
             >
@@ -391,7 +424,7 @@ export default function Home() {
 
             <button
               onClick={() => handleQuote()}
-              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
+              className="hidden md:inline-flex p-1.5 text-white/90 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
               title="Request Project Quote"
             >
               <FileText className="size-4" />
@@ -405,41 +438,43 @@ export default function Home() {
                   searchEl.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
               }}
-              className="p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
+              className="hidden lg:inline-flex p-1.5 text-white/90 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
               title="Search 3,385+ Catalog"
             >
               <Search className="size-4" />
             </button>
 
+            {/* Account / Sign In: Compact on mobile, full on desktop */}
             {user ? (
               <button
                 onClick={() => {
                   window.dispatchEvent(new CustomEvent("volamp:open-profile"));
                 }}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white transition-all cursor-pointer shadow-xs whitespace-nowrap shrink-0"
+                className="flex items-center gap-1.5 p-1 sm:px-2.5 sm:py-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 text-white transition-all cursor-pointer shadow-xs whitespace-nowrap shrink-0"
                 title="View & Edit Profile Details"
               >
-                <div className="size-4.5 rounded-full bg-[#c56718] text-white flex items-center justify-center font-bold text-[9px] shadow-inner shrink-0">
+                <div className="size-5 rounded-full bg-[#c56718] text-white flex items-center justify-center font-bold text-[9px] shadow-inner shrink-0">
                   {(user.name || user.email || "V").charAt(0).toUpperCase()}
                 </div>
-                <span className="text-xs font-semibold max-w-[120px] truncate hidden sm:inline whitespace-nowrap">
+                <span className="text-xs font-semibold max-w-[100px] truncate hidden sm:inline whitespace-nowrap">
                   {user.name || user.email?.split("@")[0]}
                 </span>
               </button>
             ) : (
               <button
                 onClick={() => setAccountOpen(true)}
-                className="flex items-center gap-1.5 text-xs text-white/90 hover:text-white font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-white/20 hover:bg-white/10 transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                className="flex items-center gap-1 text-xs text-white/90 hover:text-white font-bold uppercase tracking-wider px-2 py-1.5 sm:px-3 sm:py-1.5 rounded-lg border border-white/20 hover:bg-white/10 transition-colors cursor-pointer whitespace-nowrap shrink-0"
                 title="Sign In / Register"
               >
                 <LogIn className="size-3.5 text-amber-400 shrink-0" />
-                <span className="whitespace-nowrap">SIGN IN</span>
+                <span className="hidden sm:inline whitespace-nowrap text-[11px]">SIGN IN</span>
               </button>
             )}
 
+            {/* Cart Icon - Always visible */}
             <button
               onClick={openCart}
-              className="relative p-1.5 text-white/90 hover:text-white transition-colors cursor-pointer shrink-0"
+              className="relative p-1.5 text-white/90 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
               title="View Cart"
             >
               <ShoppingCart className="size-4" />
@@ -452,10 +487,11 @@ export default function Home() {
 
             <ThemeToggle />
 
+            {/* Hamburger Menu - Visible on Mobile and iPad/Tablet (< xl) */}
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden text-white hover:bg-white/10"
+              className="xl:hidden text-white hover:bg-white/10 size-8 sm:size-9"
               onClick={() => setMobileOpen(true)}
               aria-label="Open navigation"
             >
@@ -650,66 +686,243 @@ export default function Home() {
           </div>
         )}
 
-        {/* Mobile Navigation Drawer */}
+        {/* Mobile & Tablet Navigation Drawer (Slide-over panel) */}
         {mobileOpen && (
-          <div className="market-mobile-nav bg-slate-950 text-white z-50">
-            <button onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X /></button>
-            <button onClick={() => jump("categories")}>Categories</button>
-            <button onClick={() => jump("solutions")}>Solutions</button>
-            <button onClick={() => navigate("/about-volamp")}>About Volamp</button>
-            <button onClick={() => { setMobileOpen(false); navigate("/careers"); }} className="market-mobile-link">Careers</button>
-            <button onClick={() => { setMobileOpen(false); openCart(); }} className="market-mobile-link flex items-center gap-2">
-              <ShoppingCart className="size-4" /> Cart ({totalCount})
-            </button>
-            <button onClick={() => { setMobileOpen(false); setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button>
-            <button onClick={() => { setMobileOpen(false); navigate("/collaborate"); }} className="market-mobile-link">Collaborate with us</button>
-            <ThemeToggle />
-            {user ? (
-              <>
+          <div className="fixed inset-0 z-50 xl:hidden">
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
+              onClick={() => setMobileOpen(false)}
+            />
+
+            {/* Slide-over panel */}
+            <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-slate-950 border-l border-white/15 text-white shadow-2xl flex flex-col justify-between overflow-y-auto p-5 z-50">
+              {/* Top Drawer Header: Logo + Close Button */}
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                <div className="flex items-center gap-2">
+                  <div className="bg-white px-2 py-1 rounded-md">
+                    <img src="/volamp-logo.png" alt="VOLAMP" className="h-6 w-auto object-contain" />
+                  </div>
+                  <span className="font-bold text-xs uppercase tracking-wider text-amber-400">Navigation</span>
+                </div>
                 <button
-                  onClick={() => {
-                    setMobileOpen(false);
-                    window.dispatchEvent(new CustomEvent("volamp:open-profile"));
-                  }}
-                  className="market-mobile-link font-bold text-amber-400 flex items-center gap-2"
+                  onClick={() => setMobileOpen(false)}
+                  className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white cursor-pointer transition-colors"
+                  aria-label="Close navigation"
                 >
-                  <User className="size-4" /> My Profile ({user.name || user.email?.split("@")[0]})
+                  <X className="size-5" />
                 </button>
-                {user.accountType === "employee" ? (
-                  <a
-                    href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setMobileOpen(false)}
-                    className="market-mobile-link font-bold text-purple-300 flex items-center gap-2"
+              </div>
+
+              {/* Quick Action Tools Grid */}
+              <div className="py-4 border-b border-white/10">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2.5">
+                  Instant Procurement Tools
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => { setMobileOpen(false); openCalculator(); }}
+                    className="flex items-center gap-2 p-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-colors cursor-pointer group"
                   >
-                    <Briefcase className="size-4 text-purple-400" /> Open Employee Workspace
-                    <ExternalLink className="size-3 opacity-70" />
-                  </a>
+                    <Calculator className="size-4 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <strong className="block text-xs text-white">Calculator</strong>
+                      <span className="text-[10px] text-slate-400">Cable sizing</span>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => { setMobileOpen(false); handleQuote(); }}
+                    className="flex items-center gap-2 p-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-colors cursor-pointer group"
+                  >
+                    <FileText className="size-4 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <strong className="block text-xs text-white">Get Quote</strong>
+                      <span className="text-[10px] text-slate-400">Direct RFQ</span>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => { setMobileOpen(false); setMetalPricesOpen(true); }}
+                    className="flex items-center gap-2 p-2.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-left transition-colors cursor-pointer group"
+                  >
+                    <TrendingUp className="size-4 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <strong className="block text-xs text-white">Metal Prices</strong>
+                      <span className="text-[10px] text-slate-400">Cu & Al trends</span>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => { setMobileOpen(false); setQuickOrderOpen(true); }}
+                    className="flex items-center gap-2 p-2.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-left transition-colors cursor-pointer group"
+                  >
+                    <Zap className="size-4 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform" />
+                    <div>
+                      <strong className="block text-xs text-emerald-300">Quick Order</strong>
+                      <span className="text-[10px] text-emerald-400/80">WhatsApp fast</span>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Price Lists Banner */}
+                <button
+                  onClick={() => { setMobileOpen(false); navigate("/price-list"); }}
+                  className="mt-2 w-full flex items-center justify-between p-2.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-left transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <FileText className="size-4 text-amber-400" />
+                    <div>
+                      <strong className="block text-xs text-amber-300">Manufacturer Price Lists</strong>
+                      <span className="text-[10px] text-amber-200/80">Polycab, Havells, RR Kabel & KEI</span>
+                    </div>
+                  </div>
+                  <ArrowRight className="size-3.5 text-amber-400" />
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <div className="flex-1 py-4 space-y-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2">
+                  Navigation
+                </span>
+                <button
+                  onClick={() => { setMobileOpen(false); jump("categories"); }}
+                  className="w-full text-left py-2 px-3 rounded-md hover:bg-white/10 text-sm font-semibold text-white/90 hover:text-white flex items-center justify-between cursor-pointer"
+                >
+                  <span>Product Categories (3,385+)</span>
+                  <ChevronRight className="size-4 text-slate-500" />
+                </button>
+                <button
+                  onClick={() => { setMobileOpen(false); navigate("/business-segments"); }}
+                  className="w-full text-left py-2 px-3 rounded-md hover:bg-white/10 text-sm font-semibold text-white/90 hover:text-white flex items-center justify-between cursor-pointer"
+                >
+                  <span>Business Segments & EPC</span>
+                  <ChevronRight className="size-4 text-slate-500" />
+                </button>
+                <button
+                  onClick={() => { setMobileOpen(false); navigate("/about-volamp"); }}
+                  className="w-full text-left py-2 px-3 rounded-md hover:bg-white/10 text-sm font-semibold text-white/90 hover:text-white flex items-center justify-between cursor-pointer"
+                >
+                  <span>About VOLAMP</span>
+                  <ChevronRight className="size-4 text-slate-500" />
+                </button>
+                <button
+                  onClick={() => { setMobileOpen(false); navigate("/careers"); }}
+                  className="w-full text-left py-2 px-3 rounded-md hover:bg-white/10 text-sm font-semibold text-white/90 hover:text-white flex items-center justify-between cursor-pointer"
+                >
+                  <span>Careers</span>
+                  <ChevronRight className="size-4 text-slate-500" />
+                </button>
+                <button
+                  onClick={() => { setMobileOpen(false); navigate("/collaborate"); }}
+                  className="w-full text-left py-2 px-3 rounded-md hover:bg-white/10 text-sm font-semibold text-amber-300 hover:text-amber-200 flex items-center justify-between cursor-pointer"
+                >
+                  <span>Collaborate with us</span>
+                  <ArrowUpRight className="size-4 text-amber-400" />
+                </button>
+                <button
+                  onClick={() => { setMobileOpen(false); setTrackedOrderId(""); setTrackOrderOpen(true); }}
+                  className="w-full text-left py-2 px-3 rounded-md hover:bg-white/10 text-sm font-semibold text-white/90 hover:text-white flex items-center justify-between cursor-pointer"
+                >
+                  <span>Track My Order</span>
+                  <Truck className="size-4 text-slate-400" />
+                </button>
+                <button
+                  onClick={() => { setMobileOpen(false); openCart(); }}
+                  className="w-full text-left py-2 px-3 rounded-md hover:bg-white/10 text-sm font-semibold text-white/90 hover:text-white flex items-center justify-between cursor-pointer"
+                >
+                  <span className="flex items-center gap-2">
+                    <ShoppingCart className="size-4 text-amber-400" /> Cart
+                  </span>
+                  <span className="bg-[#c56718] text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                    {totalCount}
+                  </span>
+                </button>
+              </div>
+
+              {/* Bottom Support & Account Area */}
+              <div className="pt-4 border-t border-white/10 space-y-3">
+                <a
+                  href="tel:+919512365582"
+                  className="flex items-center justify-between p-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-white text-xs"
+                >
+                  <span className="flex items-center gap-2">
+                    <Phone className="size-4 text-amber-400" /> Central Supply Desk
+                  </span>
+                  <span className="font-bold text-amber-300">+91 9512365582</span>
+                </a>
+
+                {user ? (
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => {
+                        setMobileOpen(false);
+                        window.dispatchEvent(new CustomEvent("volamp:open-profile"));
+                      }}
+                      className="w-full flex items-center gap-2.5 p-2 rounded-lg bg-white/10 hover:bg-white/20 text-left text-xs font-semibold text-white cursor-pointer"
+                    >
+                      <div className="size-6 rounded-full bg-[#c56718] text-white flex items-center justify-center font-bold text-[10px]">
+                        {(user.name || user.email || "V").charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 truncate">
+                        <strong className="block truncate">{user.name || "My Account"}</strong>
+                        <span className="text-[10px] text-slate-400 truncate">{user.email}</span>
+                      </div>
+                    </button>
+
+                    {user.accountType === "employee" ? (
+                      <>
+                        <a
+                          href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setMobileOpen(false)}
+                          className="w-full flex items-center justify-between p-2 rounded-lg bg-purple-600/25 hover:bg-purple-600/40 text-purple-200 border border-purple-500/40 text-xs font-bold"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Briefcase className="size-3.5 text-purple-300" /> 1) Employee Workspace
+                          </span>
+                          <ExternalLink className="size-3 opacity-70" />
+                        </a>
+                        <button
+                          onClick={() => { setMobileOpen(false); navigate("/employee-portal"); }}
+                          className="w-full flex items-center justify-between p-2 rounded-lg bg-amber-500/25 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 text-xs font-bold cursor-pointer"
+                        >
+                          <span className="flex items-center gap-2">
+                            <Zap className="size-3.5 text-amber-400" /> 2) Website Maintenance
+                          </span>
+                          <ArrowRight className="size-3 text-amber-400" />
+                        </button>
+                      </>
+                    ) : (
+                      <a
+                        href="https://script.google.com/macros/s/AKfycby_LZjD_6KFK33CCaCrV4Xxgbav0HceiHg1YL0U1iVEnnHMHYbrdXIFhwRILa8VFuuV/exec"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setMobileOpen(false)}
+                        className="w-full flex items-center justify-between p-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 text-xs font-bold"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Boxes className="size-3.5 text-cyan-300" /> Check Factory Stock
+                        </span>
+                        <ExternalLink className="size-3 opacity-70" />
+                      </a>
+                    )}
+                  </div>
                 ) : (
-                  <a
-                    href="https://script.google.com/macros/s/AKfycby_LZjD_6KFK33CCaCrV4Xxgbav0HceiHg1YL0U1iVEnnHMHYbrdXIFhwRILa8VFuuV/exec"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setMobileOpen(false)}
-                    className="market-mobile-link font-bold text-cyan-300 flex items-center gap-2"
+                  <button
+                    onClick={() => {
+                      setMobileOpen(false);
+                      setAccountOpen(true);
+                    }}
+                    className="w-full py-2.5 px-4 rounded-lg bg-[#c56718] hover:bg-[#b45309] text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-md"
                   >
-                    <Boxes className="size-4 text-cyan-400" /> Check Live Stock
-                    <ExternalLink className="size-3 opacity-70" />
-                  </a>
+                    <LogIn className="size-4" /> Sign In / Register
+                  </button>
                 )}
-              </>
-            ) : (
-              <button
-                onClick={() => {
-                  setMobileOpen(false);
-                  setAccountOpen(true);
-                }}
-                className="market-mobile-link font-bold text-amber-400 flex items-center gap-2"
-              >
-                <LogIn className="size-4" /> Login / Register
-              </button>
-            )}
+              </div>
+            </div>
           </div>
         )}
       </header>
@@ -860,7 +1073,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
 
       {compareList.length > 0 && <section className="compare-section"><div className="market-container"><div className="compare-head"><div><div className="market-kicker">PROJECT SHORTLIST</div><h2>Compare before you request.</h2></div><button className="clear-link" onClick={() => setCompareList([])}>Clear shortlist</button></div><div className="compare-table"><div className="compare-labels"><strong>Product</strong><span>Application</span><span>Unit price</span><span>Estimate at {quantity} m</span></div>{products.filter((product) => compareList.includes(product.name)).map((product) => <div className="compare-product" key={product.name}><div className="compare-product-name"><strong>{product.name}</strong><span>{product.category}</span></div><span>{product.use}</span><span>₹{product.price} / m</span><strong className="estimate-accent">₹{Math.round(quantity * product.price * (1 - discount / 100)).toLocaleString("en-IN")}</strong></div>)}</div></div></section>}
 
@@ -1073,7 +1285,7 @@ export default function Home() {
       </section>
     </main>
 
-    <footer className="site-footer"><NewsletterSection /><MetalPriceTrendFooterWidget /><div className="footer-blog-bar"><div className="market-container footer-blog-inner"><div><span className="footer-eyebrow">VOLAMP JOURNAL</span><strong>Read the latest from our supply desk.</strong></div><button onClick={() => navigate("/blog")}>Visit the blog <ArrowRight className="size-4" /></button></div></div><div className="market-container footer-columns"><div className="footer-column footer-company"><BrandMark /><span className="footer-column-title">ABOUT VOLAMP</span><button onClick={() => navigate("/about-volamp")}>About Us</button><button onClick={() => navigate("/where-volamp-contributed")}>Where Volamp Contributed</button><button onClick={() => navigate("/business-segments")}>Business Segments</button><button onClick={() => navigate("/careers")}>Careers</button><button onClick={() => navigate("/collaborate")} className="footer-collaborate-link">Collaborate with Us</button><button onClick={() => navigate("/certifications-and-awards")}>Certifications & Quality</button><button onClick={() => navigate("/in-the-news")}>In the News</button></div><div className="footer-column"><span className="footer-column-title">SHOP CATEGORIES</span>{categoryNavigation.map((category) => <button key={category.name} onClick={() => navigate(categoryPath(category.slug || category.name))}>{category.name}<ArrowRight className="footer-link-arrow" /></button>)}</div><div className="footer-column"><span className="footer-column-title">HELP</span><button onClick={handleQuote}>Contact Us</button><button onClick={() => navigate("/branch-locations")}>Branch Location</button><button onClick={() => navigate("/refund-policy")}>Return & Refund Policy</button><button onClick={() => navigate("/shipping-policy")}>Shipping Policy</button><button onClick={() => navigate("/terms-and-conditions")}>Terms & Conditions</button><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></div><div className="footer-column footer-order-support"><span className="footer-column-title">ORDER SUPPORT</span><div className="footer-support-phone"><span>SUPPORT PHONE</span><a className="footer-support-phone-link" href="tel:+919512365582" aria-label="Call VOLAMP support at 9512365582"><strong>9512365582</strong></a><small>Call Volamp support</small></div><button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button><a href="https://www.google.com/shopping?q=VOLAMP+ELEKTRIKALS" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Shopping Store</a><a href="/api/google-merchant-feed.xml" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Merchant Feed (XML)</a><button onClick={() => navigate("/pay-invoice")}>Pay an Invoice Online</button><button onClick={() => toast.info("Price List", { description: "The latest approved price list will be shared by the supply desk." })}>Price List</button><button onClick={() => navigate("/complaints-cases")}>Complaints/Cases</button></div><div className="footer-column footer-social-column"><span className="footer-column-title">SOCIAL MEDIA LINKS</span><SocialMediaLinks /><a className="footer-gem-mark" href="https://gem.gov.in/" target="_blank" rel="noreferrer" aria-label="VOLAMP on Government e Marketplace"><img src="/gem-marketplace-logo.png?v=2" alt="Government e Marketplace GeM" /></a></div></div><div className="market-container footer-bottom"><span>Volamp Elektrikals © 2026. All rights reserved.</span><span>Global & Domestic electrical supply and export network.</span></div></footer>
+    <footer className="site-footer"><NewsletterSection /><MetalPriceTrendFooterWidget /><div className="footer-blog-bar"><div className="market-container footer-blog-inner"><div><span className="footer-eyebrow">VOLAMP JOURNAL</span><strong>Read the latest from our supply desk.</strong></div><button onClick={() => navigate("/blog")}>Visit the blog <ArrowRight className="size-4" /></button></div></div><div className="market-container footer-columns"><div className="footer-column footer-company"><BrandMark /><span className="footer-column-title">ABOUT VOLAMP</span><button onClick={() => navigate("/about-volamp")}>About Us</button><button onClick={() => navigate("/where-volamp-contributed")}>Where Volamp Contributed</button><button onClick={() => navigate("/business-segments")}>Business Segments</button><button onClick={() => navigate("/careers")}>Careers</button><button onClick={() => navigate("/collaborate")} className="footer-collaborate-link">Collaborate with Us</button><button onClick={() => navigate("/certifications-and-awards")}>Certifications & Quality</button><button onClick={() => navigate("/in-the-news")}>In the News</button></div><div className="footer-column"><span className="footer-column-title">SHOP CATEGORIES</span>{categoryNavigation.map((category) => <button key={category.name} onClick={() => navigate(categoryPath(category.slug || category.name))}>{category.name}<ArrowRight className="footer-link-arrow" /></button>)}</div><div className="footer-column"><span className="footer-column-title">HELP</span><button onClick={handleQuote}>Contact Us</button><button onClick={() => navigate("/branch-locations")}>Branch Location</button><button onClick={() => navigate("/refund-policy")}>Return & Refund Policy</button><button onClick={() => navigate("/shipping-policy")}>Shipping Policy</button><button onClick={() => navigate("/terms-and-conditions")}>Terms & Conditions</button><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></div><div className="footer-column footer-order-support"><span className="footer-column-title">ORDER SUPPORT</span><div className="footer-support-phone"><span>SUPPORT PHONE</span><a className="footer-support-phone-link" href="tel:+919512365582" aria-label="Call VOLAMP support at 9512365582"><strong>9512365582</strong></a><small>Call Volamp support</small></div><button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button><a href="https://www.google.com/shopping?q=VOLAMP+ELEKTRIKALS" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Shopping Store</a><a href="/api/google-merchant-feed.xml" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Merchant Feed (XML)</a><button onClick={() => navigate("/pay-invoice")}>Pay an Invoice Online</button><button onClick={() => navigate("/price-list")}>Price Lists</button><button onClick={() => navigate("/complaints-cases")}>Complaints/Cases</button></div><div className="footer-column footer-social-column"><span className="footer-column-title">SOCIAL MEDIA LINKS</span><SocialMediaLinks /><a className="footer-gem-mark" href="https://gem.gov.in/" target="_blank" rel="noreferrer" aria-label="VOLAMP on Government e Marketplace"><img src="/gem-marketplace-logo.png?v=2" alt="Government e Marketplace GeM" /></a></div></div><div className="market-container footer-bottom"><span>Volamp Elektrikals © 2026. All rights reserved.</span><span>Global & Domestic electrical supply and export network.</span></div></footer>
 
     <CableCalculatorModal
       isOpen={calculatorOpen}

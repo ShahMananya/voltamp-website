@@ -7,7 +7,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface UniversalHeaderProps {
-  currentPage?: "home" | "about" | "segments" | "careers" | "collaborate" | "blog" | "enquire" | "calculator" | "pay" | "track" | "news";
+  currentPage?: "home" | "about" | "segments" | "careers" | "collaborate" | "blog" | "enquire" | "calculator" | "pay" | "track" | "news" | "price-list";
   backUrl?: string;
   backText?: string;
   showUtilityBar?: boolean;
@@ -19,7 +19,7 @@ export default function UniversalHeader({
 }: UniversalHeaderProps) {
   const { user } = useAuth();
   const { openLanguagePicker, currentLanguageObj } = useLanguage();
-  const [, navigate] = useLocation();
+  const [currentPath, navigate] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const supportPhone = "9512365582";
 
@@ -28,15 +28,15 @@ export default function UniversalHeader({
       {/* Top Utility Strip (Warm Sand Bar Matching Home Palette) */}
       {showUtilityBar && (
         <div className="bg-[#f7ede6] text-[#5d4a4b] text-xs py-1.5 border-b border-[#ebd4c2] transition-colors">
-          <div className="market-container flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="market-container flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               <Globe2 className="size-3.5 text-[#c25e0a] shrink-0" />
-              <span className="font-semibold text-[#4d1217]">
-                Ahmedabad HQ · Global & Domestic Electrical Supply Network
+              <span className="font-semibold text-[#4d1217] truncate text-[11px] sm:text-xs">
+                Ahmedabad HQ · Global & Domestic Supply Network
               </span>
             </div>
-            <div className="flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-2 sm:gap-4 text-xs shrink-0">
               <a
                 href={`tel:+91${supportPhone}`}
                 className="hover:text-[#c25e0a] transition-colors hidden sm:flex items-center gap-1.5 font-bold text-[#4d1217]"
@@ -47,19 +47,19 @@ export default function UniversalHeader({
               <span className="text-[#ebd4c2] hidden sm:inline">|</span>
               <Link
                 href="/collaborate"
-                className="hover:text-[#c25e0a] transition-colors font-medium text-[#5d4a4b]"
+                className="hover:text-[#c25e0a] transition-colors font-medium text-[#5d4a4b] text-[11px] sm:text-xs whitespace-nowrap"
               >
-                Collaborate with us →
+                Collaborate →
               </Link>
             </div>
           </div>
         </div>
       )}
 
-      {/* Main Warm Sand & Cream Navbar (Matching Screenshot 5) */}
+      {/* Main Warm Sand & Cream Navbar */}
       <header className="sticky top-0 z-40 bg-[#fdfbf9] border-b border-[#ebd7c7] text-[#4d1217] shadow-2xs transition-colors">
         <div className="market-container flex items-center justify-between h-16 sm:h-20">
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex items-center gap-4 sm:gap-6 shrink-0">
             <Link href="/" className="flex items-center group" aria-label="VOLAMP home">
               <div className="brand-mark bg-white px-2.5 py-1.5 rounded-lg border border-[#ebd7c7] shadow-xs group-hover:border-[#c56718] transition-all flex items-center justify-center">
                 <img
@@ -71,8 +71,8 @@ export default function UniversalHeader({
             </Link>
           </div>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 text-xs font-bold text-[#4d1217] whitespace-nowrap shrink-0">
+          {/* Desktop Nav Links (xl: 1280px+) */}
+          <nav className="hidden xl:flex items-center gap-3.5 xl:gap-5 text-xs font-bold text-[#4d1217] whitespace-nowrap shrink-0">
             <Link
               href="/"
               className={`hover:text-[#c56718] transition-colors ${
@@ -138,20 +138,30 @@ export default function UniversalHeader({
               Journal
             </Link>
 
-            {/* Show only after login: Workspace (for Employees) or Check Stock (for Customers) */}
+            {/* Show only after login: Options 1 & 2 for Employees, or Check Stock for Customers */}
             {user && (
               user.accountType === "employee" ? (
-                <a
-                  href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-300 transition-colors shadow-2xs ml-1"
-                  title="Open Official VOLAMP Employee Workspace"
-                >
-                  <Briefcase className="size-3 text-purple-700" />
-                  <span>Workspace</span>
-                  <ExternalLink className="size-2.5 opacity-70" />
-                </a>
+                <div className="flex items-center gap-1.5 ml-1">
+                  <a
+                    href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-300 transition-colors shadow-2xs"
+                    title="1) Go to Workspace (Official Google Apps Script)"
+                  >
+                    <Briefcase className="size-3 text-purple-700" />
+                    <span>Workspace</span>
+                    <ExternalLink className="size-2.5 opacity-70" />
+                  </a>
+                  <Link
+                    href="/employee-portal"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-amber-500 hover:bg-amber-600 text-white border border-amber-600 transition-colors shadow-2xs"
+                    title="2) Website Maintenance (Product Prices, Add Products, Blogs, Newsletter, Price Lists)"
+                  >
+                    <Zap className="size-3" />
+                    <span>Maintenance</span>
+                  </Link>
+                </div>
               ) : (
                 <a
                   href="https://script.google.com/macros/s/AKfycby_LZjD_6KFK33CCaCrV4Xxgbav0HceiHg1YL0U1iVEnnHMHYbrdXIFhwRILa8VFuuV/exec"
@@ -214,15 +224,16 @@ export default function UniversalHeader({
             )}
             <Button
               onClick={() => navigate("/enquire")}
-              className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
+              className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold px-2.5 sm:px-4 py-2 rounded-lg shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
             >
-              <span>Request a Quote</span>
+              <span className="hidden sm:inline">Request a Quote</span>
+              <span className="sm:hidden">Quote</span>
               <ArrowRight className="size-3.5" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden text-slate-700"
+              className="xl:hidden text-slate-700"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle navigation menu"
             >
@@ -233,7 +244,7 @@ export default function UniversalHeader({
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-[#ebd7c7] bg-[#fdfbf9] p-4 space-y-3 text-sm font-semibold text-[#4d1217]">
+          <div className="xl:hidden border-t border-[#ebd7c7] bg-[#fdfbf9] p-4 space-y-3 text-sm font-semibold text-[#4d1217]">
             {user ? (
               <>
                 <button
@@ -248,17 +259,32 @@ export default function UniversalHeader({
                   <span>My Profile ({user.name || user.email?.split("@")[0]})</span>
                 </button>
                 {user.accountType === "employee" ? (
-                  <a
-                    href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="py-2 text-purple-700 font-bold border-b border-[#ebd7c7] flex items-center gap-2"
-                  >
-                    <Briefcase className="size-4 text-purple-600" />
-                    <span>Open Employee Workspace</span>
-                    <ExternalLink className="size-3 opacity-70" />
-                  </a>
+                  <>
+                    <a
+                      href="https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsaXqcHzBIZyyOknjPDPqBoeT0FvEchs8sY8FMT-A_tcQ2TF_qTQF/exec"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="py-2 text-purple-700 font-bold border-b border-[#ebd7c7] flex items-center justify-between"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Briefcase className="size-4 text-purple-600" />
+                        <span>1) Employee Workspace</span>
+                      </span>
+                      <ExternalLink className="size-3 opacity-70" />
+                    </a>
+                    <Link
+                      href="/employee-portal"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="py-2 text-amber-700 font-bold border-b border-[#ebd7c7] flex items-center justify-between"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Zap className="size-4 text-amber-600" />
+                        <span>2) Website Maintenance</span>
+                      </span>
+                      <ArrowRight className="size-3.5 text-amber-600" />
+                    </Link>
+                  </>
                 ) : (
                   <a
                     href="https://script.google.com/macros/s/AKfycby_LZjD_6KFK33CCaCrV4Xxgbav0HceiHg1YL0U1iVEnnHMHYbrdXIFhwRILa8VFuuV/exec"
@@ -343,6 +369,16 @@ export default function UniversalHeader({
               className="block py-2 text-[#4d1217] hover:text-[#c56718]"
             >
               Volamp Journal & Insights
+            </Link>
+            <Link
+              href="/price-list"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 text-[#c56718] font-bold flex items-center justify-between"
+            >
+              <span>Brand Price Lists & Catalogs</span>
+              <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                8 Brands
+              </span>
             </Link>
           </div>
         )}

@@ -189,8 +189,8 @@ export default function UniversalFooter({
             <button type="button" onClick={() => navigate("/pay-invoice")} className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline cursor-pointer block">
               Pay an Invoice Online
             </button>
-            <button type="button" onClick={() => toast.info("Price List", { description: "The latest approved price list will be shared by the supply desk." })} className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline cursor-pointer block">
-              Price List
+            <button type="button" onClick={() => navigate("/price-list")} className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline cursor-pointer block">
+              Price Lists
             </button>
             <button type="button" onClick={() => navigate("/complaints-cases")} className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline cursor-pointer block">
               Complaints/Cases

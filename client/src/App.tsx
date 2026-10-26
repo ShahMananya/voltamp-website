@@ -31,6 +31,7 @@ import InTheNews from "./pages/InTheNews";
 import BranchLocations from "./pages/BranchLocations";
 import TermsConditions from "./pages/TermsConditions";
 import ComplaintsCasesPage from "./pages/ComplaintsCasesPage";
+import PriceListPage from "./pages/PriceListPage";
 import FloatingActions from "./components/FloatingActions";
 import { LocationModal } from "./components/location/LocationModal";
 import CookieConsentBanner from "./components/cookie/CookieConsentBanner";
@@ -45,6 +46,7 @@ import { CompareModal } from "./components/compare/CompareModal";
 import { CategoryMismatchModal } from "./components/compare/CategoryMismatchModal";
 import { AuthModal } from "./components/auth/AuthModal";
 import { UserProfileModal } from "./components/profile/UserProfileModal";
+import { SessionTimeoutManager } from "./components/auth/SessionTimeoutManager";
 
 function GlobalProfileManager() {
   const [isOpen, setIsOpen] = useState(false);
@@ -228,6 +230,13 @@ function Router() {
       <Route path="/complaints" component={ComplaintsCasesPage} />
       <Route path="/cases" component={ComplaintsCasesPage} />
       <Route path="/grievance" component={ComplaintsCasesPage} />
+      <Route path="/price-list" component={PriceListPage} />
+      <Route path="/pricelist" component={PriceListPage} />
+      <Route path="/price-lists" component={PriceListPage} />
+      <Route path="/pricelists" component={PriceListPage} />
+      <Route path="/catalogs" component={PriceListPage} />
+      <Route path="/catalogues" component={PriceListPage} />
+      <Route path="/downloads" component={PriceListPage} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
@@ -243,6 +252,7 @@ function Router() {
     <CategoryMismatchModal />
     <GlobalAuthManager />
     <GlobalProfileManager />
+    <SessionTimeoutManager />
     </>
   );
 }
