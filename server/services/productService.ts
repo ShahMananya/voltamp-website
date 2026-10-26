@@ -9,12 +9,26 @@ const __dirname = path.dirname(__filename);
 function findProductsDbPath(): string | null {
   const candidates = [
     path.resolve(process.cwd(), "server/data/products_db.json"),
+    path.resolve(process.cwd(), "api/data/products_db.json"),
+    path.resolve(process.cwd(), "api/products_db.json"),
     path.resolve(process.cwd(), "data/products_db.json"),
     path.resolve(process.cwd(), "client/public/products_db.json"),
     path.resolve(process.cwd(), "dist/public/products_db.json"),
     path.join(__dirname, "../data/products_db.json"),
     path.join(__dirname, "../../server/data/products_db.json"),
     path.join(__dirname, "./data/products_db.json"),
+    path.join(__dirname, "../api/data/products_db.json"),
+    path.join(__dirname, "../../api/data/products_db.json"),
+    path.join(__dirname, "../api/products_db.json"),
+    path.join(__dirname, "../../api/products_db.json"),
+    path.join(__dirname, "products_db.json"),
+    path.join(__dirname, "../products_db.json"),
+    "/var/task/server/data/products_db.json",
+    "/var/task/api/data/products_db.json",
+    "/var/task/api/products_db.json",
+    "/var/task/products_db.json",
+    "/var/task/client/public/products_db.json",
+    "/var/task/dist/public/products_db.json",
   ];
 
   for (const candidate of candidates) {

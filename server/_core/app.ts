@@ -26,7 +26,7 @@ export function createExpressApp() {
   registerSeoRoutes(app);
   registerLiveMetalRoutes(app);
 
-  // tRPC API - supports both /api/trpc and /trpc (for Vercel rewrites)
+  // tRPC API - supports /api/trpc, /trpc, and catches Vercel rewritten paths
   const trpcHandler = createExpressMiddleware({
     router: appRouter,
     createContext,
@@ -34,6 +34,15 @@ export function createExpressApp() {
 
   app.use("/api/trpc", trpcHandler);
   app.use("/trpc", trpcHandler);
+
+  // Catch any Vercel rewritten requests where /api or /api/trpc might have been forwarded directly
+  app.use((req, res, next) => {
+    const url = req.url || "";
+    if (url.includes("products.") || url.includes("auth.") || url.includes("quotes.") || url.includes("cart.") || url.includes("orders.")) {
+      return trpcHandler(req, res, next);
+    }
+    next();
+  });
 
   return app;
 }

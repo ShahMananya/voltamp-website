@@ -16,7 +16,6 @@ import { useCart } from "@/contexts/CartContext";
 import { AIChatBox, type Message } from "@/components/AIChatBox";
 import NewsletterSection from "@/components/home/NewsletterSection";
 import MetalPriceTrendFooterWidget from "@/components/metal/MetalPriceTrendFooterWidget";
-import ContractorSizingEstimator from "@/components/home/ContractorSizingEstimator";
 import FacilityVideoModal from "@/components/video/FacilityVideoModal";
 import CableCalculatorModal from "@/components/calculator/CableCalculatorModal";
 import LiveMetalPricesModal from "@/components/metal/LiveMetalPricesModal";
@@ -120,6 +119,17 @@ export default function Home() {
   const [metalPricesOpen, setMetalPricesOpen] = useState(false);
   const whatsappBusinessUrl = import.meta.env.VITE_WHATSAPP_BUSINESS_URL || "";
   const [mobileOpen, setMobileOpen] = useState(false); const [accountOpen, setAccountOpen] = useState(() => previewSurface === "account"); const [calculatorOpen, setCalculatorOpen] = useState(() => previewSurface === "calculator"); const [calculatorCategory, setCalculatorCategory] = useState<string | null>(null); const [calculatorSubcategory, setCalculatorSubcategory] = useState<string | null>(null); const [calculatorDetail, setCalculatorDetail] = useState<string | null>(null); const [selectedDetail, setSelectedDetail] = useState<Product | null>(() => previewSurface === "product" ? products[0] : null); const [compareList, setCompareList] = useState<string[]>([]); const [search, setSearch] = useState(() => new URLSearchParams(window.location.search).get("q") ?? ""); const [quantity, setQuantity] = useState(100); const [selectedProduct, setSelectedProduct] = useState(products[0]); const [discount, setDiscount] = useState(5);
+  const [homeCatalog, setHomeCatalog] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    fetch("/products_db.json")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((items) => {
+        if (Array.isArray(items)) setHomeCatalog(items);
+      })
+      .catch(() => {});
+  }, []);
+
   const liveSearch = trpc.products.list.useQuery(
     { search: search.trim(), limit: 6 },
     { enabled: search.trim().length >= 2 }
@@ -138,8 +148,29 @@ export default function Home() {
         icon: Cable,
       }));
     }
+    if (homeCatalog && homeCatalog.length > 0 && search.trim().length >= 2) {
+      const q = search.toLowerCase().trim();
+      const terms = q.split(/\s+/).filter(Boolean);
+      const matches = homeCatalog.filter((p) => {
+        const h = `${p.name || ""} ${p.productId || ""} ${p.sku || ""} ${p.brand || ""} ${p.category || ""}`.toLowerCase();
+        return terms.every((t) => h.includes(t));
+      }).slice(0, 6);
+      if (matches.length > 0) {
+        return matches.map((p) => ({
+          name: p.name,
+          sku: p.productId,
+          category: `${p.brand} · ${p.category}`,
+          detail: p.description || p.size || "",
+          price: p.numericPrice || 0,
+          unit: p.unit || "per unit",
+          use: p.description || p.category,
+          accent: "orange" as const,
+          icon: Cable,
+        }));
+      }
+    }
     return products.filter((product) => `${product.name} ${product.sku} ${product.category} ${product.detail}`.toLowerCase().includes(search.toLowerCase())).slice(0, 4);
-  }, [search, liveSearch.data]);
+  }, [search, liveSearch.data, homeCatalog]);
   const selectedCalculatorCategory = calculatorTree.find((category) => category.name === calculatorCategory);
   const selectedCalculatorSubcategory = selectedCalculatorCategory?.subcategories.find((subcategory) => subcategory.name === calculatorSubcategory);
   const openCalculator = () => { setMobileOpen(false); setCalculatorOpen(true); };
@@ -1008,21 +1039,7 @@ export default function Home() {
         </div>
       </section>
 
-      <ContractorSizingEstimator
-        onQuote={(cat, prod, details) => handleQuote(cat, prod, details)}
-        onAddToCart={(item) =>
-          addItem({
-            id: item.id,
-            sku: item.sku,
-            name: item.name,
-            category: item.category,
-            price: item.price,
-            unit: item.unit,
-            quantity: item.quantity,
-          })
-        }
-        onOpenFullCalculator={openCalculator}
-      />
+
 
       <section id="solutions" className="py-20 bg-slate-50/70 dark:bg-[#071421] border-t border-slate-200/80 dark:border-slate-800">
         <div className="market-container">

@@ -351,20 +351,25 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
   const [staticProductFallback, setStaticProductFallback] = useState<any | null>(null);
 
   useEffect(() => {
-    if ((error || (!serverProduct && !isLoading)) && productId && !staticProductFallback) {
+    if (productId && !staticProductFallback) {
       fetch("/products_db.json")
         .then((res) => (res.ok ? res.json() : null))
         .then((items: any[]) => {
           if (Array.isArray(items)) {
+            const pIdLower = productId.toLowerCase();
             const found = items.find(
-              (p) => p.productId === productId || p.sku === productId
+              (p) =>
+                p.productId === productId ||
+                p.sku === productId ||
+                (p.productId && p.productId.toLowerCase() === pIdLower) ||
+                (p.sku && p.sku.toLowerCase() === pIdLower)
             );
             if (found) setStaticProductFallback(found);
           }
         })
         .catch(() => {});
     }
-  }, [error, serverProduct, isLoading, productId, staticProductFallback]);
+  }, [productId, staticProductFallback]);
 
   const product = serverProduct || staticProductFallback;
 
@@ -481,9 +486,30 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
     { enabled: Boolean(product?.category) }
   );
 
-  const relatedProducts = useMemo(() => {
-    return (relatedData?.products || []).filter((p) => p.productId !== product?.productId).slice(0, 4);
+  const [staticRelatedFallback, setStaticRelatedFallback] = useState<any[]>([]);
+
+  useEffect(() => {
+    if ((!relatedData || !relatedData.products || relatedData.products.length === 0) && product?.category) {
+      fetch("/products_db.json")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((items: any[]) => {
+          if (Array.isArray(items)) {
+            const related = items
+              .filter((p) => p.category === product.category && p.productId !== product.productId)
+              .slice(0, 4);
+            setStaticRelatedFallback(related);
+          }
+        })
+        .catch(() => {});
+    }
   }, [relatedData, product]);
+
+  const relatedProducts = useMemo(() => {
+    if (relatedData?.products && relatedData.products.length > 0) {
+      return relatedData.products.filter((p) => p.productId !== product?.productId).slice(0, 4);
+    }
+    return staticRelatedFallback;
+  }, [relatedData, staticRelatedFallback, product]);
 
   const prodImg = product ? getProductImage(product, product.category) : "/products/cables.jpg";
   const categoryFallback = product ? getCategoryFallbackImage(product.category) : "/products/cables.jpg";

@@ -90,6 +90,40 @@ function formatListPrice(rawPrice?: string | null): string | null {
   return null;
 }
 
+function matchesCategory(prodCategory: string = "", targetCategory?: string): boolean {
+  if (!targetCategory || targetCategory === "ALL" || targetCategory === "all") return true;
+  const p = (prodCategory || "").toLowerCase().replace(/[-_&]/g, " ").replace(/\s+/g, " ").trim();
+  const t = (targetCategory || "").toLowerCase().replace(/[-_&]/g, " ").replace(/\s+/g, " ").trim();
+
+  if (t === p || p.includes(t) || t.includes(p)) return true;
+
+  if (t.includes("wire") || t.includes("cable")) {
+    return p.includes("wire") || p.includes("cable");
+  }
+  if (t.includes("switch")) {
+    return p.includes("switch");
+  }
+  if (t.includes("conduit") || t.includes("pipe") || t.includes("pvc")) {
+    return p.includes("conduit") || p.includes("pipe") || p.includes("pvc");
+  }
+  if (t.includes("gland")) {
+    return p.includes("gland");
+  }
+  if (t.includes("lug")) {
+    return p.includes("lug");
+  }
+  if (t.includes("solar")) {
+    return p.includes("solar");
+  }
+  if (t.includes("earth")) {
+    return p.includes("earth");
+  }
+  if (t.includes("wiring") || t.includes("device")) {
+    return p.includes("wiring") || p.includes("device");
+  }
+  return false;
+}
+
 export default function CategoryPage() {
   const [isCategoryRoute, params] = useRoute("/category/:slug");
   const [, navigate] = useLocation();
@@ -235,45 +269,62 @@ export default function CategoryPage() {
     subcategory: selectedSubCat || undefined,
   });
 
-  // Fallback to static catalog if API is unreachable on static hosting / Vercel
+  // Fallback to static catalog if API is slow or unreachable on static hosting / Vercel
   const [staticFallback, setStaticFallback] = useState<any[] | null>(null);
 
   useEffect(() => {
-    if ((!productsData || productsData.products.length === 0) && !isProductsLoading && !staticFallback) {
-      fetch("/products_db.json")
-        .then((res) => (res.ok ? res.json() : null))
-        .then((items) => {
-          if (Array.isArray(items) && items.length > 0) {
-            setStaticFallback(items);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [productsData, isProductsLoading, staticFallback]);
+    fetch("/products_db.json")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((items) => {
+        if (Array.isArray(items) && items.length > 0) {
+          setStaticFallback(items);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const fallbackFiltered = useMemo(() => {
     if (!staticFallback) return null;
     let list = staticFallback;
     if (categoryQueryParam && categoryQueryParam !== "ALL") {
-      const catLower = categoryQueryParam.toLowerCase();
-      list = list.filter((p) => (p.category || "").toLowerCase().includes(catLower));
+      list = list.filter((p) => matchesCategory(p.category, categoryQueryParam));
     }
     if (selectedSubCat) {
-      const subLower = selectedSubCat.toLowerCase();
-      list = list.filter((p) => (p.subcategory || "").toLowerCase().includes(subLower));
+      const subLower = selectedSubCat.toLowerCase().replace(/[-_()]/g, " ").replace(/\s+/g, " ").trim();
+      list = list.filter((p) => {
+        const pSub = (p.subcategory || "").toLowerCase().replace(/[-_()]/g, " ").replace(/\s+/g, " ").trim();
+        const pName = (p.name || "").toLowerCase();
+        const pDesc = (p.description || "").toLowerCase();
+        return (
+          (pSub && (pSub === subLower || pSub.includes(subLower) || subLower.includes(pSub))) ||
+          pName.includes(subLower) ||
+          pDesc.includes(subLower)
+        );
+      });
     }
     if (selectedBrand) {
-      const bLower = selectedBrand.toLowerCase();
-      list = list.filter((p) => (p.brand || "").toLowerCase().includes(bLower));
+      const bLower = selectedBrand.toLowerCase().trim();
+      list = list.filter((p) => {
+        const pBrand = (p.brand || "").toLowerCase().trim();
+        if (bLower === "l&t" || bLower.includes("larsen")) {
+          return pBrand.includes("l&t") || pBrand.includes("lk");
+        }
+        return pBrand === bLower || pBrand.includes(bLower) || bLower.includes(pBrand);
+      });
     }
     if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      list = list.filter(
-        (p) =>
-          (p.name || "").toLowerCase().includes(q) ||
-          (p.productId || "").toLowerCase().includes(q) ||
-          (p.sku || "").toLowerCase().includes(q)
-      );
+      const terms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      list = list.filter((p) => {
+        const haystack = `${p.name || ""} ${p.productId || ""} ${p.sku || ""} ${p.brand || ""} ${p.category || ""} ${p.subcategory || ""} ${p.description || ""} ${p.size || ""}`.toLowerCase();
+        return terms.every((t) => haystack.includes(t));
+      });
+    }
+    if (sortBy === "price_asc") {
+      list = [...list].sort((a, b) => (a.numericPrice || 0) - (b.numericPrice || 0));
+    } else if (sortBy === "price_desc") {
+      list = [...list].sort((a, b) => (b.numericPrice || 0) - (a.numericPrice || 0));
+    } else if (sortBy === "name") {
+      list = [...list].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     }
     const total = list.length;
     const totalPages = Math.ceil(total / pageSize) || 1;
@@ -284,7 +335,20 @@ export default function CategoryPage() {
       totalPages,
       page,
     };
-  }, [staticFallback, categoryQueryParam, selectedSubCat, selectedBrand, searchQuery, page, pageSize]);
+  }, [staticFallback, categoryQueryParam, selectedSubCat, selectedBrand, searchQuery, sortBy, page, pageSize]);
+
+  const fallbackBrands = useMemo(() => {
+    if (!staticFallback) return ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand"];
+    const set = new Set<string>();
+    for (const p of staticFallback) {
+      if (matchesCategory(p.category, categoryQueryParam) && p.brand) {
+        set.add(p.brand);
+      }
+    }
+    return set.size > 0 ? Array.from(set).sort() : ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand"];
+  }, [staticFallback, categoryQueryParam]);
+
+  const displayBrands = availableBrands && availableBrands.length > 0 ? availableBrands : fallbackBrands;
 
   // Direct reference to server paginated products with fallback to static catalog
   const effectiveData =
@@ -807,7 +871,7 @@ export default function CategoryPage() {
                     />
                     <span className={selectedBrand === null ? "font-bold text-[#c56718]" : ""}>All Brands</span>
                   </div>
-                  {availableBrands?.map((brand) => {
+                  {displayBrands?.map((brand) => {
                     const isSelected = selectedBrand === brand;
                     return (
                       <div
@@ -1826,7 +1890,7 @@ export default function CategoryPage() {
             )}
 
             {/* Loading Skeleton */}
-            {isProductsLoading ? (
+            {isProductsLoading && displayProducts.length === 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pt-2">
                 {[...Array(8)].map((_, i) => (
                   <div
