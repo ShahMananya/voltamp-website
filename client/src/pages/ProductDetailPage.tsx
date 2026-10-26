@@ -48,7 +48,6 @@ import { getProductImage, getCategoryFallbackImage } from "@/data/categories";
 import { trpc } from "@/lib/trpc";
 import { QuickOrderModal } from "@/components/quickorder/QuickOrderModal";
 import { EnquireModal } from "@/components/enquire/EnquireModal";
-import { Product3DViewer } from "@/components/ar/Product3DViewer";
 import UniversalFooter from "@/components/layout/UniversalFooter";
 import SeoHead from "@/components/seo/SeoHead";
 import { useCart } from "@/contexts/CartContext";
@@ -102,14 +101,6 @@ interface GalleryItem {
   label: string;
 }
 
-interface ImageHotspot {
-  id: string;
-  x: number; // percentage 0-100
-  y: number; // percentage 0-100
-  title: string;
-  detail: string;
-  spec: string;
-}
 
 /**
  * Returns strictly category-appropriate gallery images with ultra-sharp detail perspectives.
@@ -197,120 +188,6 @@ function getCategoryGallery(product: any): GalleryItem[] {
   ];
 }
 
-/**
- * Technical inspection hotspots positioned dynamically for each category
- */
-function getCategoryHotspots(product: any): ImageHotspot[] {
-  if (!product) return [];
-  const cat = (product.category || "").toLowerCase();
-  const name = (product.name || "").toLowerCase();
-
-  if (cat.includes("cable") || cat.includes("wire") || name.includes("cable")) {
-    return [
-      {
-        id: "cond",
-        x: 48,
-        y: 48,
-        title: "Pure Copper Conductor",
-        detail: "99.97% high-conductivity electrolytic copper strands (Class 2 / Class 5).",
-        spec: "IS 8130 / IEC 60228",
-      },
-      {
-        id: "insul",
-        x: 32,
-        y: 36,
-        title: "XLPE Core Insulation",
-        detail: "Cross-linked polyethylene rated for 90°C continuous / 250°C short circuit duty.",
-        spec: "IS 7098 (Pt 1) / Type C",
-      },
-      {
-        id: "armour",
-        x: 74,
-        y: 62,
-        title: "Galvanized Steel Wire Armour (GSWA)",
-        detail: "Continuous circumferential steel wire cage protecting against heavy crush & rodent attack.",
-        spec: "IS 3975 Tensile Protection",
-      },
-      {
-        id: "sheath",
-        x: 82,
-        y: 28,
-        title: "UV & Flame Retardant Sheath",
-        detail: "Heavy-duty FRLS outer jacket with Oxygen Index > 29% for low smoke emission.",
-        spec: "IS 5831 / IEC 60332-1",
-      },
-    ];
-  }
-
-  if (cat.includes("lug") || name.includes("lug")) {
-    return [
-      {
-        id: "barrel",
-        x: 34,
-        y: 50,
-        title: "Internal Bell-Mouth Entry",
-        detail: "Precision machined chamfer enables rapid insertion of multi-strand cables without snags.",
-        spec: "DIN 46235 Standard",
-      },
-      {
-        id: "inspect",
-        x: 49,
-        y: 42,
-        title: "Visual Crimp Window",
-        detail: "Guarantees full conductor insertion depth prior to mechanical hydraulic crimping.",
-        spec: "Quality Assurance Clause",
-      },
-      {
-        id: "palm",
-        x: 72,
-        y: 50,
-        title: "Heavy-Duty Mounting Palm",
-        detail: "Flat precision-punched contact palm ensures optimal surface conductivity on switchgear busbars.",
-        spec: "IS 8309 / CPRI Certified",
-      },
-    ];
-  }
-
-  if (cat.includes("switch") || name.includes("mcb") || name.includes("breaker")) {
-    return [
-      {
-        id: "term",
-        x: 50,
-        y: 20,
-        title: "Bi-Connect Tunnel Clamp",
-        detail: "Dual-entry cage terminal accepting both 35mm² cables and fork-type busbars.",
-        spec: "IP20 Touch-Proof",
-      },
-      {
-        id: "arc",
-        x: 38,
-        y: 46,
-        title: "12-Plate De-Ion Arc Chute",
-        detail: "Instantaneously extinguishes high-energy electrical arcs during short circuits.",
-        spec: "10 kA Breaking Capacity",
-      },
-      {
-        id: "din",
-        x: 76,
-        y: 54,
-        title: "Snap-On DIN Rail Clamp",
-        detail: "Bi-stable latching clip for rapid tool-less mounting on standard 35mm distribution rails.",
-        spec: "EN 50022 Conforming",
-      },
-    ];
-  }
-
-  return [
-    {
-      id: "genuine",
-      x: 50,
-      y: 50,
-      title: "Authenticated VOLAMP Engineering Spec",
-      detail: "100% factory inspected with batch test certificate and serial tracking.",
-      spec: "ISO 9001:2015 Conforming",
-    },
-  ];
-}
 
 interface ProductDetailPageProps {
   params?: {
@@ -398,28 +275,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
   const [specSearchQuery, setSpecSearchQuery] = useState("");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [mediaMode, setMediaMode] = useState<"2d" | "3d">(() => {
-    if (typeof window !== "undefined") {
-      const search = new URLSearchParams(window.location.search);
-      if (search.get("view") === "3d" || search.get("ar") === "1" || window.location.hash === "#ar") {
-        return "3d";
-      }
-    }
-    return "2d";
-  });
-  const [full3DModalOpen, setFull3DModalOpen] = useState(false);
-
-  // Ultra-detailed Optical Zoom & Technical Hotspots State
-  const [isMagnifying, setIsMagnifying] = useState(false);
-  const [magnifierPos, setMagnifierPos] = useState({ x: 50, y: 50, cursorX: 0, cursorY: 0 });
-  const [zoomLevel, setZoomLevel] = useState(2.8);
-  const [showHotspots, setShowHotspots] = useState(false);
-  const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
   const [lightboxZoom, setLightboxZoom] = useState(1);
-
-  const categoryHotspots = useMemo(() => {
-    return getCategoryHotspots(product);
-  }, [product]);
 
   const handleDownloadImage = () => {
     if (!currentActiveImage) return;
@@ -1516,241 +1372,74 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                 </div>
               </div>
 
-              {/* Media View Mode Switcher (2D Photos vs 3D / AR View) */}
-              <div className="flex items-center justify-between mb-3 px-0.5">
-                <div className="inline-flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-xs font-semibold shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => setMediaMode("2d")}
-                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                      mediaMode === "2d"
-                        ? "bg-white dark:bg-[#0e1726] text-[#c56718] dark:text-sky-400 shadow-xs"
-                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                    }`}
-                  >
-                    <Eye className="size-3.5" />
-                    <span>2D Photos</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMediaMode("3d")}
-                    className={`px-3 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                      mediaMode === "3d"
-                        ? "bg-gradient-to-r from-[#c56718] to-sky-500 text-white shadow-sm"
-                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                    }`}
-                  >
-                    <Box className="size-3.5 animate-pulse text-amber-300" />
-                    <span>3D & AR View</span>
-                    <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-slate-950 font-black text-[9px] tracking-tight">
-                      360°
+              {/* Product Showcase Image Canvas */}
+              <div className="space-y-3">
+                {/* Image Toolbar: Label, Download & Expand Lightbox */}
+                <div className="flex items-center justify-between px-1 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                      {galleryImages[selectedImageIndex]?.label || "Product Overview"}
                     </span>
-                  </button>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMediaMode("3d");
-                    setFull3DModalOpen(true);
-                  }}
-                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/15 to-teal-500/15 hover:from-emerald-500/25 hover:to-teal-500/25 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs hover:scale-103"
-                  title="View full-screen 3D and launch camera AR"
-                >
-                  <Smartphone className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>View in AR</span>
-                </button>
-              </div>
-
-              {mediaMode === "3d" ? (
-                <div className="h-88 sm:h-96 w-full rounded-2xl overflow-hidden shadow-inner border border-slate-800">
-                  <Product3DViewer product={product} />
-                </div>
-              ) : (
-                /* Ultra-Detail Main Showcase Image with Optical Loupe & Technical Hotspots */
-                <div className="space-y-3">
-                  {/* High-Res Image Detail Toolbar */}
-                  <div className="flex items-center justify-between px-1 text-xs">
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setShowHotspots(!showHotspots)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer border ${
-                          showHotspots
-                            ? "bg-sky-500 text-white border-sky-400 shadow-sm"
-                            : "bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-sky-300"
-                        }`}
-                        title="Toggle Technical Engineering Hotspots"
-                      >
-                        <Crosshair className={`size-3.5 ${showHotspots ? "animate-spin" : ""}`} />
-                        <span>Hotspots</span>
-                        <span className={`px-1 py-0.2 rounded text-[9px] font-mono ${showHotspots ? "bg-white/20" : "bg-slate-200 dark:bg-slate-700"}`}>
-                          {categoryHotspots.length}
-                        </span>
-                      </button>
-
-                      <div className="hidden sm:flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700/80 text-[11px] text-slate-600 dark:text-slate-300 font-mono">
-                        <button
-                          type="button"
-                          onClick={() => setZoomLevel((z) => Math.max(1.8, parseFloat((z - 0.4).toFixed(1))))}
-                          className="hover:text-sky-500 px-1 cursor-pointer"
-                          title="Decrease Loupe Zoom"
-                        >
-                          <Minus className="size-3" />
-                        </button>
-                        <span className="font-bold px-0.5">{zoomLevel.toFixed(1)}x</span>
-                        <button
-                          type="button"
-                          onClick={() => setZoomLevel((z) => Math.min(4.0, parseFloat((z + 0.4).toFixed(1))))}
-                          className="hover:text-sky-500 px-1 cursor-pointer"
-                          title="Increase Loupe Zoom"
-                        >
-                          <Plus className="size-3" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={handleDownloadImage}
-                        className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
-                        title="Download High-Res 4K Image"
-                      >
-                        <Download className="size-3.5" />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLightboxZoom(1);
-                          setLightboxOpen(true);
-                        }}
-                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/70 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-                        title="Full-screen 4K High-Res Lightbox"
-                      >
-                        <Maximize2 className="size-3" />
-                        <span>Expand 4K</span>
-                      </button>
-                    </div>
                   </div>
 
-                  {/* Interactive Showcase Canvas */}
-                  <div
-                    onMouseEnter={() => setIsMagnifying(true)}
-                    onMouseLeave={() => {
-                      setIsMagnifying(false);
-                      setActiveHotspot(null);
-                    }}
-                    onMouseMove={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const x = ((e.clientX - rect.left) / rect.width) * 100;
-                      const y = ((e.clientY - rect.top) / rect.height) * 100;
-                      setMagnifierPos({
-                        x: Math.max(0, Math.min(100, x)),
-                        y: Math.max(0, Math.min(100, y)),
-                        cursorX: e.clientX - rect.left,
-                        cursorY: e.clientY - rect.top,
-                      });
-                    }}
-                    onClick={() => {
-                      if (!showHotspots) {
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleDownloadImage}
+                      className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 hover:text-[#c56718] dark:hover:text-sky-400 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                      title="Download High-Res Image"
+                    >
+                      <Download className="size-3.5" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
                         setLightboxZoom(1);
                         setLightboxOpen(true);
-                      }
-                    }}
-                    className="h-80 sm:h-96 w-full flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-slate-50/70 to-white dark:from-slate-900/40 dark:to-[#0e1726] border border-slate-200/90 dark:border-slate-800 p-6 relative cursor-crosshair group/zoom select-none shadow-xs"
-                  >
-                    <img
-                      src={currentActiveImage}
-                      alt={galleryImages[selectedImageIndex]?.label || product.name}
-                      onError={(e) => {
-                        if (e.currentTarget.src !== window.location.origin + categoryFallback) {
-                          e.currentTarget.src = categoryFallback;
-                        }
                       }}
-                      className="max-h-full max-w-full object-contain transition-transform duration-300 filter drop-shadow-md pointer-events-none"
-                    />
-
-                    {/* Optical Magnifying Loupe (Amazon / Industrial Catalog Lens) */}
-                    {isMagnifying && !showHotspots && (
-                      <div
-                        style={{
-                          left: `${magnifierPos.cursorX}px`,
-                          top: `${magnifierPos.cursorY}px`,
-                          transform: "translate(-50%, -50%)",
-                          backgroundImage: `url(${currentActiveImage})`,
-                          backgroundRepeat: "no-repeat",
-                          backgroundSize: `${zoomLevel * 100}% ${zoomLevel * 100}%`,
-                          backgroundPosition: `${magnifierPos.x}% ${magnifierPos.y}%`,
-                        }}
-                        className="absolute size-44 sm:size-52 rounded-full border-3 border-sky-400 dark:border-sky-300 shadow-2xl pointer-events-none z-30 overflow-hidden ring-4 ring-black/20 backdrop-blur-none bg-white dark:bg-slate-950"
-                      >
-                        {/* Precision Reticle Crosshairs */}
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
-                          <div className="w-full h-px bg-sky-500" />
-                          <div className="h-full w-px bg-sky-500 absolute" />
-                        </div>
-                        {/* Zoom Factor Eyebrow Badge */}
-                        <span className="absolute bottom-2 inset-x-0 mx-auto w-max px-2 py-0.5 rounded-full bg-slate-950/85 text-white font-mono text-[9px] font-bold tracking-wider border border-white/20">
-                          {zoomLevel.toFixed(1)}x OPTICAL LENS
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Interactive Engineering Spec Hotspots */}
-                    {showHotspots &&
-                      categoryHotspots.map((spot) => (
-                        <div
-                          key={spot.id}
-                          style={{ left: `${spot.x}%`, top: `${spot.y}%` }}
-                          className="absolute z-20 -translate-x-1/2 -translate-y-1/2 group/spot"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setActiveHotspot(activeHotspot === spot.id ? null : spot.id);
-                          }}
-                          onMouseEnter={() => setActiveHotspot(spot.id)}
-                        >
-                          {/* Pulsing Ripple Node */}
-                          <div className="relative flex items-center justify-center">
-                            <span className="absolute size-6 rounded-full bg-sky-500/30 animate-ping" />
-                            <span className="size-4 rounded-full bg-sky-500 border-2 border-white dark:border-slate-900 shadow-lg flex items-center justify-center cursor-pointer transition-transform hover:scale-125" />
-                          </div>
-
-                          {/* Detail Popover Card */}
-                          {(activeHotspot === spot.id || false) && (
-                            <div className="absolute left-1/2 -translate-x-1/2 bottom-6 w-60 sm:w-68 p-3 rounded-xl bg-slate-950/95 text-white border border-sky-500/50 shadow-2xl backdrop-blur-md pointer-events-auto z-40 animate-in fade-in zoom-in-95 duration-150">
-                              <div className="flex items-center justify-between pb-1 mb-1 border-b border-slate-800">
-                                <span className="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-wider">
-                                  {spot.title}
-                                </span>
-                                <span className="text-[9px] font-mono text-emerald-400 font-semibold">
-                                  {spot.spec}
-                                </span>
-                              </div>
-                              <p className="text-[11px] text-slate-300 leading-snug">
-                                {spot.detail}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-
-                    {/* Bottom Guide Pill */}
-                    <div className="absolute bottom-2.5 inset-x-3 flex items-center justify-between pointer-events-none text-[10px] text-slate-500 dark:text-slate-400 font-medium bg-white/70 dark:bg-slate-900/70 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-slate-200/60 dark:border-slate-800/60">
-                      <div className="flex items-center gap-1.5 truncate">
-                        <Eye className="size-3 text-[#c56718] dark:text-sky-400 shrink-0" />
-                        <span className="truncate font-semibold text-slate-700 dark:text-slate-300">
-                          {galleryImages[selectedImageIndex]?.label || "Product Perspective"}
-                        </span>
-                      </div>
-                      <span className="shrink-0 font-mono text-[9px] text-slate-400">
-                        {isMagnifying ? "Active 2.8x Zoom" : "Hover to Magnify"}
-                      </span>
-                    </div>
+                      className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/70 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-[11px] font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+                      title="Full-screen Lightbox"
+                    >
+                      <Maximize2 className="size-3" />
+                      <span>Expand</span>
+                    </button>
                   </div>
                 </div>
-              )}
+
+                {/* Main Showcase Canvas */}
+                <div
+                  onClick={() => {
+                    setLightboxZoom(1);
+                    setLightboxOpen(true);
+                  }}
+                  className="h-80 sm:h-96 w-full flex items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-b from-slate-50/70 to-white dark:from-slate-900/40 dark:to-[#0e1726] border border-slate-200/90 dark:border-slate-800 p-6 relative cursor-pointer select-none shadow-xs group"
+                >
+                  <img
+                    src={currentActiveImage}
+                    alt={galleryImages[selectedImageIndex]?.label || product.name}
+                    onError={(e) => {
+                      if (e.currentTarget.src !== window.location.origin + categoryFallback) {
+                        e.currentTarget.src = categoryFallback;
+                      }
+                    }}
+                    className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105 filter drop-shadow-md"
+                  />
+
+                  {/* Bottom Perspective Label */}
+                  <div className="absolute bottom-2.5 inset-x-3 flex items-center justify-between pointer-events-none text-[10px] text-slate-500 dark:text-slate-400 font-medium bg-white/80 dark:bg-slate-900/80 backdrop-blur-xs px-2.5 py-1 rounded-lg border border-slate-200/60 dark:border-slate-800/60">
+                    <div className="flex items-center gap-1.5 truncate">
+                      <Eye className="size-3 text-[#c56718] dark:text-sky-400 shrink-0" />
+                      <span className="truncate font-semibold text-slate-700 dark:text-slate-300">
+                        {galleryImages[selectedImageIndex]?.label || "Product Overview"}
+                      </span>
+                    </div>
+                    <span className="shrink-0 font-medium text-[10px] text-slate-400">
+                      Click to enlarge
+                    </span>
+                  </div>
+                </div>
+              </div>
 
               {/* Verified Quality Spec Footer */}
               <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
@@ -2657,14 +2346,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
         </div>
       )}
 
-      {/* Fullscreen 3D & WebAR Inspection Modal */}
-      {full3DModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-5xl h-[85vh] rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col">
-            <Product3DViewer product={product} isModal={true} onClose={() => setFull3DModalOpen(false)} />
-          </div>
-        </div>
-      )}
+
 
       {/* Modals */}
       <QuickOrderModal
