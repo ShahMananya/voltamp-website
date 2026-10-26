@@ -349,9 +349,11 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
 
   // Fallback to static catalog file if API is unreachable on static hosting / Vercel
   const [staticProductFallback, setStaticProductFallback] = useState<any | null>(null);
+  const [isStaticLoading, setIsStaticLoading] = useState(true);
 
   useEffect(() => {
     if (productId && !staticProductFallback) {
+      setIsStaticLoading(true);
       fetch("/products_db.json")
         .then((res) => (res.ok ? res.json() : null))
         .then((items: any[]) => {
@@ -367,7 +369,12 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             if (found) setStaticProductFallback(found);
           }
         })
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => {
+          setIsStaticLoading(false);
+        });
+    } else {
+      setIsStaticLoading(false);
     }
   }, [productId, staticProductFallback]);
 
@@ -1266,27 +1273,27 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
     ];
   }, [product, currentActiveImage, effectiveUnitPrice]);
 
-  if (isLoading || (isFetching && !product) || !productId) {
-    return (
-      <div className="min-h-screen bg-[#f8fafc] dark:bg-[#090f17] flex flex-col font-sans">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-12 flex-1 w-full animate-pulse space-y-8">
-          <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-1/4" />
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-5 h-[480px] bg-slate-200 dark:bg-slate-800 rounded-3xl" />
-            <div className="lg:col-span-4 space-y-4">
-              <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded w-1/3" />
-              <div className="h-9 bg-slate-200 dark:bg-slate-800 rounded w-full" />
-              <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded w-1/2" />
-              <div className="h-32 bg-slate-200 dark:bg-slate-800 rounded-2xl w-full" />
+  if (!product) {
+    if (isLoading || isStaticLoading || !productId) {
+      return (
+        <div className="min-h-screen bg-[#f8fafc] dark:bg-[#090f17] flex flex-col font-sans">
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-12 flex-1 w-full animate-pulse space-y-8">
+            <div className="h-6 bg-slate-200 dark:bg-slate-800 rounded w-1/4" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="lg:col-span-5 h-[480px] bg-slate-200 dark:bg-slate-800 rounded-3xl" />
+              <div className="lg:col-span-4 space-y-4">
+                <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded w-1/3" />
+                <div className="h-9 bg-slate-200 dark:bg-slate-800 rounded w-full" />
+                <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded w-1/2" />
+                <div className="h-32 bg-slate-200 dark:bg-slate-800 rounded-2xl w-full" />
+              </div>
+              <div className="lg:col-span-3 h-[420px] bg-slate-200 dark:bg-slate-800 rounded-3xl" />
             </div>
-            <div className="lg:col-span-3 h-[420px] bg-slate-200 dark:bg-slate-800 rounded-3xl" />
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (error || !product) {
     return (
       <div className="min-h-screen bg-[#f8fafc] dark:bg-[#090f17] flex flex-col items-center justify-center font-sans p-6">
         <div className="max-w-md w-full text-center space-y-4 bg-white dark:bg-[#111e2e] p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl">
@@ -1298,16 +1305,17 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             We could not find the product with reference ID "{productId || "Unknown"}". It may have been relocated or updated in our catalog.
           </p>
           <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
-            {error && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => refetch()}
-                className="cursor-pointer"
-              >
-                <RotateCcw className="size-3.5 mr-1.5" /> Retry Loading
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                refetch();
+                window.location.reload();
+              }}
+              className="cursor-pointer"
+            >
+              <RotateCcw className="size-3.5 mr-1.5" /> Retry Loading
+            </Button>
             <Link
               href="/products"
               className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#c56718] to-[#0284c7] text-white text-xs font-bold hover:shadow-lg hover:shadow-sky-500/25 transition-all"
