@@ -103,89 +103,29 @@ interface GalleryItem {
 
 
 /**
- * Returns strictly category-appropriate gallery images with ultra-sharp detail perspectives.
+ * Returns strictly the genuine, authentic product image without any synthetic or fake filler images.
  */
 function getCategoryGallery(product: any): GalleryItem[] {
-  if (!product) return [{ url: "/products/cable-cross-section.jpg", label: "Product Cross-Section" }];
+  if (!product) return [{ url: "/products/cables.jpg", label: "Product Image" }];
 
-  const cat = (product.category || "").toLowerCase();
-  const name = (product.name || "").toLowerCase();
   const primaryImg = getProductImage(product, product.category);
   const fallback = getCategoryFallbackImage(product.category);
+  const mainImage = primaryImg || fallback || "/products/cables.jpg";
 
-  // 1. GLANDS: 4 photorealistic perspectives
-  if (cat.includes("gland") || name.includes("gland")) {
-    return [
-      { url: primaryImg || "/products/cable-gland.jpg", label: "Assembled Double Compression Gland" },
-      { url: "/products/gland-exploded.jpg", label: "Component Exploded Breakdown" },
-      { url: "/products/gland-schematic.jpg", label: "CAD Dimensions & Nipple Specs" },
-      { url: "/products/gland-packaging.jpg", label: "Industrial Packaging Box" },
-    ];
-  }
-
-  // 2. WIRES & CABLES: 4 ultra-sharp perspectives
-  if (cat.includes("cable") || cat.includes("wire") || name.includes("cable") || name.includes("wire")) {
-    return [
-      { url: "/products/cable-cross-section.jpg", label: "4-Core Armoured Cutaway (Macro)" },
-      { url: "/products/cable-reel-drum.jpg", label: "Industrial Wooden Reel Spool" },
-      { url: "/products/cable-schematic.svg", label: "Layer CAD Technical Blueprint" },
-      { url: primaryImg || "/products/cables.jpg", label: "Product Coil & IS 694 Mark" },
-    ];
-  }
-
-  // 3. CABLE LUGS & TERMINALS: 3 ultra-sharp perspectives
-  if (cat.includes("lug") || name.includes("lug") || cat.includes("terminal")) {
-    return [
-      { url: "/products/cable-lugs-macro.jpg", label: "Electro-Tinned Lug Array (Macro)" },
-      { url: "/products/lug-schematic.svg", label: "DIN 46235 Precision CAD Blueprint" },
-      { url: primaryImg || "/products/cable-lugs.jpg", label: "Barrel Chamfer & Crimp Profile" },
-    ];
-  }
-
-  // 4. SWITCHGEAR: 3 perspectives
-  if (cat.includes("switch") || name.includes("mcb") || name.includes("mccb") || cat.includes("breaker")) {
-    return [
-      { url: primaryImg || "/products/switchgear.jpg", label: "Modular Unit Front Profile" },
-      { url: "/products/switchgear-schematic.svg", label: "Internal Arc Chute & CAD Blueprint" },
-      { url: "/products/switchgear.jpg", label: "Bi-Connect & DIN Mount Clamp" },
-    ];
-  }
-
-  // 5. SOLAR: 2 perspectives
-  if (cat.includes("solar") || name.includes("solar") || name.includes("panel")) {
-    return [
-      { url: primaryImg || "/products/solar-panel.jpg", label: "Monocrystalline Half-Cut Facia" },
-      { url: "/products/solar-schematic.svg", label: "Module Matrix & Frame CAD Blueprint" },
-    ];
-  }
-
-  // 6. EARTHING: 2 perspectives
-  if (cat.includes("earth") || name.includes("earth") || name.includes("rod")) {
-    return [
-      { url: primaryImg || "/products/earthing-rods.png", label: "254µ Copper Bonded Electrode" },
-      { url: "/products/earthing-schematic.svg", label: "Earth Pit & Soil Matrix Schematic" },
-    ];
-  }
-
-  // 7. PVC PIPES & CONDUITS
-  if (cat.includes("pipe") || cat.includes("conduit") || name.includes("pipe") || name.includes("conduit")) {
-    return [
-      { url: primaryImg || "/products/pvc-pipe.jpg", label: "Rigid FRLS Conduit Profile" },
-      { url: "/products/pvc-pipe.jpg", label: "Bundle & Bell-Mouth Joint" },
-    ];
-  }
-
-  // 8. WIRING DEVICES
-  if (cat.includes("wiring") || cat.includes("device") || name.includes("tape")) {
-    return [
-      { url: primaryImg || "/products/wiring-devices.jpg", label: "Modular Device Unit" },
-    ];
-  }
-
-  // Default: Only return the primary image or category fallback
-  return [
-    { url: primaryImg || fallback, label: "Product View" },
+  const items: GalleryItem[] = [
+    { url: mainImage, label: product.name || "Product Image" },
   ];
+
+  // If the product record genuinely has additional real images, include them:
+  if (Array.isArray(product.images) && product.images.length > 0) {
+    for (const img of product.images) {
+      if (typeof img === "string" && img.trim() && img !== mainImage) {
+        items.push({ url: img, label: product.name || "Product Perspective" });
+      }
+    }
+  }
+
+  return items;
 }
 
 
@@ -1453,39 +1393,41 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
               </div>
             </div>
 
-            {/* Thumbnail Gallery Strip (Category-Accurate sub photos) */}
-            <div className={`grid gap-3 ${galleryImages.length > 2 ? "grid-cols-4" : galleryImages.length === 2 ? "grid-cols-2" : "grid-cols-1"}`}>
-              {galleryImages.map((item, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setSelectedImageIndex(idx)}
-                  className={`h-22 rounded-2xl bg-white dark:bg-[#0e1726] border p-2 flex flex-col items-center justify-center transition-all cursor-pointer relative overflow-hidden group ${
-                    selectedImageIndex === idx
-                      ? "border-[#c56718] dark:border-sky-400 ring-3 ring-[#c56718]/15 dark:ring-sky-400/20 shadow-sm"
-                      : "border-slate-200/90 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600"
-                  }`}
-                  title={item.label}
-                >
-                  <img 
-                    src={item.url} 
-                    alt={item.label} 
-                    onError={(e) => {
-                      if (e.currentTarget.src !== window.location.origin + categoryFallback) {
-                        e.currentTarget.src = categoryFallback;
-                      }
-                    }}
-                    className="max-h-12 max-w-full object-contain group-hover:scale-105 transition-transform" 
-                  />
-                  <span className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold truncate max-w-full mt-1.5 text-center">
-                    {item.label}
-                  </span>
-                  {selectedImageIndex === idx && (
-                    <span className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-[#c56718] to-sky-400" />
-                  )}
-                </button>
-              ))}
-            </div>
+            {/* Thumbnail Gallery Strip (Only rendered when multiple genuine product images exist) */}
+            {galleryImages.length > 1 && (
+              <div className={`grid gap-3 ${galleryImages.length > 2 ? "grid-cols-4" : "grid-cols-2"}`}>
+                {galleryImages.map((item, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setSelectedImageIndex(idx)}
+                    className={`h-22 rounded-2xl bg-white dark:bg-[#0e1726] border p-2 flex flex-col items-center justify-center transition-all cursor-pointer relative overflow-hidden group ${
+                      selectedImageIndex === idx
+                        ? "border-[#c56718] dark:border-sky-400 ring-3 ring-[#c56718]/15 dark:ring-sky-400/20 shadow-sm"
+                        : "border-slate-200/90 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600"
+                    }`}
+                    title={item.label}
+                  >
+                    <img 
+                      src={item.url} 
+                      alt={item.label} 
+                      onError={(e) => {
+                        if (e.currentTarget.src !== window.location.origin + categoryFallback) {
+                          e.currentTarget.src = categoryFallback;
+                        }
+                      }}
+                      className="max-h-12 max-w-full object-contain group-hover:scale-105 transition-transform" 
+                    />
+                    <span className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold truncate max-w-full mt-1.5 text-center">
+                      {item.label}
+                    </span>
+                    {selectedImageIndex === idx && (
+                      <span className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-[#c56718] to-sky-400" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* ========================================================================= */}
@@ -2317,32 +2259,34 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             </div>
           </div>
 
-          {/* Bottom Thumbnails Carousel Bar */}
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-2xl flex items-center justify-center gap-2 sm:gap-3 z-20 pt-3 border-t border-white/10"
-          >
-            {galleryImages.map((img, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => {
-                  setSelectedImageIndex(idx);
-                  setLightboxZoom(1);
-                }}
-                className={`h-16 w-20 rounded-xl border p-1 bg-white/5 transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden ${
-                  selectedImageIndex === idx
-                    ? "border-sky-400 ring-2 ring-sky-400/30 scale-105 bg-white/15"
-                    : "border-white/20 hover:border-white/50 opacity-60 hover:opacity-100"
-                }`}
-              >
-                <img src={img.url} alt={img.label} className="max-h-9 max-w-full object-contain" />
-                <span className="text-[8px] text-white/90 truncate w-full text-center mt-1 font-medium">
-                  {img.label}
-                </span>
-              </button>
-            ))}
-          </div>
+          {/* Bottom Thumbnails Carousel Bar (Only if multiple genuine images exist) */}
+          {galleryImages.length > 1 && (
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-2xl flex items-center justify-center gap-2 sm:gap-3 z-20 pt-3 border-t border-white/10"
+            >
+              {galleryImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setSelectedImageIndex(idx);
+                    setLightboxZoom(1);
+                  }}
+                  className={`h-16 w-20 rounded-xl border p-1 bg-white/5 transition-all cursor-pointer flex flex-col items-center justify-center overflow-hidden ${
+                    selectedImageIndex === idx
+                      ? "border-sky-400 ring-2 ring-sky-400/30 scale-105 bg-white/15"
+                      : "border-white/20 hover:border-white/50 opacity-60 hover:opacity-100"
+                  }`}
+                >
+                  <img src={img.url} alt={img.label} className="max-h-9 max-w-full object-contain" />
+                  <span className="text-[8px] text-white/90 truncate w-full text-center mt-1 font-medium">
+                    {img.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
