@@ -347,18 +347,42 @@ export default function MetalPriceTrendFooterWidget({
   }, []);
 
   const chartData = useMemo(() => {
-    if (serverHistory && serverHistory[selectedRange]) {
-      return serverHistory[selectedRange];
-    }
-    const series = getAuthenticMcxHistory(
+    const fallbackSeries = getAuthenticMcxHistory(
       copperPrice,
       copperHigh,
       copperLow,
       alPrice,
       alHigh,
       alLow
-    );
-    return series[selectedRange];
+    )[selectedRange] || [];
+
+    const rawList =
+      serverHistory &&
+      serverHistory[selectedRange] &&
+      serverHistory[selectedRange].length >= fallbackSeries.length
+        ? serverHistory[selectedRange]
+        : fallbackSeries;
+
+    return rawList.map((pt: any) => {
+      const cuInr = Number(pt.copper) || copperPrice;
+      const alInr = Number(pt.aluminium) || alPrice;
+      const cuUsd =
+        typeof pt.copperUsd === "number" && !isNaN(pt.copperUsd) && pt.copperUsd > 0
+          ? pt.copperUsd
+          : Math.round((cuInr / RATIO_CU_INR_TO_USD_LB) * 10000) / 10000;
+      const alUsd =
+        typeof pt.aluminiumUsd === "number" && !isNaN(pt.aluminiumUsd) && pt.aluminiumUsd > 0
+          ? pt.aluminiumUsd
+          : Math.round((alInr / RATIO_AL_INR_TO_USD_LB) * 10000) / 10000;
+
+      return {
+        time: String(pt.time || ""),
+        copper: cuInr,
+        aluminium: alInr,
+        copperUsd: cuUsd,
+        aluminiumUsd: alUsd,
+      };
+    });
   }, [serverHistory, selectedRange, copperPrice, copperHigh, copperLow, alPrice, alHigh, alLow]);
 
   // Dynamic Landed CC Rod 8mm standard calculation (Hindalco / Vedanta formula benchmark)
@@ -805,7 +829,7 @@ Helpline: +91 79 2213 1234 | sales@volamp.com | www.volamp.com
               </span>
             </div>
 
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minHeight={280}>
               <AreaChart
                 data={chartData}
                 margin={{ top: 15, right: 35, left: -10, bottom: 0 }}
@@ -869,7 +893,7 @@ Helpline: +91 79 2213 1234 | sales@volamp.com | www.volamp.com
                 <ReferenceLine
                   yAxisId="mainAxis"
                   y={activeTab === "aluminium" ? activeAlVal : activeCopperVal}
-                  stroke="#2563eb"
+                  stroke={activeTab === "aluminium" ? "#0284c7" : priceUnit === "USD" ? "#2563eb" : "#c56718"}
                   strokeDasharray="3 3"
                   strokeWidth={1.5}
                 />
@@ -935,6 +959,7 @@ Helpline: +91 79 2213 1234 | sales@volamp.com | www.volamp.com
                     fillOpacity={chartMode === "line" ? 0 : 1}
                     fill={priceUnit === "USD" ? "url(#tradingEconomicsBlue)" : "url(#cuColor)"}
                     name={priceUnit === "USD" ? "Copper (USD/Lbs)" : "Copper (₹/kg)"}
+                    isAnimationActive={false}
                   />
                 )}
 
@@ -951,6 +976,7 @@ Helpline: +91 79 2213 1234 | sales@volamp.com | www.volamp.com
                     fillOpacity={chartMode === "line" ? 0 : 1}
                     fill="url(#alColor)"
                     name={priceUnit === "USD" ? "Aluminium (USD/Lbs)" : "Aluminium (₹/kg)"}
+                    isAnimationActive={false}
                   />
                 )}
               </AreaChart>
