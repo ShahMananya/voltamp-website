@@ -1043,16 +1043,14 @@ export default function Home() {
 
       <section id="solutions" className="py-20 bg-slate-50/70 dark:bg-[#071421] border-t border-slate-200/80 dark:border-slate-800">
         <div className="market-container">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-[#c56718] dark:text-amber-400 text-xs font-bold uppercase tracking-wider mb-2">
-                <Sparkles className="size-3" /> Built For Real Infrastructure Procurement
-              </div>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0b1f33] dark:text-white tracking-tight">
-                Enterprise Electrical Supply & Fulfilment
-              </h2>
+          <div className="mb-10 max-w-3xl space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-[#c56718] dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
+              <Sparkles className="size-3" /> Built For Real Infrastructure Procurement
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0b1f33] dark:text-white tracking-tight">
+              Enterprise Electrical Supply &amp; Fulfilment
+            </h2>
+            <p className="text-xs sm:text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-relaxed pt-0.5">
               Engineered for EPCs, government contractors, solar developers, and commercial builders with strict test compliance.
             </p>
           </div>
