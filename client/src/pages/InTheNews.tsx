@@ -244,14 +244,14 @@ export default function InTheNews() {
           </div>
 
           {/* Photograph / Media Badge */}
-          <div className="shrink-0 w-full lg:w-88 rounded-2xl overflow-hidden border border-white/20 bg-stone-900/70 shadow-2xl group">
-            <div className="relative overflow-hidden">
+          <div className="shrink-0 w-full lg:w-96 xl:w-[28rem] rounded-2xl overflow-hidden border border-white/20 bg-stone-900/70 shadow-2xl group">
+            <div className="relative overflow-hidden bg-slate-900">
               <img
-                src="/ahmedabad-mirror-top-10-entrepreneurs-2026.jpg"
-                alt="Ahmedabad Mirror Top 10 Inspiring Entrepreneurs in Ahmedabad 2026"
-                className="w-full h-56 sm:h-64 object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                src="/ahmedabad-mirror-top-10-entrepreneurs-2026.png?v=3"
+                alt="Ahmedabad Mirror Top 10 Inspiring Entrepreneurs in Ahmedabad 2026 - Featuring Naimil Vipul Patel, CEO & Director Volamp Elektrikals"
+                className="w-full h-auto object-contain group-hover:scale-102 transition-transform duration-300"
               />
-              <span className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-xs text-white text-[10px] font-bold flex items-center gap-1">
+              <span className="absolute top-3 right-3 px-2.5 py-1 rounded-md bg-black/75 backdrop-blur-xs text-white text-[10px] font-bold flex items-center gap-1 z-10">
                 <BadgeCheck className="size-3 text-red-500" /> Authentic Media
               </span>
             </div>
