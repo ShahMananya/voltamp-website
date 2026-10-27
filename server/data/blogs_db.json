@@ -57,5 +57,46 @@
     ],
     "imageUrl": "/products/switchgear.jpg",
     "createdAt": "2026-10-26T05:58:05.299Z"
+  },
+  {
+    "id": "blog-004",
+    "slug": "is-7098-vs-is-1554-cable-difference-guide",
+    "title": "IS 7098 vs IS 1554: Key Differences Between XLPE and PVC Armoured Power Cables",
+    "category": "Technical Engineering",
+    "author": "Naimil Patel (CEO)",
+    "date": "October 24, 2026",
+    "readTime": "8 min read",
+    "excerpt": "Detailed comparison between IS 7098 (XLPE insulated) and IS 1554 (PVC insulated) cables covering continuous operating temperature, short-circuit ratings, current carrying capacity, and industrial selection criteria.",
+    "content": "When procuring LT (Low Tension) and HT (High Tension) power cables for industrial plants, substations, and commercial infrastructure, electrical engineers must choose between two premier Bureau of Indian Standards specifications: **IS 7098 (Part 1 & 2)** for XLPE insulated cables and **IS 1554 (Part 1)** for PVC insulated cables.\n\n### 1. Fundamental Insulation Differences\n- **IS 1554 (PVC Insulation):** Polyvinyl Chloride is a thermoplastic material. Under thermal stress, PVC softens and deforms. Its standard maximum continuous operating conductor temperature is limited to **70°C**.\n- **IS 7098 (XLPE Insulation):** Cross-Linked Polyethylene undergoes chemical or radiation cross-linking, converting thermoplastic polymer chains into a 3D thermosetting matrix. It does not melt at elevated temperatures, supporting continuous operation up to **90°C** and short-circuit temperatures up to **250°C** (compared to 160°C for PVC).\n\n### 2. Current Carrying Capacity & Efficiency\nBecause XLPE can safely operate at 90°C versus 70°C for PVC, an IS 7098 cable carries approximately **20% to 25% higher current** than an equivalent cross-section IS 1554 cable under identical ambient derating factors. This frequently allows specifying a smaller conductor gauge (e.g. 185 sqmm XLPE instead of 240 sqmm PVC), significantly reducing cable capex, tray loading, and installation conduit diameter.\n\n### 3. Summary Comparison Matrix\n| Parameter | IS 1554 (Part 1) PVC | IS 7098 (Part 1) XLPE |\n|---|---|---|\n| **Continuous Operating Temp** | 70°C | 90°C |\n| **Max Short-Circuit Temp (1s)** | 160°C | 250°C |\n| **Emergency Overload Temp** | 120°C | 130°C |\n| **Dielectric Losses** | Moderate (tan δ ≈ 0.05) | Very Low (tan δ ≈ 0.0004) |\n| **Moisture Resistance** | Good | Superior (water tree retardant) |\n| **Primary Recommendation** | Auxiliary & control circuits | Main power distribution & feeders |\n\nVolamp Elektrikals stocks certified IS 7098 and IS 1554 cables from Polycab, Finolex, and KEI with full Manufacturer Test Certificates (MTC) ready for immediate project dispatch from our Ahmedabad hub.",
+    "tags": [
+      "IS 7098",
+      "IS 1554",
+      "XLPE vs PVC",
+      "Armoured Cables",
+      "Standards"
+    ],
+    "imageUrl": "/products/cables.jpg",
+    "createdAt": "2026-10-26T23:15:00.000Z"
+  },
+  {
+    "id": "blog-005",
+    "slug": "cable-gland-and-lug-size-selection-chart",
+    "title": "Industrial Cable Gland & Terminal Lug Size Selection Chart: Dowells, Comet & HMI",
+    "category": "Installation & Specifications",
+    "author": "Jinay Patel (Technical Sourcing)",
+    "date": "October 22, 2026",
+    "readTime": "6 min read",
+    "excerpt": "Complete engineering reference chart for matching armoured cable cross-sections (1.5 sqmm to 630 sqmm) to single and double compression brass glands, copper tubular lugs, and bi-metallic terminals.",
+    "content": "Proper selection of cable termination glands and crimping lugs is critical to prevent moisture ingress, ensure earth fault loop continuity, and avoid hot-spot thermal failures in industrial distribution boards and motor junction boxes.\n\n### 1. Gland Types Explained\n- **Single Compression (SC) Glands:** Grips only the outer cable sheath. Best suited for indoor dry control panels and light commercial installations.\n- **Double Compression (DC / Weatherproof) Glands:** Provides a dual seal—gripping the inner bedding over the armour wires as well as the outer jacket. Mandatory for outdoor substations, hazardous areas, chemical processing units, and high-vibration plants.\n\n### 2. Standard Cable Gland & Lug Matching Chart (LT 1.1 kV XLPE / PVC)\n| Cable Size (Core × Sqmm) | Single Compression Gland (Dowell's / Comet) | Double Compression Gland (Weatherproof) | Copper Lug Size | Aluminium Bi-Metallic Lug |\n|---|---|---|---|---|\n| 3C / 4C × 2.5 sqmm | 1/2\" / 16mm | DC 01S | C-2.5 | A-2.5 |\n| 3C / 4C × 4 sqmm | 3/4\" / 19mm | DC 01 | C-4 | A-4 |\n| 3C / 4C × 6 sqmm | 3/4\" / 19mm | DC 02 | C-6 | A-6 |\n| 3.5C / 4C × 16 sqmm | 1\" / 25mm | DC 03 | C-16 | A-16 |\n| 3.5C / 4C × 25 sqmm | 1-1/4\" / 32mm | DC 04 | C-25 | A-25 |\n| 3.5C / 4C × 35 sqmm | 1-1/4\" / 32mm | DC 05 | C-35 | A-35 |\n| 3.5C / 4C × 50 sqmm | 1-1/2\" / 38mm | DC 06 | C-50 | A-50 |\n| 3.5C / 4C × 70 sqmm | 1-3/4\" / 45mm | DC 07 | C-70 | A-70 |\n| 3.5C / 4C × 95 sqmm | 2\" / 50mm | DC 08 | C-95 | A-95 |\n| 3.5C / 4C × 120 sqmm | 2-1/4\" / 57mm | DC 09 | C-120 | A-120 |\n| 3.5C / 4C × 150 sqmm | 2-1/2\" / 63mm | DC 10 | C-150 | A-150 |\n| 3.5C / 4C × 185 sqmm | 2-3/4\" / 70mm | DC 11 | C-185 | A-185 |\n| 3.5C / 4C × 240 sqmm | 3\" / 75mm | DC 12 | C-240 | A-240 |\n| 3.5C / 4C × 300 sqmm | 3-1/4\" / 82mm | DC 13 | C-300 | A-300 |\n| 3.5C / 4C × 400 sqmm | 3-1/2\" / 90mm | DC 14 | C-400 | A-400 |\n\n### Official Authorized Brands\nVolamp Elektrikals stocks the full range of heavy-duty nickel-plated brass glands and certified copper / bi-metallic crimping terminals from **Dowells, Comet, and HMI** with factory test certs for same-day dispatch.",
+    "tags": [
+      "Cable Glands",
+      "Lugs Chart",
+      "Dowells",
+      "Comet",
+      "HMI",
+      "Installation"
+    ],
+    "imageUrl": "/products/earthing.jpg",
+    "createdAt": "2026-10-26T23:15:00.000Z"
   }
 ]

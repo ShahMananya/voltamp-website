@@ -48,7 +48,7 @@ const categoryUrls = CATEGORY_SLUGS.map(s => `  <url>
     <priority>0.85</priority>
   </url>`).join('\n');
 
-const raw = fs.readFileSync(path.resolve(__dirname, 'client/public/products_db.json'), 'utf8');
+const raw = fs.readFileSync(path.resolve(__dirname, '../client/public/products_db.json'), 'utf8');
 const products = JSON.parse(raw);
 const productUrls = products
   .filter(p => p.productId && p.name)
@@ -66,7 +66,8 @@ ${categoryUrls}
 ${productUrls}
 </urlset>`.trim();
 
-fs.writeFileSync(path.resolve(__dirname, 'client/public/sitemap.xml'), xml, 'utf8');
+const outPath = path.resolve(__dirname, '../client/public/sitemap.xml');
+fs.writeFileSync(outPath, xml, 'utf8');
 console.log('Successfully generated client/public/sitemap.xml with', products.length, 'products. File size:', (xml.length / 1024).toFixed(1), 'KB');
 
 function escapeXml(str) {
@@ -122,7 +123,7 @@ ${itemsXml}
   </channel>
 </rss>`;
 
-const merchantPath = path.resolve(__dirname, 'client/public/google-merchant-feed.xml');
+const merchantPath = path.resolve(__dirname, '../client/public/google-merchant-feed.xml');
 fs.writeFileSync(merchantPath, merchantXml, 'utf8');
 console.log(`Successfully generated client/public/google-merchant-feed.xml with ${validProducts.length} items. File size: ${(fs.statSync(merchantPath).size / 1024).toFixed(1)} KB`);
 
