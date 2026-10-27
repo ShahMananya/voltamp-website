@@ -586,7 +586,7 @@ export default function PriceListPage() {
       setPinError("");
       toast.success("Welcome, Volamp Sales Team! Sales session unlocked for 30 minutes.");
     } else {
-      setPinError("Invalid sales access code. Use 'volamp2026' or contact your administrator.");
+      setPinError("Invalid sales desk access code. Please contact your system administrator.");
     }
   };
 
@@ -897,7 +897,7 @@ Central Depot:       Ahmedabad - Aslali Express Bypass, Gujarat, India
               </button>
               <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-400 text-center">
                 <Lock className="size-3 text-stone-400" />
-                <span>PIN: <code>volamp2026</code> (Authorized sales desk only)</span>
+                <span>Authorized Sales Desk & Admin Access</span>
               </div>
             </div>
           </div>
@@ -1305,10 +1305,7 @@ Central Depot:       Ahmedabad - Aslali Express Bypass, Gujarat, India
                   <Lock className="size-4 text-amber-600 shrink-0 mt-0.5" />
                   <div>
                     <span className="font-bold block">Sales Desk Security Verification</span>
-                    To prevent unauthorized price alterations, please verify your sales team PIN.
-                    <span className="block mt-1 font-mono text-[11px] opacity-80 font-bold">
-                      Default Sales PIN: <code>volamp2026</code>
-                    </span>
+                    To prevent unauthorized catalog alterations, please verify your authorized sales team credentials.
                   </div>
                 </div>
 
@@ -1320,7 +1317,7 @@ Central Depot:       Ahmedabad - Aslali Express Bypass, Gujarat, India
                     type="password"
                     value={salesPinInput}
                     onChange={(e) => setSalesPinInput(e.target.value)}
-                    placeholder="e.g. volamp2026"
+                    placeholder="Enter authorized PIN"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#ebd7c7] dark:border-[#3a1014] bg-[#faf5ef] dark:bg-[#120406] text-sm text-[#4d1217] dark:text-white focus:outline-hidden focus:ring-2 focus:ring-[#c56718]/40"
                     autoFocus
                   />

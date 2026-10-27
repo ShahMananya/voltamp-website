@@ -14,12 +14,12 @@ describe("Careers & Talent Acquisition API", () => {
     expect(roles).toBeDefined();
     expect(roles.length).toBeGreaterThanOrEqual(8);
 
-    const htLtRole = roles.find((r) => r.id === "ht-lt-cable-design-engineer");
-    expect(htLtRole).toBeDefined();
-    expect(htLtRole?.department).toBe("Engineering & R&D");
-    expect(htLtRole?.location).toContain("Ahmedabad");
-    expect(htLtRole?.responsibilities.length).toBeGreaterThan(0);
-    expect(htLtRole?.requirements.length).toBeGreaterThan(0);
+    const salesRole = roles.find((r) => r.id === "sales-executive");
+    expect(salesRole).toBeDefined();
+    expect(salesRole?.department).toBe("Sales & Business Development");
+    expect(salesRole?.location).toContain("Ahmedabad");
+    expect(salesRole?.responsibilities.length).toBeGreaterThan(0);
+    expect(salesRole?.skillsRequired.length).toBeGreaterThan(0);
   });
 
   it("submits a job application successfully and generates a unique VOL-HR application ID", async () => {

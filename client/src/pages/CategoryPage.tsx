@@ -575,7 +575,7 @@ export default function CategoryPage() {
         title={`${categoryTitle} - Buy B2B Wholesale Price`}
         description={`Explore genuine ${categoryTitle} with contractor discounts at Volamp Elektrikals. Polycab, Finolex, KEI, Schneider Electric, L&T, Dowells, and Legrand industrial cables ready for immediate dispatch across Gujarat and India.`}
         keywords={`${categoryTitle}, buy ${categoryTitle} online, electrical cables wholesale Ahmedabad, Polycab distributor Gujarat, industrial electrical switchgear supply`}
-        canonicalPath={`/category/${slug || "products"}`}
+        canonicalPath={slug ? `/category/${slug}` : "/products"}
         ogType="website"
         jsonLd={categoryJsonLd}
       />
@@ -2114,7 +2114,9 @@ export default function CategoryPage() {
                             className="text-xs font-semibold text-slate-800 dark:text-slate-100 line-clamp-2 min-h-[2.5rem] leading-snug group-hover:text-[#c56718] dark:group-hover:text-[#f59e0b] transition-colors"
                             title={prod.name}
                           >
-                            {prod.name}
+                            <Link href={`/product/${prod.productId}`} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                              {prod.name}
+                            </Link>
                           </h3>
 
                           {/* Technical Specification Badges */}
@@ -2174,16 +2176,13 @@ export default function CategoryPage() {
 
                         {/* Dual Action Buttons: View Details & Add To Cart */}
                         <div className="mt-3 pt-2 grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/product/${prod.productId}`);
-                            }}
-                            className="py-1.5 px-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-[#c56718] hover:text-[#c56718] dark:hover:text-[#f59e0b] text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all text-center cursor-pointer"
+                          <Link
+                            href={`/product/${prod.productId}`}
+                            onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                            className="py-1.5 px-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-[#c56718] hover:text-[#c56718] dark:hover:text-[#f59e0b] text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all text-center flex items-center justify-center cursor-pointer"
                           >
                             View Details
-                          </button>
+                          </Link>
                           <button
                             type="button"
                             onClick={(e) => handleAddToCart(e, prod)}
@@ -2242,9 +2241,12 @@ export default function CategoryPage() {
                                 </div>
                               </td>
                               <td className="py-2.5 px-4">
-                                <span className="font-semibold text-slate-900 dark:text-white block hover:text-[#c56718]">
+                                <Link
+                                  href={`/product/${prod.productId}`}
+                                  className="font-semibold text-slate-900 dark:text-white block hover:text-[#c56718]"
+                                >
                                   {prod.name}
-                                </span>
+                                </Link>
                                 <div className="flex flex-wrap gap-1 mt-1">
                                   {prod.size && (
                                     <span className="text-[10px] text-slate-500 bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 rounded">
@@ -2305,16 +2307,13 @@ export default function CategoryPage() {
                                       {isProductInCompare(prod.productId) ? "Compared" : "Compare"}
                                     </span>
                                   </button>
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      navigate(`/product/${prod.productId}`);
-                                    }}
-                                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 text-slate-700 dark:text-slate-200 text-xs font-semibold cursor-pointer"
+                                  <Link
+                                    href={`/product/${prod.productId}`}
+                                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                                    className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 text-slate-700 dark:text-slate-200 text-xs font-semibold inline-block text-center cursor-pointer"
                                   >
                                     Details
-                                  </button>
+                                  </Link>
                                   <button
                                     type="button"
                                     onClick={(e) => handleAddToCart(e, prod)}

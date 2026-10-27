@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Cable, Zap, ShieldCheck, Factory, PlugZap, ShoppingCart, ArrowRight, Plus, Minus, FileText, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -249,7 +249,7 @@ export default function FastMovingShowcase({ onAddToCart, onQuote }: FastMovingS
 
                   {/* Title & SKU */}
                   <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#c56718] dark:group-hover:text-amber-400 transition-colors line-clamp-2">
-                    {item.name}
+                    <Link href={`/product/${item.sku}`}>{item.name}</Link>
                   </h3>
                   <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500 block mt-0.5">
                     SKU: {item.sku}
@@ -334,13 +334,12 @@ export default function FastMovingShowcase({ onAddToCart, onQuote }: FastMovingS
                     >
                       BOM RFQ
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/product/${item.sku}`)}
+                    <Link
+                      href={`/product/${item.sku}`}
                       className="hover:underline flex items-center gap-0.5 cursor-pointer"
                     >
                       Details <ArrowRight className="size-2.5" />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

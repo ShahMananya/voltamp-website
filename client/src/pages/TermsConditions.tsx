@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import ThemeToggle from "@/components/ThemeToggle";
 import UniversalFooter from "@/components/layout/UniversalFooter";
+import SeoHead from "@/components/seo/SeoHead";
 import {
   FileText,
   ShieldCheck,
@@ -189,6 +190,11 @@ export default function TermsConditions() {
 
   return (
     <div className="policy-page min-h-screen bg-[#faf7f3] dark:bg-[#0c1520] text-[#3d2b2d] dark:text-[#f5f7f9] flex flex-col font-sans transition-colors">
+      <SeoHead
+        title="Terms & Conditions of Commercial Supply"
+        description="Official commercial terms, quotation validity, payment terms, and warranty conditions of Volamp Elektrikals Private Limited, Ahmedabad, Gujarat."
+        canonicalPath="/terms-and-conditions"
+      />
       {/* 1. Policy Navbar */}
       <header className="policy-navbar">
         <div className="policy-nav-container">

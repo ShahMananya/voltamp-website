@@ -7,6 +7,7 @@ export interface SeoProps {
   canonicalPath?: string;
   canonical?: string;
   noindex?: boolean;
+  noIndex?: boolean;
   ogImage?: string;
   ogType?: "website" | "article" | "product";
   jsonLd?: Record<string, any> | Array<Record<string, any>>;
@@ -28,6 +29,7 @@ export default function SeoHead({
   canonicalPath,
   canonical,
   noindex = false,
+  noIndex,
   ogImage = DEFAULT_IMAGE,
   ogType = "website",
   jsonLd,
@@ -79,16 +81,24 @@ export default function SeoHead({
     if (keywords) {
       setMetaTag("name", "keywords", keywords);
     }
-    setMetaTag("name", "robots", noindex ? "noindex, nofollow" : "index, follow");
 
-    // 3. Canonical Link
+    // Staging protection (always noindex vercel.app domains)
+    const isStaging = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
+    const shouldNoindex = Boolean(noindex || noIndex || isStaging);
+    setMetaTag("name", "robots", shouldNoindex ? "noindex, nofollow" : "index, follow");
+
+    // 3. Self-Referencing Canonical Link
     let fullCanonicalUrl = BASE_URL;
     if (canonical) {
       fullCanonicalUrl = canonical.startsWith("http") ? canonical : `${BASE_URL}${canonical.startsWith("/") ? "" : "/"}${canonical}`;
     } else if (canonicalPath) {
       const cleanPath = canonicalPath.startsWith("/") ? canonicalPath : `/${canonicalPath}`;
       fullCanonicalUrl = `${BASE_URL}${cleanPath === "/" ? "" : cleanPath}`;
+    } else if (typeof window !== "undefined") {
+      const pathname = window.location.pathname || "/";
+      fullCanonicalUrl = `${BASE_URL}${pathname === "/" ? "" : pathname.replace(/\/+$/, "")}`;
     }
+
     let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!link) {
       link = document.createElement("link");

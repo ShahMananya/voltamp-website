@@ -21,6 +21,7 @@ import {
   Scale,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import SeoHead from "@/components/seo/SeoHead";
 import { toast } from "sonner";
 
 type Language = "en" | "gu" | "hi";
@@ -559,6 +560,11 @@ export default function ShippingPolicy() {
 
   return (
     <div className="policy-page">
+      <SeoHead
+        title="Shipping & Dispatch Policy Across 28 States"
+        description="Official dispatch, logistics, transit damage, and POD policy for industrial cable consignments from Volamp Elektrikals central Ahmedabad fulfillment terminal."
+        canonicalPath="/shipping-policy"
+      />
       {/* Top Header */}
       <header className="policy-navbar">
         <div className="policy-nav-container">

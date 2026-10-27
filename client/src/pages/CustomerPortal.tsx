@@ -298,7 +298,7 @@ export default function CustomerPortal() {
   return (
     <div className="portal-shell industrial-portal">
       <SeoHead
-        title="Customer Dashboard & Orders | Voltamp"
+        title="Customer Dashboard & Orders | Volamp"
         description="Private customer dashboard for B2B procurement, order tracking, and account management."
         noindex={true}
       />

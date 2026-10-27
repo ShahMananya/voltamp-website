@@ -161,15 +161,15 @@ export default function ComplaintsCasesPage() {
   return (
     <div className="volamp-marketplace min-h-screen bg-[#faf7f3] dark:bg-[#0c1520] text-[#3d2b2d] dark:text-[#f5f7f9] flex flex-col font-sans transition-colors">
       <SeoHead
-        title="Official Grievance Cell & Complaints Resolution | Voltamp Elektrikals"
-        description="Official B2B grievance resolution desk of Voltamp Elektrikals Private Limited. File or track transit damage, batch test discrepancies, and delivery queries with Grievances@volampelektrikals.com."
-        keywords="Voltamp grievance cell, Voltamp complaint portal, electrical cable dispute resolution, Grievances@volampelektrikals.com, transit damage electrical cable"
+        title="Official Grievance Cell & Complaints Resolution | Volamp Elektrikals"
+        description="Official B2B grievance resolution desk of Volamp Elektrikals Private Limited. File or track transit damage, batch test discrepancies, and delivery queries with Grievances@volampelektrikals.com."
+        keywords="Volamp grievance cell, Volamp complaint portal, electrical cable dispute resolution, Grievances@volampelektrikals.com, transit damage electrical cable"
         canonical="https://volampelektrikals.com/complaints"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "ContactPage",
           "name": "Official Grievance Cell & Complaints Resolution",
-          "description": "Escalation desk for commercial, technical, and delivery disputes for Voltamp Elektrikals.",
+          "description": "Escalation desk for commercial, technical, and delivery disputes for Volamp Elektrikals.",
           "mainEntity": {
             "@type": "ContactPoint",
             "contactType": "Grievance Officer",

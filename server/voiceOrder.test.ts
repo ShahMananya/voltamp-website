@@ -58,6 +58,6 @@ describe("AI Voice Ordering Parser & Inventory Recognition", () => {
     expect(gujResult.items[0].matchedProduct?.productId).toBe("CAB-000005");
     expect(gujResult.items[0].candidates.length).toBeGreaterThan(0);
     expect(gujResult.items[1].detectedQuantity).toBe(1);
-    expect(gujResult.items[1].matchedProduct?.brand).toBe("LK");
+    expect(gujResult.items[1].matchedProduct?.brand).toBe("L&T / LK");
   });
 });

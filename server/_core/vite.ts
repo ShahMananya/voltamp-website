@@ -5,6 +5,7 @@ import { nanoid } from "nanoid";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
+import { seoPrerenderMiddleware } from "../seoPrerender";
 
 export function resolveHmrClientPort(rawPort: string | undefined): number {
   const parsedPort = Number(rawPort);
@@ -74,8 +75,8 @@ export function serveStatic(app: Express) {
 
   app.use(express.static(distPath));
 
-  // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+  // Serve with SEO Prerendering and real HTTP 404s
+  app.use("*", (req, res, next) => {
+    seoPrerenderMiddleware(req, res, next);
   });
 }

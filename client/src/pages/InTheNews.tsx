@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
+import SeoHead from "@/components/seo/SeoHead";
 import { useUserLocation } from "@/contexts/LocationContext";
 import { useCart } from "@/contexts/CartContext";
 import { trpc } from "@/lib/trpc";
@@ -147,6 +148,11 @@ export default function InTheNews() {
 
   return (
     <div className="volamp-marketplace min-h-screen bg-[#faf7f3] text-[#3d2b2d] transition-colors">
+      <SeoHead
+        title="Volamp in the News & Media Press Spotlight"
+        description="Official media coverage and press features for Volamp Elektrikals. Ahmedabad Mirror spotlight on CEO Naimil Vipul Patel and industrial growth."
+        canonicalPath="/in-the-news"
+      />
       {/* Universal Header (Consistent Warm Sand & Cream Theme) */}
       <UniversalHeader currentPage="news" />
 

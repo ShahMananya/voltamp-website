@@ -29,6 +29,7 @@ import { trpc } from "@/lib/trpc";
 import { useUserLocation } from "@/contexts/LocationContext";
 import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
+import SeoHead from "@/components/seo/SeoHead";
 
 const CATEGORY_OPTIONS = [
   "Wire Cables (LT / HT / Armoured / FRLS)",
@@ -149,6 +150,11 @@ export default function EnquirePage() {
 
   return (
     <div className="min-h-screen bg-[#fdfbf9] text-[#0b1f33] flex flex-col font-sans">
+      <SeoHead
+        title="Request Quote & Project Sourcing RFQ Desk"
+        description="Submit your electrical cable and switchgear BOM for project pricing, manufacturer discounts, and technical compliance reports from Volamp Elektrikals."
+        canonicalPath="/enquire"
+      />
       {/* Universal Header (Matching Home Page White Palette) */}
       <UniversalHeader currentPage="enquire" />
 

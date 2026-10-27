@@ -7,17 +7,26 @@ import { registerGoogleMerchantRoutes } from "../googleMerchantFeed";
 import { registerProductRestRoutes } from "../productRestRoutes";
 import { registerSeoRoutes } from "../seoRoutes";
 import { registerLiveMetalRoutes } from "../liveMetalRoutes";
+import { securityHeadersMiddleware } from "../securityHeaders";
+import { redirectsMiddleware } from "../redirects";
+import { seoPrerenderMiddleware } from "../seoPrerender";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 
 export function createExpressApp() {
   const app = express();
 
-  // Configure body parser with larger size limit for file uploads
+  // 1. Security Headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Staging Noindex)
+  app.use(securityHeadersMiddleware);
+
+  // 2. Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-  // Register all system routes
+  // 3. WordPress 301 Redirects & Query Cleaners
+  app.use(redirectsMiddleware);
+
+  // 4. Register all system routes
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerQuickOrderPdfRoute(app);
@@ -26,7 +35,7 @@ export function createExpressApp() {
   registerSeoRoutes(app);
   registerLiveMetalRoutes(app);
 
-  // tRPC API - supports /api/trpc, /trpc, and catches Vercel rewritten paths
+  // 5. tRPC API - supports /api/trpc, /trpc, and catches Vercel rewritten paths
   const trpcHandler = createExpressMiddleware({
     router: appRouter,
     createContext,
@@ -43,6 +52,9 @@ export function createExpressApp() {
     }
     next();
   });
+
+  // 6. Server-Side SEO Prerender & Real 404 handler for HTML routes
+  app.use(seoPrerenderMiddleware);
 
   return app;
 }

@@ -20,6 +20,7 @@ import {
   Scale,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import SeoHead from "@/components/seo/SeoHead";
 import { toast } from "sonner";
 
 interface PrivacySection {
@@ -153,6 +154,11 @@ export default function PrivacyPolicy() {
 
   return (
     <div className="policy-page">
+      <SeoHead
+        title="Privacy Policy & Commercial Data Governance"
+        description="Official B2B privacy policy of Volamp Elektrikals Private Limited. Strict data protection, zero third-party monetization, and GST compliance standards."
+        canonicalPath="/privacy-policy"
+      />
       {/* Top Navbar */}
       <header className="policy-navbar">
         <div className="policy-nav-container">

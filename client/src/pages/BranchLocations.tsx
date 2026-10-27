@@ -112,16 +112,16 @@ export default function BranchLocations() {
   return (
     <div className="volamp-marketplace min-h-screen bg-[#faf7f3] dark:bg-[#0c1520] text-[#3d2b2d] dark:text-[#f5f7f9] flex flex-col font-sans transition-colors">
       <SeoHead
-        title="Branch Locations & Warehouse Depots | Voltamp Ahmedabad & Aslali"
-        description="Visit Voltamp Elektrikals: Corporate Sales Office at Khadia (Old City) and Central Logistics Fulfillment Center at Aslali, Ahmedabad, Gujarat. Pan-India dispatch."
-        keywords="Voltamp branch Ahmedabad, electrical shop Khadia, cable warehouse Aslali, Polycab distributor Ahmedabad address, electrical wholesale Gujarat, Voltamp contact number"
+        title="Branch Locations & Warehouse Depots | Volamp Ahmedabad & Aslali"
+        description="Visit Volamp Elektrikals: Corporate Sales Office at Khadia (Old City) and Central Logistics Fulfillment Center at Aslali, Ahmedabad, Gujarat. Pan-India dispatch."
+        keywords="Volamp branch Ahmedabad, electrical shop Khadia, cable warehouse Aslali, Polycab distributor Ahmedabad address, electrical wholesale Gujarat, Volamp contact number"
         canonical="https://volampelektrikals.com/branch-locations"
         jsonLd={{
           "@context": "https://schema.org",
           "@graph": [
             {
               "@type": "LocalBusiness",
-              "name": "Voltamp Elektrikals Private Limited - Corporate Office",
+              "name": "Volamp Elektrikals Private Limited - Corporate Office",
               "telephone": "+919512365582",
               "email": "sales@volampelektrikals.com",
               "address": {
@@ -142,7 +142,7 @@ export default function BranchLocations() {
             },
             {
               "@type": "Warehouse",
-              "name": "Voltamp Elektrikals - Aslali Central Fulfillment Hub",
+              "name": "Volamp Elektrikals - Aslali Central Fulfillment Hub",
               "telephone": "+919512365582",
               "email": "logistics@volampelektrikals.com",
               "address": {

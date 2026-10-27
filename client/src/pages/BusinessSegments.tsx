@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { EnquireModal } from "@/components/enquire/EnquireModal";
 import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
+import SeoHead from "@/components/seo/SeoHead";
 import {
   ArrowRight,
   Building2,
@@ -174,6 +175,11 @@ export default function BusinessSegments() {
 
   return (
     <div className="volamp-marketplace min-h-screen bg-[#faf7f3] dark:bg-[#0c1520] text-[#3d2b2d] dark:text-[#f5f7f9] flex flex-col font-sans transition-colors">
+      <SeoHead
+        title="Industrial Business Segments & EPC Supply"
+        description="Electrical cable and switchgear supply solutions for EPC infrastructure, manufacturing, solar, commercial, and government projects. Request BOM quote."
+        canonicalPath="/business-segments"
+      />
       {/* 1. Header */}
       <UniversalHeader currentPage="segments" />
 

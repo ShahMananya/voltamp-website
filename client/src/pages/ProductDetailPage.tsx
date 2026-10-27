@@ -1138,6 +1138,11 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
 
     return (
       <div className="min-h-screen bg-[#f8fafc] dark:bg-[#090f17] flex flex-col items-center justify-center font-sans p-6">
+        <SeoHead
+          title="Product Not Found (404)"
+          description="The requested industrial electrical product was not found in our catalog. Browse our full verified inventory."
+          noindex={true}
+        />
         <div className="max-w-md w-full text-center space-y-4 bg-white dark:bg-[#111e2e] p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl">
           <div className="size-16 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-500 mx-auto flex items-center justify-center">
             <Package className="size-8" />

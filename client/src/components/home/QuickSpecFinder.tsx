@@ -415,7 +415,7 @@ export default function QuickSpecFinder({ onAddToCart, onQuote }: QuickSpecFinde
 
                   {/* Title & SKU */}
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-[#c56718] dark:group-hover:text-amber-400 transition-colors line-clamp-2">
-                    {prod.name}
+                    <Link href={`/product/${prod.sku}`}>{prod.name}</Link>
                   </h3>
                   <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-500 dark:text-slate-400 font-mono">
                     <span>SKU: {prod.sku}</span>
@@ -527,13 +527,12 @@ export default function QuickSpecFinder({ onAddToCart, onQuote }: QuickSpecFinde
                     >
                       <FileText className="size-3" /> Project RFQ
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/product/${prod.sku}`)}
+                    <Link
+                      href={`/product/${prod.sku}`}
                       className="hover:text-slate-900 dark:hover:text-white hover:underline cursor-pointer flex items-center gap-1"
                     >
                       View Full Specs <ArrowRight className="size-3" />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

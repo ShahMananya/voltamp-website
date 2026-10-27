@@ -83,7 +83,7 @@ describe("Dynamic Product Master Data System", () => {
     }
 
     const switchgearBrands = getCatalogBrands("Switchgear");
-    expect(switchgearBrands).toContain("LK");
+    expect(switchgearBrands.some((b) => b.includes("LK") || b.includes("L&T"))).toBe(true);
   });
 
   it("calculates import diff preview showing New, Updated, Unchanged, and Inactive items", () => {

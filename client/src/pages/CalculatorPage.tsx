@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
+import SeoHead from "@/components/seo/SeoHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/CartContext";
@@ -641,6 +642,11 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
 
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#090f17] text-[#1e293b] dark:text-[#f1f5f9] font-sans flex flex-col transition-colors">
+      <SeoHead
+        title="Cable Sizing & Electrical Cost Calculator"
+        description="Calculate electrical cable voltage drop, conductor sizing, and manufacturer discounts for Polycab, Finolex & KEI cables at Volamp Elektrikals. Try tool."
+        canonicalPath="/calculator"
+      />
       <UniversalHeader currentPage="calculator" />
 
       {/* Hero Section */}

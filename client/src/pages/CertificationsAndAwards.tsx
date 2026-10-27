@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
+import SeoHead from "@/components/seo/SeoHead";
 import {
   ShieldCheck,
   FileCheck,
@@ -315,6 +316,11 @@ export default function CertificationsAndAwards() {
 
   return (
     <div className="volamp-marketplace min-h-screen bg-[#faf7f3] dark:bg-[#0c1520] text-[#3d2b2d] dark:text-[#f5f7f9] flex flex-col font-sans transition-colors">
+      <SeoHead
+        title="IS & IEC Certifications, CPRI Test Reports"
+        description="Verified BIS, CPRI, NABL, and GeM certifications for Polycab, Finolex & KEI power cables and switchgear supplied by Volamp Elektrikals. View standards."
+        canonicalPath="/certifications-and-awards"
+      />
       {/* 1. Universal Top Header */}
       <UniversalHeader currentPage="about" />
 
