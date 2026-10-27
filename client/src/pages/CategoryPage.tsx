@@ -237,7 +237,7 @@ export default function CategoryPage() {
   const pageSize = 16;
 
   // tRPC query to load real products with full backend filtering
-  const { data: productsData, isLoading: isProductsLoading } = trpc.products.list.useQuery({
+  const { data: productsData, isLoading: isProductsLoading, isError: isProductsError } = trpc.products.list.useQuery({
     category: categoryQueryParam,
     subcategory: selectedSubCat || undefined,
     brand: selectedBrand || undefined,
@@ -270,11 +270,13 @@ export default function CategoryPage() {
     subcategory: selectedSubCat || undefined,
   });
 
-  // Fallback to static catalog if API is slow or unreachable on static hosting / Vercel
+  // Fallback to static catalog ONLY if API is unreachable / fails
   const [staticFallback, setStaticFallback] = useState<any[] | null>(null);
 
   useEffect(() => {
-    fetch("/products_db.json?v=" + Date.now(), { cache: "no-store" })
+    // Only attempt 4.9MB JSON fetch if serverless API reports an error
+    if (!isProductsError) return;
+    fetch("/products_db.json")
       .then((res) => (res.ok ? res.json() : null))
       .then((items) => {
         if (Array.isArray(items) && items.length > 0) {
@@ -318,7 +320,7 @@ export default function CategoryPage() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [isProductsError]);
 
   const fallbackFiltered = useMemo(() => {
     if (!staticFallback) return null;
@@ -1802,41 +1804,52 @@ export default function CategoryPage() {
           {/* RIGHT MAIN SHOWCASE: SORTING & 4-COLUMN PRODUCT GRID (Matching Image 1)  */}
           {/* ========================================================================= */}
           <section className="lg:col-span-9 space-y-4">
-            {/* Direct Sourcing Answer for AI Answer Engines (AEO/GEO) & Spec Summary */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#111e2e] border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2.5">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800/80 pb-2">
+            {/* Category Page Primary Heading (H1) & Comprehensive Intro Copy for SEO */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#111e2e] border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800/80 pb-2.5">
                 <div className="flex items-center gap-2">
                   <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#c56718] dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded border border-amber-200/60 dark:border-amber-800/40">
-                    Direct Sourcing Specification
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#c56718] dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-0.5 rounded border border-amber-200/60 dark:border-amber-800/40">
+                    B2B Wholesale Electrical Hub
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Reviewed by <strong className="text-slate-700 dark:text-slate-200 font-semibold">Volamp Engineering & Technical Desk</strong> • Updated October 2026
+                  Authorized Stockist • <strong className="text-slate-700 dark:text-slate-200 font-semibold">Ahmedabad Central Depot</strong> • 2026 Price List
                 </div>
               </div>
 
-              {/* 40-60 Word Direct Answer */}
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] tracking-tight">
+                {category ? `${category.name} Wholesale Distributor & Stockist` : "Industrial Electrical Cables, Switchgear & Power Distribution Catalogue"}
+              </h1>
+
+              {/* ~150 words of rich, indexable technical intro copy */}
               <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
-                Volamp Elektrikals is an authorized wholesale distributor and stockist supplying genuine {categoryTitle} manufactured by Polycab, Finolex, KEI Industries, Schneider Electric, L&T, Dowells, and Legrand. All supplies meet verified Bureau of Indian Standards (IS 7098, IS 1554, IS 694) and international EN 50618 norms, backed by manufacturer test certificates (MTC), same-day Gujarat dispatch, and 48 to 72-hour pan-India project delivery.
+                Volamp Elektrikals is an authorized wholesale distributor and stockist supplying certified {categoryTitle} manufactured by leading OEMs including Polycab, Finolex, KEI Industries, Schneider Electric, L&amp;T (Lauritz Knudsen), Dowells, and Legrand. Engineered for heavy industrial infrastructure, substations, commercial complexes, and EPC project contracting, our complete inventory complies strictly with Bureau of Indian Standards (IS 7098 Part 1 &amp; 2 for XLPE armoured cables, IS 1554 for PVC power cables, IS 694 for building wires, and EN 50618 for solar photovoltaic arrays). Every consignment is accompanied by official manufacturer Material Test Certificates (MTC) with complete batch traceability and guaranteed copper/aluminium conductor purity. Headquartered in Ahmedabad with centralized warehousing in Aslali, we ensure immediate same-day dispatch across Gujarat's industrial corridors (Sanand, Vatva, Naroda GIDC) and 24 to 48-hour insured freight to project sites across 28 states.
               </p>
 
               {/* Standards Badges */}
-              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                <span className="text-[11px] font-semibold text-slate-500">Standards:</span>
+              <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/80">
+                <span className="text-[11px] font-semibold text-slate-500">Compliance &amp; Certifications:</span>
                 <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] sm:text-[11px] font-mono font-medium">IS 7098 (Pt 1/2)</span>
                 <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] sm:text-[11px] font-mono font-medium">IS 1554</span>
                 <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] sm:text-[11px] font-mono font-medium">IS 694</span>
                 <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] sm:text-[11px] font-mono font-medium">EN 50618</span>
-                <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[10px] sm:text-[11px] font-medium border border-emerald-200 dark:border-emerald-800/40">CPRI / ERDA Tested</span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[10px] sm:text-[11px] font-medium border border-emerald-200 dark:border-emerald-800/40">CPRI / ERDA Tested · MTC Included</span>
               </div>
             </div>
 
             {/* Top Results Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
-              <span className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400">
-                Showing {effectiveData?.total ? `${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, effectiveData.total)} of ${effectiveData.total}` : "0"} Products
-              </span>
+              {isProductsLoading && !effectiveData ? (
+                <span className="text-xs sm:text-sm font-semibold text-slate-500 animate-pulse flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-[#c56718] animate-ping" />
+                  Loading verified catalogue specifications...
+                </span>
+              ) : (
+                <span className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400">
+                  Showing {effectiveData?.total ? `${(page - 1) * pageSize + 1}-${Math.min(page * pageSize, effectiveData.total)} of ${effectiveData.total}` : "0"} Products
+                </span>
+              )}
 
               <div className="flex items-center gap-3">
                 {/* Sort By Dropdown */}

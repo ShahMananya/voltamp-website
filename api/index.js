@@ -4648,28 +4648,28 @@ var STATIC_PAGES = [
   { path: "collaborate", priority: "0.8", changefreq: "monthly" },
   { path: "careers", priority: "0.7", changefreq: "weekly" },
   { path: "enquire", priority: "0.8", changefreq: "monthly" },
-  { path: "complaints-cases", priority: "0.8", changefreq: "monthly" },
   { path: "in-the-news", priority: "0.7", changefreq: "monthly" },
-  { path: "blog", priority: "0.7", changefreq: "weekly" },
-  { path: "pay-invoice", priority: "0.7", changefreq: "monthly" },
-  { path: "track", priority: "0.7", changefreq: "monthly" },
-  { path: "shipping-policy", priority: "0.6", changefreq: "monthly" },
-  { path: "refund-policy", priority: "0.6", changefreq: "monthly" },
-  { path: "terms-and-conditions", priority: "0.6", changefreq: "monthly" },
-  { path: "privacy-policy", priority: "0.6", changefreq: "monthly" }
+  { path: "blog", priority: "0.8", changefreq: "daily" },
+  { path: "shipping-policy", priority: "0.5", changefreq: "monthly" },
+  { path: "terms-and-conditions", priority: "0.5", changefreq: "monthly" },
+  { path: "privacy-policy", priority: "0.5", changefreq: "monthly" }
+];
+var BLOG_SLUGS = [
+  "copper-vs-aluminium-armoured-cable-sizing-guide",
+  "solar-dc-cable-specifications-iec-62930",
+  "lme-copper-aluminium-market-analysis-q4-2026",
+  "is-7098-vs-is-1554-cable-difference-guide",
+  "cable-gland-and-lug-size-selection-chart"
 ];
 var CATEGORY_SLUGS = [
   "wire-cables",
-  "switchgear",
-  "earthing-lightning",
-  "solar-renewable",
-  "substation-transmission",
-  "industrial-automation",
-  "lighting-luminaires",
-  "conduits-cable-management",
-  "capacitors-power-quality",
-  "safety-ppe-tools",
-  "fire-safety-cables"
+  "switch-gears",
+  "lugs",
+  "conduit",
+  "glands",
+  "wiring-device",
+  "earthing-material",
+  "solar"
 ];
 function generateSitemapXml() {
   const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
@@ -4687,6 +4687,14 @@ function generateSitemapXml() {
     <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
+  </url>`
+  ).join("\n");
+  const blogUrls = BLOG_SLUGS.map(
+    (slug) => `  <url>
+    <loc>${BASE_URL2}/blog/${slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>`
   ).join("\n");
   const products2 = loadProductsFromDisk();
@@ -4708,6 +4716,7 @@ function generateSitemapXml() {
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${staticUrls}
 ${categoryUrls}
+${blogUrls}
 ${productUrls}
 </urlset>`.trim();
 }

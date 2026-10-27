@@ -73,12 +73,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/complaints-cases</loc>
-    <lastmod>2026-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://volampelektrikals.com/in-the-news</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>monthly</changefreq>
@@ -87,44 +81,26 @@
   <url>
     <loc>https://volampelektrikals.com/blog</loc>
     <lastmod>2026-10-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://volampelektrikals.com/pay-invoice</loc>
-    <lastmod>2026-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://volampelektrikals.com/track</loc>
-    <lastmod>2026-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://volampelektrikals.com/shipping-policy</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://volampelektrikals.com/refund-policy</loc>
-    <lastmod>2026-10-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://volampelektrikals.com/terms-and-conditions</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://volampelektrikals.com/privacy-policy</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://volampelektrikals.com/category/wire-cables</loc>
@@ -133,64 +109,76 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/category/switchgear</loc>
+    <loc>https://volampelektrikals.com/category/switch-gears</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/category/earthing-lightning</loc>
+    <loc>https://volampelektrikals.com/category/lugs</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/category/solar-renewable</loc>
+    <loc>https://volampelektrikals.com/category/conduit</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/category/substation-transmission</loc>
+    <loc>https://volampelektrikals.com/category/glands</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/category/industrial-automation</loc>
+    <loc>https://volampelektrikals.com/category/wiring-device</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/category/lighting-luminaires</loc>
+    <loc>https://volampelektrikals.com/category/earthing-material</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/category/conduits-cable-management</loc>
+    <loc>https://volampelektrikals.com/category/solar</loc>
     <lastmod>2026-10-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/category/capacitors-power-quality</loc>
+    <loc>https://volampelektrikals.com/blog/copper-vs-aluminium-armoured-cable-sizing-guide</loc>
     <lastmod>2026-10-27</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/category/safety-ppe-tools</loc>
+    <loc>https://volampelektrikals.com/blog/solar-dc-cable-specifications-iec-62930</loc>
     <lastmod>2026-10-27</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
   <url>
-    <loc>https://volampelektrikals.com/category/fire-safety-cables</loc>
+    <loc>https://volampelektrikals.com/blog/lme-copper-aluminium-market-analysis-q4-2026</loc>
     <lastmod>2026-10-27</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://volampelektrikals.com/blog/is-7098-vs-is-1554-cable-difference-guide</loc>
+    <lastmod>2026-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
+  </url>
+  <url>
+    <loc>https://volampelektrikals.com/blog/cable-gland-and-lug-size-selection-chart</loc>
+    <lastmod>2026-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.80</priority>
   </url>
   <url>
     <loc>https://volampelektrikals.com/product/CAB-000001</loc>

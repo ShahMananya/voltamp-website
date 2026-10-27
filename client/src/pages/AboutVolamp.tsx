@@ -161,7 +161,7 @@ function CeoPortrait({ ceo }: { ceo: { name: string; imageUrl?: string | null; i
       <div className="about-ceo-portrait has-image">
         <img
           src={candidates[candidateIndex]}
-          alt={ceo.name}
+          alt={`${ceo.name} - Chief Executive Officer, Volamp Elektrikals`}
           className="about-ceo-photo"
           onError={() => {
             if (candidateIndex + 1 < candidates.length) {
@@ -203,7 +203,7 @@ function TeamMemberCard({ member }: { member: TeamMemberItem }) {
         <div className="about-team-avatar has-photo">
           <img
             src={candidates[candidateIndex]}
-            alt={member.name}
+            alt={`${member.name} - ${member.role}, Volamp Elektrikals`}
             className="about-team-photo"
             onError={() => {
               if (candidateIndex + 1 < candidates.length) {
@@ -545,18 +545,18 @@ export default function AboutVolamp() {
   return (
     <div className="about-page">
       <SeoHead
-        title="About Voltamp Elektrikals | 60+ Years Electrical Engineering Legacy"
-        description="Founded in June 1964 in Ahmedabad, Voltamp Elektrikals Private Limited is one of India's foremost B2B distributors of industrial cables, switchgear, and power distribution systems."
-        keywords="About Voltamp Elektrikals, electrical distributor Gujarat, Naimil Patel CEO, 60 years electrical supply Ahmedabad, Polycab master distributor, industrial cables history"
+        title="About Volamp Elektrikals | 60+ Years Legacy"
+        description="Founded in 1964 in Ahmedabad, Volamp is India's trusted distributor of industrial power cables, solar DC cabling & switchgear. Explore our 4-gen heritage."
+        keywords="About Volamp Elektrikals, electrical distributor Gujarat, Naimil Patel CEO, 60 years electrical supply Ahmedabad, Polycab master distributor, industrial cables history"
         canonical="https://volampelektrikals.com/about-volamp"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "AboutPage",
-          "name": "About Voltamp Elektrikals Private Limited",
-          "description": "Historical lineage and leadership profile of Voltamp Elektrikals. Family electrical business legacy since 1964; Volamp Elektrikals Private Limited incorporated in 2021 in Ahmedabad, Gujarat.",
+          "name": "About Volamp Elektrikals Private Limited",
+          "description": "Historical lineage and leadership profile of Volamp Elektrikals. Family electrical business legacy since 1964; Volamp Elektrikals Private Limited incorporated in 2021 in Ahmedabad, Gujarat.",
           "mainEntity": {
             "@type": "Organization",
-            "name": "Voltamp Elektrikals Private Limited",
+            "name": "Volamp Elektrikals Private Limited",
             "foundingDate": "2021-04-26",
             "founder": {
               "@type": "Person",

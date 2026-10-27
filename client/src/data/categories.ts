@@ -605,17 +605,42 @@ export const ICON_MAP = {
   Radio,
 };
 
+const CATEGORY_SLUG_ALIASES: Record<string, string> = {
+  "switchgear": "switch-gears",
+  "switch-gear": "switch-gears",
+  "switchgears": "switch-gears",
+  "earthing-lightning": "earthing-material",
+  "earthing": "earthing-material",
+  "earthing-materials": "earthing-material",
+  "earthing-wires": "earthing-material",
+  "earthing-wire": "earthing-material",
+  "solar-renewable": "solar",
+  "solar-energy": "solar",
+  "conduits-cable-management": "conduit",
+  "conduits": "conduit",
+  "pvc-pipe": "conduit",
+  "pvc-pipes": "conduit",
+  "pvc": "conduit",
+  "cable-glands": "glands",
+  "gland": "glands",
+  "cable-lugs": "lugs",
+  "lug": "lugs",
+  "wiring-devices": "wiring-device",
+  "wiring": "wiring-device",
+  "cables": "wire-cables",
+  "wires": "wire-cables",
+  "wire-cable": "wire-cables",
+};
+
 export function getCategoryBySlug(slug: string): Category | undefined {
   const normalized = slug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-  if (normalized === "pvc-pipe" || normalized === "pvc-pipes" || normalized === "pvc") {
-    return CATEGORIES.find((c) => c.slug === "conduit");
-  }
-  if (normalized === "earthing-wires" || normalized === "earthing-wire" || normalized === "earthing") {
-    return CATEGORIES.find((c) => c.slug === "earthing-material");
-  }
+  const mappedSlug = CATEGORY_SLUG_ALIASES[normalized] || normalized;
+
   return CATEGORIES.find(
     (c) =>
+      c.slug === mappedSlug ||
       c.slug === normalized ||
+      c.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") === mappedSlug ||
       c.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") === normalized
   );
 }

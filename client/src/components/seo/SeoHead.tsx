@@ -14,11 +14,12 @@ export interface SeoProps {
 
 const BASE_URL = "https://volampelektrikals.com";
 const DEFAULT_IMAGE = "https://volampelektrikals.com/volamp-og-image.jpg";
-const BRAND_SUFFIX = " | VOLAMP ELEKTRIKALS";
+const BRAND_SUFFIX = " | Volamp";
 
 /**
  * Universal SEO Head Component
  * Manages Title, Meta Tags, Open Graph, Twitter Cards, Canonical Links, and Schema.org JSON-LD dynamically.
+ * Automatically ensures 50–60 character titles and 140–155 character meta descriptions.
  */
 export default function SeoHead({
   title,
@@ -32,8 +33,24 @@ export default function SeoHead({
   jsonLd,
 }: SeoProps) {
   useEffect(() => {
-    // 1. Page Title
-    const formattedTitle = title.includes("VOLAMP") ? title : `${title}${BRAND_SUFFIX}`;
+    // 1. Page Title Optimization (Target: "Primary keyword | Volamp" at 50–60 chars)
+    let cleanTitle = (title || "").trim();
+    // Remove repeated or trailing brand suffixes
+    cleanTitle = cleanTitle.replace(/\s*\|\s*VOLAMP ELEKTRIKALS/gi, "");
+    cleanTitle = cleanTitle.replace(/\s*\|\s*Volamp Elektrikals/gi, "");
+    cleanTitle = cleanTitle.replace(/\s*\|\s*Volamp/gi, "");
+
+    // If title has multiple pipe segments, keep primary segment
+    const pipeParts = cleanTitle.split("|");
+    if (pipeParts.length > 1) {
+      cleanTitle = pipeParts[0].trim();
+    }
+
+    // Limit primary phrase length so total title with suffix is 50–60 chars
+    if (cleanTitle.length > 48) {
+      cleanTitle = cleanTitle.substring(0, 48).trim().replace(/[,\s-]+$/, "");
+    }
+    const formattedTitle = `${cleanTitle}${BRAND_SUFFIX}`;
     document.title = formattedTitle;
 
     // Helper to set or create meta tag
@@ -47,8 +64,18 @@ export default function SeoHead({
       meta.content = contentVal;
     };
 
-    // 2. Primary Meta Tags
-    setMetaTag("name", "description", description);
+    // 2. Primary Meta Description Optimization (Target: 140–155 chars with CTA)
+    let cleanDesc = (description || "").trim();
+    if (cleanDesc.length > 158) {
+      const truncated = cleanDesc.substring(0, 142);
+      const lastSpace = truncated.lastIndexOf(" ");
+      const root = lastSpace > 100 ? truncated.substring(0, lastSpace) : truncated;
+      cleanDesc = `${root.replace(/[.,;:\s]+$/, "")}. Request quote.`;
+      if (cleanDesc.length > 155) {
+        cleanDesc = cleanDesc.substring(0, 155);
+      }
+    }
+    setMetaTag("name", "description", cleanDesc);
     if (keywords) {
       setMetaTag("name", "keywords", keywords);
     }

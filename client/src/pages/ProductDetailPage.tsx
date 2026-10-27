@@ -1045,38 +1045,49 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
       ? currentActiveImage
       : `https://volampelektrikals.com${currentActiveImage.startsWith("/") ? "" : "/"}${currentActiveImage}`;
 
-    return [
-      {
-        "@context": "https://schema.org/",
-        "@type": "Product",
-        "@id": `https://volampelektrikals.com/product/${product.productId}#product`,
-        name: product.name,
-        image: [imgUrl],
-        description:
-          product.description ||
-          `${product.name} (${brandName}) industrial electrical specification. Certified genuine OEM supply with MTC test certificate from VOLAMP Elektrikals, Ahmedabad.`,
-        sku: product.sku || product.productId,
-        mpn: product.productId,
-        brand: {
-          "@type": "Brand",
-          name: brandName,
-        },
-        category: cat,
-        offers: {
-          "@type": "Offer",
-          url: `https://volampelektrikals.com/product/${product.productId}`,
-          priceCurrency: "INR",
-          price: effectiveUnitPrice.toFixed(2),
-          priceValidUntil: "2027-12-31",
-          itemCondition: "https://schema.org/NewCondition",
-          availability: "https://schema.org/InStock",
-          seller: {
-            "@type": "Organization",
-            name: "VOLAMP ELEKTRIKALS PVT. LTD.",
-            telephone: "+91-9512365582",
-          },
-        },
+    const brandPrefix = product.brand && !product.name.toLowerCase().includes(product.brand.toLowerCase()) ? `${product.brand} ` : "";
+    const sizeSuffix = product.size && !product.name.toLowerCase().includes(product.size.toLowerCase()) ? ` (${product.size})` : "";
+    const fullName = `${brandPrefix}${product.name}${sizeSuffix}`.trim();
+
+    const hasRealPrice = Boolean(effectiveUnitPrice > 0 && product.numericPrice && product.numericPrice > 0);
+
+    const productSchema: any = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "@id": `https://volampelektrikals.com/product/${product.productId}#product`,
+      name: fullName,
+      image: [imgUrl],
+      description:
+        product.description ||
+        `${fullName} (${brandName}) industrial electrical specification. Certified genuine OEM supply with MTC test certificate from VOLAMP Elektrikals, Ahmedabad.`,
+      sku: product.sku || product.productId,
+      mpn: product.productId,
+      brand: {
+        "@type": "Brand",
+        name: brandName,
       },
+      category: cat,
+    };
+
+    if (hasRealPrice) {
+      productSchema.offers = {
+        "@type": "Offer",
+        url: `https://volampelektrikals.com/product/${product.productId}`,
+        priceCurrency: "INR",
+        price: effectiveUnitPrice.toFixed(2),
+        priceValidUntil: "2027-12-31",
+        itemCondition: "https://schema.org/NewCondition",
+        availability: product.availability === "OUT OF STOCK" ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+        seller: {
+          "@type": "Organization",
+          name: "VOLAMP ELEKTRIKALS PVT. LTD.",
+          telephone: "+91-9512365582",
+        },
+      };
+    }
+
+    return [
+      productSchema,
       {
         "@context": "https://schema.org/",
         "@type": "BreadcrumbList",
@@ -1096,7 +1107,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
           {
             "@type": "ListItem",
             position: 3,
-            name: product.name,
+            name: fullName,
             item: `https://volampelektrikals.com/product/${product.productId}`,
           },
         ],
@@ -1159,12 +1170,16 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
     );
   }
 
+  const brandPrefix = product.brand && !product.name.toLowerCase().includes(product.brand.toLowerCase()) ? `${product.brand} ` : "";
+  const sizeSuffix = product.size && !product.name.toLowerCase().includes(product.size.toLowerCase()) ? ` (${product.size})` : "";
+  const fullName = `${brandPrefix}${product.name}${sizeSuffix}`.trim();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] via-slate-50 to-[#f1f5f9] dark:from-[#090f17] dark:via-[#0c1522] dark:to-[#080d14] text-[#1e293b] dark:text-[#f1f5f9] flex flex-col font-sans transition-colors">
       <SeoHead
-        title={`${product.name} | ${product.brand || "Industrial"} | Volamp Elektrikals Authorized Dealer`}
-        description={`Buy ${product.name} (${product.brand || "Industrial"}) from Volamp Elektrikals, Authorized Dealer & Distributor. B2B contractor rates, certified specifications, MTC test certificates, fast dispatch from Ahmedabad.`}
-        keywords={`${product.name}, ${product.brand}, ${product.category}, buy ${product.name} online, electrical supplier Ahmedabad, Volamp Elektrikals wholesale, Polycab Havells distributor`}
+        title={`${fullName} Wholesale`}
+        description={`Buy ${fullName} at wholesale distributor rates with MTC test certificates from Volamp Elektrikals. Fast dispatch from Ahmedabad. Request quote.`}
+        keywords={`${product.name}, ${product.brand}, ${product.category}, buy ${product.name} online, electrical supplier Ahmedabad, Volamp wholesale`}
         canonicalPath={`/product/${product.productId}`}
         ogImage={currentActiveImage.startsWith("http") ? currentActiveImage : `https://volampelektrikals.com${currentActiveImage}`}
         ogType="product"
@@ -1489,7 +1504,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
               </div>
 
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] tracking-tight leading-snug">
-                {product.name}
+                {fullName}
               </h1>
 
               <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 font-mono">

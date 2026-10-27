@@ -200,9 +200,9 @@ export default function Home() {
 
   return <div className="volamp-marketplace">
     <SeoHead
-      title="VOLAMP ELEKTRIKALS | B2B Electrical Supplier & Power Cable Distributor Ahmedabad Gujarat"
-      description="VOLAMP ELEKTRIKALS is a leading B2B electrical distributor in Ahmedabad, Gujarat. Supplying Polycab, Havells, RR Kabel, KEI, and Schneider LT/HT power cables, solar DC cables, switchgear, and earthing materials across India and global export corridors."
-      keywords="electrical supplier Ahmedabad, cable distributor Gujarat, Polycab distributor Ahmedabad, Havells switchgear dealer, solar DC cable supplier, LT HT power cable Gujarat, industrial electrical distributor, Volamp Elektrikals"
+      title="Industrial Cable & Electrical Distributor"
+      description="Authorized distributor of Polycab, Finolex, KEI & Schneider cables and switchgear in Ahmedabad. 24-48h dispatch across India. Request wholesale quote."
+      keywords="electrical supplier Ahmedabad, cable distributor Gujarat, Polycab distributor Ahmedabad, Finolex cables, KEI cables, switchgear, Volamp Elektrikals"
       canonicalPath="/"
       ogType="website"
     />
@@ -962,7 +962,7 @@ export default function Home() {
       <div className="relative z-10 market-container flex flex-col items-center justify-end text-center pt-16 sm:pt-24 lg:pt-32 pb-8 sm:pb-10 px-4 mt-auto">
         {/* Screen-reader accessible H1 for SEO compliance */}
         <h1 className="sr-only">
-          VOLAMP ELEKTRIKALS | India's Premier Industrial Power Cable & Electrical Stockist
+          Industrial Cable & Electrical Distributor in Ahmedabad
         </h1>
 
         {/* Sound mute/unmute control positioned discreetly */}
@@ -990,7 +990,7 @@ export default function Home() {
           <div className="market-section-head">
             <div>
               <span className="market-kicker">BROWSE THE SUPPLY SYSTEM · 8 MASTER CATEGORIES · 3,385+ PRODUCTS</span>
-              <h1>Explore categories</h1>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Explore categories</h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
                 Direct wholesale distributor pricing, IS/IEC/CE certifications, Material Test Certificates (MTC), and 48 to 72-hour pan-India project dispatch across our complete electrical portfolio.
               </p>
