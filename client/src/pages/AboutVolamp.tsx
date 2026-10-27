@@ -553,11 +553,11 @@ export default function AboutVolamp() {
           "@context": "https://schema.org",
           "@type": "AboutPage",
           "name": "About Voltamp Elektrikals Private Limited",
-          "description": "Historical lineage and leadership profile of Voltamp Elektrikals, founded June 1964 in Ahmedabad, Gujarat.",
+          "description": "Historical lineage and leadership profile of Voltamp Elektrikals. Family electrical business legacy since 1964; Volamp Elektrikals Private Limited incorporated in 2021 in Ahmedabad, Gujarat.",
           "mainEntity": {
             "@type": "Organization",
             "name": "Voltamp Elektrikals Private Limited",
-            "foundingDate": "1964-06",
+            "foundingDate": "2021-04-26",
             "founder": {
               "@type": "Person",
               "name": "Patel Family"
@@ -906,7 +906,7 @@ export default function AboutVolamp() {
                 <span>01</span>
                 <h3>Clarity before commitment</h3>
                 <p>
-                  Direct technical specifications, verified cable sizing, and transparent manufacturer pricing.
+                  Direct technical specifications, verified cable sizing, and transparent wholesale distributor pricing.
                 </p>
               </article>
               <article>

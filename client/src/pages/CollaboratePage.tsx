@@ -327,7 +327,7 @@ export default function CollaboratePage() {
                 Distribution & Dealership
               </h3>
               <p className="text-xs text-[#5d4a4b] leading-relaxed">
-                Exclusive territory rights, factory-direct margins, and ready inventories across House Wires & Industrial Cables.
+                Exclusive territory rights, wholesale distributor margins, and ready inventories across House Wires & Industrial Cables.
               </p>
             </div>
 

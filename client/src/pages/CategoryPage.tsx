@@ -10,6 +10,7 @@ import {
   Copy,
   FileSpreadsheet,
   FileText,
+  FileCheck,
   Filter,
   Grid,
   Headphones,
@@ -501,7 +502,7 @@ export default function CategoryPage() {
         "@type": "CollectionPage",
         "@id": `https://volampelektrikals.com/category/${slug || "products"}#collection`,
         name: `${categoryTitle} | VOLAMP Elektrikals B2B Wholesale Catalog`,
-        description: `Explore genuine ${categoryTitle} with B2B contractor discounts at Volamp Elektrikals. Authorized distribution of Polycab, Havells, Schneider, L&T, and industrial cables from Ahmedabad, Gujarat.`,
+        description: `Explore genuine ${categoryTitle} with B2B contractor discounts at Volamp Elektrikals. Authorized wholesale distribution of Polycab, Finolex, KEI, Schneider Electric, L&T, Dowells, and Legrand industrial cables from Ahmedabad, Gujarat.`,
         url: `https://volampelektrikals.com/category/${slug || "products"}`,
         isPartOf: {
           "@type": "WebSite",
@@ -533,6 +534,36 @@ export default function CategoryPage() {
           },
         ],
       },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: `Where are ${categoryTitle} products dispatched from, and what are the delivery timelines?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Orders within Ahmedabad and Gujarat GIDC industrial belts benefit from same-day to 24-hour dispatch from our central Aslali warehouse. Pan-India shipments across 28 states arrive within 48 to 72 hours via insured freight.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: `Do ${categoryTitle} products come with official Material Test Certificates (MTC)?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Yes. All consignments are accompanied by official manufacturer Material Test Certificates (MTC), routine batch test reports, and compliance certificates for IS 7098, IS 1554, IS 694, or EN 50618.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: `Which brands does Volamp distribute for ${categoryTitle}?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Volamp Elektrikals is an authorized wholesale distributor and stockist of Polycab, Finolex, KEI Industries, Schneider Electric, L&T / Lauritz Knudsen, Dowells, and Legrand.",
+            },
+          },
+        ],
+      },
     ];
   }, [categoryTitle, slug]);
 
@@ -540,7 +571,7 @@ export default function CategoryPage() {
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0c1520] text-[#1e293b] dark:text-[#f1f5f9] flex flex-col font-sans transition-colors">
       <SeoHead
         title={`${categoryTitle} - Buy B2B Wholesale Price`}
-        description={`Explore genuine ${categoryTitle} with contractor discounts at Volamp Elektrikals. Polycab, Havells, Schneider, L&T, and industrial power cables ready for immediate dispatch across Gujarat and India.`}
+        description={`Explore genuine ${categoryTitle} with contractor discounts at Volamp Elektrikals. Polycab, Finolex, KEI, Schneider Electric, L&T, Dowells, and Legrand industrial cables ready for immediate dispatch across Gujarat and India.`}
         keywords={`${categoryTitle}, buy ${categoryTitle} online, electrical cables wholesale Ahmedabad, Polycab distributor Gujarat, industrial electrical switchgear supply`}
         canonicalPath={`/category/${slug || "products"}`}
         ogType="website"
@@ -1771,6 +1802,36 @@ export default function CategoryPage() {
           {/* RIGHT MAIN SHOWCASE: SORTING & 4-COLUMN PRODUCT GRID (Matching Image 1)  */}
           {/* ========================================================================= */}
           <section className="lg:col-span-9 space-y-4">
+            {/* Direct Sourcing Answer for AI Answer Engines (AEO/GEO) & Spec Summary */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#111e2e] border border-slate-200/90 dark:border-slate-800 shadow-xs space-y-2.5">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800/80 pb-2">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#c56718] dark:text-amber-400 bg-amber-50 dark:bg-amber-950/50 px-2 py-0.5 rounded border border-amber-200/60 dark:border-amber-800/40">
+                    Direct Sourcing Specification
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                  Reviewed by <strong className="text-slate-700 dark:text-slate-200 font-semibold">Volamp Engineering & Technical Desk</strong> • Updated October 2026
+                </div>
+              </div>
+
+              {/* 40-60 Word Direct Answer */}
+              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
+                Volamp Elektrikals is an authorized wholesale distributor and stockist supplying genuine {categoryTitle} manufactured by Polycab, Finolex, KEI Industries, Schneider Electric, L&T, Dowells, and Legrand. All supplies meet verified Bureau of Indian Standards (IS 7098, IS 1554, IS 694) and international EN 50618 norms, backed by manufacturer test certificates (MTC), same-day Gujarat dispatch, and 48 to 72-hour pan-India project delivery.
+              </p>
+
+              {/* Standards Badges */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                <span className="text-[11px] font-semibold text-slate-500">Standards:</span>
+                <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] sm:text-[11px] font-mono font-medium">IS 7098 (Pt 1/2)</span>
+                <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] sm:text-[11px] font-mono font-medium">IS 1554</span>
+                <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] sm:text-[11px] font-mono font-medium">IS 694</span>
+                <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] sm:text-[11px] font-mono font-medium">EN 50618</span>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[10px] sm:text-[11px] font-medium border border-emerald-200 dark:border-emerald-800/40">CPRI / ERDA Tested</span>
+              </div>
+            </div>
+
             {/* Top Results Bar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200 dark:border-slate-800">
               <span className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400">
@@ -2337,6 +2398,102 @@ export default function CategoryPage() {
             >
               Call 9512365582
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Visible FAQ and Technical Spec Sheet for AEO/GEO Answer Engines */}
+      <section className="bg-slate-50 dark:bg-[#0a1420] border-t border-slate-200 dark:border-slate-800 py-10">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 space-y-8">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-[#c56718] dark:text-amber-400 block mb-1">
+              Technical Standards & Sourcing FAQs
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
+              {categoryTitle} Sourcing Guide & Standards
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Spec Sheet Table */}
+            <div className="bg-white dark:bg-[#111e2e] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                <ShieldCheck className="size-4 text-[#c56718]" />
+                Technical Standards Quick Reference
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
+                    <tr>
+                      <th className="py-2 px-3 font-semibold">Standard</th>
+                      <th className="py-2 px-3 font-semibold">Description</th>
+                      <th className="py-2 px-3 font-semibold">Voltage / Rating</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                    <tr>
+                      <td className="py-2 px-3 font-mono font-medium text-[#c56718]">IS 7098 (Pt 1)</td>
+                      <td className="py-2 px-3">Crosslinked Polyethylene (XLPE) Insulated PVC Sheathed Cables</td>
+                      <td className="py-2 px-3">Up to 1.1 kV</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-3 font-mono font-medium text-[#c56718]">IS 7098 (Pt 2)</td>
+                      <td className="py-2 px-3">HT XLPE Power Cables for Electricity Supply</td>
+                      <td className="py-2 px-3">3.3 kV to 33 kV</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-3 font-mono font-medium text-[#c56718]">IS 1554 (Pt 1)</td>
+                      <td className="py-2 px-3">PVC Insulated Heavy Duty Electrical Power Cables</td>
+                      <td className="py-2 px-3">Up to 1.1 kV</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-3 font-mono font-medium text-[#c56718]">IS 694</td>
+                      <td className="py-2 px-3">PVC Insulated Copper Wires for Working Voltages</td>
+                      <td className="py-2 px-3">Up to 1.1 kV</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 px-3 font-mono font-medium text-[#c56718]">EN 50618</td>
+                      <td className="py-2 px-3">Electric Cables for Photovoltaic Systems (Solar DC)</td>
+                      <td className="py-2 px-3">1500 V DC</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Visible FAQ Matching Schema */}
+            <div className="bg-white dark:bg-[#111e2e] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-4">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                <FileCheck className="size-4 text-emerald-600" />
+                Frequently Asked Sourcing Questions
+              </h3>
+              <div className="space-y-3 text-xs">
+                <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <h4 className="font-bold text-slate-900 dark:text-white">
+                    Where are products dispatched from, and what are the delivery timelines?
+                  </h4>
+                  <p className="mt-1 text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Orders within Ahmedabad and Gujarat GIDC industrial belts benefit from same-day to 24-hour dispatch from our central Aslali warehouse. Pan-India shipments across 28 states arrive within 48 to 72 hours via insured freight.
+                  </p>
+                </div>
+                <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <h4 className="font-bold text-slate-900 dark:text-white">
+                    Do products come with official Material Test Certificates (MTC)?
+                  </h4>
+                  <p className="mt-1 text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Yes. All consignments are accompanied by official manufacturer Material Test Certificates (MTC), routine batch test reports, and compliance certificates for IS 7098, IS 1554, IS 694, or EN 50618.
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-slate-900 dark:text-white">
+                    Which brands does Volamp distribute for {categoryTitle}?
+                  </h4>
+                  <p className="mt-1 text-slate-600 dark:text-slate-300 leading-relaxed">
+                    Volamp Elektrikals is an authorized wholesale distributor and stockist of Polycab, Finolex, KEI Industries, Schneider Electric, L&T / Lauritz Knudsen, Dowells, and Legrand.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

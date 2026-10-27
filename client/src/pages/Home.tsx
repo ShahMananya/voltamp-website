@@ -674,7 +674,7 @@ export default function Home() {
                       </div>
                       <div>
                         <strong>Wholesale & EPC Supply Support</strong>
-                        <p>Direct manufacturer pricing, Material Test Certificates (MTC), and pan-India project dispatch.</p>
+                        <p>Direct wholesale distributor pricing, Material Test Certificates (MTC), and pan-India project dispatch.</p>
                       </div>
                     </div>
                   </div>
@@ -992,7 +992,7 @@ export default function Home() {
               <span className="market-kicker">BROWSE THE SUPPLY SYSTEM · 8 MASTER CATEGORIES · 3,385+ PRODUCTS</span>
               <h1>Explore categories</h1>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
-                Direct manufacturer pricing, IS/IEC/CE certifications, Material Test Certificates (MTC), and 48-hour pan-India project dispatch across our complete electrical portfolio.
+                Direct wholesale distributor pricing, IS/IEC/CE certifications, Material Test Certificates (MTC), and 48 to 72-hour pan-India project dispatch across our complete electrical portfolio.
               </p>
             </div>
             <div className="hidden sm:flex items-center gap-2">
@@ -1074,7 +1074,7 @@ export default function Home() {
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white">Pan-India & Export Corridors</h3>
               <p className="mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                Dedicated 12-hour dispatch corridors across 28 states, major transit hubs, and international maritime export ports.
+                Same-day to 24-hour dispatch across Gujarat, and 48 to 72-hour express dispatch across 28 states & major transit corridors.
               </p>
             </div>
 
@@ -1120,7 +1120,7 @@ export default function Home() {
                 </h2>
 
                 <p className="mt-3.5 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl">
-                  Get verified factory-direct pricing, official Material Test Certificates (MTC), and pan-India project dispatch directly from our central Ahmedabad manufacturing hub.
+                  Get verified wholesale distributor pricing, official manufacturer Material Test Certificates (MTC), and pan-India project dispatch directly from our central Ahmedabad logistics hub.
                 </p>
               </div>
 
@@ -1132,7 +1132,7 @@ export default function Home() {
                       <Factory className="size-5" />
                     </div>
                     <div>
-                      <strong className="block text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Manufacturing HQ</strong>
+                      <strong className="block text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Corporate & Logistics HQ</strong>
                       <span className="text-[11px] text-slate-500 dark:text-slate-400">Ahmedabad, Gujarat</span>
                     </div>
                   </div>

@@ -165,7 +165,7 @@ export default function EnquirePage() {
               Tell us what you need to source.
             </h1>
             <p className="mt-3 text-[#5d4a4b] text-sm sm:text-base max-w-2xl leading-relaxed">
-              Get direct manufacturer pricing, verified plant specifications, and prompt technical quotations for industrial, EPC, and export projects.
+              Get direct wholesale distributor pricing, verified manufacturer specifications, and prompt technical quotations for industrial, EPC, and export projects.
             </p>
           </div>
 

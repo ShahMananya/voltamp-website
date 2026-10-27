@@ -4,7 +4,7 @@ Disallow: /portal
 Disallow: /employee-portal
 Disallow: /api/trpc/
 
-# AI Crawlers & Answer Engines
+# AI Crawlers & Answer Engines (AEO / GEO explicit crawl access)
 User-agent: GPTBot
 Allow: /
 User-agent: ClaudeBot
@@ -12,6 +12,12 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 User-agent: Google-Extended
+Allow: /
+User-agent: Amazonbot
+Allow: /
+User-agent: Meta-ExternalAgent
+Allow: /
+User-agent: Bytespider
 Allow: /
 
 Sitemap: https://volampelektrikals.com/sitemap.xml

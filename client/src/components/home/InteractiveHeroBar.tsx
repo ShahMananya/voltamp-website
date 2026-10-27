@@ -29,7 +29,7 @@ export default function InteractiveHeroBar({
   const actionCards = [
     {
       title: "Project Quote Desk",
-      subtitle: "Instant factory-direct BOM pricing",
+      subtitle: "Instant wholesale B2B pricing",
       badge: "Turnaround < 2h",
       icon: FileText,
       accent: "from-amber-500/10 to-orange-500/10 text-[#c56718] dark:text-amber-400 border-amber-300/60 dark:border-amber-500/30",
