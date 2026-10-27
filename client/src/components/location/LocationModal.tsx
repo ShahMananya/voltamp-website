@@ -71,7 +71,6 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
   const [activeTab, setActiveTab] = useState<"global" | "india">("global");
   const [customInput, setCustomInput] = useState("");
   const [isDetecting, setIsDetecting] = useState(false);
-  const [isInteracted, setIsInteracted] = useState(false);
   const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const dismissWelcome = (e?: React.MouseEvent | React.TouchEvent | KeyboardEvent) => {
@@ -100,10 +99,9 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [welcomeLocation]);
 
-  // Auto-close welcome popup after 1.5 seconds if user does not interact or hover
+  // Auto-close welcome popup unconditionally after 1.5 seconds (1500ms)
   useEffect(() => {
     if (welcomeLocation) {
-      setIsInteracted(false);
       autoCloseTimerRef.current = setTimeout(() => {
         dismissWelcome();
       }, 1500);
@@ -116,14 +114,6 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
       }
     };
   }, [welcomeLocation]);
-
-  const handleUserPress = () => {
-    if (autoCloseTimerRef.current) {
-      clearTimeout(autoCloseTimerRef.current);
-      autoCloseTimerRef.current = null;
-    }
-    setIsInteracted(true);
-  };
 
   // Check if location is an international/global location
   const isGlobalLocation = (loc: string) => {
@@ -383,25 +373,17 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
         >
           <div
             className="account-modal relative w-full max-w-[520px] rounded-2xl bg-white border border-[#d2e0e8] p-7 shadow-2xl text-center overflow-hidden"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleUserPress();
-            }}
-            onMouseEnter={handleUserPress}
-            onMouseDown={handleUserPress}
-            onTouchStart={handleUserPress}
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* 1.5s Auto-dismiss timer indicator (pauses on hover) */}
-            {!isInteracted && (
-              <div className="absolute top-0 left-0 right-0 h-1 bg-amber-100 overflow-hidden rounded-t-2xl">
-                <div
-                  className="h-full bg-gradient-to-r from-amber-500 to-[#c46b19]"
-                  style={{
-                    animation: "volampAutoDismiss 1500ms linear forwards",
-                  }}
-                />
-              </div>
-            )}
+            {/* 1.5s Auto-dismiss timer indicator */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-amber-100 overflow-hidden rounded-t-2xl">
+              <div
+                className="h-full bg-gradient-to-r from-amber-500 to-[#c46b19]"
+                style={{
+                  animation: "volampAutoDismiss 1500ms linear forwards",
+                }}
+              />
+            </div>
             <style>{`
               @keyframes volampAutoDismiss {
                 0% { width: 100%; }
@@ -409,14 +391,13 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
               }
             `}</style>
 
-            {/* Close Button */}
+            {/* Close / Cancel Button */}
             <button
               type="button"
               onClick={(e) => dismissWelcome(e)}
-              onMouseDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
               className="absolute right-4 top-4 z-50 rounded-full p-2.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer flex items-center justify-center"
               aria-label="Close welcome popup"
+              title="Close"
             >
               <X className="size-5" />
             </button>
