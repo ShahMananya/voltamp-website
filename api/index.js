@@ -4023,7 +4023,7 @@ function loadProductsFromDisk() {
         productId: item.productId,
         sku: item.sku || `SKU-${item.productId}`,
         name: item.name,
-        brand: item.brand || (item.category === "Lugs" || item.productId && item.productId.startsWith("LUG-") ? "Dowells" : "Polycab"),
+        brand: item.brand !== void 0 ? item.brand || "" : item.category === "Lugs" || item.productId && item.productId.startsWith("LUG-") ? "Dowells" : ["Wiring Devices", "Earthing Wires", "Solar"].includes(item.category) ? "" : "Polycab",
         category: item.category,
         subcategory: item.subcategory || null,
         description: item.description || null,
@@ -4085,6 +4085,7 @@ function normalizeCategory(c) {
 }
 function normalizeBrand(b) {
   const lower = (b || "").toLowerCase().trim();
+  if (!lower) return "";
   if (lower === "finolex" || lower === "finnolex") return "finolex";
   if (lower.includes("schneider") || lower.includes("schnieder")) return "schneider electric";
   if (lower === "l&t" || lower === "l & t" || lower === "lk" || lower === "l&t / lk" || lower.includes("larsen")) return "l&t / lk";
@@ -4092,6 +4093,8 @@ function normalizeBrand(b) {
   if (lower === "kei") return "kei";
   if (lower === "legrand") return "legrand";
   if (lower.includes("dowell")) return "dowells";
+  if (lower === "hmi" || lower.includes("hmi")) return "hmi";
+  if (lower === "comet" || lower.includes("comet")) return "comet";
   return lower;
 }
 function parseItemSpecs(specifications) {
@@ -4110,6 +4113,8 @@ function getProductHaystack(p) {
   if (brandNorm === "schnieder") brandAliases += " schneider schnieder schneider electric";
   if (brandNorm === "lk") brandAliases += " lk l&t l and t larsen toubro";
   if (brandNorm.includes("dowell")) brandAliases += " dowells dowell dowell's";
+  if (brandNorm === "hmi") brandAliases += " hmi hmi-w hmi-f";
+  if (brandNorm === "comet") brandAliases += " comet";
   const size = (p.size || "").toLowerCase();
   const sizeNum = size.replace(/[^\d\.]/g, "");
   let sizeAliases = size;
@@ -4559,15 +4564,18 @@ function getCatalogBrands(category) {
   const all = getCachedProducts();
   const brands = /* @__PURE__ */ new Set();
   const targetCategory = category ? normalizeCategory(category) : null;
+  if (targetCategory && ["Wiring Devices", "Earthing Wires", "Solar"].includes(targetCategory)) {
+    return [];
+  }
   for (const p of all) {
     if (targetCategory && normalizeCategory(p.category) !== targetCategory) {
       continue;
     }
-    if (p.brand && !p.brand.toLowerCase().includes("volamp")) {
-      brands.add(p.brand);
+    if (p.brand && p.brand.trim() !== "" && !p.brand.toLowerCase().includes("volamp")) {
+      brands.add(p.brand.trim());
     }
   }
-  const canonicalOrder = ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand", "Dowells"];
+  const canonicalOrder = ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand", "Dowells", "HMI", "Comet"];
   return Array.from(brands).sort((a, b) => {
     const ia = canonicalOrder.indexOf(a);
     const ib = canonicalOrder.indexOf(b);
@@ -9096,6 +9104,8 @@ function parseProductQuery(q) {
   else if (/legrand/i.test(lower)) brand = "legrand";
   else if (/lk|l&t|larsen/i.test(lower)) brand = "lk";
   else if (/dowell/i.test(lower)) brand = "dowells";
+  else if (/hmi/i.test(lower)) brand = "hmi";
+  else if (/comet/i.test(lower)) brand = "comet";
   else if (/(?:volamp|voltamp)\s+(?:products?|brand|cables?|wires?|switchgear|lugs?|glands?|earthing|conduits?)|brand\s*[:=]?\s*(?:volamp|voltamp)/i.test(lower)) brand = "volamp";
   let material = null;
   if (/copper|cu\b/i.test(lower)) material = "copper";

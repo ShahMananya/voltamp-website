@@ -285,6 +285,32 @@ export default function CategoryPage() {
                 sku: (item.sku || "").replace(/POLYCAB/g, "DOWELLS"),
               };
             }
+            if (item.category === "Glands" || (item.productId && item.productId.startsWith("GLD-"))) {
+              let b = "HMI";
+              let s = "HMI";
+              if (item.subcategory === "Double Compression MD") {
+                b = "Dowells";
+                s = "DOWELLS";
+              } else if (item.subcategory === "Single Compression") {
+                b = "Comet";
+                s = "COMET";
+              }
+              return {
+                ...item,
+                brand: b,
+                sku: (item.sku || "").replace(/POLYCAB/g, s),
+              };
+            }
+            if (
+              ["Wiring Devices", "Earthing Wires", "Solar"].includes(item.category) ||
+              (item.productId && (item.productId.startsWith("WD-") || item.productId.startsWith("EAR-") || item.productId.startsWith("SOL-")))
+            ) {
+              return {
+                ...item,
+                brand: "",
+                sku: (item.sku || "").replace(/-POLYCAB/g, ""),
+              };
+            }
             return item;
           });
           setStaticFallback(sanitized);
@@ -348,17 +374,32 @@ export default function CategoryPage() {
   }, [staticFallback, categoryQueryParam, selectedSubCat, selectedBrand, searchQuery, sortBy, page, pageSize]);
 
   const fallbackBrands = useMemo(() => {
-    if (!staticFallback) return ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand"];
-    const set = new Set<string>();
-    for (const p of staticFallback) {
-      if (matchesCategory(p.category, categoryQueryParam) && p.brand) {
-        set.add(p.brand);
+    if (categoryQueryParam) {
+      const catLower = categoryQueryParam.toLowerCase();
+      if (catLower.includes("wiring") || catLower.includes("device") || catLower.includes("earth") || catLower.includes("solar")) {
+        return [];
       }
     }
-    return set.size > 0 ? Array.from(set).sort() : ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand"];
+    if (!staticFallback) return ["Polycab", "Finolex", "KEI", "Schneider Electric", "L&T / LK", "Legrand", "Dowells", "HMI", "Comet"];
+    const set = new Set<string>();
+    for (const p of staticFallback) {
+      if (matchesCategory(p.category, categoryQueryParam) && p.brand && p.brand.trim() !== "") {
+        set.add(p.brand.trim());
+      }
+    }
+    return Array.from(set).sort();
   }, [staticFallback, categoryQueryParam]);
 
-  const displayBrands = availableBrands && availableBrands.length > 0 ? availableBrands : fallbackBrands;
+  const displayBrands = useMemo(() => {
+    if (categoryQueryParam) {
+      const catLower = categoryQueryParam.toLowerCase();
+      if (catLower.includes("wiring") || catLower.includes("device") || catLower.includes("earth") || catLower.includes("solar")) {
+        return [];
+      }
+    }
+    if (availableBrands && availableBrands.length > 0) return availableBrands.filter((b: string) => b && b.trim() !== "");
+    return fallbackBrands;
+  }, [availableBrands, fallbackBrands, categoryQueryParam]);
 
   // Direct reference to server paginated products with fallback to static catalog
   const effectiveData =
@@ -848,7 +889,8 @@ export default function CategoryPage() {
             </div>
 
             {/* Accordion 3: Brand */}
-            <div className="border-b border-slate-100 dark:border-slate-800/80 pb-3">
+            {displayBrands && displayBrands.length > 0 && (
+              <div className="border-b border-slate-100 dark:border-slate-800/80 pb-3">
               <button
                 type="button"
                 onClick={() => toggleAccordion("brand")}
@@ -908,6 +950,7 @@ export default function CategoryPage() {
                 </div>
               )}
             </div>
+            )}
 
             {/* Accordion 4: Sub Categories */}
             {category?.subcategories && category.subcategories.length > 0 && (
@@ -1978,9 +2021,15 @@ export default function CategoryPage() {
 
                           {/* Brand Name & Volamp Authorized Dealer Badge */}
                           <div className="flex items-center justify-between gap-1 mb-1">
-                            <span className="text-[11px] font-extrabold text-[#c56718] dark:text-[#f59e0b] uppercase tracking-wider block">
-                              {prod.brand || "Industrial"}
-                            </span>
+                            {prod.brand ? (
+                              <span className="text-[11px] font-extrabold text-[#c56718] dark:text-[#f59e0b] uppercase tracking-wider block">
+                                {prod.brand}
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500 block">
+                                Standard Supply
+                              </span>
+                            )}
                             <span className="text-[9px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800 shrink-0">
                               Volamp Authorized
                             </span>
@@ -2141,7 +2190,7 @@ export default function CategoryPage() {
                                 </div>
                               </td>
                               <td className="py-2.5 px-3 text-[#c56718] font-bold">
-                                {prod.brand || "Industrial"}
+                                {prod.brand || "-"}
                               </td>
                               <td className="py-2.5 px-3 font-mono text-slate-500 text-[11px]">
                                 {prod.sku || prod.productId}

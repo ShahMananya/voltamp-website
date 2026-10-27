@@ -190,6 +190,30 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                   brand: "Dowells",
                   sku: (found.sku || "").replace(/POLYCAB/g, "DOWELLS"),
                 };
+              } else if (found.category === "Glands" || (found.productId && found.productId.startsWith("GLD-"))) {
+                let b = "HMI";
+                let s = "HMI";
+                if (found.subcategory === "Double Compression MD") {
+                  b = "Dowells";
+                  s = "DOWELLS";
+                } else if (found.subcategory === "Single Compression") {
+                  b = "Comet";
+                  s = "COMET";
+                }
+                found = {
+                  ...found,
+                  brand: b,
+                  sku: (found.sku || "").replace(/POLYCAB/g, s),
+                };
+              } else if (
+                ["Wiring Devices", "Earthing Wires", "Solar"].includes(found.category) ||
+                (found.productId && (found.productId.startsWith("WD-") || found.productId.startsWith("EAR-") || found.productId.startsWith("SOL-")))
+              ) {
+                found = {
+                  ...found,
+                  brand: "",
+                  sku: (found.sku || "").replace(/-POLYCAB/g, ""),
+                };
               }
               setStaticProductFallback(found);
             }
@@ -994,8 +1018,10 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
     });
 
     // General product fields
+    if (product?.brand) {
+      list.push({ label: "Product Brand", value: product.brand, category: "General Parameters" });
+    }
     list.push(
-      { label: "Product Brand", value: product?.brand || "Authorized Brand", category: "General Parameters" },
       { label: "Authorized Dealer", value: "Volamp Elektrikals Pvt. Ltd. (Authorized Channel Partner)", category: "General Parameters" },
       { label: "Product Category", value: product?.category || "Electrical Supplies", category: "General Parameters" },
       { label: "Procurement Unit", value: product?.unit || "Per Piece", category: "General Parameters" },
@@ -1447,9 +1473,11 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             {/* Brand, Title & SKU */}
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="px-2.5 py-1 rounded-lg bg-[#c56718]/10 text-[#c56718] dark:text-[#f59e0b] border border-[#c56718]/25 text-xs font-black tracking-wider uppercase">
-                  Brand: {product.brand || "Authorized Brand"}
-                </span>
+                {product.brand ? (
+                  <span className="px-2.5 py-1 rounded-lg bg-[#c56718]/10 text-[#c56718] dark:text-[#f59e0b] border border-[#c56718]/25 text-xs font-black tracking-wider uppercase">
+                    Brand: {product.brand}
+                  </span>
+                ) : null}
                 <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25 text-xs font-bold flex items-center gap-1">
                   <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
                   <span>Volamp Authorized Dealer</span>

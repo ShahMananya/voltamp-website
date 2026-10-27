@@ -282,6 +282,8 @@ export function parseProductQuery(q: string) {
   else if (/legrand/i.test(lower)) brand = "legrand";
   else if (/lk|l&t|larsen/i.test(lower)) brand = "lk";
   else if (/dowell/i.test(lower)) brand = "dowells";
+  else if (/hmi/i.test(lower)) brand = "hmi";
+  else if (/comet/i.test(lower)) brand = "comet";
   else if (/(?:volamp|voltamp)\s+(?:products?|brand|cables?|wires?|switchgear|lugs?|glands?|earthing|conduits?)|brand\s*[:=]?\s*(?:volamp|voltamp)/i.test(lower)) brand = "volamp";
 
   let material: string | null = null;
