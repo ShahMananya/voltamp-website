@@ -26,6 +26,13 @@ export function securityHeadersMiddleware(req: Request, res: Response, next: Nex
   res.setHeader("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
   res.setHeader("X-XSS-Protection", "1; mode=block");
 
+  // 1.1 Cache Control: Immutable 1-year caching for hashed static assets
+  if (req.path && (req.path.startsWith("/assets/") || /\.(js|css|woff2?|png|jpe?g|webp|svg|ico)$/i.test(req.path))) {
+    if (!req.path.endsWith(".html")) {
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    }
+  }
+
   // 2. Prevent staging domain (e.g. *.vercel.app) from indexing into Google
   const host = (req.headers.host || "").toLowerCase();
   const isStaging = host.includes("vercel.app") || host.includes("onrender.com") || host.includes("localhost") === false && !host.includes("volampelektrikals.com");

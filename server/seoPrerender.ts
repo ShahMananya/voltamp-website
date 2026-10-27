@@ -675,14 +675,15 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
     const allProducts = loadProductsFromDisk();
     const categoryProducts = allProducts.filter((p) => {
       const c = (p.category || "").toLowerCase();
-      if (slug.includes("cable") || slug.includes("wire")) return c.includes("cable") || c.includes("wire");
-      if (slug.includes("switch")) return c.includes("switch");
-      if (slug.includes("solar")) return c.includes("solar");
-      if (slug.includes("lug")) return c.includes("lug");
-      if (slug.includes("gland")) return c.includes("gland");
-      if (slug.includes("conduit")) return c.includes("conduit");
-      if (slug.includes("earth")) return c.includes("earth");
-      return true;
+      if (slug === "wire-cables" || slug.includes("cable") || slug.includes("wire")) return c.includes("cable") || c.includes("wire");
+      if (slug === "switch-gears" || slug.includes("switch")) return c.includes("switch");
+      if (slug === "solar") return c.includes("solar");
+      if (slug === "lugs") return c.includes("lug");
+      if (slug === "glands") return c.includes("gland");
+      if (slug === "conduit") return c.includes("pipe") || c.includes("conduit");
+      if (slug === "earthing-material") return c.includes("earth");
+      if (slug === "wiring-device") return c.includes("device") || c.includes("wiring");
+      return false; // Prevent catalog leaking into unverified categories
     }).slice(0, 24);
 
     const productLinksHtml = categoryProducts

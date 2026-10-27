@@ -34,6 +34,16 @@ const STATIC_PAGE_REDIRECTS: Record<string, string> = {
   "/all-products": "/products",
   "/where-we-contribute": "/where-volamp-contributed",
   "/projects": "/where-volamp-contributed",
+  "/category/switchgear": "/category/switch-gears",
+  "/category/switchgears": "/category/switch-gears",
+  "/category/cables": "/category/wire-cables",
+  "/category/cable": "/category/wire-cables",
+  "/category/wires-cables": "/category/wire-cables",
+  "/category/industrial-automation": "/category/switch-gears",
+  "/category/lighting-luminaires": "/category/wiring-device",
+  "/category/substation-transmission": "/category/wire-cables",
+  "/category/conduits-cable-management": "/category/conduit",
+  "/category/earthing-lightning": "/category/earthing-material",
 };
 
 const CATEGORY_MAP: Record<string, string> = {

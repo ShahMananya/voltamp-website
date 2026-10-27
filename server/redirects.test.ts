@@ -88,4 +88,17 @@ describe("WordPress Migration 301 Redirects", () => {
     expect(getRedirect().status).toBe(301);
     expect(getRedirect().url).toBe("/");
   });
+
+  it("redirects legacy category aliases like /category/switchgear and empty categories", () => {
+    const { req, res, next, getRedirect } = mockReqRes("/category/switchgear");
+    redirectsMiddleware(req, res, next);
+    expect(getRedirect().status).toBe(301);
+    expect(getRedirect().url).toBe("/category/switch-gears");
+
+    const { req: req2, res: res2, next: next2, getRedirect: getRedirect2 } = mockReqRes("/category/industrial-automation");
+    redirectsMiddleware(req2, res2, next2);
+    expect(getRedirect2().status).toBe(301);
+    expect(getRedirect2().url).toBe("/category/switch-gears");
+  });
 });
+

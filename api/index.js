@@ -5514,6 +5514,11 @@ function securityHeadersMiddleware(req, res, next) {
   res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
   res.setHeader("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
   res.setHeader("X-XSS-Protection", "1; mode=block");
+  if (req.path && (req.path.startsWith("/assets/") || /\.(js|css|woff2?|png|jpe?g|webp|svg|ico)$/i.test(req.path))) {
+    if (!req.path.endsWith(".html")) {
+      res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    }
+  }
   const host = (req.headers.host || "").toLowerCase();
   const isStaging = host.includes("vercel.app") || host.includes("onrender.com") || host.includes("localhost") === false && !host.includes("volampelektrikals.com");
   if (isStaging && !host.includes("volampelektrikals.com") && !host.includes("localhost")) {
@@ -5550,7 +5555,17 @@ var STATIC_PAGE_REDIRECTS = {
   "/catalogue": "/products",
   "/all-products": "/products",
   "/where-we-contribute": "/where-volamp-contributed",
-  "/projects": "/where-volamp-contributed"
+  "/projects": "/where-volamp-contributed",
+  "/category/switchgear": "/category/switch-gears",
+  "/category/switchgears": "/category/switch-gears",
+  "/category/cables": "/category/wire-cables",
+  "/category/cable": "/category/wire-cables",
+  "/category/wires-cables": "/category/wire-cables",
+  "/category/industrial-automation": "/category/switch-gears",
+  "/category/lighting-luminaires": "/category/wiring-device",
+  "/category/substation-transmission": "/category/wire-cables",
+  "/category/conduits-cable-management": "/category/conduit",
+  "/category/earthing-lightning": "/category/earthing-material"
 };
 var CATEGORY_MAP = {
   "wires-cables": "wire-cables",
@@ -6180,14 +6195,15 @@ function seoPrerenderMiddleware(req, res, next) {
     const allProducts = loadProductsFromDisk();
     const categoryProducts = allProducts.filter((p) => {
       const c = (p.category || "").toLowerCase();
-      if (slug.includes("cable") || slug.includes("wire")) return c.includes("cable") || c.includes("wire");
-      if (slug.includes("switch")) return c.includes("switch");
-      if (slug.includes("solar")) return c.includes("solar");
-      if (slug.includes("lug")) return c.includes("lug");
-      if (slug.includes("gland")) return c.includes("gland");
-      if (slug.includes("conduit")) return c.includes("conduit");
-      if (slug.includes("earth")) return c.includes("earth");
-      return true;
+      if (slug === "wire-cables" || slug.includes("cable") || slug.includes("wire")) return c.includes("cable") || c.includes("wire");
+      if (slug === "switch-gears" || slug.includes("switch")) return c.includes("switch");
+      if (slug === "solar") return c.includes("solar");
+      if (slug === "lugs") return c.includes("lug");
+      if (slug === "glands") return c.includes("gland");
+      if (slug === "conduit") return c.includes("pipe") || c.includes("conduit");
+      if (slug === "earthing-material") return c.includes("earth");
+      if (slug === "wiring-device") return c.includes("device") || c.includes("wiring");
+      return false;
     }).slice(0, 24);
     const productLinksHtml = categoryProducts.map(
       (p) => `

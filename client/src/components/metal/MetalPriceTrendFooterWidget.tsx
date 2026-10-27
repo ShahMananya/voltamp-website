@@ -460,7 +460,7 @@ Helpline: +91 79 2213 1234 | sales@volamp.com | www.volamp.com
               <span className="size-2 rounded-full bg-emerald-500 animate-ping" />
               <span>LIVE COMMODITY BENCHMARK · MCX INDIA & LME</span>
             </div>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#4d1217] dark:text-white font-['Plus_Jakarta_Sans',sans-serif] tracking-tight" role="heading" aria-level={3}>
+            <div className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#4d1217] dark:text-white font-['Plus_Jakarta_Sans',sans-serif] tracking-tight">
               Copper & Aluminium Conductor Price Trends
             </div>
             <p className="text-xs sm:text-sm text-[#5d4a4b] dark:text-[#cfc2c3] max-w-2xl leading-relaxed">
