@@ -99,6 +99,36 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toContain('rel="canonical" href="https://volampelektrikals.com/category/wire-cables"');
   });
 
+  it("prerenders regional dealer hub page (/dealers/polycab-ahmedabad) with 200, H1, and canonical", () => {
+    const { req, res, next, getResult } = mockHttp("/dealers/polycab-ahmedabad");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain("<h1");
+    expect(result.sentHtml).toContain("Authorized Polycab Cable Dealer &amp; Distributor in Ahmedabad, Gujarat");
+    expect(result.sentHtml).toContain('rel="canonical" href="https://volampelektrikals.com/dealers/polycab-ahmedabad"');
+  });
+
+  it("prerenders global export hub page (/export) with 200, H1, and canonical", () => {
+    const { req, res, next, getResult } = mockHttp("/export");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain("<h1");
+    expect(result.sentHtml).toContain("Global Cable Export &amp; International Electrical Supply Desk");
+    expect(result.sentHtml).toContain('rel="canonical" href="https://volampelektrikals.com/export"');
+  });
+
+  it("prerenders engineering blog post with 200, H1, and canonical", () => {
+    const { req, res, next, getResult } = mockHttp("/blog/copper-vs-aluminium-armoured-cable-sizing-guide");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain("<h1");
+    expect(result.sentHtml).toContain("Copper vs Aluminium Armoured Cable Sizing Guide");
+    expect(result.sentHtml).toContain('rel="canonical" href="https://volampelektrikals.com/blog/copper-vs-aluminium-armoured-cable-sizing-guide"');
+  });
+
   it("passes through static asset requests without intercepting", () => {
     const { req, res, next, getResult } = mockHttp("/assets/index-abc.js");
     seoPrerenderMiddleware(req, res, next);
@@ -107,3 +137,4 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toBe("");
   });
 });
+

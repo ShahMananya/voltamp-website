@@ -7,7 +7,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface UniversalHeaderProps {
-  currentPage?: "home" | "about" | "segments" | "careers" | "collaborate" | "blog" | "enquire" | "calculator" | "pay" | "track" | "news" | "price-list";
+  currentPage?: "home" | "about" | "segments" | "careers" | "collaborate" | "blog" | "enquire" | "calculator" | "pay" | "track" | "news" | "price-list" | "products" | "export";
   backUrl?: string;
   backText?: string;
   showUtilityBar?: boolean;
@@ -136,6 +136,13 @@ export default function UniversalHeader({
               }`}
             >
               Journal
+            </Link>
+            <Link
+              href="/export"
+              className="hover:text-[#c56718] transition-colors inline-flex items-center gap-1 text-emerald-800 font-bold"
+            >
+              <Globe2 className="size-3 text-[#c56718]" />
+              <span>Global Export</span>
             </Link>
 
             {/* Show only after login: Options 1 & 2 for Employees, or Check Stock for Customers */}
@@ -369,6 +376,14 @@ export default function UniversalHeader({
               className="block py-2 text-[#4d1217] hover:text-[#c56718]"
             >
               Volamp Journal & Insights
+            </Link>
+            <Link
+              href="/export"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block py-2 font-bold text-emerald-800 hover:text-[#c56718] flex items-center gap-1.5"
+            >
+              <Globe2 className="size-3.5 text-[#c56718]" />
+              <span>Global Export (Mundra / Kandla)</span>
             </Link>
             <Link
               href="/price-list"

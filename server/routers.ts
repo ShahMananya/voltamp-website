@@ -1,5 +1,6 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { VOLAMP_JOB_ROLES } from "@shared/careersData";
+import { BLOG_POSTS_DATA } from "@shared/blogData";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { getSessionCookieOptions } from "./_core/cookies";
@@ -1858,8 +1859,26 @@ export const appRouter = router({
 
   blogs: router({
     list: publicProcedure.query(async () => {
-      return getBlogs();
+      const cmsBlogs = await getBlogs();
+      // Combine custom CMS blogs with the 5 technical whitepaper engineering guides
+      const technicalSlugs = new Set(BLOG_POSTS_DATA.map((b) => b.slug));
+      const filteredCms = cmsBlogs.filter((b: any) => !technicalSlugs.has(b.slug));
+      return [...BLOG_POSTS_DATA, ...filteredCms];
     }),
+
+    getBySlug: publicProcedure
+      .input(z.object({ slug: z.string() }))
+      .query(async ({ input }) => {
+        const technical = BLOG_POSTS_DATA.find((p) => p.slug === input.slug);
+        if (technical) return technical;
+        const cmsBlogs = await getBlogs();
+        const found = cmsBlogs.find((p: any) => p.slug === input.slug || p.id === input.slug);
+        if (found) return found;
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Engineering article not found",
+        });
+      }),
 
     create: protectedProcedure
       .input(
@@ -2004,6 +2023,7 @@ export const appRouter = router({
         return app;
       }),
   }),
+
 });
 
 export type AppRouter = typeof appRouter;

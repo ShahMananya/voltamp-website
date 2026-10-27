@@ -32,6 +32,8 @@ import BranchLocations from "./pages/BranchLocations";
 import TermsConditions from "./pages/TermsConditions";
 import ComplaintsCasesPage from "./pages/ComplaintsCasesPage";
 import PriceListPage from "./pages/PriceListPage";
+import BrandCityLandingPage from "./pages/BrandCityLandingPage";
+import ExportPage from "./pages/ExportPage";
 import FloatingActions from "./components/FloatingActions";
 import { LocationModal } from "./components/location/LocationModal";
 import CookieConsentBanner from "./components/cookie/CookieConsentBanner";
@@ -230,6 +232,12 @@ function Router() {
       <Route path="/complaints" component={ComplaintsCasesPage} />
       <Route path="/cases" component={ComplaintsCasesPage} />
       <Route path="/grievance" component={ComplaintsCasesPage} />
+      <Route path="/export" component={ExportPage} />
+      <Route path="/international-buyers" component={ExportPage} />
+      <Route path="/global-supply" component={ExportPage} />
+      <Route path="/dealers/:slug" component={BrandCityLandingPage} />
+      <Route path="/locations/industrial-gidc-hubs" component={BrandCityLandingPage} />
+      <Route path="/locations/:slug" component={BrandCityLandingPage} />
       <Route path="/price-list" component={PriceListPage} />
       <Route path="/pricelist" component={PriceListPage} />
       <Route path="/price-lists" component={PriceListPage} />

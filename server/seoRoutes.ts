@@ -19,6 +19,12 @@ const STATIC_PAGES = [
   { path: "enquire", priority: "0.8", changefreq: "monthly" },
   { path: "in-the-news", priority: "0.7", changefreq: "monthly" },
   { path: "blog", priority: "0.8", changefreq: "daily" },
+  { path: "export", priority: "0.9", changefreq: "weekly" },
+  { path: "dealers/polycab-ahmedabad", priority: "0.95", changefreq: "daily" },
+  { path: "dealers/finolex-cables-ahmedabad", priority: "0.95", changefreq: "daily" },
+  { path: "dealers/kei-cables-gujarat", priority: "0.95", changefreq: "daily" },
+  { path: "dealers/schneider-electric-ahmedabad", priority: "0.90", changefreq: "daily" },
+  { path: "locations/industrial-gidc-hubs", priority: "0.95", changefreq: "daily" },
   { path: "shipping-policy", priority: "0.5", changefreq: "monthly" },
   { path: "terms-and-conditions", priority: "0.5", changefreq: "monthly" },
   { path: "privacy-policy", priority: "0.5", changefreq: "monthly" },
@@ -205,6 +211,12 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 - [Infrastructure Footprint](https://volampelektrikals.com/where-volamp-contributed): Landmark project supplies including 200MW West Bengal Solar Park, Punjab 66kV Grid, and AMC Stadium Ahmedabad.
 - [Project Sourcing & RFQ Desk](https://volampelektrikals.com/enquire): Direct BOM evaluation and project quotation by electrical engineers.
 - [Customer Grievance Redressal Cell](https://volampelektrikals.com/complaints-cases): Official dispute, shortage, and escalation management portal.
+- [Global Cable Export Desk](https://volampelektrikals.com/export): Direct export of IEC/BS certified power cables, solar DC cables, and switchgear via Mundra & Kandla deep-water ports.
+- [Polycab Dealer Ahmedabad](https://volampelektrikals.com/dealers/polycab-ahmedabad): Authorized master distributor for Polycab LT/HT XLPE cables, solar DC wires, and flexible building wires in Ahmedabad & Gujarat.
+- [Finolex Cables Dealer Ahmedabad](https://volampelektrikals.com/dealers/finolex-cables-ahmedabad): Authorized wholesale stockist for Finolex 100% pure electrolytic copper flexible wires and power cables.
+- [KEI Cables Distributor Gujarat](https://volampelektrikals.com/dealers/kei-cables-gujarat): Industrial distributor for KEI heavy HT power cables, rubber trailing cables, and EHV transmission lines.
+- [Schneider Electric Switchgear](https://volampelektrikals.com/dealers/schneider-electric-ahmedabad): Authorized distributor for Acti9 MCBs, EasyPact MCCBs, and TeSys contactors in Ahmedabad.
+- [Gujarat GIDC Industrial Supply](https://volampelektrikals.com/locations/industrial-gidc-hubs): Same-day 24h electrical delivery to Sanand, Vatva, Naroda, Changodar, Dahej, and Ankleshwar GIDC estates.
 
 ## Product Categories & Standards
 - [Wires & Cables](https://volampelektrikals.com/category/wire-cables): LT/HT XLPE armoured power cables, control cables, and flexible copper wires (IS 7098 Part 1/2, IS 1554, IS 694).

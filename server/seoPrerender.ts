@@ -158,6 +158,54 @@ const STATIC_ROUTES: Record<
     intro:
       "Volamp Elektrikals maintains an ISO-aligned grievance resolution mechanism to address any shipment transit damage, quantity discrepancies, test certificate inquiries, or specification escalations with a guaranteed 48-hour investigation timeline.",
   },
+  "export": {
+    title: "Global Cable Export & International Supply Desk | Volamp",
+    description:
+      "Direct export of IEC & BS compliant power cables, solar DC cables, and switchgear from Mundra & Kandla ports. CIF & FOB terms for Middle East, Africa & Asia.",
+    h1: "Global Cable Export & International Electrical Supply Desk",
+    intro:
+      "Volamp Elektrikals Private Limited is an international electrical procurement and export partner headquartered in Ahmedabad, Gujarat, India. Leveraging deep logistics proximity to India's premier western deep-water container ports (Mundra and Kandla, <350 km from our central Aslali stockyard), we supply certified HT/LT power cables, solar photovoltaic cables, switchgear, and earthing infrastructure to international EPC contractors, utility developers, and industrial projects across the Middle East, Africa, and Southeast Asia. All export drums comply with ISPM-15 phytosanitary heat-treatment standards, accompanied by SGS/Bureau Veritas pre-shipment inspection certificates and Letters of Credit (LC) facilitation.",
+  },
+  "dealers/polycab-ahmedabad": {
+    title: "Polycab Dealer & Distributor Ahmedabad Gujarat | Volamp",
+    description:
+      "Authorized Polycab cables & wires distributor in Ahmedabad. LT/HT XLPE armoured power cables, solar DC cables, flexible wires with CPRI test reports.",
+    h1: "Authorized Polycab Cable Dealer & Distributor in Ahmedabad, Gujarat",
+    intro:
+      "Volamp Elektrikals Private Limited is an authorized master distributor and wholesale stockist for Polycab India Ltd. in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, we maintain extensive ready inventory of Polycab 1.1kV LT XLPE aluminium and copper armoured cables (IS 7098 Part 1), 11kV to 33kV HT XLPE power cables (IS 7098 Part 2), 1500V DC solar PV cables (EN 50618), Green Wire FRLS building wires, and multi-core flexible control cables. Every reel and coil is guaranteed 100% original, backed by original manufacturer Material Test Certificates (MTC) and CPRI type-test reports.",
+  },
+  "dealers/finolex-cables-ahmedabad": {
+    title: "Finolex Cables Dealer & Wholesale Stockist Ahmedabad | Volamp",
+    description:
+      "Authorized Finolex cables distributor in Ahmedabad, Gujarat. Flame retardant industrial flexible wires, 3-core flat submersible cables, and power cables.",
+    h1: "Finolex Cables Dealer & Wholesale Stockist in Ahmedabad, Gujarat",
+    intro:
+      "Volamp Elektrikals Private Limited is a trusted authorized wholesale dealer and stockist for Finolex Cables Ltd. in Ahmedabad and across Gujarat. Renowned for 99.97% pure electrolytic grade copper conductors and proprietary in-house PVC compounding, Finolex wires deliver unmatched electrical conductivity, energy efficiency, and thermal longevity. We supply commercial contractors and industrial builders with Finolex Flame Guard FRLS wires, 3-core flat submersible cables, and multi-conductor industrial flexible cables.",
+  },
+  "dealers/kei-cables-gujarat": {
+    title: "KEI Cables Distributor & Industrial Stockist Gujarat | Volamp",
+    description:
+      "Authorized KEI Industries distributor in Ahmedabad & Gujarat. Heavy-duty HT/EHV power cables, rubber trailing cables, instrumentation cables, and solar wires.",
+    h1: "KEI Cables Industrial Distributor & Stockist in Gujarat",
+    intro:
+      "Volamp Elektrikals Private Limited is a specialized industrial distributor and project stockist for KEI Industries Ltd. in Ahmedabad and throughout Gujarat. Catering to heavy engineering, steel plants, chemical manufacturing, infrastructure EPCs, and utility distribution, we supply KEI's engineered cable solutions including Extra High Voltage (EHV) cables up to 220kV, rubber EPR/CSP trailing cables for mining and cranes, and fire-survival FS cables.",
+  },
+  "dealers/schneider-electric-ahmedabad": {
+    title: "Schneider Electric Switchgear Distributor Ahmedabad | Volamp",
+    description:
+      "Authorized Schneider Electric distributor in Ahmedabad. Acti9 MCBs, EasyPact CVS/EZC MCCBs, TeSys contactors, and industrial power distribution boards.",
+    h1: "Schneider Electric Switchgear Distributor in Ahmedabad, Gujarat",
+    intro:
+      "Volamp Elektrikals Private Limited is an authorized B2B distributor of Schneider Electric low-voltage switchgear and industrial automation components in Ahmedabad, Gujarat. We supply project contractors, OEM panel builders, and facility maintenance teams with authentic Schneider protection switchgear including Acti9 miniature circuit breakers (MCBs), EasyPact CVS and EZC molded case circuit breakers (MCCBs), TeSys D and TeSys F contactors, and motor protection circuit breakers (MPCBs).",
+  },
+  "locations/industrial-gidc-hubs": {
+    title: "Industrial Electrical Supply across Gujarat GIDC Hubs | Volamp",
+    description:
+      "Same-day 24h electrical cable & switchgear delivery to Sanand, Vatva, Naroda, Changodar, Dahej, Ankleshwar GIDC estates from Aslali logistics terminal.",
+    h1: "Express Industrial Electrical Supply across Gujarat GIDC Corridors",
+    intro:
+      "Volamp Elektrikals Private Limited operates a rapid-dispatch industrial supply network servicing major Gujarat Industrial Development Corporation (GIDC) estates. Centered at our modern logistics hub at the junction of NH-48 and SP Ring Road in Aslali, Ahmedabad, our delivery fleet provides guaranteed same-day to 24-hour turnaround for urgent maintenance, emergency breakdowns, and scheduled project installations across Sanand, Vatva, Naroda, Changodar, Dahej, Ankleshwar, and Jhagadia industrial belts.",
+  },
   "customer-portal": {
     title: "Customer Account Portal | Volamp Elektrikals",
     description:
