@@ -13,7 +13,7 @@ export interface SeoProps {
 }
 
 const BASE_URL = "https://volampelektrikals.com";
-const DEFAULT_IMAGE = "https://volampelektrikals.com/volamp-logo.png";
+const DEFAULT_IMAGE = "https://volampelektrikals.com/volamp-og-image.jpg";
 const BRAND_SUFFIX = " | VOLAMP ELEKTRIKALS";
 
 /**

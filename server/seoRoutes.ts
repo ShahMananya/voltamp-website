@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import { GOOGLE_MERCHANT_PRODUCTS } from "./googleMerchantFeed";
+import { loadProductsFromDisk } from "./services/productService";
 
 const BASE_URL = "https://volampelektrikals.com";
 
@@ -11,6 +11,7 @@ const STATIC_PAGES = [
   { path: "business-segments", priority: "0.9", changefreq: "weekly" },
   { path: "branch-locations", priority: "0.9", changefreq: "weekly" },
   { path: "products", priority: "0.9", changefreq: "daily" },
+  { path: "price-list", priority: "0.9", changefreq: "weekly" },
   { path: "certifications-and-awards", priority: "0.8", changefreq: "monthly" },
   { path: "calculator", priority: "0.8", changefreq: "monthly" },
   { path: "collaborate", priority: "0.8", changefreq: "monthly" },
@@ -18,6 +19,7 @@ const STATIC_PAGES = [
   { path: "enquire", priority: "0.8", changefreq: "monthly" },
   { path: "complaints-cases", priority: "0.8", changefreq: "monthly" },
   { path: "in-the-news", priority: "0.7", changefreq: "monthly" },
+  { path: "blog", priority: "0.7", changefreq: "weekly" },
   { path: "pay-invoice", priority: "0.7", changefreq: "monthly" },
   { path: "track", priority: "0.7", changefreq: "monthly" },
   { path: "shipping-policy", priority: "0.6", changefreq: "monthly" },
@@ -62,18 +64,33 @@ export function generateSitemapXml(): string {
   </url>`
   ).join("\n");
 
-  const productUrls = GOOGLE_MERCHANT_PRODUCTS.map(
-    (prod) => `  <url>
-    <loc>${BASE_URL}/product/${prod.id}</loc>
+  const products = loadProductsFromDisk();
+  const productUrls = products
+    .filter((prod) => prod.productId && prod.name)
+    .map((prod) => {
+      const imgLink =
+        prod.imageUrl && prod.imageUrl.startsWith("http")
+          ? prod.imageUrl
+          : prod.imageUrl
+          ? `${BASE_URL}${prod.imageUrl}`
+          : "";
+
+      return `  <url>
+    <loc>${BASE_URL}/product/${encodeURIComponent(prod.productId)}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
+    <priority>0.80</priority>${
+      imgLink
+        ? `
     <image:image>
-      <image:loc>${prod.imageLink}</image:loc>
-      <image:title>${prod.title.replace(/&/g, "&amp;")}</image:title>
-    </image:image>
-  </url>`
-  ).join("\n");
+      <image:loc>${imgLink}</image:loc>
+      <image:title>${prod.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</image:title>
+    </image:image>`
+        : ""
+    }
+  </url>`;
+    })
+    .join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -91,21 +108,66 @@ Disallow: /portal
 Disallow: /employee-portal
 Disallow: /api/trpc/
 
-# AI Crawlers & Answer Engines explicit access
+# AI Search & Retrieval Crawlers (Explicit allow with portal protection)
 User-agent: GPTBot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: ClaudeBot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: PerplexityBot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Google-Extended
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Amazonbot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Meta-ExternalAgent
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Bytespider
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
 
 Sitemap: ${BASE_URL}/sitemap.xml
 `.trim();

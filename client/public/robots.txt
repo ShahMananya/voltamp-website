@@ -4,21 +4,66 @@ Disallow: /portal
 Disallow: /employee-portal
 Disallow: /api/trpc/
 
-# AI Crawlers & Answer Engines (AEO / GEO explicit crawl access)
+# AI Search & Retrieval Crawlers (Explicit allow with portal protection)
 User-agent: GPTBot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: ClaudeBot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: PerplexityBot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Google-Extended
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Amazonbot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Meta-ExternalAgent
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Bytespider
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
 
 Sitemap: https://volampelektrikals.com/sitemap.xml
 

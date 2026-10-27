@@ -3581,397 +3581,6 @@ function registerQuickOrderPdfRoute(app2) {
   });
 }
 
-// server/googleMerchantFeed.ts
-var GOOGLE_MERCHANT_PRODUCTS = [
-  // Core published products
-  {
-    id: "VLP-LV-001",
-    title: "VOLAMP LV Power Cable (IS:7098 / IS:1554)",
-    description: "Low-voltage power cable options for dependable building and plant distribution. Conductor 100% Electrolytic Copper / Aluminium.",
-    link: "https://volampelektrikals.com/category/wire-cables",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "118.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Wires & Cables > Power Cables",
-    googleProductCategory: "Hardware > Electrical Supplies > Wire & Cable",
-    mpn: "VLP-LV-001"
-  },
-  {
-    id: "VLP-IN-014",
-    title: "VOLAMP Instrumentation Shielded Cable",
-    description: "Shielded signal cabling for control rooms, process environments and automation systems with high EMI protection.",
-    link: "https://volampelektrikals.com/category/wire-cables",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "142.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Wires & Cables > Instrumentation Cables",
-    googleProductCategory: "Hardware > Electrical Supplies > Wire & Cable",
-    mpn: "VLP-IN-014"
-  },
-  {
-    id: "VLP-SL-022",
-    title: "VOLAMP Solar DC Cable (1500V UV & Ozone Resistant)",
-    description: "Purpose-built solar PV DC cable with cross-linked polyolefin insulation, EN 50618 certified for rooftop and utility solar plants.",
-    link: "https://volampelektrikals.com/category/solar-renewable",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "76.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Renewable Energy > Solar Cables",
-    googleProductCategory: "Hardware > Electrical Supplies > Wire & Cable",
-    mpn: "VLP-SL-022"
-  },
-  {
-    id: "VLP-BW-031",
-    title: "VOLAMP Building Wire (FRLS Copper Single Core)",
-    description: "Everyday flame retardant low smoke (FRLS) wiring for residential, commercial and contractor requirements.",
-    link: "https://volampelektrikals.com/category/wire-cables",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "42.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Wires & Cables > Building Wires",
-    googleProductCategory: "Hardware > Electrical Supplies > Wire & Cable",
-    mpn: "VLP-BW-031"
-  },
-  {
-    id: "VLP-CD-048",
-    title: "VOLAMP Control & Data Cable (CCTV, LAN, Coaxial)",
-    description: "Clear transmission connections for CCTV, LAN Cat6, telephone, and industrial automation networks.",
-    link: "https://volampelektrikals.com/category/wire-cables",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "68.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Wires & Cables > Communication & Data Cables",
-    googleProductCategory: "Hardware > Electrical Supplies > Wire & Cable",
-    mpn: "VLP-CD-048"
-  },
-  // Wires & Cables subcategories
-  {
-    id: "VLP-SUB-FRLS-01",
-    title: "VOLAMP Industrial Flexible FRLS Insulated Cable",
-    description: "High-flexibility flame retardant low smoke copper multi-strand cable for industrial machinery and control panels.",
-    link: "https://volampelektrikals.com/category/wire-cables",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "85.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Wires & Cables > Flexible Cables",
-    googleProductCategory: "Hardware > Electrical Supplies > Wire & Cable",
-    mpn: "VLP-FRLS-FLX"
-  },
-  {
-    id: "VLP-SUB-SUBM-02",
-    title: "VOLAMP 3 Core Flat Submersible Pump Cable",
-    description: "Heavy-duty water-resistant flat submersible pump cable designed for continuous deep-well and agricultural submersible motors.",
-    link: "https://volampelektrikals.com/category/wire-cables",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "165.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Wires & Cables > Submersible Cables",
-    googleProductCategory: "Hardware > Electrical Supplies > Wire & Cable",
-    mpn: "VLP-SUBM-3C"
-  },
-  {
-    id: "VLP-SUB-CCTV-03",
-    title: "VOLAMP CCTV Composite Video & Power Cable",
-    description: "Shielded composite surveillance cable with power cores for crystal-clear security camera video feeds. Available in 90m, 180m, 300m coils.",
-    link: "https://volampelektrikals.com/category/wire-cables",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "32.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Wires & Cables > CCTV Cables",
-    googleProductCategory: "Hardware > Electrical Supplies > Wire & Cable",
-    mpn: "VLP-CCTV-COMP"
-  },
-  {
-    id: "VLP-SUB-COAX-04",
-    title: "VOLAMP Low-Loss Co-Axial Cable (RG-59 / RG-6 / RG-11)",
-    description: "Precision impedance RF coaxial cables for satellite TV, MATV, CATV, and telecommunication feeds.",
-    link: "https://volampelektrikals.com/category/wire-cables",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "24.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Wires & Cables > Coaxial Cables",
-    googleProductCategory: "Hardware > Electrical Supplies > Wire & Cable",
-    mpn: "VLP-COAX-RG"
-  },
-  {
-    id: "VLP-SUB-HTARM-05",
-    title: "VOLAMP HT Armoured Power Cable (11kV / 33kV XLPE)",
-    description: "Heavy-duty steel wire / strip armoured XLPE power distribution cable for underground sub-stations and heavy industrial plants.",
-    link: "https://volampelektrikals.com/category/wire-cables",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "480.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Wires & Cables > Armoured Cables",
-    googleProductCategory: "Hardware > Electrical Supplies > Wire & Cable",
-    mpn: "VLP-HT-ARM"
-  },
-  // Switchgears
-  {
-    id: "VLP-SW-MCB-10",
-    title: "VOLAMP Miniature Circuit Breakers (MCB 1P / 2P / 3P / 4P)",
-    description: "IS/IEC 60898 compliant 10kA miniature circuit breakers for overload and short-circuit protection.",
-    link: "https://volampelektrikals.com/category/switchgears",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "340.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Switchgear > Miniature Circuit Breakers",
-    googleProductCategory: "Hardware > Electrical Supplies > Circuit Breakers",
-    mpn: "VLP-SW-MCB"
-  },
-  {
-    id: "VLP-SW-MCCB-11",
-    title: "VOLAMP Moulded Case Circuit Breakers (MCCB 16A - 800A)",
-    description: "Adjustable thermal-magnetic and microprocessor MCCBs for main distribution panels and industrial feeder boards.",
-    link: "https://volampelektrikals.com/category/switchgears",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "2850.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Switchgear > Moulded Case Circuit Breakers",
-    googleProductCategory: "Hardware > Electrical Supplies > Circuit Breakers",
-    mpn: "VLP-SW-MCCB"
-  },
-  {
-    id: "VLP-SW-RCCB-12",
-    title: "VOLAMP Residual Current Circuit Breaker (RCCB / ELCB 30mA / 100mA)",
-    description: "High-sensitivity earth leakage circuit breakers protecting human life from electrocution and preventing fire risks.",
-    link: "https://volampelektrikals.com/category/switchgears",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "1850.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Switchgear > RCCB & Earth Leakage",
-    googleProductCategory: "Hardware > Electrical Supplies > Circuit Breakers",
-    mpn: "VLP-SW-RCCB"
-  },
-  // Earthing & Lightning
-  {
-    id: "VLP-EARTH-ROD-20",
-    title: "VOLAMP Copper Bonded Earth Rod (250 Micron UL Listed)",
-    description: "High molecularly bonded copper coated ground rod with high tensile carbon steel core for long-lasting corrosion resistance.",
-    link: "https://volampelektrikals.com/category/earthing-lightning",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "850.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Earthing & Lightning > Earth Rods",
-    googleProductCategory: "Hardware > Electrical Supplies > Earthing",
-    mpn: "VLP-ER-CB250"
-  },
-  {
-    id: "VLP-EARTH-CHEM-21",
-    title: "VOLAMP Chemical Earthing Compound (Backfill Material 25kg)",
-    description: "Highly conductive moisture-retaining chemical backfill compound compliant with IEEE-80 standards for low earth pit resistance.",
-    link: "https://volampelektrikals.com/category/earthing-lightning",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "550.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Earthing & Lightning > Backfill Compound",
-    googleProductCategory: "Hardware > Electrical Supplies > Earthing",
-    mpn: "VLP-ER-CHEM25"
-  },
-  {
-    id: "VLP-LIGHT-ARR-22",
-    title: "VOLAMP Early Streamer Emission (ESE) Lightning Arrester",
-    description: "Advanced active ESE lightning protection terminal for large-scale industrial plants, commercial towers, and substations.",
-    link: "https://volampelektrikals.com/category/earthing-lightning",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "14500.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Earthing & Lightning > Lightning Arresters",
-    googleProductCategory: "Hardware > Electrical Supplies > Earthing",
-    mpn: "VLP-LA-ESE"
-  },
-  // Lugs & Glands
-  {
-    id: "VLP-LUG-CU-30",
-    title: "VOLAMP Heavy Duty Copper Cable Lugs (1.5 sq mm to 1000 sq mm)",
-    description: "Electrolytic tin-plated copper crimping terminal lugs for vibration-proof and low-resistance electrical connections.",
-    link: "https://volampelektrikals.com/category/lugs-glands",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "18.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Lugs & Glands > Copper Cable Lugs",
-    googleProductCategory: "Hardware > Electrical Supplies > Cable Terminals",
-    mpn: "VLP-LG-CULUG"
-  },
-  {
-    id: "VLP-GLAND-BR-31",
-    title: "VOLAMP Brass Double Compression Cable Gland (Weatherproof & Flameproof)",
-    description: "Precision nickel-plated brass double compression cable gland with neoprene rubber seals for armoured cables in hazardous areas.",
-    link: "https://volampelektrikals.com/category/lugs-glands",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "165.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Lugs & Glands > Cable Glands",
-    googleProductCategory: "Hardware > Electrical Supplies > Cable Glands",
-    mpn: "VLP-LG-BRDC"
-  },
-  // Industrial Electricals
-  {
-    id: "VLP-IND-PLUG-40",
-    title: "VOLAMP Industrial Plug & Socket IP67 (16A / 32A / 63A)",
-    description: "Heavy-duty waterproof and dustproof pin-and-sleeve industrial connector for construction sites and plant machinery.",
-    link: "https://volampelektrikals.com/category/industrial-electricals",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "420.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Industrial Electricals > Plugs & Sockets",
-    googleProductCategory: "Hardware > Electrical Supplies > Plugs & Outlets",
-    mpn: "VLP-IE-IP67"
-  },
-  {
-    id: "VLP-IND-CONTR-41",
-    title: "VOLAMP Industrial 3-Pole Power Contactor with Thermal Overload",
-    description: "Heavy-duty AC3 duty power contactor for electric motor starting, DOL starters, and industrial automation panels.",
-    link: "https://volampelektrikals.com/category/industrial-electricals",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "1250.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Industrial Electricals > Contactors & Relays",
-    googleProductCategory: "Hardware > Electrical Supplies > Contactors",
-    mpn: "VLP-IE-CONTR"
-  },
-  // Solar & Renewable
-  {
-    id: "VLP-SOL-MC4-50",
-    title: "VOLAMP Solar MC4 Connectors Male & Female Pair (IP68 1500V DC)",
-    description: "TUV certified weatherproof MC4 solar panel wire connectors with snap-in lock for solar PV array installations.",
-    link: "https://volampelektrikals.com/category/solar-renewable",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "48.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Solar & Renewable > Solar Connectors",
-    googleProductCategory: "Hardware > Electrical Supplies > Solar Supplies",
-    mpn: "VLP-SOL-MC4"
-  },
-  {
-    id: "VLP-SOL-ACDB-51",
-    title: "VOLAMP Solar ACDB & DCDB Distribution Box",
-    description: "Polycarbonate IP65 waterproof solar junction box with SPD type II surge protection and DC/AC circuit breakers.",
-    link: "https://volampelektrikals.com/category/solar-renewable",
-    imageLink: "https://volampelektrikals.com/volamp-logo.png",
-    price: "3400.00 INR",
-    availability: "in_stock",
-    condition: "new",
-    brand: "VOLAMP ELEKTRIKALS",
-    category: "Solar & Renewable > Solar Distribution Boxes",
-    googleProductCategory: "Hardware > Electrical Supplies > Solar Supplies",
-    mpn: "VLP-SOL-ACDB"
-  }
-];
-function escapeXml(str) {
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
-}
-function generateGoogleMerchantXml() {
-  const itemsXml = GOOGLE_MERCHANT_PRODUCTS.map((prod) => {
-    return `    <item>
-      <g:id>${escapeXml(prod.id)}</g:id>
-      <g:title>${escapeXml(prod.title)}</g:title>
-      <g:description>${escapeXml(prod.description)}</g:description>
-      <g:link>${escapeXml(prod.link)}</g:link>
-      <g:image_link>${escapeXml(prod.imageLink)}</g:image_link>
-      <g:condition>${prod.condition}</g:condition>
-      <g:availability>${prod.availability}</g:availability>
-      <g:price>${escapeXml(prod.price)}</g:price>
-      <g:brand>${escapeXml(prod.brand)}</g:brand>
-      <g:google_product_category>${escapeXml(prod.googleProductCategory)}</g:google_product_category>
-      <g:product_type>${escapeXml(prod.category)}</g:product_type>
-      <g:mpn>${escapeXml(prod.mpn)}</g:mpn>
-      <g:identifier_exists>yes</g:identifier_exists>
-      <g:shipping>
-        <g:country>IN</g:country>
-        <g:service>Project Freight &amp; Delivery</g:service>
-        <g:price>0.00 INR</g:price>
-      </g:shipping>
-    </item>`;
-  }).join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
-  <channel>
-    <title>VOLAMP ELEKTRIKALS PVT. LTD. - Google Merchant Product Feed</title>
-    <link>https://volampelektrikals.com/</link>
-    <description>Official product catalog for Google Merchant Center and Google Shopping. High-performance industrial wires, cables, switchgears, earthing, and electrical essentials.</description>
-${itemsXml}
-  </channel>
-</rss>`;
-}
-function registerGoogleMerchantRoutes(app2) {
-  const feedHandler = (_req, res) => {
-    try {
-      const xml = generateGoogleMerchantXml();
-      res.setHeader("Content-Type", "application/xml; charset=utf-8");
-      res.setHeader("Cache-Control", "public, max-age=3600");
-      res.send(xml);
-    } catch (err) {
-      console.error("Failed to generate Google Merchant XML feed:", err);
-      res.status(500).send("Error generating Google Merchant feed");
-    }
-  };
-  app2.get("/api/google-merchant-feed.xml", feedHandler);
-  app2.get("/feed/google-shopping.xml", feedHandler);
-  app2.get("/google-merchant-feed.xml", feedHandler);
-  app2.get("/api/google-merchant/status", (_req, res) => {
-    res.json({
-      status: "active",
-      storeName: "VOLAMP ELEKTRIKALS PVT. LTD.",
-      domain: "https://volampelektrikals.com",
-      feedUrls: {
-        apiFeed: "https://volampelektrikals.com/api/google-merchant-feed.xml",
-        rootFeed: "https://volampelektrikals.com/google-merchant-feed.xml"
-      },
-      itemCount: GOOGLE_MERCHANT_PRODUCTS.length,
-      merchantCenterUrl: "https://merchants.google.com/",
-      instructions: [
-        "1. Log in to Google Merchant Center (https://merchants.google.com/)",
-        "2. Verify and claim your website: https://volampelektrikals.com using the HTML verification meta tag in index.html",
-        "3. Go to Products > Feeds > Add primary feed",
-        "4. Choose Scheduled Fetch, name it 'VOLAMP Product Feed', and enter the feed URL: https://volampelektrikals.com/api/google-merchant-feed.xml",
-        "5. Google will automatically import your products and display them on Google Search & Google Shopping."
-      ]
-    });
-  });
-}
-
 // server/services/productService.ts
 import fs2 from "fs";
 import path2 from "path";
@@ -4879,6 +4488,85 @@ function addNewProduct(input) {
   return newProd;
 }
 
+// server/googleMerchantFeed.ts
+var BASE_URL = "https://volampelektrikals.com";
+function escapeXml(str) {
+  return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+}
+function generateGoogleMerchantXml() {
+  const products2 = loadProductsFromDisk();
+  const validProducts = products2.filter((p) => p.productId && p.name);
+  const itemsXml = validProducts.map((prod) => {
+    const rawPrice = prod.numericPrice || (typeof prod.price === "string" ? parseFloat(prod.price.replace(/[^0-9.]/g, "")) : 0) || 100;
+    const priceFormatted = `${rawPrice.toFixed(2)} INR`;
+    const productLink = `${BASE_URL}/product/${encodeURIComponent(prod.productId)}`;
+    const imageLink = prod.imageUrl && prod.imageUrl.startsWith("http") ? prod.imageUrl : prod.imageUrl ? `${BASE_URL}${prod.imageUrl}` : `${BASE_URL}/products/default.jpg`;
+    const brand = prod.brand || "Polycab";
+    const category = prod.category || "Wires & Cables";
+    return `    <item>
+      <g:id>${escapeXml(prod.productId)}</g:id>
+      <g:title>${escapeXml(prod.name)}</g:title>
+      <g:description>${escapeXml(
+      prod.description || `${prod.name} - genuine certified industrial electrical supply with manufacturer test certificate (MTC) from Volamp Elektrikals.`
+    )}</g:description>
+      <g:link>${escapeXml(productLink)}</g:link>
+      <g:image_link>${escapeXml(imageLink)}</g:image_link>
+      <g:condition>new</g:condition>
+      <g:availability>${prod.availability === "OUT OF STOCK" ? "out_of_stock" : "in_stock"}</g:availability>
+      <g:price>${escapeXml(priceFormatted)}</g:price>
+      <g:brand>${escapeXml(brand)}</g:brand>
+      <g:google_product_category>Hardware &gt; Electrical Supplies &gt; Wire &amp; Cable</g:google_product_category>
+      <g:product_type>${escapeXml(category)}</g:product_type>
+      <g:mpn>${escapeXml(prod.sku || prod.productId)}</g:mpn>
+      <g:identifier_exists>yes</g:identifier_exists>
+      <g:shipping>
+        <g:country>IN</g:country>
+        <g:service>Insured Project Freight</g:service>
+        <g:price>0.00 INR</g:price>
+      </g:shipping>
+    </item>`;
+  }).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+  <channel>
+    <title>VOLAMP ELEKTRIKALS PVT. LTD. - Official Google Merchant Product Feed</title>
+    <link>${BASE_URL}/</link>
+    <description>Official verified product catalog for Google Merchant Center and Google Shopping. Genuine industrial power cables, switchgear, and earthing supplies from Ahmedabad, Gujarat.</description>
+${itemsXml}
+  </channel>
+</rss>`;
+}
+function registerGoogleMerchantRoutes(app2) {
+  const feedHandler = (_req, res) => {
+    try {
+      const xml = generateGoogleMerchantXml();
+      res.setHeader("Content-Type", "application/xml; charset=utf-8");
+      res.setHeader("Cache-Control", "public, max-age=14400");
+      res.send(xml);
+    } catch (err) {
+      console.error("Failed to generate Google Merchant XML feed:", err);
+      res.status(500).send("Error generating Google Merchant feed");
+    }
+  };
+  app2.get("/api/google-merchant-feed.xml", feedHandler);
+  app2.get("/feed/google-shopping.xml", feedHandler);
+  app2.get("/google-merchant-feed.xml", feedHandler);
+  app2.get("/api/google-merchant/status", (_req, res) => {
+    const products2 = loadProductsFromDisk();
+    res.json({
+      status: "active",
+      storeName: "VOLAMP ELEKTRIKALS PVT. LTD.",
+      domain: BASE_URL,
+      feedUrls: {
+        apiFeed: `${BASE_URL}/api/google-merchant-feed.xml`,
+        rootFeed: `${BASE_URL}/google-merchant-feed.xml`
+      },
+      itemCount: products2.length,
+      merchantCenterUrl: "https://merchants.google.com/"
+    });
+  });
+}
+
 // server/productRestRoutes.ts
 function registerProductRestRoutes(app2) {
   app2.get("/api/products", (req, res) => {
@@ -4946,7 +4634,7 @@ function registerProductRestRoutes(app2) {
 }
 
 // server/seoRoutes.ts
-var BASE_URL = "https://volampelektrikals.com";
+var BASE_URL2 = "https://volampelektrikals.com";
 var STATIC_PAGES = [
   { path: "", priority: "1.0", changefreq: "daily" },
   { path: "about-volamp", priority: "0.9", changefreq: "weekly" },
@@ -4954,6 +4642,7 @@ var STATIC_PAGES = [
   { path: "business-segments", priority: "0.9", changefreq: "weekly" },
   { path: "branch-locations", priority: "0.9", changefreq: "weekly" },
   { path: "products", priority: "0.9", changefreq: "daily" },
+  { path: "price-list", priority: "0.9", changefreq: "weekly" },
   { path: "certifications-and-awards", priority: "0.8", changefreq: "monthly" },
   { path: "calculator", priority: "0.8", changefreq: "monthly" },
   { path: "collaborate", priority: "0.8", changefreq: "monthly" },
@@ -4961,6 +4650,7 @@ var STATIC_PAGES = [
   { path: "enquire", priority: "0.8", changefreq: "monthly" },
   { path: "complaints-cases", priority: "0.8", changefreq: "monthly" },
   { path: "in-the-news", priority: "0.7", changefreq: "monthly" },
+  { path: "blog", priority: "0.7", changefreq: "weekly" },
   { path: "pay-invoice", priority: "0.7", changefreq: "monthly" },
   { path: "track", priority: "0.7", changefreq: "monthly" },
   { path: "shipping-policy", priority: "0.6", changefreq: "monthly" },
@@ -4985,7 +4675,7 @@ function generateSitemapXml() {
   const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
   const staticUrls = STATIC_PAGES.map(
     (page) => `  <url>
-    <loc>${BASE_URL}/${page.path}</loc>
+    <loc>${BASE_URL2}/${page.path}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
@@ -4993,24 +4683,26 @@ function generateSitemapXml() {
   ).join("\n");
   const categoryUrls = CATEGORY_SLUGS.map(
     (slug) => `  <url>
-    <loc>${BASE_URL}/category/${slug}</loc>
+    <loc>${BASE_URL2}/category/${slug}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>`
   ).join("\n");
-  const productUrls = GOOGLE_MERCHANT_PRODUCTS.map(
-    (prod) => `  <url>
-    <loc>${BASE_URL}/product/${prod.id}</loc>
+  const products2 = loadProductsFromDisk();
+  const productUrls = products2.filter((prod) => prod.productId && prod.name).map((prod) => {
+    const imgLink = prod.imageUrl && prod.imageUrl.startsWith("http") ? prod.imageUrl : prod.imageUrl ? `${BASE_URL2}${prod.imageUrl}` : "";
+    return `  <url>
+    <loc>${BASE_URL2}/product/${encodeURIComponent(prod.productId)}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
+    <priority>0.80</priority>${imgLink ? `
     <image:image>
-      <image:loc>${prod.imageLink}</image:loc>
-      <image:title>${prod.title.replace(/&/g, "&amp;")}</image:title>
-    </image:image>
-  </url>`
-  ).join("\n");
+      <image:loc>${imgLink}</image:loc>
+      <image:title>${prod.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</image:title>
+    </image:image>` : ""}
+  </url>`;
+  }).join("\n");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
@@ -5026,23 +4718,68 @@ Disallow: /portal
 Disallow: /employee-portal
 Disallow: /api/trpc/
 
-# AI Crawlers & Answer Engines explicit access
+# AI Search & Retrieval Crawlers (Explicit allow with portal protection)
 User-agent: GPTBot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: ClaudeBot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+User-agent: Claude-SearchBot
+Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: PerplexityBot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Google-Extended
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Amazonbot
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Meta-ExternalAgent
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
 User-agent: Bytespider
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
 
-Sitemap: ${BASE_URL}/sitemap.xml
+Sitemap: ${BASE_URL2}/sitemap.xml
 `.trim();
 }
 function generateLlmsTxt() {
@@ -5095,7 +4832,7 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 `.trim();
 }
 function generateLlmsFullTxt() {
-  return `# VOLAMP ELEKTRIKALS PRIVATE LIMITED — Authoritative AI Knowledge Manifest (llms-full.txt)
+  return `# VOLAMP ELEKTRIKALS PRIVATE LIMITED \u2014 Authoritative AI Knowledge Manifest (llms-full.txt)
 > Comprehensive manifest for AI answer engines (Google AI Overviews, Perplexity, Claude, ChatGPT, Gemini, Microsoft Copilot).
 
 ## 1. Corporate Identity, Legal & Credentials
@@ -5122,13 +4859,13 @@ function generateLlmsFullTxt() {
 
 ## 2. Authorized Brand Partnerships & Online Catalog
 Volamp Elektrikals stocks over 3,500+ active electrical SKUs from 7 leading authorized manufacturer brands:
-1. Polycab India Ltd. (Master Distributor — LT/HT XLPE Armoured Cables, Solar DC Cables, Flexible Multi-strand Wires)
-2. Finolex Cables Ltd. (Authorized Stockist — Pure Electrolytic Copper Flexible Wires & Industrial Cables)
-3. KEI Industries Ltd. (Industrial Partner — Heavy Power Cables, Extra High Voltage EHV, Rubber Trailing Cables)
-4. Schneider Electric India (Authorized Distribution — Acti9 MCBs, EasyPact MCCBs, Contactors, Motor Starters)
-5. Larsen & Toubro / Lauritz Knudsen (Authorized Partner — dsine MCCBs, Starters, Industrial Distribution Boards)
-6. Dowells (Exclusive Brand Partner for Cable Lugs — Heavy-Duty Copper Crimping Lugs & Terminal Ends)
-7. Legrand (Certified Distribution — Industrial Protection Switchgear & Enclosures)
+1. Polycab India Ltd. (Master Distributor \u2014 LT/HT XLPE Armoured Cables, Solar DC Cables, Flexible Multi-strand Wires)
+2. Finolex Cables Ltd. (Authorized Stockist \u2014 Pure Electrolytic Copper Flexible Wires & Industrial Cables)
+3. KEI Industries Ltd. (Industrial Partner \u2014 Heavy Power Cables, Extra High Voltage EHV, Rubber Trailing Cables)
+4. Schneider Electric India (Authorized Distribution \u2014 Acti9 MCBs, EasyPact MCCBs, Contactors, Motor Starters)
+5. Larsen & Toubro / Lauritz Knudsen (Authorized Partner \u2014 dsine MCCBs, Starters, Industrial Distribution Boards)
+6. Dowells (Exclusive Brand Partner for Cable Lugs \u2014 Heavy-Duty Copper Crimping Lugs & Terminal Ends)
+7. Legrand (Certified Distribution \u2014 Industrial Protection Switchgear & Enclosures)
 
 ## 3. Product Categories & Technical Standards
 - Wires & Cables: Compliant with IS 7098 (Part 1 for LT up to 1.1kV, Part 2 for HT 3.3kV to 33kV), IS 1554 (PVC power cables), IS 694 (copper multi-strand flexible wires).
