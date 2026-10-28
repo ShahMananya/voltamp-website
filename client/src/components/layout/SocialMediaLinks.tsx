@@ -27,7 +27,7 @@ export const OFFICIAL_SOCIAL_LINKS: SocialLinkItem[] = [
   {
     id: "facebook",
     name: "Facebook",
-    href: "https://www.facebook.com/profile.php?id=61587485305483#",
+    href: "https://www.facebook.com/profile.php?id=61587485305483",
     ariaLabel: "VOLAMP on Facebook",
     title: "VOLAMP on Facebook (Official Page)",
     brandClass: "social-btn-facebook",
@@ -40,7 +40,7 @@ export const OFFICIAL_SOCIAL_LINKS: SocialLinkItem[] = [
   {
     id: "instagram",
     name: "Instagram",
-    href: "https://www.instagram.com/volampp?stkn=dGtjZDA1enF5OWN6",
+    href: "https://www.instagram.com/volampp",
     ariaLabel: "VOLAMP on Instagram",
     title: "VOLAMP on Instagram (@volampp)",
     brandClass: "social-btn-instagram",
@@ -53,7 +53,7 @@ export const OFFICIAL_SOCIAL_LINKS: SocialLinkItem[] = [
   {
     id: "youtube",
     name: "YouTube",
-    href: "https://m.youtube.com/%40cablezone",
+    href: "https://www.youtube.com/@cablezone",
     ariaLabel: "VOLAMP on YouTube",
     title: "VOLAMP on YouTube (@cablezone)",
     brandClass: "social-btn-youtube",
@@ -66,9 +66,9 @@ export const OFFICIAL_SOCIAL_LINKS: SocialLinkItem[] = [
   {
     id: "x",
     name: "X",
-    href: "https://x.com/VolampL?t=vkBQW9lpw2gNbC5lDqYUCg&s=09",
+    href: "https://x.com/volampelektrik",
     ariaLabel: "VOLAMP on X",
-    title: "VOLAMP on X (@VolampL)",
+    title: "VOLAMP on X (@volampelektrik)",
     brandClass: "social-btn-x",
     icon: (
       <svg viewBox="0 0 24 24" className="size-3.5" fill="currentColor" aria-hidden="true">
@@ -79,9 +79,9 @@ export const OFFICIAL_SOCIAL_LINKS: SocialLinkItem[] = [
   {
     id: "pinterest",
     name: "Pinterest",
-    href: "https://in.pinterest.com/volammp2021/",
+    href: "https://www.pinterest.com/volampelektrikals/",
     ariaLabel: "VOLAMP on Pinterest",
-    title: "VOLAMP on Pinterest (@volammp2021)",
+    title: "VOLAMP on Pinterest (@volampelektrikals)",
     brandClass: "social-btn-pinterest",
     icon: (
       <svg viewBox="0 0 24 24" className="size-4" fill="currentColor" aria-hidden="true">

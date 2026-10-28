@@ -2602,7 +2602,7 @@ async function trackConsignmentOrder(query) {
       {
         title: "Delivered to Project Site",
         description: "Scheduled arrival and physical sign-off at project unloading bay.",
-        time: "Expected 24-48h post dispatch",
+        time: "Expected 48-72h post dispatch (24h in Gujarat GIDC)",
         completed: false,
         current: false
       }
@@ -10811,7 +10811,7 @@ ${formatProductCard(prod)}
 
 **Commercial Ordering & Fast Dispatch:**
 \u2022 **Contractor Discount**: Direct **40% OFF** manufacturer list price already applied.
-\u2022 **Stock Depot**: Allotted from Ahmedabad Central Hub (24\u201348h Dispatch under Policy VEP/LOG/001).
+\u2022 **Stock Depot**: Allotted from Ahmedabad Central Hub (Same-day to 24h Gujarat GIDC / 48\u201372h Pan-India Dispatch under Policy VEP/LOG/001).
 \u2022 **Tax Invoice**: 18% GST invoice with full ITC passed on dispatch.
 
 **Ready to book this item?** Tell me your required quantity/meters, customer name, phone number, and delivery city!`;

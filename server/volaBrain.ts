@@ -896,7 +896,7 @@ function handleProductAndCatalogQuery(query: string): string | null {
         `---\n\n` +
         `**Commercial Ordering & Fast Dispatch:**\n` +
         `• **Contractor Discount**: Direct **40% OFF** manufacturer list price already applied.\n` +
-        `• **Stock Depot**: Allotted from Ahmedabad Central Hub (24–48h Dispatch under Policy VEP/LOG/001).\n` +
+        `• **Stock Depot**: Allotted from Ahmedabad Central Hub (Same-day to 24h Gujarat GIDC / 48–72h Pan-India Dispatch under Policy VEP/LOG/001).\n` +
         `• **Tax Invoice**: 18% GST invoice with full ITC passed on dispatch.\n\n` +
         `**Ready to book this item?** Tell me your required quantity/meters, customer name, phone number, and delivery city!`
       );

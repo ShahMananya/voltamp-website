@@ -959,7 +959,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
       doc.setTextColor(203, 213, 225);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(6);
-      doc.text("28 States · 24-48h Dispatch", 147, yPos + 12.5);
+      doc.text("28 States · 48-72h Dispatch", 147, yPos + 12.5);
       doc.text("Export Port Corridors", 147, yPos + 16);
 
       // =========================================================================
@@ -1601,7 +1601,7 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                 <span className="text-[11px] font-bold text-slate-800 dark:text-slate-200 leading-tight">
                   Pan-India Transit
                 </span>
-                <span className="text-[9px] text-slate-400">24-48h Dispatch</span>
+                <span className="text-[9px] text-slate-400">Same-Day / 48-72h Dispatch</span>
               </div>
 
               <div className="p-3 rounded-2xl bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 text-center flex flex-col items-center justify-center gap-1.5 hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors shadow-2xs group">

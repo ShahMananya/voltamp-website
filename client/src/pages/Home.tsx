@@ -201,7 +201,7 @@ export default function Home() {
   return <div className="volamp-marketplace">
     <SeoHead
       title="Industrial Cable & Electrical Distributor"
-      description="Authorized distributor of Polycab, Finolex, KEI & Schneider cables and switchgear in Ahmedabad. 24-48h dispatch across India. Request wholesale quote."
+      description="Authorized distributor of Polycab, Finolex, KEI & Schneider cables and switchgear in Ahmedabad. 48-72h dispatch across India. Request wholesale quote."
       keywords="electrical supplier Ahmedabad, cable distributor Gujarat, Polycab distributor Ahmedabad, Finolex cables, KEI cables, switchgear, Volamp Elektrikals"
       canonicalPath="/"
       ogType="website"
@@ -1296,6 +1296,60 @@ export default function Home() {
               </div>
             </div>
 
+          </div>
+        </div>
+      </section>
+      {/* 11. Frequently Asked Questions (Matches FAQ Schema exactly for Google Search & AEO) */}
+      <section className="py-16 sm:py-20 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-800" id="faq">
+        <div className="market-container max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="text-center space-y-3 mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-950/60 border border-orange-200 dark:border-orange-800 text-[#c56718] dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
+              <span>FREQUENTLY ASKED QUESTIONS</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Essential B2B Procurement & Distribution Facts
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+              Clear, verifiable answers regarding our Ahmedabad facilities, authorized brand distributorships, dispatch SLAs, and compliance.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-xs">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+                Where is Volamp Elektrikals located in Ahmedabad?
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                Volamp Elektrikals corporate head office is located at 1753, Dhobi's Pole, Chinubhai Road, Khadia, Ahmedabad, Gujarat 380001 in the historic Gandhi Road electrical trading hub. Its central logistics &amp; fulfillment terminal is situated at Aslali Highway, Ahmedabad.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-xs">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+                What brands and cables does Volamp distribute in Gujarat?
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                Volamp Elektrikals is an authorized wholesale distributor and supplier of Polycab India, Finolex Cables, KEI Industries, Schneider Electric, Larsen &amp; Toubro (L&amp;T / Lauritz Knudsen), Dowells, and Legrand. Products include LT/HT XLPE armoured cables, 1500V solar DC cables, copper flexible wires, switchgear (ACB/MCCB/MCB), and chemical earthing rods.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-xs">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+                What is the dispatch turnaround time for industrial electrical orders?
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                Orders within Ahmedabad and major Gujarat GIDC manufacturing zones (Sanand, Changodar, Vatva, Naroda, Ankleshwar, Dahej) benefit from same-day to 24-hour dispatch from the Aslali central warehouse. Pan-India shipments arrive within 48 to 72 hours with transit insurance.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-xs">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+                How do I register a dispute, shortage, or transit complaint with Volamp?
+              </h3>
+              <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                Customers can register formal cases online at <a href="/complaints-cases" className="text-[#c56718] font-semibold hover:underline">volampelektrikals.com/complaints-cases</a> or email the Grievance &amp; Escalation Cell directly at <a href="mailto:Grievances@volampelektrikals.com" className="text-[#c56718] font-semibold hover:underline">Grievances@volampelektrikals.com</a>.
+              </p>
+            </div>
           </div>
         </div>
       </section>

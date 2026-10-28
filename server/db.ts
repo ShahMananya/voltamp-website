@@ -2693,7 +2693,7 @@ export async function trackConsignmentOrder(query: string): Promise<ConsignmentT
       {
         title: "Delivered to Project Site",
         description: "Scheduled arrival and physical sign-off at project unloading bay.",
-        time: "Expected 24-48h post dispatch",
+        time: "Expected 48-72h post dispatch (24h in Gujarat GIDC)",
         completed: false,
         current: false,
       },
