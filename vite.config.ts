@@ -167,6 +167,34 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("three") || id.includes("globe.gl")) {
+              return "vendor-three";
+            }
+            if (id.includes("mermaid") || id.includes("cytoscape")) {
+              return "vendor-diagrams";
+            }
+            if (id.includes("monaco") || id.includes("shiki")) {
+              return "vendor-editor";
+            }
+            if (id.includes("recharts")) {
+              return "vendor-charts";
+            }
+            if (id.includes("@radix-ui") || id.includes("lucide-react")) {
+              return "vendor-ui";
+            }
+            if (id.includes("react-dom") || id.includes("react/") || id.includes("wouter")) {
+              return "vendor-core";
+            }
+            return "vendor";
+          }
+        },
+      },
+    },
   },
   server: {
     host: true,

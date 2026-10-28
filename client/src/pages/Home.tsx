@@ -216,7 +216,8 @@ export default function Home() {
           loop
           muted={heroVideoMuted}
           playsInline
-          preload="auto"
+          preload="none"
+          poster="/products/cables.jpg?v=3"
           className="w-full h-full object-cover object-center"
         >
           <source src="/videos/volamp-operations-hero.mp4?v=no-ceo-v7" type="video/mp4" />
