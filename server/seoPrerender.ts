@@ -17,7 +17,7 @@ const STATIC_ROUTES: Record<
   "": {
     title: "Industrial Cable & Electrical Distributor | Volamp",
     description:
-      "Authorized wholesale distributor of Polycab, Finolex, KEI cables and Schneider, L&T switchgear in Ahmedabad, Gujarat. 3,500+ SKUs with test certificates.",
+      "Authorized wholesale distributor of Polycab, Finolex, KEI cables and Schneider, L&T switchgear in Ahmedabad, Gujarat. 3,385+ SKUs with test certificates.",
     h1: "Industrial Cable & Electrical Distributor in Ahmedabad",
     intro:
       "Volamp Elektrikals Private Limited is Gujarat's premier B2B master distributor and authorized wholesale stockist of industrial cables, HT/LT power cables, solar PV cables, switchgear, and earthing infrastructure. Backed by a 60+ year family legacy established in 1964 and modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across 28 Indian states.",
@@ -57,10 +57,10 @@ const STATIC_ROUTES: Record<
   "products": {
     title: "Industrial Electrical Products Catalog | Volamp",
     description:
-      "Browse 3,500+ verified electrical products: LT/HT XLPE cables, solar DC wires, switchgear, MCBs, lugs, and earthing supplies. Instant BOM quotation.",
+      "Browse 3,385+ verified electrical products: LT/HT XLPE cables, solar DC wires, switchgear, MCBs, lugs, and earthing supplies. Instant BOM quotation.",
     h1: "Industrial Electrical & Power Cable Catalog",
     intro:
-      "Explore over 3,500 active, genuine electrical SKUs from India's leading manufacturers: Polycab, Finolex, KEI Industries, Schneider Electric, L&T / Lauritz Knudsen, and Dowells. Every product is backed by full manufacturer warranties, IS/IEC standard compliance (IS 7098, IS 1554, IS 694, EN 50618, IEC 60947), and complete routine factory test reports delivered with every drum or carton.",
+      "Explore over 3,385 active, genuine electrical SKUs from India's leading manufacturers: Polycab, Finolex, KEI Industries, Schneider Electric, L&T / Lauritz Knudsen, and Dowells. Every product is backed by full manufacturer warranties, IS/IEC standard compliance (IS 7098, IS 1554, IS 694, EN 50618, IEC 60947), and complete routine factory test reports delivered with every drum or carton.",
   },
   "price-list": {
     title: "Manufacturer Cable Price Lists 2026 | Volamp",
@@ -519,7 +519,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       const html = renderPageHtml({
         title: "Product Not Found (404) | Volamp",
-        description: "The requested electrical product could not be found. Browse over 3,500 active power cables, switchgear, and earthing supplies in our catalog.",
+        description: "The requested electrical product could not be found. Browse over 3,385 active power cables, switchgear, and earthing supplies in our catalog.",
         canonical: `${BASE_URL}/404`,
         noIndex: true,
         bodyHtml: `
@@ -528,10 +528,10 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             <h1 style="font-size:32px;font-weight:800;color:#0f172a;margin:12px 0;">Product Not Found</h1>
             <p style="color:#64748b;font-size:16px;line-height:1.6;margin-bottom:28px;">
               The product code <code>${escapeXml(rawId)}</code> does not exist in our catalog or may have been retired.
-              We stock over 3,500 genuine certified electrical products from Polycab, Finolex, KEI, Schneider, and L&T.
+              We stock over 3,385 genuine certified electrical products from Polycab, Finolex, KEI, Schneider, and L&T.
             </p>
             <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-              <a href="/products" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Browse 3,500+ Products</a>
+              <a href="/products" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Browse 3,385+ Products</a>
               <a href="/enquire" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Contact Engineering Desk</a>
               <a href="/" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Home</a>
             </div>
@@ -877,7 +877,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
         </p>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
           <a href="/" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Return to Homepage</a>
-          <a href="/products" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Browse 3,500+ Products</a>
+          <a href="/products" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Browse 3,385+ Products</a>
           <a href="/enquire" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Contact Sales Desk</a>
         </div>
       </div>

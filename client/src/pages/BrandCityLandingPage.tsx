@@ -314,7 +314,7 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
       "GST-Compliant E-Way Bill Generation & Transporter Vehicle Tracking",
     ],
     authorizedStatus: "Regional Logistics Hub & Master Distributor",
-    stockCount: "3,500+ SKUs in Stock",
+    stockCount: "3,385+ SKUs in Stock",
     dispatchTime: "Same-Day / Within 4-6 Hours",
     overview:
       "Gujarat's industrial growth is powered by its premier GIDC manufacturing clusters: the automotive corridor of Sanand, the chemical and pharmaceutical estates of Vatva and Naroda, the engineering hubs of Changodar, and the petroleum/chemical complexes of Dahej and Ankleshwar. Volamp Elektrikals acts as the vital electrical backbone for these zones.",

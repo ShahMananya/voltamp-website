@@ -206,10 +206,10 @@ export default function WhereVolampContributed() {
             <div className="p-6 rounded-xl bg-[#fffaf5] dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
               <Truck className="size-7 text-[#c56718] mb-3" />
               <h3 className="text-sm font-bold text-[#4d1217] dark:text-white mb-1.5">
-                24-48 Hour Pan-India Dispatch
+                48 to 72-Hour Pan-India Dispatch
               </h3>
               <p className="text-xs text-[#5d4a4b] dark:text-slate-300 leading-relaxed">
-                Direct dispatch from our central Ahmedabad inventory hub across 28 states, high-altitude border airfields, and maritime port zones.
+                Direct dispatch from our central Ahmedabad inventory hub: same-day to 24h across Gujarat GIDC zones; 48 to 72 hours across 28 states with transit insurance.
               </p>
             </div>
 

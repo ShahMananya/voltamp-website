@@ -204,7 +204,7 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 - [Homepage](https://volampelektrikals.com): Corporate overview, brand portfolio, real-time cable estimator, and RFQ desk.
 - [About VOLAMP](https://volampelektrikals.com/about-volamp): 4-generation lineage, engineering leadership by CEO Naimil Vipul Patel, and corporate governance.
 - [Branch Locations & Warehouses](https://volampelektrikals.com/branch-locations): Corporate Sales Office (Khadia, Ahmedabad 380001) and Central Logistics Fulfillment Terminal (Aslali Highway, Ahmedabad 382427).
-- [Products Catalog](https://volampelektrikals.com/products): 3,500+ verified active SKUs across power cables, switchgear, and earthing.
+- [Products Catalog](https://volampelektrikals.com/products): 3,385+ verified active SKUs across power cables, switchgear, and earthing.
 - [Manufacturer Price Lists](https://volampelektrikals.com/price-list): 2026 manufacturer price lists, contractor discount circulars, and CPRI test certificates.
 - [Cable Sizing Calculator](https://volampelektrikals.com/calculator): Interactive engineering calculator for copper and aluminium cable voltage drop and current ratings.
 - [Certifications & Compliance](https://volampelektrikals.com/certifications-and-awards): IS 7098 (Part 1 & 2), IS 1554, IS 694, and EN 50618 compliance reports.
@@ -277,7 +277,7 @@ export function generateLlmsFullTxt(): string {
   - Pinterest: https://www.pinterest.com/volampelektrikals/
 
 ## 2. Authorized Brand Partnerships & Online Catalog
-Volamp Elektrikals stocks over 3,500+ active electrical SKUs from 7 leading authorized manufacturer brands:
+Volamp Elektrikals stocks over 3,385+ active electrical SKUs from 7 leading authorized manufacturer brands:
 1. Polycab India Ltd. (Master Distributor — LT/HT XLPE Armoured Cables, Solar DC Cables, Flexible Multi-strand Wires)
 2. Finolex Cables Ltd. (Authorized Stockist — Pure Electrolytic Copper Flexible Wires & Industrial Cables)
 3. KEI Industries Ltd. (Industrial Partner — Heavy Power Cables, Extra High Voltage EHV, Rubber Trailing Cables)
