@@ -542,26 +542,35 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
     }
 
     // PRODUCT FOUND -> Server-side rendered with semantic H1, Specs, Links, and Schema (Launch Blocker 1)
+    const brandPrefix = product.brand && !product.name.toLowerCase().includes(product.brand.toLowerCase()) ? `${product.brand} ` : "";
+    const sizeSuffix = product.size && !product.name.toLowerCase().includes(product.size.toLowerCase()) ? ` (${product.size})` : "";
+    const fullName = `${brandPrefix}${product.name}${sizeSuffix}`.trim();
+
     const rawPrice =
       product.numericPrice ||
-      (typeof product.price === "string" ? parseFloat(product.price.replace(/[^0-9.]/g, "")) : 0) ||
-      100;
-    const priceFormatted = rawPrice.toLocaleString("en-IN", { style: "currency", currency: "INR" });
+      (typeof product.price === "string" ? parseFloat(product.price.replace(/[^0-9.]/g, "")) : 0);
+    const hasPrice = rawPrice > 0;
+    const priceFormatted = hasPrice
+      ? rawPrice.toLocaleString("en-IN", { style: "currency", currency: "INR" })
+      : "Price on Request / RFQ";
     const productUrl = `${BASE_URL}/product/${encodeURIComponent(product.productId)}`;
 
-    const schema = JSON.stringify({
+    const productSchema: any = {
       "@context": "https://schema.org",
       "@type": "Product",
-      "name": product.name,
+      "name": fullName,
       "image": product.imageUrl ? (product.imageUrl.startsWith("http") ? product.imageUrl : `${BASE_URL}${product.imageUrl}`) : `${BASE_URL}/products/default.jpg`,
-      "description": product.description || `${product.name} industrial supply from Volamp Elektrikals.`,
+      "description": product.description || `${fullName} industrial supply from Volamp Elektrikals.`,
       "sku": product.sku || product.productId,
       "mpn": product.productId,
       "brand": {
         "@type": "Brand",
         "name": product.brand || "Polycab",
       },
-      "offers": {
+    };
+
+    if (hasPrice) {
+      productSchema.offers = {
         "@type": "Offer",
         "url": productUrl,
         "priceCurrency": "INR",
@@ -572,14 +581,16 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
           "@type": "Organization",
           "name": "VOLAMP ELEKTRIKALS PVT. LTD.",
         },
-      },
-    });
+      };
+    }
+
+    const schema = JSON.stringify(productSchema);
 
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     const html = renderPageHtml({
-      title: `${product.name} | Volamp`,
-      description: `Buy ${product.name} (SKU: ${product.sku || product.productId}). Genuine ${product.brand || "Polycab"} electrical supply with MTC test certificate from Volamp.`,
+      title: `${fullName} | Volamp`,
+      description: `Buy ${fullName} (SKU: ${product.sku || product.productId}). Genuine ${product.brand || "Polycab"} electrical supply with MTC test certificate from Volamp.`,
       canonical: productUrl,
       schemaJson: schema,
       bodyHtml: `
@@ -588,13 +599,13 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
             <a href="/products" style="color:#64748b;text-decoration:none;">Products</a> &gt;
             <a href="/category/${encodeURIComponent((product.category || "wire-cables").toLowerCase().replace(/\s+/g, "-"))}" style="color:#64748b;text-decoration:none;">${escapeXml(product.category || "Electrical")}</a> &gt;
-            <span style="color:#0f172a;font-weight:600;">${escapeXml(product.name)}</span>
+            <span style="color:#0f172a;font-weight:600;">${escapeXml(fullName)}</span>
           </nav>
           <header style="border-bottom:1px solid #e2e8f0;padding-bottom:24px;margin-bottom:28px;">
             <div style="display:inline-block;padding:4px 10px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;border-radius:6px;margin-bottom:12px;">
               ${escapeXml(product.brand || "Polycab")} • Genuine Certified
             </div>
-            <h1 style="font-size:28px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 12px 0;">${escapeXml(product.name)}</h1>
+            <h1 style="font-size:28px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 12px 0;">${escapeXml(fullName)}</h1>
             <p style="font-size:14px;color:#64748b;margin:0;">
               Product ID: <strong style="font-family:monospace;color:#0f172a;">${escapeXml(product.productId)}</strong> |
               SKU: <strong style="font-family:monospace;color:#0f172a;">${escapeXml(product.sku || product.productId)}</strong> |
@@ -606,7 +617,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
               <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px;">
                 <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 6px 0;">B2B Wholesale Price (excl. GST)</p>
                 <div style="font-size:32px;font-weight:900;color:#0f172a;">${priceFormatted}</div>
-                <p style="font-size:12px;color:#16a34a;font-weight:700;margin:8px 0 0 0;">✓ In Stock — Ready for 24h dispatch across Gujarat & Pan-India</p>
+                <p style="font-size:12px;color:#16a34a;font-weight:700;margin:8px 0 0 0;">✓ In Stock — Same-day to 24h Gujarat GIDC; 48 to 72h Pan-India Dispatch</p>
               </div>
               <div style="display:flex;gap:12px;flex-wrap:wrap;">
                 <a href="/enquire" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;display:inline-block;">Request Project Quotation</a>

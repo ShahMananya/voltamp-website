@@ -575,7 +575,7 @@ export default function PriceListPage() {
   // Handle Sales Portal Login (starts session with 30-min inactivity limit)
   const handleSalesLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (salesPinInput.trim() === "volamp2026" || salesPinInput.trim() === "1234" || salesPinInput.trim().toLowerCase() === "sales") {
+    if (salesPinInput.trim() === "volamp2026") {
       setIsSalesAuthenticated(true);
       try {
         sessionStorage.setItem(SALES_SESSION_KEY, "true");

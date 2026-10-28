@@ -207,7 +207,7 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     ],
     authorizedStatus: "Industrial Project Partner & Stockist",
     stockCount: "1,500+ KEI SKUs",
-    dispatchTime: "24h - 48h Dispatch",
+    dispatchTime: "Same-Day to 24h (GIDC) / 48-72h (Pan-India)",
     overview:
       "KEI Industries is celebrated for high-reliability heavy power distribution and extra-high voltage transmission. Volamp Elektrikals partners with electrical utilities, EPC contractors, and chemical/refinery infrastructure projects across Dahej, Ankleshwar, Hazira, and Sanand to deliver certified KEI cables on project schedule.",
     popularProducts: [

@@ -117,16 +117,12 @@ export default function HomePriceListSection() {
   // PIN Login
   const handleSalesLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      salesPinInput.trim() === "volamp2026" ||
-      salesPinInput.trim() === "1234" ||
-      salesPinInput.trim().toLowerCase() === "sales"
-    ) {
+    if (salesPinInput.trim() === "volamp2026") {
       setIsSalesAuthenticated(true);
       setPinError("");
       toast.success("Welcome, Volamp Sales Team! Sales Upload Portal unlocked.");
     } else {
-      setPinError("Invalid sales access code. Use 'volamp2026' or contact your administrator.");
+      setPinError("Invalid sales access code. Please contact your system administrator.");
     }
   };
 
@@ -242,14 +238,11 @@ export default function HomePriceListSection() {
           {/* Action CTAs */}
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
-              onClick={() => setSalesModalOpen(true)}
+              onClick={() => navigate("/price-list")}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-stone-800 text-stone-800 dark:text-stone-100 font-bold text-xs uppercase tracking-wider border border-stone-300 dark:border-stone-700 hover:border-[#c56718] hover:text-[#c56718] shadow-xs hover:shadow-md transition-all cursor-pointer"
             >
-              <Upload className="size-3.5 text-[#c56718]" />
-              <span>Upload / Manage Price Lists</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">
-                Sales PIN
-              </span>
+              <FileText className="size-3.5 text-[#c56718]" />
+              <span>Manufacturer Price Lists</span>
             </button>
 
             <button
@@ -668,7 +661,7 @@ export default function HomePriceListSection() {
                   <input
                     type="password"
                     autoFocus
-                    placeholder="Enter sales PIN (volamp2026)"
+                    placeholder="Enter authorized sales PIN"
                     value={salesPinInput}
                     onChange={(e) => {
                       setSalesPinInput(e.target.value);
@@ -680,7 +673,7 @@ export default function HomePriceListSection() {
                     <p className="mt-1.5 text-xs text-rose-600 font-medium">{pinError}</p>
                   )}
                   <p className="mt-2 text-[11px] text-stone-400">
-                    Authorized Sales Team PIN is: <span className="font-mono font-bold text-[#c56718]">volamp2026</span>
+                    Authorized Volamp sales personnel access only.
                   </p>
                 </div>
 
