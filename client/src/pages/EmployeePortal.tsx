@@ -12,10 +12,12 @@ import {
   FileText,
   Headphones,
   Loader2,
+  Lock,
   LogIn,
   LogOut,
   MessageCircle,
   PackageSearch,
+  ShieldAlert,
   ShieldCheck,
   UserCheck,
   Users,
@@ -53,6 +55,7 @@ const WORKSPACE_URL = "https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsa
 export default function EmployeePortal() {
   const [, setLocation] = useLocation();
   const { user, loading, logout } = useAuth();
+  const isCeo = user?.email?.toLowerCase() === "ceo@volampelektrikals.com" || user?.email?.toLowerCase() === "admin@volampelektrikals.com";
   const [activeTab, setActiveTab] = useState<"options" | "maintenance" | "pricing" | "blogs" | "newsletters" | "pricelists" | "queues">("options");
   const [approvingId, setApprovingId] = useState<number | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
@@ -427,14 +430,15 @@ export default function EmployeePortal() {
             </div>
 
             {/* OPTION 2: WEBSITE MAINTENANCE */}
-            <div className="group relative rounded-2xl bg-white dark:bg-[#102b42] border-2 border-amber-300/80 dark:border-amber-500/40 p-6 flex flex-col justify-between hover:border-amber-500 hover:shadow-xl transition-all">
+            <div className={`group relative rounded-2xl bg-white dark:bg-[#102b42] border-2 ${isCeo ? "border-amber-300/80 dark:border-amber-500/40 hover:border-amber-500" : "border-slate-300 dark:border-slate-700"} p-6 flex flex-col justify-between hover:shadow-xl transition-all`}>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="size-12 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-[#c56718] dark:text-amber-400 flex items-center justify-center font-bold">
-                    <Wrench className="size-6" />
+                    {isCeo ? <Wrench className="size-6" /> : <Lock className="size-6 text-amber-600" />}
                   </div>
-                  <span className="text-[10px] font-black uppercase px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 tracking-wider">
-                    Option 2 · Live CMS
+                  <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full ${isCeo ? "bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300" : "bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300"} tracking-wider flex items-center gap-1`}>
+                    {!isCeo && <Lock className="size-2.5" />}
+                    {isCeo ? "Option 2 · Live CMS" : "Option 2 · CEO Access Only"}
                   </span>
                 </div>
                 <div>
@@ -444,22 +448,44 @@ export default function EmployeePortal() {
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                     Update product prices, add new cables and switchgear to the live catalog, publish blog technical guides to Volamp Journal, dispatch newsletters, and push manufacturer price lists.
                   </p>
+                  <div className="mt-2.5 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 flex items-start gap-1.5 text-[11px] text-amber-900 dark:text-amber-200">
+                    <ShieldCheck className="size-3.5 text-amber-600 shrink-0 mt-0.5" />
+                    <span>Access restricted exclusively to <strong className="font-mono">ceo@volampelektrikals.com</strong> with email OTP.</span>
+                  </div>
                 </div>
               </div>
 
               <div className="pt-6 mt-4 border-t border-slate-100 dark:border-slate-800">
-                <button
-                  onClick={() => {
-                    setActiveTab("pricing");
-                    const el = document.getElementById("maintenance-workbench");
-                    if (el) el.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#c56718] hover:bg-[#b45309] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md group-hover:scale-[1.01] cursor-pointer"
-                >
-                  <Wrench className="size-4" />
-                  <span>Enter Website Maintenance</span>
-                  <ArrowRight className="size-4" />
-                </button>
+                {isCeo ? (
+                  <button
+                    onClick={() => {
+                      setActiveTab("pricing");
+                      const el = document.getElementById("maintenance-workbench");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#c56718] hover:bg-[#b45309] text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md group-hover:scale-[1.01] cursor-pointer"
+                  >
+                    <Wrench className="size-4" />
+                    <span>Enter Website Maintenance</span>
+                    <ArrowRight className="size-4" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      toast.error("Access Restricted to CEO", {
+                        description: "Website Maintenance access is strictly granted to ceo@volampelektrikals.com with email OTP.",
+                      });
+                      window.dispatchEvent(
+                        new CustomEvent("volamp:open-auth", { detail: { accountType: "employee" } })
+                      );
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md group-hover:scale-[1.01] cursor-pointer"
+                  >
+                    <Lock className="size-4" />
+                    <span>Sign In as ceo@volampelektrikals.com (OTP)</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -468,7 +494,38 @@ export default function EmployeePortal() {
         {/* =========================================================================
             WEBSITE MAINTENANCE WORKBENCH (INTERNAL EMPLOYEE CMS)
             ========================================================================= */}
-        <div id="maintenance-workbench" className="space-y-6">
+        {!isCeo ? (
+          <div id="maintenance-workbench" className="rounded-3xl p-8 sm:p-12 bg-white dark:bg-[#102b42] border-2 border-amber-300 dark:border-amber-700/60 text-center max-w-2xl mx-auto shadow-xl">
+            <div className="size-16 rounded-2xl bg-amber-100 dark:bg-amber-950/80 text-[#c56718] flex items-center justify-center mx-auto mb-4">
+              <ShieldAlert className="size-8" />
+            </div>
+            <span className="text-[10px] font-black uppercase px-3 py-1 rounded-full bg-red-100 dark:bg-red-950 text-red-800 dark:text-red-300 tracking-wider">
+              Restricted Authorization Gate
+            </span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#102a40] dark:text-white font-['Plus_Jakarta_Sans',sans-serif] mt-3">
+              Website Maintenance Locked
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-2 mb-6 leading-relaxed">
+              Live website maintenance (updating cable and switchgear prices, creating catalog items, publishing technical whitepapers in Volamp Journal, dispatching newsletters, and pushing manufacturer price lists) is strictly authorized for:
+              <br />
+              <strong className="text-[#c56718] font-mono text-sm inline-block mt-1">ceo@volampelektrikals.com</strong>
+              <br />
+              <span className="text-[11px] text-slate-500 mt-1 inline-block">Authentication is strictly verified via one-time password (OTP) sent directly to that email.</span>
+            </p>
+            <Button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(
+                  new CustomEvent("volamp:open-auth", { detail: { accountType: "employee" } })
+                );
+              }}
+              className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold py-3 px-6 rounded-xl shadow-md cursor-pointer flex items-center justify-center gap-2 mx-auto"
+            >
+              <LogIn className="size-4" /> Sign In as ceo@volampelektrikals.com with OTP
+            </Button>
+          </div>
+        ) : (
+          <div id="maintenance-workbench" className="space-y-6">
           {/* Navigation Tabs */}
           <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-white dark:bg-[#102b42] border border-[#ebd7c7] dark:border-white/10 shadow-xs">
             <button
@@ -1427,6 +1484,7 @@ export default function EmployeePortal() {
             </div>
           )}
         </div>
+        )}
       </main>
 
       {/* =========================================================================

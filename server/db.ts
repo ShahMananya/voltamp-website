@@ -89,9 +89,29 @@ const customerSalt = generateSalt();
 
 const memoryUsers: Map<string, StoredUser> = new Map([
   [
-    "admin@volampelektrikals.com",
+    "ceo@volampelektrikals.com",
     {
       id: 1,
+      openId: "emp-ceo-01",
+      name: "VOLAMP CEO",
+      email: "ceo@volampelektrikals.com",
+      loginMethod: "password",
+      role: "admin",
+      accountType: "employee",
+      employeeStatus: "approved",
+      passwordHash: hashPassword("Volamp@2026", adminSalt),
+      passwordSalt: adminSalt,
+      mfaEnabled: true,
+      emailVerified: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastSignedIn: new Date(),
+    },
+  ],
+  [
+    "admin@volampelektrikals.com",
+    {
+      id: 2,
       openId: "emp-admin-01",
       name: "VOLAMP Admin",
       email: "admin@volampelektrikals.com",

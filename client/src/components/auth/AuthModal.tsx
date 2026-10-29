@@ -500,18 +500,18 @@ export function AuthModal({
               Sign in with your official VOLAMP credentials.
             </p>
 
-            {/* Pre-Approved Master Admin Fast Fill */}
+            {/* Pre-Approved CEO Account Fast Fill */}
             <div className="p-3 mb-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs">
               <div className="flex items-center justify-between mb-1">
                 <strong className="flex items-center gap-1 font-bold text-amber-900 dark:text-amber-200 text-[11px]">
-                  <ShieldCheck className="size-3.5 text-amber-600" /> Pre-Approved Administrator Account
+                  <ShieldCheck className="size-3.5 text-amber-600" /> Authorized CEO Account (Website Maintenance)
                 </strong>
                 <button
                   type="button"
                   onClick={() => {
-                    setEmail("admin@volampelektrikals.com");
+                    setEmail("ceo@volampelektrikals.com");
                     setPassword("Volamp@2026");
-                    toast.info("Filled administrator credentials (admin@volampelektrikals.com / Volamp@2026)");
+                    toast.info("Filled CEO credentials (ceo@volampelektrikals.com / Volamp@2026). Mandatory OTP required.");
                   }}
                   className="text-[11px] font-bold text-[#c56718] hover:underline cursor-pointer"
                 >
@@ -519,7 +519,10 @@ export function AuthModal({
                 </button>
               </div>
               <p className="text-[11px] text-slate-600 dark:text-slate-300">
-                Email: <code className="font-mono font-bold text-slate-800 dark:text-slate-200">admin@volampelektrikals.com</code> &middot; Pass: <code className="font-mono font-bold text-slate-800 dark:text-slate-200">Volamp@2026</code>
+                Email: <code className="font-mono font-bold text-slate-800 dark:text-slate-200">ceo@volampelektrikals.com</code> &middot; Pass: <code className="font-mono font-bold text-slate-800 dark:text-slate-200">Volamp@2026</code>
+              </p>
+              <p className="text-[10px] text-amber-700/80 dark:text-amber-300/80 mt-1">
+                Mandatory 6-digit verification code (OTP) will be dispatched directly to this email upon login.
               </p>
             </div>
 

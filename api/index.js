@@ -295,9 +295,29 @@ var adminSalt = generateSalt();
 var customerSalt = generateSalt();
 var memoryUsers = /* @__PURE__ */ new Map([
   [
-    "admin@volampelektrikals.com",
+    "ceo@volampelektrikals.com",
     {
       id: 1,
+      openId: "emp-ceo-01",
+      name: "VOLAMP CEO",
+      email: "ceo@volampelektrikals.com",
+      loginMethod: "password",
+      role: "admin",
+      accountType: "employee",
+      employeeStatus: "approved",
+      passwordHash: hashPassword("Volamp@2026", adminSalt),
+      passwordSalt: adminSalt,
+      mfaEnabled: true,
+      emailVerified: true,
+      createdAt: /* @__PURE__ */ new Date(),
+      updatedAt: /* @__PURE__ */ new Date(),
+      lastSignedIn: /* @__PURE__ */ new Date()
+    }
+  ],
+  [
+    "admin@volampelektrikals.com",
+    {
+      id: 2,
       openId: "emp-admin-01",
       name: "VOLAMP Admin",
       email: "admin@volampelektrikals.com",
@@ -11949,6 +11969,14 @@ var profileInput = z2.object({
   preferredCommunication: z2.enum(["email", "phone", "whatsapp"]),
   deliveryInstructions: z2.string().trim().max(2e3).optional()
 });
+function assertWebsiteMaintenanceAccess(user) {
+  if (!user || user.accountType !== "employee" || user.email !== "ceo@volampelektrikals.com" && user.email !== "admin@volampelektrikals.com") {
+    throw new TRPCError3({
+      code: "FORBIDDEN",
+      message: "Website Maintenance access is strictly restricted to ceo@volampelektrikals.com with email OTP verification."
+    });
+  }
+}
 var appRouter = router({
   system: systemRouter,
   auth: router({
@@ -13093,12 +13121,7 @@ var appRouter = router({
         status: z2.enum(["Active", "Inactive", "Out of Stock", "Discontinued"]).optional()
       })
     ).mutation(async ({ ctx, input }) => {
-      if (ctx.user.accountType !== "employee") {
-        throw new TRPCError3({
-          code: "FORBIDDEN",
-          message: "Only authorized VOLAMP employees can update product prices."
-        });
-      }
+      assertWebsiteMaintenanceAccess(ctx.user);
       const updated = updateProductPrice(input);
       return { success: true, product: updated };
     }),
@@ -13121,12 +13144,7 @@ var appRouter = router({
         imageUrl: z2.string().trim().optional()
       })
     ).mutation(async ({ ctx, input }) => {
-      if (ctx.user.accountType !== "employee") {
-        throw new TRPCError3({
-          code: "FORBIDDEN",
-          message: "Only authorized VOLAMP employees can add products to catalog."
-        });
-      }
+      assertWebsiteMaintenanceAccess(ctx.user);
       const created = addNewProduct(input);
       return { success: true, product: created };
     })
@@ -13161,22 +13179,12 @@ var appRouter = router({
         imageUrl: z2.string().trim().optional()
       })
     ).mutation(async ({ ctx, input }) => {
-      if (ctx.user.accountType !== "employee") {
-        throw new TRPCError3({
-          code: "FORBIDDEN",
-          message: "Only authorized VOLAMP employees can publish blogs."
-        });
-      }
+      assertWebsiteMaintenanceAccess(ctx.user);
       const blog = createBlog(input);
       return { success: true, blog };
     }),
     delete: protectedProcedure.input(z2.object({ id: z2.string() })).mutation(async ({ ctx, input }) => {
-      if (ctx.user.accountType !== "employee") {
-        throw new TRPCError3({
-          code: "FORBIDDEN",
-          message: "Only authorized VOLAMP employees can delete blogs."
-        });
-      }
+      assertWebsiteMaintenanceAccess(ctx.user);
       const ok = deleteBlog(input.id);
       return { success: ok };
     })
@@ -13201,22 +13209,12 @@ var appRouter = router({
         description: z2.string().trim().min(5, "Description is required")
       })
     ).mutation(async ({ ctx, input }) => {
-      if (ctx.user.accountType !== "employee") {
-        throw new TRPCError3({
-          code: "FORBIDDEN",
-          message: "Only authorized VOLAMP employees can push price lists."
-        });
-      }
+      assertWebsiteMaintenanceAccess(ctx.user);
       const item = pushPriceList(input);
       return { success: true, item };
     }),
     delete: protectedProcedure.input(z2.object({ id: z2.string() })).mutation(async ({ ctx, input }) => {
-      if (ctx.user.accountType !== "employee") {
-        throw new TRPCError3({
-          code: "FORBIDDEN",
-          message: "Only authorized VOLAMP employees can delete price lists."
-        });
-      }
+      assertWebsiteMaintenanceAccess(ctx.user);
       const ok = deletePushedPriceList(input.id);
       return { success: ok };
     })
