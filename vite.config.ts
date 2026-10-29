@@ -171,23 +171,29 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes("node_modules")) {
-            if (id.includes("three") || id.includes("globe.gl")) {
+          const norm = id.replace(/\\/g, "/");
+          if (norm.includes("node_modules")) {
+            if (norm.includes("three") || norm.includes("globe.gl")) {
               return "vendor-three";
             }
-            if (id.includes("mermaid") || id.includes("cytoscape")) {
+            if (norm.includes("mermaid") || norm.includes("cytoscape")) {
               return "vendor-diagrams";
             }
-            if (id.includes("monaco") || id.includes("shiki")) {
+            if (norm.includes("monaco") || norm.includes("shiki")) {
               return "vendor-editor";
             }
-            if (id.includes("recharts")) {
+            if (norm.includes("recharts")) {
               return "vendor-charts";
             }
-            if (id.includes("@radix-ui") || id.includes("lucide-react")) {
-              return "vendor-ui";
-            }
-            if (id.includes("react-dom") || id.includes("react/") || id.includes("wouter")) {
+            if (
+              norm.includes("/react/") ||
+              norm.includes("/react-dom/") ||
+              norm.includes("/scheduler/") ||
+              norm.includes("@radix-ui") ||
+              norm.includes("lucide-react") ||
+              norm.includes("wouter") ||
+              norm.includes("@tanstack")
+            ) {
               return "vendor-core";
             }
             return "vendor";
