@@ -12,6 +12,7 @@ import {
   FileText,
   Headphones,
   Loader2,
+  LogIn,
   LogOut,
   MessageCircle,
   PackageSearch,
@@ -266,14 +267,43 @@ export default function EmployeePortal() {
           <h1 className="text-xl font-bold text-[#102a40] dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
             Employee Portal Restricted
           </h1>
-          <p className="text-xs text-[#6e808b] dark:text-[#b6c8d3] mt-2 mb-6 leading-relaxed">
-            This workspace is strictly reserved for verified VOLAMP employees. Please sign in with your official employee account.
+          <p className="text-xs text-[#6e808b] dark:text-[#b6c8d3] mt-2 mb-4 leading-relaxed">
+            This workspace is strictly reserved for verified VOLAMP employees. Please sign in with your official employee credentials (@volampelektrikals.com).
           </p>
-          <Link href="/">
-            <Button className="w-full bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-semibold py-2.5">
-              Back to Homepage <ArrowRight className="ml-2 size-4" />
+
+          {user && user.accountType === "customer" && (
+            <div className="p-3 mb-5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs text-amber-800 dark:text-amber-200 text-left">
+              <p className="font-semibold">Currently signed in as Customer:</p>
+              <p className="font-mono text-[11px] truncate">{user.email}</p>
+              <p className="text-[10px] text-amber-700/80 dark:text-amber-300/80 mt-1">
+                Please switch to an official employee account to access this portal.
+              </p>
+            </div>
+          )}
+
+          <div className="space-y-2.5">
+            <Button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(
+                  new CustomEvent("volamp:open-auth", { detail: { accountType: "employee" } })
+                );
+              }}
+              className="w-full bg-[#1d73b7] hover:bg-[#155a90] text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+            >
+              <LogIn className="size-4" />
+              <span>Sign In as Employee</span>
             </Button>
-          </Link>
+
+            <Link href="/">
+              <Button
+                variant="outline"
+                className="w-full border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold py-2.5 cursor-pointer"
+              >
+                Back to Homepage <ArrowRight className="ml-2 size-4" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
