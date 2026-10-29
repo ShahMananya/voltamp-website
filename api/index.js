@@ -6052,7 +6052,7 @@ function renderPageHtml({
     );
   }
   template = template.replace(
-    '<div id="root"></div>',
+    /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/,
     `<div id="root">${bodyHtml}</div>`
   );
   return template;

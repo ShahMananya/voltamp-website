@@ -469,7 +469,7 @@ function renderPageHtml({
   // 7. Inject semantic pre-rendered HTML into <div id="root">
   // React createRoot will hydrate / replace this when client JS mounts!
   template = template.replace(
-    '<div id="root"></div>',
+    /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/,
     `<div id="root">${bodyHtml}</div>`
   );
 
