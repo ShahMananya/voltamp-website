@@ -182,20 +182,6 @@ export default defineConfig({
             if (norm.includes("monaco") || norm.includes("shiki")) {
               return "vendor-editor";
             }
-            if (norm.includes("recharts")) {
-              return "vendor-charts";
-            }
-            if (
-              norm.includes("/react/") ||
-              norm.includes("/react-dom/") ||
-              norm.includes("/scheduler/") ||
-              norm.includes("@radix-ui") ||
-              norm.includes("lucide-react") ||
-              norm.includes("wouter") ||
-              norm.includes("@tanstack")
-            ) {
-              return "vendor-core";
-            }
             return "vendor";
           }
         },
