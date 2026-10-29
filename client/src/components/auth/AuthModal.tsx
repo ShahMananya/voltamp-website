@@ -9,12 +9,14 @@ import {
   Clock,
   KeyRound,
   Lock,
+  LogIn,
   Mail,
   RefreshCw,
   Shield,
   ShieldAlert,
   ShieldCheck,
   User,
+  UserPlus,
   UserRound,
   X,
 } from "lucide-react";
@@ -378,49 +380,94 @@ export function AuthModal({
 
             <div className="grid grid-cols-1 gap-3.5 w-full">
               {/* Employee Option */}
-              <div className="flex flex-col items-start p-4 rounded-xl border-2 border-[#d2e0e8] dark:border-[#254259] hover:border-[#1d73b7] dark:hover:border-[#1d73b7] bg-[#f8fafc] dark:bg-[#15344d] transition-all text-left group">
-                <div className="flex items-center gap-3 w-full mb-2">
-                  <div className="p-2.5 rounded-lg bg-[#1d73b7]/10 text-[#1d73b7]">
-                    <Briefcase className="size-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[#102a40] dark:text-white">
-                      Employee
-                    </h3>
-                    <p className="text-[11px] text-[#6e808b] dark:text-[#b6c8d3]">
-                      For VOLAMP employees
-                    </p>
+              <div className="flex flex-col items-start p-4 rounded-xl border-2 border-[#d2e0e8] dark:border-[#254259] hover:border-[#1d73b7] dark:hover:border-[#1d73b7] bg-[#f8fafc] dark:bg-[#15344d] transition-all text-left group shadow-xs">
+                <div className="flex items-center justify-between w-full mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-lg bg-[#1d73b7]/10 text-[#1d73b7]">
+                      <Briefcase className="size-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-[#102a40] dark:text-white flex items-center gap-1.5">
+                        Employee
+                        <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-[#1d73b7]/10 text-[#1d73b7] dark:bg-[#1d73b7]/30 dark:text-blue-300">
+                          Staff Only
+                        </span>
+                      </h3>
+                      <p className="text-[11px] text-[#6e808b] dark:text-[#b6c8d3]">
+                        For VOLAMP employees (@volampelektrikals.com)
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <Button
-                  onClick={() => setView("employee-login")}
-                  className="w-full mt-2 bg-[#1d73b7] hover:bg-[#155a90] text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2"
-                >
-                  Login / Register as Employee <ArrowRight className="size-3.5" />
-                </Button>
+
+                {/* 2 Options for Employee */}
+                <div className="grid grid-cols-2 gap-2 w-full mt-2">
+                  <Button
+                    type="button"
+                    onClick={() => setView("employee-login")}
+                    className="w-full bg-[#1d73b7] hover:bg-[#155a90] text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                  >
+                    <LogIn className="size-3.5" />
+                    <span>Login</span>
+                    <ArrowRight className="size-3 hidden sm:inline" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setDomainError(null);
+                      setView("employee-register");
+                    }}
+                    className="w-full border-[#1d73b7] text-[#1d73b7] hover:bg-[#1d73b7]/10 dark:text-blue-300 dark:border-blue-400 bg-white dark:bg-[#102b42] text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <UserPlus className="size-3.5" />
+                    <span>Register</span>
+                  </Button>
+                </div>
               </div>
 
               {/* Customer Option */}
-              <div className="flex flex-col items-start p-4 rounded-xl border-2 border-[#d2e0e8] dark:border-[#254259] hover:border-[#d97818] dark:hover:border-[#d97818] bg-[#f8fafc] dark:bg-[#15344d] transition-all text-left group">
-                <div className="flex items-center gap-3 w-full mb-2">
-                  <div className="p-2.5 rounded-lg bg-[#d97818]/10 text-[#d97818]">
-                    <Building2 className="size-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-[#102a40] dark:text-white">
-                      Customer
-                    </h3>
-                    <p className="text-[11px] text-[#6e808b] dark:text-[#b6c8d3]">
-                      For VOLAMP customers
-                    </p>
+              <div className="flex flex-col items-start p-4 rounded-xl border-2 border-[#d2e0e8] dark:border-[#254259] hover:border-[#d97818] dark:hover:border-[#d97818] bg-[#f8fafc] dark:bg-[#15344d] transition-all text-left group shadow-xs">
+                <div className="flex items-center justify-between w-full mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-lg bg-[#d97818]/10 text-[#d97818]">
+                      <Building2 className="size-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-[#102a40] dark:text-white flex items-center gap-1.5">
+                        Customer
+                        <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-[#d97818]/10 text-[#d97818] dark:bg-[#d97818]/30 dark:text-amber-300">
+                          B2B & Retail
+                        </span>
+                      </h3>
+                      <p className="text-[11px] text-[#6e808b] dark:text-[#b6c8d3]">
+                        For VOLAMP customers & project contractors
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <Button
-                  onClick={() => setView("customer-login")}
-                  className="w-full mt-2 bg-[#d97818] hover:bg-[#b86412] text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2"
-                >
-                  Login / Register as Customer <ArrowRight className="size-3.5" />
-                </Button>
+
+                {/* 2 Options for Customer */}
+                <div className="grid grid-cols-2 gap-2 w-full mt-2">
+                  <Button
+                    type="button"
+                    onClick={() => setView("customer-login")}
+                    className="w-full bg-[#d97818] hover:bg-[#b86412] text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                  >
+                    <LogIn className="size-3.5" />
+                    <span>Login</span>
+                    <ArrowRight className="size-3 hidden sm:inline" />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setView("customer-register")}
+                    className="w-full border-[#d97818] text-[#d97818] hover:bg-[#d97818]/10 dark:text-amber-300 dark:border-amber-400 bg-white dark:bg-[#102b42] text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <UserPlus className="size-3.5" />
+                    <span>Register</span>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

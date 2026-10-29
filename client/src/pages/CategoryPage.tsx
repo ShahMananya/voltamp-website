@@ -614,12 +614,13 @@ export default function CategoryPage() {
           {/* Right Header: Theme & Auth */}
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link
-              href="/portal"
-              className="px-4 py-2 rounded-lg bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold transition-all shadow-xs"
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("volamp:open-auth"))}
+              className="px-4 py-2 rounded-lg bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
             >
               Login / Register
-            </Link>
+            </button>
           </div>
         </div>
       </header>

@@ -75,11 +75,11 @@ function GlobalProfileManager() {
 
 function GlobalAuthManager() {
   const [isOpen, setIsOpen] = useState(false);
-  const [initialType, setInitialType] = useState<"customer" | "employee">("customer");
+  const [initialType, setInitialType] = useState<"customer" | "employee" | undefined>(undefined);
 
   useEffect(() => {
     const handleOpen = (e: any) => {
-      setInitialType(e?.detail?.accountType || "customer");
+      setInitialType(e?.detail?.accountType || undefined);
       setIsOpen(true);
     };
     window.addEventListener("volamp:open-auth", handleOpen);

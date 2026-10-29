@@ -220,7 +220,7 @@ export default function UniversalHeader({
                 size="sm"
                 onClick={() => {
                   window.dispatchEvent(
-                    new CustomEvent("volamp:open-auth", { detail: { accountType: "customer" } })
+                    new CustomEvent("volamp:open-auth")
                   );
                 }}
                 className="text-xs font-bold border-[#ebd7c7] bg-white text-[#4d1217] hover:bg-[#f7ede6] flex items-center gap-1.5 cursor-pointer shadow-2xs"
@@ -312,7 +312,7 @@ export default function UniversalHeader({
                 onClick={() => {
                   setMobileMenuOpen(false);
                   window.dispatchEvent(
-                    new CustomEvent("volamp:open-auth", { detail: { accountType: "customer" } })
+                    new CustomEvent("volamp:open-auth")
                   );
                 }}
                 className="w-full text-left py-2 text-[#c56718] font-bold border-b border-[#ebd7c7] cursor-pointer flex items-center gap-2"
