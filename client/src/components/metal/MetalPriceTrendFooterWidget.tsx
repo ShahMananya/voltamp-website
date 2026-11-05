@@ -17,6 +17,8 @@ import {
   Layers,
   Download,
   FileText,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   AreaChart,
@@ -242,6 +244,29 @@ export default function MetalPriceTrendFooterWidget({
   const [modalOpen, setModalOpen] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState("19 Oct 2026 · Official Daily Fix");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const leaveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = () => {
+    if (leaveTimeoutRef.current) {
+      clearTimeout(leaveTimeoutRef.current);
+      leaveTimeoutRef.current = null;
+    }
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    leaveTimeoutRef.current = setTimeout(() => {
+      setIsHovered(false);
+    }, 350);
+  };
+
+  const toggleExpanded = () => {
+    setIsExpanded((prev) => !prev);
+  };
+
+  const showDetails = isExpanded || isHovered;
 
   // Live metal state - MCX India spot benchmark
   const [copperPrice, setCopperPrice] = useState(1402.30);
@@ -451,8 +476,112 @@ Helpline: +91 79 2213 1234 | sales@volamp.com | www.volamp.com
   };
 
   return (
-    <section className="metal-trend-footer-widget w-full bg-[#f6eee3] dark:bg-[#1a080b] border-y border-[#ebd4c2] dark:border-[#3a1014] py-8 sm:py-10 transition-colors">
-      <div className="market-container max-w-7xl mx-auto space-y-6">
+    <section
+      className="metal-trend-footer-widget w-full bg-[#f6eee3] dark:bg-[#1a080b] border-y border-[#ebd4c2] dark:border-[#3a1014] transition-colors relative overflow-hidden select-none"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* 1. SLIM STRIP (Always Visible - Hover or Click to Enlarge) */}
+      <div
+        onClick={toggleExpanded}
+        className="w-full py-3 px-4 sm:px-6 bg-gradient-to-r from-[#fbf5ed] via-white to-[#fbf5ed] dark:from-[#20070a] dark:via-[#190507] dark:to-[#20070a] hover:bg-[#f5ede2] dark:hover:bg-[#28090d] cursor-pointer transition-colors flex items-center justify-between gap-3 select-none"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggleExpanded();
+          }
+        }}
+        aria-expanded={showDetails}
+        aria-label="Toggle Live Metal Benchmark Details"
+      >
+        <div className="market-container max-w-7xl mx-auto w-full flex items-center justify-between gap-3 flex-wrap">
+          {/* Left: Live Indicator & Title */}
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="relative flex size-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full size-2.5 bg-emerald-500" />
+            </span>
+            <span className="text-[11px] font-black uppercase tracking-wider text-[#4d1217] dark:text-[#f59e0b] hidden sm:inline">
+              MCX Live Benchmark
+            </span>
+          </div>
+
+          {/* Center: Live Ticker Pills */}
+          <div className="flex items-center gap-2 sm:gap-4 flex-wrap text-xs">
+            {/* Copper Pill */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/90 dark:bg-[#2c0d11] border border-[#ebd7c7] dark:border-[#4d161c] shadow-2xs">
+              <span className="size-4 rounded bg-[#c56718]/15 text-[#c56718] text-[10px] font-black flex items-center justify-center">
+                Cu
+              </span>
+              <span className="font-bold text-[#4d1217] dark:text-white font-mono text-xs">
+                {priceUnit === "USD" ? `$${activeCopperVal.toFixed(3)}/lb` : `₹${Math.round(copperPrice)}/kg`}
+              </span>
+              <span
+                className={`text-[11px] font-bold flex items-center ${
+                  copperChange >= 0
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-rose-600 dark:text-rose-400"
+                }`}
+              >
+                {copperChange >= 0 ? "+" : ""}
+                {copperPercent.toFixed(1)}%
+              </span>
+            </div>
+
+            {/* Aluminium Pill */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/90 dark:bg-[#2c0d11] border border-[#ebd7c7] dark:border-[#4d161c] shadow-2xs">
+              <span className="size-4 rounded bg-[#0284c7]/15 text-[#0284c7] text-[10px] font-black flex items-center justify-center">
+                Al
+              </span>
+              <span className="font-bold text-[#4d1217] dark:text-white font-mono text-xs">
+                {priceUnit === "USD" ? `$${activeAlVal.toFixed(3)}/lb` : `₹${Math.round(alPrice)}/kg`}
+              </span>
+              <span
+                className={`text-[11px] font-bold flex items-center ${
+                  alChange >= 0
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-rose-600 dark:text-rose-400"
+                }`}
+              >
+                {alChange >= 0 ? "+" : ""}
+                {alPercent.toFixed(1)}%
+              </span>
+            </div>
+
+            {/* USD/INR Exchange Rate (Hidden on mobile) */}
+            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-stone-50 dark:bg-[#1a080b] border border-stone-200 dark:border-stone-800 text-[11px] text-[#5d4a4b] dark:text-[#cfc2c3]">
+              <span className="text-stone-400">USD/INR:</span>
+              <span className="font-mono font-bold text-stone-900 dark:text-white">₹{usdInrRate.toFixed(2)}</span>
+            </div>
+          </div>
+
+          {/* Right: Expand / Collapse CTA Button */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[11px] font-extrabold text-[#c56718] dark:text-[#f59e0b] hidden md:inline">
+              {showDetails ? "Collapse Details" : "View Live Chart & Details"}
+            </span>
+            <div
+              className={`p-1 rounded-full bg-[#c56718]/10 text-[#c56718] dark:text-[#f59e0b] transition-transform duration-300 ${
+                showDetails ? "rotate-180" : "rotate-0"
+              }`}
+            >
+              <ChevronDown className="size-4" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. ENLARGED DETAILS DRAWER (Unfolds on Hover or Click) */}
+      <div
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          showDetails
+            ? "max-h-[2200px] opacity-100 py-6 sm:py-8 border-t border-[#ebd4c2]/80 dark:border-[#3a1014]/80"
+            : "max-h-0 opacity-0 py-0"
+        }`}
+      >
+        <div className="market-container max-w-7xl mx-auto space-y-6 px-4 sm:px-6">
         {/* Top Header Strip */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1.5">
@@ -1040,6 +1169,7 @@ Helpline: +91 79 2213 1234 | sales@volamp.com | www.volamp.com
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       {/* Embedded Live Metal Calculator Modal */}
