@@ -7,10 +7,27 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { invokeLLM, type Tool, type Message } from "./_core/llm";
 import { sdk } from "./_core/sdk";
 import { systemRouter } from "./_core/systemRouter";
-import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
-import { dispatchOtpEmail } from "./services/emailService";
+import { protectedProcedure, publicProcedure, router, employeeProcedure, adminProcedure } from "./_core/trpc";
+import {
+  dispatchOtpEmail,
+  dispatchEmployeeApprovalRequestEmail,
+  dispatchEmployeeApprovedConfirmationEmail,
+  dispatchEmployeeRejectedNotificationEmail,
+} from "./services/emailService";
 import {
   approveEmployee,
+  rejectEmployee,
+  suspendEmployee,
+  reactivateEmployee,
+  deactivateEmployee,
+  updateEmployeeProfile,
+  listAllEmployees,
+  listPendingEmployees,
+  createEmployeeApprovalToken,
+  getEmployeeApprovalToken,
+  markEmployeeApprovalTokenUsed,
+  recordEmployeeAuditLog,
+  getEmployeeAuditLogs,
   createLocalUser,
   createQuotation,
   createSupportTicket,
@@ -494,7 +511,6 @@ export const appRouter = router({
           email: z.string().trim().email(),
           password: z.string().min(1, "Password is required"),
           rememberMe: z.boolean().optional(),
-          expectedAccountType: z.enum(["customer", "employee"]).optional(),
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -516,33 +532,60 @@ export const appRouter = router({
           });
         }
 
-        // Account type check if specified from tab
-        if (input.expectedAccountType && user.accountType !== input.expectedAccountType) {
-          if (input.expectedAccountType === "employee") {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "This account is registered as a Customer. Please use Customer Login.",
-            });
-          } else {
-            throw new TRPCError({
-              code: "BAD_REQUEST",
-              message: "This is an official Employee account. Please use Employee Login.",
-            });
-          }
-        }
+        // Compute effective role and deterministic redirection destination
+        const callerEmail = user.email?.toLowerCase().trim() || "";
+        const isAdmin =
+          callerEmail === "ceo@volampelektrikals.com" ||
+          callerEmail === "admin@volampelektrikals.com" ||
+          user.role === "admin";
+
+        const effectiveRole: "admin" | "employee" | "customer" = isAdmin
+          ? "admin"
+          : user.accountType === "employee"
+          ? "employee"
+          : "customer";
+
+        const redirectUrl =
+          effectiveRole === "admin"
+            ? "/employee-portal?tab=governance"
+            : effectiveRole === "employee"
+            ? "/employee-portal"
+            : "/portal";
 
         // Check employee approval status
         if (user.accountType === "employee") {
+          if (user.employeeStatus === "pending_verification") {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message: "Your official email address has not been verified yet. Please verify your company email with the OTP sent to your inbox.",
+            });
+          }
           if (user.employeeStatus === "pending_approval") {
             throw new TRPCError({
               code: "FORBIDDEN",
-              message: "Your employee account is pending administrator approval.",
+              message:
+                "Your employee registration has been successfully submitted and verified. Your account is currently awaiting authorization from VOLAMP management. You will receive an email once your registration is reviewed.",
             });
           }
           if (user.employeeStatus === "rejected") {
             throw new TRPCError({
               code: "FORBIDDEN",
-              message: "Your employee registration was not approved.",
+              message:
+                "Your employee registration was reviewed and not authorized by executive management. Please contact HR or IT administration.",
+            });
+          }
+          if (user.employeeStatus === "suspended") {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message:
+                "Your official employee portal access has been suspended. Please contact the Executive Administration desk.",
+            });
+          }
+          if (user.employeeStatus === "deactivated") {
+            throw new TRPCError({
+              code: "FORBIDDEN",
+              message:
+                "This employee account has been deactivated. Please contact IT support.",
             });
           }
         }
@@ -567,7 +610,8 @@ export const appRouter = router({
             mfaPendingToken,
             email: user.email,
             accountType: user.accountType,
-            devOtpHint: process.env.NODE_ENV !== "production" ? otp : undefined,
+            effectiveRole,
+            redirectUrl,
           };
         }
 
@@ -585,6 +629,8 @@ export const appRouter = router({
         return {
           mfaRequired: false as const,
           user,
+          effectiveRole,
+          redirectUrl,
         };
       }),
 
@@ -621,6 +667,25 @@ export const appRouter = router({
           });
         }
 
+        const callerEmail = user.email?.toLowerCase().trim() || "";
+        const isAdmin =
+          callerEmail === "ceo@volampelektrikals.com" ||
+          callerEmail === "admin@volampelektrikals.com" ||
+          user.role === "admin";
+
+        const effectiveRole: "admin" | "employee" | "customer" = isAdmin
+          ? "admin"
+          : user.accountType === "employee"
+          ? "employee"
+          : "customer";
+
+        const redirectUrl =
+          effectiveRole === "admin"
+            ? "/employee-portal?tab=governance"
+            : effectiveRole === "employee"
+            ? "/employee-portal"
+            : "/portal";
+
         const expiresInMs = input.rememberMe ? 30 * 24 * 60 * 60 * 1000 : ONE_YEAR_MS;
         const sessionToken = await sdk.createSessionToken(user.openId, {
           expiresInMs,
@@ -634,6 +699,8 @@ export const appRouter = router({
         return {
           success: true as const,
           user,
+          effectiveRole,
+          redirectUrl,
         };
       }),
 
@@ -652,7 +719,6 @@ export const appRouter = router({
         await dispatchOtpEmail(payload.email, otp, "mfa");
         return {
           success: true as const,
-          devOtpHint: process.env.NODE_ENV !== "production" ? otp : undefined,
         };
       }),
 
@@ -661,7 +727,19 @@ export const appRouter = router({
         z.object({
           name: z.string().trim().min(2, "Name must be at least 2 characters"),
           email: z.string().trim().email("Please enter a valid email address"),
-          password: z.string().min(6, "Password must be at least 6 characters"),
+          employeeId: z.string().trim().max(64).optional(),
+          department: z.string().trim().min(2, "Please select or enter your department"),
+          designation: z.string().trim().min(2, "Please enter your job designation"),
+          password: z
+            .string()
+            .min(8, "Password must be at least 8 characters")
+            .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+            .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+            .regex(/[0-9]/, "Password must contain at least one number")
+            .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+          termsAccepted: z.boolean().refine((val) => val === true, {
+            message: "You must accept company terms and privacy policy to register.",
+          }),
         })
       )
       .mutation(async ({ input }) => {
@@ -669,11 +747,12 @@ export const appRouter = router({
 
         // STRICT BACKEND ENFORCEMENT:
         // Must end with @volampelektrikals.com
-        if (!normalizedEmail.endsWith("@volampelektrikals.com")) {
+        const domain = normalizedEmail.split("@")[1];
+        if (domain !== "volampelektrikals.com") {
           throw new TRPCError({
             code: "BAD_REQUEST",
             message:
-              "Employee registration requires an official VOLAMP email address ending in @volampelektrikals.com.",
+              "Employee registration requires an official VOLAMP corporate email address ending in @volampelektrikals.com. Personal email addresses (Gmail, Yahoo, Outlook, etc.) are strictly prohibited.",
           });
         }
 
@@ -681,7 +760,8 @@ export const appRouter = router({
         if (existing) {
           throw new TRPCError({
             code: "CONFLICT",
-            message: "An account with this official email already exists.",
+            message:
+              "An account with this official email already exists. If your account is awaiting authorization or you forgot your password, please use the status recovery or sign-in options.",
           });
         }
 
@@ -690,11 +770,25 @@ export const appRouter = router({
           email: normalizedEmail,
           password: input.password,
           accountType: "employee",
-          employeeStatus: "pending_approval",
+          employeeStatus: "pending_verification",
+          employeeId: input.employeeId?.trim() || undefined,
+          department: input.department.trim(),
+          designation: input.designation.trim(),
+          termsAccepted: input.termsAccepted,
           mfaEnabled: true,
           emailVerified: false,
         });
 
+        // Record registration audit log
+        await recordEmployeeAuditLog({
+          userId: newUser.id,
+          employeeEmail: normalizedEmail,
+          action: "REGISTERED",
+          actorEmail: normalizedEmail,
+          details: `Employee submitted registration for ${input.department} - ${input.designation}. Email verification pending.`,
+        });
+
+        // Dispatch OTP to employee's company email
         const otp = generate6DigitOtp();
         saveOtp(normalizedEmail, otp, "email_verification", 15 * 60 * 1000);
         await dispatchOtpEmail(normalizedEmail, otp, "registration");
@@ -702,7 +796,7 @@ export const appRouter = router({
         return {
           success: true as const,
           email: newUser.email,
-          devOtpHint: process.env.NODE_ENV !== "production" ? otp : undefined,
+          status: "pending_verification" as const,
         };
       }),
 
@@ -716,6 +810,14 @@ export const appRouter = router({
       )
       .mutation(async ({ input }) => {
         const normalizedEmail = input.email.toLowerCase().trim();
+
+        if (normalizedEmail.endsWith("@volampelektrikals.com")) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message:
+              "Corporate email addresses ending in @volampelektrikals.com are reserved for VOLAMP staff and require official employee registration with CEO authorization.",
+          });
+        }
 
         const existing = await getUserByEmail(normalizedEmail);
         if (existing) {
@@ -768,7 +870,6 @@ export const appRouter = router({
         return {
           success: true as const,
           alreadyVerified: false as const,
-          devOtpHint: process.env.NODE_ENV !== "production" ? otp : undefined,
         };
       }),
 
@@ -800,12 +901,61 @@ export const appRouter = router({
         await updateUser(user.id, { emailVerified: true });
 
         if (user.accountType === "employee") {
+          // Transition employee to pending CEO approval
+          await updateUser(user.id, { employeeStatus: "pending_approval" });
+
+          // Record email verified audit log
+          await recordEmployeeAuditLog({
+            userId: user.id,
+            employeeEmail: normalizedEmail,
+            action: "EMAIL_VERIFIED",
+            actorEmail: normalizedEmail,
+            details: "Official corporate email verified successfully with OTP.",
+          });
+
+          // Generate single-use, time-limited approval and rejection tokens (24 hours)
+          const approveToken = await createEmployeeApprovalToken({
+            userId: user.id,
+            employeeEmail: normalizedEmail,
+            action: "approve",
+            expiresInMs: 24 * 60 * 60 * 1000,
+          });
+
+          const rejectToken = await createEmployeeApprovalToken({
+            userId: user.id,
+            employeeEmail: normalizedEmail,
+            action: "reject",
+            expiresInMs: 24 * 60 * 60 * 1000,
+          });
+
+          // Dispatch CEO Approval Request email directly to ceo@volampelektrikals.com
+          await dispatchEmployeeApprovalRequestEmail({
+            employeeName: user.name || "Employee",
+            employeeEmail: normalizedEmail,
+            employeeId: user.employeeId || undefined,
+            department: user.department || undefined,
+            designation: user.designation || undefined,
+            registrationDate: user.createdAt,
+            emailVerified: true,
+            approvalToken: approveToken.token,
+            rejectToken: rejectToken.token,
+          });
+
+          // Record approval request dispatch in audit log
+          await recordEmployeeAuditLog({
+            userId: user.id,
+            employeeEmail: normalizedEmail,
+            action: "CEO_APPROVAL_DISPATCHED",
+            actorEmail: "system",
+            details: `Approval notification dispatched to ceo@volampelektrikals.com with 24-hour single-use tokens.`,
+          });
+
           return {
             success: true as const,
             accountType: "employee" as const,
             status: "pending_approval" as const,
             message:
-              "Your official email has been verified. Your account is now pending administrator approval before access to the employee portal is granted.",
+              "Your employee registration has been successfully submitted and verified. Your account is currently awaiting authorization from VOLAMP management. You will receive an email once your registration is reviewed.",
           };
         }
 
@@ -823,18 +973,6 @@ export const appRouter = router({
           status: "active" as const,
           user,
         };
-      }),
-
-    quickApproveEmployee: publicProcedure
-      .input(z.object({ email: z.string().trim().email() }))
-      .mutation(async ({ input }) => {
-        const normalized = input.email.toLowerCase().trim();
-        const user = await getUserByEmail(normalized);
-        if (!user) {
-          throw new TRPCError({ code: "NOT_FOUND", message: "User account not found." });
-        }
-        await updateUser(user.id, { employeeStatus: "approved", emailVerified: true });
-        return { success: true as const, email: normalized };
       }),
 
     forgotPassword: publicProcedure
@@ -894,30 +1032,310 @@ export const appRouter = router({
   }),
 
   employee: router({
-    dashboard: protectedProcedure.query(async ({ ctx }) => {
-      if (ctx.user.accountType !== "employee") {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Access restricted to VOLAMP employees.",
-        });
-      }
+    dashboard: employeeProcedure.query(async () => {
       return getEmployeeDashboardData();
     }),
 
-    approveEmployee: protectedProcedure
-      .input(z.object({ userId: z.number().int().positive() }))
+    // Public procedure to inspect token for CEO authorization page (safe dossier)
+    getApprovalRequestInfo: publicProcedure
+      .input(z.object({ token: z.string().trim() }))
+      .query(async ({ input }) => {
+        const tokenRecord = await getEmployeeApprovalToken(input.token);
+        if (!tokenRecord) {
+          return {
+            valid: false as const,
+            error: "The authorization link is invalid or could not be found.",
+          };
+        }
+
+        const now = new Date();
+        if (new Date(tokenRecord.expiresAt) < now) {
+          return {
+            valid: false as const,
+            expired: true as const,
+            error: "This CEO authorization link expired after 24 hours. A new authorization link can be requested from executive administration.",
+          };
+        }
+
+        if (tokenRecord.usedAt) {
+          return {
+            valid: false as const,
+            alreadyUsed: true as const,
+            usedAt: tokenRecord.usedAt,
+            usedBy: tokenRecord.usedBy,
+            error: `This authorization link has already been used on ${new Date(tokenRecord.usedAt).toLocaleString("en-IN")} by ${tokenRecord.usedBy || "executive management"}.`,
+          };
+        }
+
+        const employee = await getUserById(tokenRecord.userId);
+        if (!employee) {
+          return {
+            valid: false as const,
+            error: "Associated employee account was not found.",
+          };
+        }
+
+        return {
+          valid: true as const,
+          token: tokenRecord.token,
+          action: tokenRecord.action,
+          expiresAt: tokenRecord.expiresAt,
+          employee: {
+            id: employee.id,
+            name: employee.name || "Employee",
+            email: employee.email || "",
+            employeeId: employee.employeeId || "Not assigned yet",
+            department: employee.department || "Operations",
+            designation: employee.designation || "Staff Member",
+            emailVerified: Boolean(employee.emailVerified),
+            currentStatus: employee.employeeStatus,
+            createdAt: employee.createdAt,
+          },
+        };
+      }),
+
+    // Protected procedure for CEO to finalize approval or rejection decision
+    processCeoDecision: protectedProcedure
+      .input(
+        z.object({
+          token: z.string().trim(),
+          decision: z.enum(["approve", "reject"]),
+          reason: z.string().trim().max(500).optional(),
+        })
+      )
       .mutation(async ({ ctx, input }) => {
-        if (ctx.user.accountType !== "employee" || ctx.user.role !== "admin") {
+        const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+        const isCeo = callerEmail === "ceo@volampelektrikals.com" || ctx.user.role === "admin";
+        if (!isCeo) {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Only administrator employees can approve employee registrations.",
+            message: "Access denied. Only the CEO (ceo@volampelektrikals.com) or Executive Administrator can authorize employee accounts.",
           });
         }
-        const approved = await approveEmployee(input.userId);
+
+        const tokenRecord = await getEmployeeApprovalToken(input.token);
+        if (!tokenRecord) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Authorization token is invalid or does not exist.",
+          });
+        }
+
+        if (tokenRecord.usedAt) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "This authorization token has already been processed and cannot be reused.",
+          });
+        }
+
+        if (new Date(tokenRecord.expiresAt) < new Date()) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "This authorization token has expired (24h limit).",
+          });
+        }
+
+        const employee = await getUserById(tokenRecord.userId);
+        if (!employee) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Employee account was not found.",
+          });
+        }
+
+        // Atomically mark token as used
+        await markEmployeeApprovalTokenUsed(tokenRecord.token, callerEmail);
+
+        if (input.decision === "approve") {
+          await approveEmployee(employee.id, callerEmail);
+          if (employee.email) {
+            await dispatchEmployeeApprovedConfirmationEmail({
+              employeeName: employee.name || "Employee",
+              employeeEmail: employee.email,
+              employeeId: employee.employeeId || undefined,
+              department: employee.department || undefined,
+              designation: employee.designation || undefined,
+              approvedBy: callerEmail,
+            });
+          }
+        } else {
+          await rejectEmployee(employee.id, input.reason || "Registration not authorized by CEO.", callerEmail);
+          if (employee.email) {
+            await dispatchEmployeeRejectedNotificationEmail({
+              employeeName: employee.name || "Employee",
+              employeeEmail: employee.email,
+              reason: input.reason || "Registration not authorized by CEO.",
+            });
+          }
+        }
+
+        return {
+          success: true as const,
+          decision: input.decision,
+          employeeName: employee.name,
+          employeeEmail: employee.email,
+          decidedBy: callerEmail,
+          decidedAt: new Date(),
+        };
+      }),
+
+    // Direct approve from dashboard
+    approveEmployee: adminProcedure
+      .input(z.object({ userId: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+        const user = await getUserById(input.userId);
+        const approved = await approveEmployee(input.userId, callerEmail);
         if (!approved) {
           throw new TRPCError({ code: "NOT_FOUND", message: "Employee not found." });
         }
+        if (user && user.email) {
+          await dispatchEmployeeApprovedConfirmationEmail({
+            employeeName: user.name || "Employee",
+            employeeEmail: user.email,
+            employeeId: user.employeeId || undefined,
+            department: user.department || undefined,
+            designation: user.designation || undefined,
+            approvedBy: callerEmail,
+          });
+        }
         return { success: true as const };
+      }),
+
+    // Direct reject from dashboard
+    rejectEmployee: adminProcedure
+      .input(z.object({ userId: z.number().int().positive(), reason: z.string().optional() }))
+      .mutation(async ({ ctx, input }) => {
+        const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+        const user = await getUserById(input.userId);
+        const rejected = await rejectEmployee(input.userId, input.reason || "Registration not approved by CEO.", callerEmail);
+        if (!rejected) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Employee not found." });
+        }
+        if (user && user.email) {
+          await dispatchEmployeeRejectedNotificationEmail({
+            employeeName: user.name || "Employee",
+            employeeEmail: user.email,
+            reason: input.reason,
+          });
+        }
+        return { success: true as const };
+      }),
+
+    // Administrative lifecycle action: suspend, reactivate, deactivate
+    manageEmployeeStatus: adminProcedure
+      .input(
+        z.object({
+          userId: z.number().int().positive(),
+          action: z.enum(["approve", "reject", "suspend", "reactivate", "deactivate"]),
+          reason: z.string().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+        const user = await getUserById(input.userId);
+        if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "Employee not found." });
+
+        if (input.action === "approve" || input.action === "reactivate") {
+          await (input.action === "approve" ? approveEmployee(input.userId, callerEmail) : reactivateEmployee(input.userId, callerEmail));
+          if (user.email) {
+            await dispatchEmployeeApprovedConfirmationEmail({
+              employeeName: user.name || "Employee",
+              employeeEmail: user.email,
+              department: user.department || undefined,
+              designation: user.designation || undefined,
+              approvedBy: callerEmail,
+            });
+          }
+        } else if (input.action === "reject") {
+          await rejectEmployee(input.userId, input.reason || "Registration not authorized by CEO.", callerEmail);
+          if (user.email) {
+            await dispatchEmployeeRejectedNotificationEmail({
+              employeeName: user.name || "Employee",
+              employeeEmail: user.email,
+              reason: input.reason,
+            });
+          }
+        } else if (input.action === "suspend") {
+          await suspendEmployee(input.userId, callerEmail);
+        } else if (input.action === "deactivate") {
+          await deactivateEmployee(input.userId, callerEmail);
+        }
+
+        return { success: true as const, action: input.action, userId: input.userId };
+      }),
+
+    // Update employee profile & role
+    updateEmployee: adminProcedure
+      .input(
+        z.object({
+          userId: z.number().int().positive(),
+          department: z.string().optional(),
+          designation: z.string().optional(),
+          employeeId: z.string().optional(),
+          role: z.enum(["user", "admin"]).optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+        await updateEmployeeProfile(
+          input.userId,
+          {
+            department: input.department,
+            designation: input.designation,
+            employeeId: input.employeeId,
+            role: input.role,
+          },
+          callerEmail
+        );
+        return { success: true as const };
+      }),
+
+    // Resend CEO approval email with fresh 24h tokens
+    resendCeoApprovalEmail: adminProcedure
+      .input(z.object({ userId: z.number().int().positive() }))
+      .mutation(async ({ ctx, input }) => {
+        const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+        const user = await getUserById(input.userId);
+        if (!user || user.accountType !== "employee") {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Employee not found." });
+        }
+        const approveToken = await createEmployeeApprovalToken({
+          userId: user.id,
+          employeeEmail: user.email || "",
+          action: "approve",
+          expiresInMs: 24 * 60 * 60 * 1000,
+        });
+        const rejectToken = await createEmployeeApprovalToken({
+          userId: user.id,
+          employeeEmail: user.email || "",
+          action: "reject",
+          expiresInMs: 24 * 60 * 60 * 1000,
+        });
+        await dispatchEmployeeApprovalRequestEmail({
+          employeeName: user.name || "Employee",
+          employeeEmail: user.email || "",
+          employeeId: user.employeeId || undefined,
+          department: user.department || undefined,
+          designation: user.designation || undefined,
+          registrationDate: user.createdAt,
+          emailVerified: true,
+          approvalToken: approveToken.token,
+          rejectToken: rejectToken.token,
+        });
+        return { success: true as const };
+      }),
+
+    // List all employees for admin/CEO
+    listEmployees: adminProcedure.query(async () => {
+      return listAllEmployees();
+    }),
+
+    // List audit logs for admin/CEO
+    listAuditLogs: adminProcedure
+      .input(z.object({ limit: z.number().min(1).max(200).optional() }).optional())
+      .query(async ({ input }) => {
+        return getEmployeeAuditLogs(input?.limit || 100);
       }),
   }),
 

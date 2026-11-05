@@ -112,6 +112,7 @@ export default function CustomerPortal() {
   const [supportMessage, setSupportMessage] = useState("");
 
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalView, setAuthModalView] = useState<"login" | "register">("login");
   const [authModalType, setAuthModalType] = useState<"customer" | "employee">("customer");
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
 
@@ -235,22 +236,22 @@ export default function CustomerPortal() {
               <div className="portal-access-actions">
                 <Button
                   onClick={() => {
-                    setAuthModalType("customer");
+                    setAuthModalView("login");
                     setAuthModalOpen(true);
                   }}
                   className="primary-cta"
                 >
-                  Customer login <ArrowRight className="ml-2 size-4" />
+                  Sign In <ArrowRight className="ml-2 size-4" />
                 </Button>
                 <Button
                   onClick={() => {
-                    setAuthModalType("customer");
+                    setAuthModalView("register");
                     setAuthModalOpen(true);
                   }}
                   variant="outline"
                   className="secondary-portal-cta"
                 >
-                  Create customer account <ArrowRight className="ml-2 size-4" />
+                  Create Account <ArrowRight className="ml-2 size-4" />
                 </Button>
               </div>
             </div>
@@ -259,7 +260,7 @@ export default function CustomerPortal() {
               <span>VOLAMP / CUSTOMER SYSTEM</span>
               <strong>Your information stays tied to your account.</strong>
               <p>
-                Customer login and first-time registration use one secure sign-in flow. Employee access is managed
+                Sign in with your email to access your quotations and orders. Employee access is verified
                 through official @volampelektrikals.com credentials.
               </p>
               <div className="employee-entry">
@@ -270,13 +271,13 @@ export default function CustomerPortal() {
                 </div>
                 <Button
                   onClick={() => {
-                    setAuthModalType("employee");
+                    setAuthModalView("login");
                     setAuthModalOpen(true);
                   }}
                   variant="outline"
                   className="employee-portal-cta"
                 >
-                  Employee login / signup <ArrowRight className="ml-2 size-4" />
+                  Sign in to Employee Portal <ArrowRight className="ml-2 size-4" />
                 </Button>
               </div>
             </div>
@@ -286,7 +287,7 @@ export default function CustomerPortal() {
         <AuthModal
           isOpen={authModalOpen}
           onClose={() => setAuthModalOpen(false)}
-          initialAccountType={authModalType}
+          initialView={authModalView}
         />
       </div>
     );
@@ -712,7 +713,7 @@ export default function CustomerPortal() {
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
-        initialAccountType={authModalType}
+        initialView={authModalView}
       />
       <WhatsAppInvoiceModal
         isOpen={invoiceModalOpen}

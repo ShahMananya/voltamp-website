@@ -929,8 +929,8 @@ export default function GlobeProjectsExperience() {
   }, [currentWaypointIndex, waypoints.length]);
 
   return (
-    <div className="footprint-experience-wrapper w-full">
-      <div className={`footprint-theater-stage ${isImmersive ? "is-immersive" : ""}`}>
+    <div className="footprint-experience-wrapper w-full overflow-hidden">
+      <div className={`footprint-theater-stage ${isImmersive ? "is-immersive" : ""} overflow-hidden`}>
       {/* 1. Main 3D Canvas Viewport (100% full bleed, Map-first) */}
       <div
         ref={viewportRef}

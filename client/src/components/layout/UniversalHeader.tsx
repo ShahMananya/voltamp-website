@@ -57,15 +57,15 @@ export default function UniversalHeader({
       )}
 
       {/* Main Warm Sand & Cream Navbar */}
-      <header className="sticky top-0 z-40 bg-[#fdfbf9] border-b border-[#ebd7c7] text-[#4d1217] shadow-2xs transition-colors">
+      <header className="sticky top-0 z-40 bg-[#fdfbf9] border-b border-[#ebd7c7] text-[#4d1217] shadow-2xs transition-colors overflow-x-clip">
         <div className="market-container flex items-center justify-between h-16 sm:h-20">
-          <div className="flex items-center gap-4 sm:gap-6 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-6 shrink-0">
             <Link href="/" className="flex items-center group" aria-label="VOLAMP home">
-              <div className="brand-mark bg-white px-2.5 py-1.5 rounded-lg border border-[#ebd7c7] shadow-xs group-hover:border-[#c56718] transition-all flex items-center justify-center">
+              <div className="brand-mark bg-white px-1.5 py-1 sm:px-2.5 sm:py-1.5 rounded-lg border border-[#ebd7c7] shadow-xs group-hover:border-[#c56718] transition-all flex items-center justify-center">
                 <img
                   src="/volamp-logo.png?v=3"
                   alt="VOLAMP Elektrikals - Powering Growth"
-                  className="h-8 sm:h-9 w-auto object-contain"
+                  className="h-7 sm:h-9 w-auto object-contain"
                 />
               </div>
             </Link>
@@ -186,14 +186,15 @@ export default function UniversalHeader({
           </nav>
 
           {/* Header Actions */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 flex-nowrap">
+          <div className="flex items-center gap-1 sm:gap-2.5 shrink-0 flex-nowrap">
             <button
               onClick={openLanguagePicker}
-              className="flex items-center gap-1.5 text-xs font-bold text-[#4d1217] hover:text-[#c56718] px-2.5 py-1.5 rounded-lg border border-[#ebd7c7] bg-white hover:bg-[#f7ede6] transition-colors cursor-pointer shadow-2xs"
+              className="flex items-center gap-1 text-xs font-bold text-[#4d1217] hover:text-[#c56718] px-1.5 py-1 sm:px-2.5 sm:py-1.5 rounded-lg border border-[#ebd7c7] bg-white hover:bg-[#f7ede6] transition-colors cursor-pointer shadow-2xs h-8 sm:h-9"
               title={`Translate Website Language (Current: ${currentLanguageObj.name} · ${currentLanguageObj.nativeName})`}
+              aria-label={`Language: ${currentLanguageObj.name}`}
             >
-              <span>{currentLanguageObj.flag}</span>
-              <span className="hidden sm:inline uppercase text-[11px]">{currentLanguageObj.nativeName}</span>
+              <span className="text-sm leading-none">{currentLanguageObj.flag}</span>
+              <span className="hidden md:inline uppercase text-[11px]">{currentLanguageObj.nativeName}</span>
             </button>
             <ThemeToggle />
             {user ? (
@@ -203,16 +204,16 @@ export default function UniversalHeader({
                 onClick={() => {
                   window.dispatchEvent(new CustomEvent("volamp:open-profile"));
                 }}
-                className="text-xs font-bold border-[#ebd7c7] bg-white text-[#4d1217] hover:bg-[#f7ede6] flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="text-xs font-bold border-[#ebd7c7] bg-white text-[#4d1217] hover:bg-[#f7ede6] flex items-center gap-1.5 cursor-pointer shadow-2xs h-8 sm:h-9 px-2 sm:px-3"
                 title="View & Edit Profile Details"
               >
                 <div className="size-4 rounded-full bg-[#c56718] text-white flex items-center justify-center font-bold text-[9px]">
                   {(user.name || user.email || "V").charAt(0).toUpperCase()}
                 </div>
-                <span className="max-w-[120px] truncate hidden sm:inline">
+                <span className="max-w-[120px] truncate hidden md:inline">
                   {user.name || user.email?.split("@")[0]}
                 </span>
-                <span className="text-[10px] text-slate-400 font-normal hidden md:inline">· Profile</span>
+                <span className="text-[10px] text-slate-400 font-normal hidden lg:inline">· Profile</span>
               </Button>
             ) : (
               <Button
@@ -223,15 +224,17 @@ export default function UniversalHeader({
                     new CustomEvent("volamp:open-auth")
                   );
                 }}
-                className="text-xs font-bold border-[#ebd7c7] bg-white text-[#4d1217] hover:bg-[#f7ede6] flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="text-xs font-bold border-[#ebd7c7] bg-white text-[#4d1217] hover:bg-[#f7ede6] flex items-center gap-1.5 cursor-pointer shadow-2xs h-8 sm:h-9 px-2 sm:px-3"
+                title="Sign In / Register"
               >
                 <LogIn className="size-3.5 text-[#c56718]" />
-                <span className="hidden sm:inline">Sign In</span>
+                <span className="hidden md:inline">Sign In</span>
               </Button>
             )}
+            {/* Quick Quote: visible from 480px up; on small mobile screens (<480px), prominently placed in the Hamburger menu drawer */}
             <Button
               onClick={() => navigate("/enquire")}
-              className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold px-2.5 sm:px-4 py-2 rounded-lg shadow-sm flex items-center gap-1.5 cursor-pointer transition-all"
+              className="hidden min-[480px]:inline-flex bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold px-2.5 sm:px-4 py-2 rounded-lg shadow-sm items-center gap-1.5 cursor-pointer transition-all h-8 sm:h-9"
             >
               <span className="hidden sm:inline">Request a Quote</span>
               <span className="sm:hidden">Quote</span>
@@ -240,7 +243,7 @@ export default function UniversalHeader({
             <Button
               variant="ghost"
               size="icon"
-              className="xl:hidden text-slate-700"
+              className="xl:hidden text-slate-700 h-8 w-8 sm:h-9 sm:w-9 p-0"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle navigation menu"
             >
@@ -251,7 +254,37 @@ export default function UniversalHeader({
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="xl:hidden border-t border-[#ebd7c7] bg-[#fdfbf9] p-4 space-y-3 text-sm font-semibold text-[#4d1217]">
+          <div className="xl:hidden border-t border-[#ebd7c7] bg-[#fdfbf9] p-4 space-y-3 text-sm font-semibold text-[#4d1217] animate-in slide-in-from-top-2 duration-150">
+            {/* Accessible Mobile Primary Action: Quick Quote */}
+            <div className="pb-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate("/enquire");
+                }}
+                className="w-full py-2.5 px-4 rounded-xl bg-[#c56718] hover:bg-[#b45309] text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-sm cursor-pointer transition-all"
+              >
+                <span>Request a Custom Quote</span>
+                <ArrowRight className="size-3.5" />
+              </button>
+            </div>
+
+            {/* Accessible Mobile Language Selector */}
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                openLanguagePicker();
+              }}
+              className="w-full text-left py-2 text-[#4d1217] font-semibold border-b border-[#ebd7c7] cursor-pointer flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <span className="text-base">{currentLanguageObj.flag}</span>
+                <span className="text-xs">Language: {currentLanguageObj.name} ({currentLanguageObj.nativeName})</span>
+              </span>
+              <span className="text-[11px] font-bold text-[#c56718]">Change →</span>
+            </button>
             {user ? (
               <>
                 <button

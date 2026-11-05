@@ -36,6 +36,8 @@ const ComplaintsCasesPage = lazy(() => import("./pages/ComplaintsCasesPage"));
 const PriceListPage = lazy(() => import("./pages/PriceListPage"));
 const BrandCityLandingPage = lazy(() => import("./pages/BrandCityLandingPage"));
 const ExportPage = lazy(() => import("./pages/ExportPage"));
+const EmployeeRegistrationPage = lazy(() => import("./pages/EmployeeRegistrationPage"));
+const CeoAuthorizationPage = lazy(() => import("./pages/CeoAuthorizationPage"));
 
 function RouteSuspenseFallback() {
   return (
@@ -174,6 +176,12 @@ function Router() {
       <Route path="/marketplace" component={CategoryPage} />
       <Route path="/portal" component={CustomerPortal} />
       <Route path="/employee-portal" component={EmployeePortal} />
+      <Route path="/employee-registration" component={EmployeeRegistrationPage} />
+      <Route path="/employee/register" component={EmployeeRegistrationPage} />
+      <Route path="/employee-register" component={EmployeeRegistrationPage} />
+      <Route path="/ceo-authorization" component={CeoAuthorizationPage} />
+      <Route path="/ceo/authorize" component={CeoAuthorizationPage} />
+      <Route path="/ceo-approval" component={CeoAuthorizationPage} />
       <Route path="/about-volamp" component={AboutVolamp} />
       <Route path="/about" component={AboutVolamp} />
       <Route path="/about-us" component={AboutVolamp} />

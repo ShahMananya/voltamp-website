@@ -55,11 +55,33 @@ export function useAuth(options?: UseAuthOptions) {
       "manus-runtime-user-info",
       JSON.stringify(meQuery.data)
     );
+    const user = meQuery.data ?? null;
+    const email = user?.email?.toLowerCase().trim() || "";
+    const isAdmin = Boolean(
+      user &&
+        (user.role === "admin" ||
+          email === "ceo@volampelektrikals.com" ||
+          email === "admin@volampelektrikals.com")
+    );
+    const isEmployee = Boolean(user && user.accountType === "employee");
+    const isCustomer = Boolean(user && user.accountType === "customer");
+    const effectiveRole: "admin" | "employee" | "customer" | "guest" = isAdmin
+      ? "admin"
+      : isEmployee
+      ? "employee"
+      : isCustomer
+      ? "customer"
+      : "guest";
+
     return {
-      user: meQuery.data ?? null,
+      user,
       loading: meQuery.isLoading || logoutMutation.isPending,
       error: meQuery.error ?? logoutMutation.error ?? null,
-      isAuthenticated: Boolean(meQuery.data),
+      isAuthenticated: Boolean(user),
+      isAdmin,
+      isEmployee,
+      isCustomer,
+      effectiveRole,
     };
   }, [
     meQuery.data,

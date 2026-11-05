@@ -42,10 +42,13 @@ describe("Authentication and MFA Flow", () => {
       caller.auth.registerEmployee({
         name: "Test Employee",
         email: "someone@gmail.com",
+        department: "Engineering",
+        designation: "Engineer",
         password: "Password123!",
+        termsAccepted: true,
       })
     ).rejects.toThrow(
-      "Employee registration requires an official VOLAMP email address ending in @volampelektrikals.com."
+      "Employee registration requires an official VOLAMP corporate email address ending in @volampelektrikals.com"
     );
   });
 
@@ -56,7 +59,11 @@ describe("Authentication and MFA Flow", () => {
     const result = await caller.auth.registerEmployee({
       name: "Rohan Patel",
       email: "rohan@volampelektrikals.com",
-      password: "VolampPassword2026",
+      department: "Engineering",
+      designation: "Senior Cable Specialist",
+      employeeId: "VLT-2026-ENG99",
+      password: "VolampPassword2026!",
+      termsAccepted: true,
     });
 
     expect(result.success).toBe(true);
@@ -81,26 +88,28 @@ describe("Authentication and MFA Flow", () => {
     await expect(
       caller.auth.login({
         email: "rohan@volampelektrikals.com",
-        password: "VolampPassword2026",
-        expectedAccountType: "employee",
+        password: "VolampPassword2026!",
       })
-    ).rejects.toThrow("pending administrator approval");
+    ).rejects.toThrow("awaiting authorization from VOLAMP management");
   });
 
-  it("enforces server-side MFA for approved employee login", async () => {
+  it("enforces server-side MFA for approved employee login and returns dynamic redirection", async () => {
     const { ctx, setCookies } = createTestContext();
     const caller = appRouter.createCaller(ctx);
 
-    // Login as approved admin employee
+    // Login as approved admin employee (no role passed by client)
     const loginResult = await caller.auth.login({
       email: "admin@volampelektrikals.com",
       password: "Volamp@2026",
-      expectedAccountType: "employee",
     });
 
-    // Must require MFA
+    // Must require MFA and resolve effectiveRole & redirectUrl automatically from DB
     expect(loginResult.mfaRequired).toBe(true);
     expect(loginResult.mfaPendingToken).toBeDefined();
+    if (loginResult.mfaRequired) {
+      expect(loginResult.effectiveRole).toBe("admin");
+      expect(loginResult.redirectUrl).toBe("/employee-portal?tab=governance");
+    }
     // Server must NOT have set the session cookie yet
     expect(setCookies).toHaveLength(0);
 

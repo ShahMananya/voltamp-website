@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Link, useLocation } from "wouter";
 import { startLogin } from "@/const";
@@ -196,7 +196,34 @@ export default function Home() {
   const toggleCompare = (name: string) => setCompareList((current) => current.includes(name) ? current.filter((item) => item !== name) : current.length < 3 ? [...current, name] : current);
 
   const [heroVideoMuted, setHeroVideoMuted] = useState(true);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
 
+  // Guarantee hero facility video plays immediately upon page visit
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    video.muted = heroVideoMuted;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay policy fallback: enforce mute and retry immediately
+        video.muted = true;
+        setHeroVideoMuted(true);
+        video.play().catch(() => {});
+      });
+    }
+  }, [heroVideoMuted]);
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible" && heroVideoRef.current) {
+        heroVideoRef.current.play().catch(() => {});
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
 
   return <div className="volamp-marketplace">
     <SeoHead
@@ -211,21 +238,22 @@ export default function Home() {
       {/* 1. Full-bleed Background Facility Video covering Header and Hero */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
         <video
-          key="hero-video-remastered-no-ceo-v7"
+          ref={heroVideoRef}
+          key="volamp-live-hero-video"
           autoPlay
           loop
           muted={heroVideoMuted}
           playsInline
-          preload="none"
-          poster="/products/cables.jpg?v=3"
+          preload="auto"
           className="w-full h-full object-cover object-center"
         >
-          <source src="/videos/volamp-operations-hero.mp4?v=no-ceo-v7" type="video/mp4" />
-          <source src="/videos/IMG_1536.mp4?v=no-ceo-v7" type="video/mp4" />
-          <source src="/videos/VolampIMG_1104.mp4?v=no-ceo-v7" type="video/mp4" />
+          <source src="/videos/volamp-operations-hero.mp4" type="video/mp4" />
+          <source src="/videos/volamp-reel.mp4" type="video/mp4" />
+          <source src="/videos/IMG_1536.mp4" type="video/mp4" />
+          <source src="/videos/VolampIMG_1104.mp4" type="video/mp4" />
         </video>
         {/* Crisp cinematic gradient overlay - keeps video vibrant while ensuring text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70 z-1" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/75 z-1" />
       </div>
 
       {/* 2. Top utility row (overlaid on top of video, 100% transparent) */}
@@ -959,27 +987,43 @@ export default function Home() {
         )}
       </header>
 
-      {/* 4. Hero Controls (Clean, unobstructed video presentation) */}
-      <div className="relative z-10 market-container flex flex-col items-center justify-end text-center pt-16 sm:pt-24 lg:pt-32 pb-8 sm:pb-10 px-4 mt-auto">
+      {/* 4. Hero Controls (Unobstructed full-bleed video presentation with ambient controls) */}
+      <div className="relative z-20 market-container w-full flex flex-col items-center justify-end text-center pt-16 sm:pt-24 lg:pt-32 pb-4 sm:pb-6 px-4 mt-auto">
         {/* Screen-reader accessible H1 for SEO compliance */}
         <h1 className="sr-only">
           Industrial Cable & Electrical Distributor in Ahmedabad
         </h1>
 
-        {/* Sound mute/unmute control positioned discreetly */}
-        <div className="absolute bottom-6 left-6 sm:left-8 z-20 hidden sm:block">
+        {/* Bottom controls row */}
+        <div className="w-full flex items-center justify-between gap-3">
+          {/* Sound mute/unmute control */}
           <button
             onClick={() => setHeroVideoMuted(!heroVideoMuted)}
-            className="p-2.5 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 text-white transition-all cursor-pointer flex items-center gap-2 shadow-lg group"
+            className="p-2 sm:p-2.5 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/20 text-white transition-all cursor-pointer flex items-center gap-2 shadow-xl group"
             title={heroVideoMuted ? "Unmute facility ambient sound" : "Mute video sound"}
           >
             {heroVideoMuted ? <VolumeX className="size-4 text-slate-300" /> : <Volume2 className="size-4 text-amber-400" />}
-            <span className="text-[11px] font-medium text-slate-300 pr-1 group-hover:text-white transition-colors">
+            <span className="text-[11px] font-medium text-slate-200 pr-1 group-hover:text-white transition-colors">
               {heroVideoMuted ? "Sound Off" : "Sound On"}
             </span>
           </button>
-        </div>
 
+          {/* Facility Operations Live Badge & Full Video CTA */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[11px] font-bold text-amber-300 shadow-xl">
+              <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
+              <span>Live Operations · Central Logistics Hub</span>
+            </div>
+            <button
+              onClick={() => setVideoModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#c56718] hover:bg-amber-500 text-white hover:text-slate-950 font-bold text-xs shadow-xl transition-all cursor-pointer hover:scale-105 border border-amber-400/30"
+              title="Watch full facility tour in HD"
+            >
+              <Play className="size-3 fill-current" />
+              <span>Watch Facility Tour</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1355,7 +1399,7 @@ export default function Home() {
       </section>
     </main>
 
-    <footer className="site-footer"><NewsletterSection /><MetalPriceTrendFooterWidget /><div className="footer-blog-bar"><div className="market-container footer-blog-inner"><div><span className="footer-eyebrow">VOLAMP JOURNAL</span><strong>Read the latest from our supply desk.</strong></div><button onClick={() => navigate("/blog")}>Visit the blog <ArrowRight className="size-4" /></button></div></div><div className="market-container footer-columns"><div className="footer-column footer-company"><BrandMark /><span className="footer-column-title">ABOUT VOLAMP</span><button onClick={() => navigate("/about-volamp")}>About Us</button><button onClick={() => navigate("/where-volamp-contributed")}>Where Volamp Contributed</button><button onClick={() => navigate("/business-segments")}>Business Segments</button><button onClick={() => navigate("/careers")}>Careers</button><button onClick={() => navigate("/collaborate")} className="footer-collaborate-link">Collaborate with Us</button><button onClick={() => navigate("/certifications-and-awards")}>Certifications & Quality</button><button onClick={() => navigate("/in-the-news")}>In the News</button></div><div className="footer-column"><span className="footer-column-title">SHOP CATEGORIES</span>{categoryNavigation.map((category) => <button key={category.name} onClick={() => navigate(categoryPath(category.slug || category.name))}>{category.name}<ArrowRight className="footer-link-arrow" /></button>)}</div><div className="footer-column"><span className="footer-column-title">HELP</span><button onClick={handleQuote}>Contact Us</button><button onClick={() => navigate("/branch-locations")}>Branch Location</button><button onClick={() => navigate("/refund-policy")}>Return & Refund Policy</button><button onClick={() => navigate("/shipping-policy")}>Shipping Policy</button><button onClick={() => navigate("/terms-and-conditions")}>Terms & Conditions</button><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></div><div className="footer-column footer-order-support"><span className="footer-column-title">ORDER SUPPORT</span><div className="footer-support-phone"><span>SUPPORT PHONE</span><a className="footer-support-phone-link" href="tel:+919512365582" aria-label="Call VOLAMP support at 9512365582"><strong>9512365582</strong></a><small>Call Volamp support</small></div><button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button><a href="https://www.google.com/shopping?q=VOLAMP+ELEKTRIKALS" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Shopping Store</a><a href="/api/google-merchant-feed.xml" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Merchant Feed (XML)</a><button onClick={() => navigate("/pay-invoice")}>Pay an Invoice Online</button><button onClick={() => navigate("/price-list")}>Price Lists</button><button onClick={() => navigate("/complaints-cases")}>Complaints/Cases</button></div><div className="footer-column footer-social-column"><span className="footer-column-title">SOCIAL MEDIA LINKS</span><SocialMediaLinks /><a className="footer-gem-mark" href="https://gem.gov.in/" target="_blank" rel="noreferrer" aria-label="VOLAMP on Government e Marketplace"><img src="/gem-marketplace-logo.png?v=2" alt="Government e Marketplace GeM" /></a></div></div><div className="market-container footer-bottom"><span>Volamp Elektrikals © 2026. All rights reserved.</span><span>Global & Domestic electrical supply and export network.</span></div></footer>
+    <footer className="site-footer"><NewsletterSection /><MetalPriceTrendFooterWidget /><div className="footer-blog-bar"><div className="market-container footer-blog-inner"><div><span className="footer-eyebrow">VOLAMP JOURNAL</span><strong>Read the latest from our supply desk.</strong></div><button onClick={() => navigate("/blog")}>Visit the blog <ArrowRight className="size-4" /></button></div></div><div className="market-container footer-columns"><div className="footer-column footer-company"><BrandMark /><span className="footer-column-title">ABOUT VOLAMP</span><button onClick={() => navigate("/about-volamp")}>About Us</button><button onClick={() => navigate("/where-volamp-contributed")}>Where Volamp Contributed</button><button onClick={() => navigate("/business-segments")}>Business Segments</button><button onClick={() => navigate("/careers")}>Careers</button><button onClick={() => navigate("/collaborate")} className="footer-collaborate-link">Collaborate with Us</button><button onClick={() => navigate("/certifications-and-awards")}>Certifications & Quality</button><button onClick={() => navigate("/in-the-news")}>In the News</button></div><div className="footer-column"><span className="footer-column-title">SHOP CATEGORIES</span>{categoryNavigation.map((category) => <button key={category.name} onClick={() => navigate(categoryPath(category.slug || category.name))}>{category.name}<ArrowRight className="footer-link-arrow" /></button>)}</div><div className="footer-column"><span className="footer-column-title">HELP</span><button onClick={handleQuote}>Contact Us</button><button onClick={() => navigate("/branch-locations")}>Branch Location</button><button onClick={() => navigate("/refund-policy")}>Return & Refund Policy</button><button onClick={() => navigate("/shipping-policy")}>Shipping Policy</button><button onClick={() => navigate("/terms-and-conditions")}>Terms & Conditions</button><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></div><div className="footer-column footer-order-support"><span className="footer-column-title">ORDER SUPPORT</span><div className="footer-support-phone"><span>SUPPORT PHONE</span><a className="footer-support-phone-link" href="tel:+919512365582" aria-label="Call VOLAMP support at 9512365582"><strong>9512365582</strong></a><small>Call Volamp support</small></div><button onClick={() => { setTrackedOrderId(""); setTrackOrderOpen(true); }}>Track My Order</button><a href="https://www.google.com/shopping?q=VOLAMP+ELEKTRIKALS" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Shopping Store</a><a href="/api/google-merchant-feed.xml" target="_blank" rel="noreferrer" className="text-left text-xs text-slate-400 hover:text-white transition-colors">Google Merchant Feed (XML)</a><button onClick={() => navigate("/pay-invoice")}>Pay an Invoice Online</button><button onClick={() => navigate("/price-list")}>Price Lists</button><button onClick={() => navigate("/complaints-cases")}>Complaints/Cases</button><button onClick={() => navigate("/employee-portal")}>Employee Portal</button></div><div className="footer-column footer-social-column"><span className="footer-column-title">SOCIAL MEDIA LINKS</span><SocialMediaLinks /><a className="footer-gem-mark" href="https://gem.gov.in/" target="_blank" rel="noreferrer" aria-label="VOLAMP on Government e Marketplace"><img src="/gem-marketplace-logo.png?v=2" alt="Government e Marketplace GeM" /></a></div></div><div className="market-container footer-bottom"><span>Volamp Elektrikals © 2026. All rights reserved.</span><span>Global & Domestic electrical supply and export network.</span></div></footer>
 
     <CableCalculatorModal
       isOpen={calculatorOpen}

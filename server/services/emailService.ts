@@ -1183,3 +1183,471 @@ Vadodara, Gujarat, India
 
   return { internalDrop, userConfirmation };
 }
+
+// ---------------------------------------------------------------------------
+// 5. Employee Account Approval Workflow (ceo@volampelektrikals.com)
+// ---------------------------------------------------------------------------
+
+export interface EmployeeApprovalRequestData {
+  employeeName: string;
+  employeeEmail: string;
+  employeeId?: string;
+  department?: string;
+  designation?: string;
+  registrationDate?: Date;
+  emailVerified?: boolean;
+  approvalToken?: string;
+  rejectToken?: string;
+  ipAddress?: string;
+}
+
+export async function dispatchEmployeeApprovalRequestEmail(
+  data: EmployeeApprovalRequestData
+): Promise<EmailDispatchResult> {
+  const ceoInbox = "ceo@volampelektrikals.com";
+  const defaultSender = process.env.SMTP_FROM || "no-reply@volampelektrikals.com";
+  const formattedDate = (data.registrationDate || new Date()).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  const baseUrl =
+    process.env.APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://volampelektrikals.com");
+  
+  const approveUrl = data.approvalToken
+    ? `${baseUrl}/ceo-authorization?token=${encodeURIComponent(data.approvalToken)}&action=approve`
+    : `${baseUrl}/ceo-authorization?employeeEmail=${encodeURIComponent(data.employeeEmail)}&action=approve`;
+
+  const rejectUrl = data.rejectToken
+    ? `${baseUrl}/ceo-authorization?token=${encodeURIComponent(data.rejectToken)}&action=reject`
+    : `${baseUrl}/ceo-authorization?employeeEmail=${encodeURIComponent(data.employeeEmail)}&action=reject`;
+
+  const subject = `[ACTION REQUIRED] New Employee Account Authorization Request - ${data.employeeName} (${data.employeeEmail})`;
+
+  const textContent = `
+VOLAMP ELEKTRIKALS PVT. LTD. - EXECUTIVE LEADERSHIP & IT SECURITY DESK
+======================================================================
+OFFICIAL EMPLOYEE REGISTRATION PENDING CEO AUTHORIZATION
+======================================================================
+
+A new employee has completed registration and verified their official company email address.
+CEO authorization is required before this employee can access the VOLAMP Employee Portal.
+
+EMPLOYEE DOSSIER:
+- Full Name: ${data.employeeName}
+- Official Corporate Email: ${data.employeeEmail}
+- Employee ID: ${data.employeeId || "Not assigned yet"}
+- Department: ${data.department || "Operations"}
+- Designation: ${data.designation || "Staff Member"}
+- Registration Date & Time: ${formattedDate} IST
+- Company Email Verification: VERIFIED
+- Current Account Status: PENDING CEO APPROVAL
+
+SECURITY & ACCESS RULES:
+- Opening this email or its links does NOT automatically activate or reject the account.
+- The CEO must authenticate with multi-factor authentication (MFA) to finalize the decision.
+- These authorization links are secure, time-limited (24 hours), and single-use.
+
+ACTIONS:
+To APPROVE this employee for official portal access:
+${approveUrl}
+
+To REJECT this registration request:
+${rejectUrl}
+
+Or manage via the Executive Governance desk in the Employee Portal:
+${baseUrl}/employee-portal
+
+======================================================================
+VOLAMP Elektrikals Pvt. Ltd. • Executive Leadership Desk
+Vadodara, Gujarat, India • volampelektrikals.com
+`.trim();
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 40px 15px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 620px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0;">
+          <!-- Header Banner -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #0a1f33 0%, #102a40 60%, #1d4ed8 100%); padding: 32px 30px; text-align: center;">
+              <div style="font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: 2px; text-transform: uppercase;">
+                VOLAMP <span style="color: #f59e0b;">ELEKTRIKALS</span>
+              </div>
+              <div style="font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 2.5px; text-transform: uppercase; margin-top: 6px;">
+                Executive Leadership & IT Security Governance Desk
+              </div>
+            </td>
+          </tr>
+
+          <!-- Main Body -->
+          <tr>
+            <td style="padding: 36px 36px 28px 36px;">
+              <div style="display: inline-block; padding: 5px 14px; border-radius: 9999px; background-color: #fef3c7; color: #92400e; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; border: 1px solid #fde68a;">
+                Action Required &bull; Pending CEO Decision
+              </div>
+              <h1 style="font-size: 21px; font-weight: 800; color: #0f172a; margin: 0 0 12px 0; line-height: 1.3;">
+                Employee Registration Authorization Request
+              </h1>
+              <p style="font-size: 14px; line-height: 1.6; color: #475569; margin: 0 0 20px 0;">
+                A new staff member has completed registration using the verified corporate domain <strong style="color: #0f172a;">@volampelektrikals.com</strong>. Per company governance policy, access to the internal Employee Portal is locked until explicitly authorized by the CEO.
+              </p>
+
+              <!-- Employee Dossier Card -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; margin: 16px 0 24px 0;">
+                <tr>
+                  <td style="padding: 20px 22px;">
+                    <table width="100%" cellspacing="0" cellpadding="7">
+                      <tr>
+                        <td width="36%" style="font-size: 12px; color: #64748b; font-weight: 600;">Employee Full Name:</td>
+                        <td style="font-size: 14px; color: #0f172a; font-weight: 700;">${data.employeeName}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Official Corporate Email:</td>
+                        <td style="font-size: 13px; color: #0f172a; font-weight: 700; font-family: monospace;">${data.employeeEmail}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Employee ID:</td>
+                        <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.employeeId || "Not assigned yet"}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Department:</td>
+                        <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.department || "Operations"}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Job Designation:</td>
+                        <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.designation || "Staff Member"}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Registration Timestamp:</td>
+                        <td style="font-size: 12px; color: #334155;">${formattedDate} IST</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Company Email Status:</td>
+                        <td style="font-size: 12px; color: #059669; font-weight: 700;">
+                          <span style="display: inline-block; padding: 2px 8px; border-radius: 6px; background-color: #d1fae5; border: 1px solid #a7f3d0;">
+                            &#10003; Verified via OTP
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Current Portal Status:</td>
+                        <td style="font-size: 12px; color: #b45309; font-weight: 700;">
+                          <span style="display: inline-block; padding: 2px 8px; border-radius: 6px; background-color: #fef3c7; border: 1px solid #fde68a;">
+                            Locked &bull; Pending CEO Approval
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Action Buttons -->
+              <div style="margin: 28px 0 20px 0;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="center" style="padding-bottom: 12px;">
+                      <a href="${approveUrl}" style="background-color: #059669; color: #ffffff; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(5,150,105,0.25); min-width: 180px; text-align: center;">
+                        &#10003; Approve Employee
+                      </a>
+                      &nbsp;&nbsp;
+                      <a href="${rejectUrl}" style="background-color: #dc2626; color: #ffffff; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(220,38,38,0.25); min-width: 180px; text-align: center;">
+                        &#10007; Reject Employee
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              <!-- Security Policy Notice -->
+              <div style="background-color: #f8fafc; border-left: 4px solid #0284c7; padding: 12px 16px; border-radius: 6px; margin: 20px 0 16px 0;">
+                <p style="font-size: 11px; line-height: 1.5; color: #475569; margin: 0;">
+                  <strong style="color: #0369a1;">Zero-Touch Security Protocol:</strong> Clicking an action above opens a secure confirmation page on <em>volampelektrikals.com</em> requiring multi-factor CEO authentication. No account state changes until you review and confirm on-screen. Links expire in 24 hours and are single-use.
+                </p>
+              </div>
+
+              <p style="font-size: 12px; color: #64748b; text-align: center; margin: 16px 0 0 0;">
+                Or access the Executive Portal directly at: <a href="${baseUrl}/employee-portal" style="color: #1d73b7; text-decoration: underline;">${baseUrl}/employee-portal</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; border-top: 1px solid #edf2f7; padding: 22px 36px; text-align: center;">
+              <p style="font-size: 11px; color: #94a3b8; margin: 0; line-height: 1.5;">
+                VOLAMP Elektrikals Pvt. Ltd. &bull; Corporate Headquarters, Vadodara, Gujarat, India<br>
+                Official Website: <a href="https://volampelektrikals.com" style="color: #1d73b7; text-decoration: none;">volampelektrikals.com</a> &bull; CEO Executive Desk: <a href="mailto:ceo@volampelektrikals.com" style="color: #1d73b7; text-decoration: none;">ceo@volampelektrikals.com</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`.trim();
+
+  return sendTransactionalEmail({
+    to: ceoInbox,
+    from: defaultSender,
+    fromName: "VOLAMP IT & Security Governance Desk",
+    replyTo: data.employeeEmail,
+    subject,
+    text: textContent,
+    html: htmlContent,
+    category: "employee_approval_request",
+  });
+}
+
+export interface EmployeeApprovedConfirmationData {
+  employeeName: string;
+  employeeEmail: string;
+  employeeId?: string;
+  department?: string;
+  designation?: string;
+  approvedBy?: string;
+}
+
+export async function dispatchEmployeeApprovedConfirmationEmail(
+  data: EmployeeApprovedConfirmationData
+): Promise<EmailDispatchResult> {
+  const defaultSender = process.env.SMTP_FROM || "no-reply@volampelektrikals.com";
+  const baseUrl =
+    process.env.APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://volampelektrikals.com");
+  const loginUrl = `${baseUrl}/employee-portal`;
+
+  const subject = `Official Employee Account Authorized - Welcome to VOLAMP Elektrikals`;
+
+  const textContent = `
+VOLAMP ELEKTRIKALS PVT. LTD. - EXECUTIVE LEADERSHIP DESK
+=========================================================
+OFFICIAL EMPLOYEE ACCESS AUTHORIZED
+=========================================================
+
+Dear ${data.employeeName},
+
+Your employee registration for ${data.employeeEmail} has been reviewed and explicitly authorized by Executive Leadership (${data.approvedBy || "ceo@volampelektrikals.com"}).
+
+ACCOUNT DETAILS:
+- Employee Name: ${data.employeeName}
+- Official Email: ${data.employeeEmail}
+- Employee ID: ${data.employeeId || "Assigned by HR"}
+- Department: ${data.department || "Operations"}
+- Designation: ${data.designation || "Staff Member"}
+- Account Status: ACTIVE (Authorized for Portal Access)
+
+ACCESS YOUR EMPLOYEE WORKSPACE:
+${loginUrl}
+
+Security Notice: All corporate employee accounts have Multi-Factor Authentication (MFA) enabled. When signing in, a secure verification code will be dispatched to your company email address.
+
+Regards,
+Executive Leadership & IT Administration Desk
+VOLAMP Elektrikals Pvt. Ltd.
+Vadodara, Gujarat, India • volampelektrikals.com
+`.trim();
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 40px 15px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0;">
+          <tr>
+            <td style="background: linear-gradient(135deg, #0a1f33 0%, #065f46 100%); padding: 32px 30px; text-align: center;">
+              <div style="font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: 2px; text-transform: uppercase;">
+                VOLAMP <span style="color: #f59e0b;">ELEKTRIKALS</span>
+              </div>
+              <div style="font-size: 11px; font-weight: 700; color: #a7f3d0; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;">
+                Official Employee Portal Access
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 36px 36px 28px 36px;">
+              <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; background-color: #d1fae5; color: #065f46; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">
+                &#10003; Account Authorized &bull; Access Granted
+              </div>
+              <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 12px 0;">
+                Welcome, ${data.employeeName}!
+              </h1>
+              <p style="font-size: 14px; line-height: 1.6; color: #475569; margin: 0 0 20px 0;">
+                Your corporate registration for <strong style="color: #0f172a;">${data.employeeEmail}</strong> has been authorized by Executive Management (<span style="color: #059669; font-weight: 600;">${data.approvedBy || "ceo@volampelektrikals.com"}</span>).
+              </p>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="6" style="background-color: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; margin: 16px 0 24px 0; padding: 12px;">
+                <tr>
+                  <td width="40%" style="font-size: 12px; color: #64748b; font-weight: 600;">Department:</td>
+                  <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.department || "Operations"}</td>
+                </tr>
+                <tr>
+                  <td style="font-size: 12px; color: #64748b; font-weight: 600;">Designation:</td>
+                  <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.designation || "Staff Member"}</td>
+                </tr>
+                <tr>
+                  <td style="font-size: 12px; color: #64748b; font-weight: 600;">Employee ID:</td>
+                  <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.employeeId || "Assigned by HR"}</td>
+                </tr>
+                <tr>
+                  <td style="font-size: 12px; color: #64748b; font-weight: 600;">Security:</td>
+                  <td style="font-size: 13px; color: #059669; font-weight: 600;">Multi-Factor Authentication (MFA) Protected</td>
+                </tr>
+              </table>
+
+              <div style="text-align: center; margin: 26px 0 24px 0;">
+                <a href="${loginUrl}" style="background-color: #1d73b7; color: #ffffff; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(29,115,183,0.25);">
+                  Sign In to Employee Portal &rarr;
+                </a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; border-top: 1px solid #edf2f7; padding: 20px 36px; text-align: center;">
+              <p style="font-size: 11px; color: #8e9da9; margin: 0;">
+                VOLAMP Elektrikals Pvt. Ltd. &bull; Vadodara, Gujarat, India &bull; <a href="https://volampelektrikals.com" style="color: #1d73b7; text-decoration: none;">volampelektrikals.com</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`.trim();
+
+  return sendTransactionalEmail({
+    to: data.employeeEmail,
+    from: defaultSender,
+    fromName: "VOLAMP Executive Leadership Desk",
+    replyTo: "ceo@volampelektrikals.com",
+    subject,
+    text: textContent,
+    html: htmlContent,
+    category: "employee_approved_confirmation",
+  });
+}
+
+export interface EmployeeRejectedNotificationData {
+  employeeName: string;
+  employeeEmail: string;
+  reason?: string;
+}
+
+export async function dispatchEmployeeRejectedNotificationEmail(
+  data: EmployeeRejectedNotificationData
+): Promise<EmailDispatchResult> {
+  const defaultSender = process.env.SMTP_FROM || "no-reply@volampelektrikals.com";
+  const subject = `Employee Registration Status Update - VOLAMP Elektrikals`;
+
+  const textContent = `
+VOLAMP ELEKTRIKALS PVT. LTD. - EXECUTIVE LEADERSHIP DESK
+=========================================================
+REGISTRATION NOT AUTHORIZED
+=========================================================
+
+Dear ${data.employeeName},
+
+We are writing to inform you that your request for access to the VOLAMP Employee Portal for ${data.employeeEmail} could not be authorized by company management at this time.
+
+${data.reason ? `Reason: ${data.reason}\n` : ""}
+If you believe this decision is in error or require official portal access as part of your employment duties, please contact your department supervisor or the Human Resources & IT administration desk directly.
+
+Regards,
+Executive Leadership & IT Administration Desk
+VOLAMP Elektrikals Pvt. Ltd.
+Vadodara, Gujarat, India • volampelektrikals.com
+`.trim();
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 40px 15px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0;">
+          <tr>
+            <td style="background: linear-gradient(135deg, #0a1f33 0%, #7f1d1d 100%); padding: 32px 30px; text-align: center;">
+              <div style="font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: 2px; text-transform: uppercase;">
+                VOLAMP <span style="color: #f59e0b;">ELEKTRIKALS</span>
+              </div>
+              <div style="font-size: 11px; font-weight: 700; color: #fecaca; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;">
+                Employee Registration Update
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 36px 36px 28px 36px;">
+              <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; background-color: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">
+                Registration Not Authorized
+              </div>
+              <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 12px 0;">
+                Notice Regarding Registration for ${data.employeeName}
+              </h1>
+              <p style="font-size: 14px; line-height: 1.6; color: #475569; margin: 0 0 16px 0;">
+                Your request to activate an Employee Portal account for <strong style="color: #0f172a;">${data.employeeEmail}</strong> was reviewed by Executive Leadership and could not be authorized at this time.
+              </p>
+
+              ${data.reason ? `
+              <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 13px; color: #991b1b;">
+                <strong>Management Remark:</strong> ${data.reason}
+              </div>` : ""}
+
+              <p style="font-size: 13px; line-height: 1.6; color: #475569; margin: 16px 0 0 0;">
+                If you believe this was in error, please contact your department manager or email the Human Resources & IT security desk at <a href="mailto:support@volampelektrikals.com" style="color: #1d73b7;">support@volampelektrikals.com</a>.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; border-top: 1px solid #edf2f7; padding: 20px 36px; text-align: center;">
+              <p style="font-size: 11px; color: #8e9da9; margin: 0;">
+                VOLAMP Elektrikals Pvt. Ltd. &bull; Vadodara, Gujarat, India &bull; <a href="https://volampelektrikals.com" style="color: #1d73b7; text-decoration: none;">volampelektrikals.com</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`.trim();
+
+  return sendTransactionalEmail({
+    to: data.employeeEmail,
+    from: defaultSender,
+    fromName: "VOLAMP Executive Leadership Desk",
+    replyTo: "ceo@volampelektrikals.com",
+    subject,
+    text: textContent,
+    html: htmlContent,
+    category: "employee_rejected_notification",
+  });
+}

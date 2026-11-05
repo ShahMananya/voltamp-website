@@ -27,12 +27,50 @@ const requireUser = t.middleware(async opts => {
 
 export const protectedProcedure = t.procedure.use(requireUser);
 
+export const employeeProcedure = t.procedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    if (!ctx.user) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    }
+
+    if (ctx.user.accountType !== "employee") {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Access restricted to VOLAMP employees." });
+    }
+
+    if (ctx.user.employeeStatus !== "approved" && ctx.user.role !== "admin") {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Your employee account is pending authorization or inactive.",
+      });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user,
+      },
+    });
+  }),
+);
+
 export const adminProcedure = t.procedure.use(
   t.middleware(async opts => {
     const { ctx, next } = opts;
 
-    if (!ctx.user || ctx.user.role !== 'admin') {
-      throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
+    if (!ctx.user) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    }
+
+    const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+    const isCeo =
+      callerEmail === "ceo@volampelektrikals.com" ||
+      callerEmail === "admin@volampelektrikals.com" ||
+      ctx.user.role === "admin";
+
+    if (!isCeo) {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Administrative privileges required." });
     }
 
     return next({

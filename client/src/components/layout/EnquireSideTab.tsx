@@ -10,7 +10,7 @@ export default function EnquireSideTab({ onOpen }: EnquireSideTabProps) {
       type="button"
       onClick={onOpen}
       aria-label="Enquire Now - Quick Project Supply & RFQ"
-      className="fixed right-0 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center justify-center gap-2.5 py-3.5 px-2 bg-gradient-to-b from-[#c56718] to-[#9a3412] hover:from-[#d97706] hover:to-[#c56718] text-white shadow-[-4px_6px_25px_rgba(197,103,24,0.45)] rounded-l-2xl transition-all duration-300 cursor-pointer group hover:-translate-x-1.5 select-none focus:outline-none focus:ring-2 focus:ring-[#c56718]/50 print:hidden border-l border-y border-white/20 backdrop-blur-md"
+      className="hidden md:flex fixed right-0 top-1/2 -translate-y-1/2 z-40 flex-col items-center justify-center gap-2.5 py-3.5 px-2 bg-gradient-to-b from-[#c56718] to-[#9a3412] hover:from-[#d97706] hover:to-[#c56718] text-white shadow-[-4px_6px_25px_rgba(197,103,24,0.45)] rounded-l-2xl transition-all duration-300 cursor-pointer group hover:-translate-x-1.5 select-none focus:outline-none focus:ring-2 focus:ring-[#c56718]/50 print:hidden border-l border-y border-white/20 backdrop-blur-md"
     >
       {/* Speech Bubble Icon with Pulse Animation */}
       <div className="relative flex items-center justify-center size-6 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors shrink-0">

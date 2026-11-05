@@ -1,4 +1,6 @@
 // server/_core/app.ts
+import fs4 from "fs";
+import path4 from "path";
 import express from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 
@@ -7,7 +9,6 @@ var COOKIE_NAME = "app_session_id";
 var ONE_YEAR_MS = 1e3 * 60 * 60 * 24 * 365;
 var AXIOS_TIMEOUT_MS = 3e4;
 var UNAUTHED_ERR_MSG = "Please login (10001)";
-var NOT_ADMIN_ERR_MSG = "You do not have required permission (10002)";
 var OAUTH_STATE_COOKIE = "__Host-oauth_state";
 var decodeOAuthState = (state) => {
   let decoded;
@@ -42,7 +43,14 @@ var users = mysqlTable("users", {
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   accountType: mysqlEnum("accountType", ["customer", "employee"]).default("customer").notNull(),
-  employeeStatus: mysqlEnum("employeeStatus", ["pending_approval", "approved", "rejected"]).default("approved").notNull(),
+  employeeStatus: varchar("employeeStatus", { length: 64 }).default("approved").notNull(),
+  employeeId: varchar("employeeId", { length: 64 }),
+  department: varchar("department", { length: 120 }),
+  designation: varchar("designation", { length: 120 }),
+  rejectionReason: text("rejectionReason"),
+  approvedAt: timestamp("approvedAt"),
+  approvedBy: varchar("approvedBy", { length: 320 }),
+  termsAccepted: boolean("termsAccepted").default(false),
   passwordHash: varchar("passwordHash", { length: 255 }),
   passwordSalt: varchar("passwordSalt", { length: 64 }),
   mfaEnabled: boolean("mfaEnabled").default(false).notNull(),
@@ -248,6 +256,28 @@ var careerApplications = mysqlTable("career_applications", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull()
 });
+var employeeApprovalTokens = mysqlTable("employee_approval_tokens", {
+  id: int("id").autoincrement().primaryKey(),
+  token: varchar("token", { length: 128 }).notNull().unique(),
+  userId: int("userId").notNull(),
+  employeeEmail: varchar("employeeEmail", { length: 320 }).notNull(),
+  action: varchar("action", { length: 32 }).default("approve").notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  usedAt: timestamp("usedAt"),
+  usedBy: varchar("usedBy", { length: 320 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull()
+});
+var employeeAuditLogs = mysqlTable("employee_audit_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  employeeEmail: varchar("employeeEmail", { length: 320 }).notNull(),
+  action: varchar("action", { length: 64 }).notNull(),
+  actorEmail: varchar("actorEmail", { length: 320 }).notNull(),
+  actorIp: varchar("actorIp", { length: 64 }),
+  actorUserAgent: text("actorUserAgent"),
+  details: text("details"),
+  createdAt: timestamp("createdAt").defaultNow().notNull()
+});
 
 // server/_core/env.ts
 var ENV = {
@@ -305,6 +335,13 @@ var memoryUsers = /* @__PURE__ */ new Map([
       role: "admin",
       accountType: "employee",
       employeeStatus: "approved",
+      employeeId: "VLT-EXEC-001",
+      department: "Executive Office",
+      designation: "Chief Executive Officer",
+      rejectionReason: null,
+      approvedBy: "Board of Directors",
+      approvedAt: /* @__PURE__ */ new Date("2026-01-01"),
+      termsAccepted: true,
       passwordHash: hashPassword("Volamp@2026", adminSalt),
       passwordSalt: adminSalt,
       mfaEnabled: true,
@@ -325,6 +362,13 @@ var memoryUsers = /* @__PURE__ */ new Map([
       role: "admin",
       accountType: "employee",
       employeeStatus: "approved",
+      employeeId: "VLT-ADMIN-001",
+      department: "IT & Systems",
+      designation: "Systems Administrator",
+      rejectionReason: null,
+      approvedBy: "Board of Directors",
+      approvedAt: /* @__PURE__ */ new Date("2026-01-01"),
+      termsAccepted: true,
       passwordHash: hashPassword("Volamp@2026", adminSalt),
       passwordSalt: adminSalt,
       mfaEnabled: true,
@@ -345,6 +389,13 @@ var memoryUsers = /* @__PURE__ */ new Map([
       role: "user",
       accountType: "customer",
       employeeStatus: "approved",
+      employeeId: null,
+      department: null,
+      designation: null,
+      rejectionReason: null,
+      approvedBy: null,
+      approvedAt: null,
+      termsAccepted: true,
       passwordHash: hashPassword("Volamp@2026", customerSalt),
       passwordSalt: customerSalt,
       mfaEnabled: false,
@@ -356,6 +407,10 @@ var memoryUsers = /* @__PURE__ */ new Map([
   ]
 ]);
 var memoryNextUserId = 3;
+var memoryNextTokenId = 1;
+var memoryNextAuditId = 1;
+var memoryApprovalTokens = /* @__PURE__ */ new Map();
+var memoryAuditLogs = [];
 var memoryOtps = [];
 var memoryCustomerProfiles = /* @__PURE__ */ new Map();
 var memoryQuotations = [
@@ -480,6 +535,13 @@ async function createLocalUser(params) {
     role: userRole,
     accountType: params.accountType,
     employeeStatus: params.employeeStatus ?? (isEmployee ? "pending_approval" : "approved"),
+    employeeId: params.employeeId || null,
+    department: params.department || null,
+    designation: params.designation || null,
+    termsAccepted: params.termsAccepted ?? false,
+    rejectionReason: null,
+    approvedAt: null,
+    approvedBy: null,
     passwordHash: hash,
     passwordSalt: salt,
     mfaEnabled: isEmployee ? true : Boolean(params.mfaEnabled),
@@ -531,6 +593,13 @@ async function upsertUser(user) {
         role: user.role ?? "user",
         accountType: user.accountType ?? "customer",
         employeeStatus: user.employeeStatus ?? "approved",
+        employeeId: null,
+        department: null,
+        designation: null,
+        rejectionReason: null,
+        approvedAt: null,
+        approvedBy: null,
+        termsAccepted: true,
         passwordHash: null,
         passwordSalt: null,
         mfaEnabled: false,
@@ -572,6 +641,114 @@ async function upsertUser(user) {
     throw error;
   }
 }
+async function createEmployeeApprovalToken(params) {
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + (params.expiresInMs ?? 24 * 60 * 60 * 1e3));
+  const record = {
+    id: memoryNextTokenId++,
+    token,
+    userId: params.userId,
+    employeeEmail: params.employeeEmail.toLowerCase().trim(),
+    action: params.action || "approve",
+    expiresAt,
+    usedAt: null,
+    usedBy: null,
+    createdAt: /* @__PURE__ */ new Date()
+  };
+  const db = await getDb();
+  if (db) {
+    try {
+      await db.insert(employeeApprovalTokens).values(record);
+    } catch (e) {
+      console.warn("[Database] Failed to insert approval token into DB:", e);
+    }
+  }
+  memoryApprovalTokens.set(token, record);
+  return record;
+}
+async function getEmployeeApprovalToken(token) {
+  const db = await getDb();
+  if (db) {
+    try {
+      const res = await db.select().from(employeeApprovalTokens).where(eq(employeeApprovalTokens.token, token)).limit(1);
+      if (res && res.length > 0) return res[0];
+    } catch (e) {
+      console.warn("[Database] Failed to fetch approval token:", e);
+    }
+  }
+  return memoryApprovalTokens.get(token);
+}
+async function markEmployeeApprovalTokenUsed(token, actorEmail) {
+  const db = await getDb();
+  const now = /* @__PURE__ */ new Date();
+  if (db) {
+    try {
+      await db.update(employeeApprovalTokens).set({ usedAt: now, usedBy: actorEmail.toLowerCase().trim() }).where(eq(employeeApprovalTokens.token, token));
+    } catch (e) {
+      console.warn("[Database] Failed to mark approval token used in DB:", e);
+    }
+  }
+  const inMem = memoryApprovalTokens.get(token);
+  if (inMem) {
+    inMem.usedAt = now;
+    inMem.usedBy = actorEmail.toLowerCase().trim();
+    return true;
+  }
+  return true;
+}
+async function recordEmployeeAuditLog(params) {
+  const log = {
+    id: memoryNextAuditId++,
+    userId: params.userId,
+    employeeEmail: params.employeeEmail.toLowerCase().trim(),
+    action: params.action,
+    actorEmail: params.actorEmail.toLowerCase().trim(),
+    actorIp: params.actorIp || null,
+    actorUserAgent: params.actorUserAgent || null,
+    details: params.details || null,
+    createdAt: /* @__PURE__ */ new Date()
+  };
+  const db = await getDb();
+  if (db) {
+    try {
+      await db.insert(employeeAuditLogs).values(log);
+    } catch (e) {
+      console.warn("[Database] Failed to insert audit log into DB:", e);
+    }
+  }
+  memoryAuditLogs.unshift(log);
+  return log;
+}
+async function getEmployeeAuditLogs(limit = 100) {
+  const db = await getDb();
+  if (db) {
+    try {
+      const logs = await db.select().from(employeeAuditLogs).limit(limit);
+      return logs;
+    } catch (e) {
+      console.warn("[Database] Failed to list audit logs from DB:", e);
+    }
+  }
+  return memoryAuditLogs.slice(0, limit);
+}
+async function listAllEmployees() {
+  const db = await getDb();
+  if (db) {
+    try {
+      const list = await db.select().from(users).where(eq(users.accountType, "employee"));
+      return list;
+    } catch (e) {
+      console.warn("[Database] Failed to list employees from DB:", e);
+    }
+  }
+  const emps = [];
+  for (const user of Array.from(memoryUsers.values())) {
+    if (user.accountType === "employee") {
+      emps.push(user);
+    }
+  }
+  return emps;
+}
 async function listPendingEmployees() {
   const db = await getDb();
   if (db) {
@@ -580,16 +757,96 @@ async function listPendingEmployees() {
   }
   const pending = [];
   for (const user of Array.from(memoryUsers.values())) {
-    if (user.accountType === "employee" && user.employeeStatus === "pending_approval") {
+    if (user.accountType === "employee" && (user.employeeStatus === "pending_approval" || user.employeeStatus === "pending_verification")) {
       pending.push(user);
     }
   }
   return pending;
 }
-async function approveEmployee(userId) {
+async function approveEmployee(userId, actorEmail = "ceo@volampelektrikals.com") {
+  const user = await getUserById(userId);
+  if (!user || user.accountType !== "employee") return false;
+  const now = /* @__PURE__ */ new Date();
+  await updateUser(userId, {
+    employeeStatus: "approved",
+    approvedAt: now,
+    approvedBy: actorEmail
+  });
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "CEO_APPROVED",
+    actorEmail,
+    details: `Employee account authorized for official portal access by ${actorEmail}`
+  });
+  return true;
+}
+async function rejectEmployee(userId, reason = "Registration not authorized by executive management.", actorEmail = "ceo@volampelektrikals.com") {
+  const user = await getUserById(userId);
+  if (!user || user.accountType !== "employee") return false;
+  await updateUser(userId, {
+    employeeStatus: "rejected",
+    rejectionReason: reason
+  });
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "CEO_REJECTED",
+    actorEmail,
+    details: `Employee account rejected by ${actorEmail}. Reason: ${reason}`
+  });
+  return true;
+}
+async function suspendEmployee(userId, actorEmail = "ceo@volampelektrikals.com") {
+  const user = await getUserById(userId);
+  if (!user || user.accountType !== "employee") return false;
+  await updateUser(userId, { employeeStatus: "suspended" });
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "EMPLOYEE_SUSPENDED",
+    actorEmail,
+    details: `Employee account suspended by ${actorEmail}`
+  });
+  return true;
+}
+async function reactivateEmployee(userId, actorEmail = "ceo@volampelektrikals.com") {
   const user = await getUserById(userId);
   if (!user || user.accountType !== "employee") return false;
   await updateUser(userId, { employeeStatus: "approved" });
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "EMPLOYEE_REACTIVATED",
+    actorEmail,
+    details: `Employee account reactivated by ${actorEmail}`
+  });
+  return true;
+}
+async function deactivateEmployee(userId, actorEmail = "ceo@volampelektrikals.com") {
+  const user = await getUserById(userId);
+  if (!user || user.accountType !== "employee") return false;
+  await updateUser(userId, { employeeStatus: "deactivated" });
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "EMPLOYEE_DEACTIVATED",
+    actorEmail,
+    details: `Employee account deactivated by ${actorEmail}`
+  });
+  return true;
+}
+async function updateEmployeeProfile(userId, fields, actorEmail = "ceo@volampelektrikals.com") {
+  const user = await getUserById(userId);
+  if (!user || user.accountType !== "employee") return false;
+  await updateUser(userId, fields);
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "PROFILE_UPDATED",
+    actorEmail,
+    details: `Employee profile updated: ${JSON.stringify(fields)}`
+  });
   return true;
 }
 async function getCustomerPortal(userId) {
@@ -5680,734 +5937,6 @@ function redirectsMiddleware(req, res, next) {
   next();
 }
 
-// server/seoPrerender.ts
-import fs3 from "fs";
-import path3 from "path";
-import { fileURLToPath as fileURLToPath2 } from "url";
-var __filename2 = fileURLToPath2(import.meta.url);
-var __dirname2 = path3.dirname(__filename2);
-var BASE_URL3 = "https://volampelektrikals.com";
-var STATIC_ROUTES = {
-  "": {
-    title: "Industrial Cable & Electrical Distributor | Volamp",
-    description: "Authorized wholesale distributor of Polycab, Finolex, KEI cables and Schneider, L&T switchgear in Ahmedabad, Gujarat. 3,385+ SKUs with test certificates.",
-    h1: "Industrial Cable & Electrical Distributor in Ahmedabad",
-    intro: "Volamp Elektrikals Private Limited is Gujarat's premier B2B master distributor and authorized wholesale stockist of industrial cables, HT/LT power cables, solar PV cables, switchgear, and earthing infrastructure. Backed by a 60+ year family legacy established in 1964 and modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across 28 Indian states."
-  },
-  "about-volamp": {
-    title: "About Volamp Elektrikals | 60+ Years Electrical Legacy",
-    description: "Learn about Volamp Elektrikals: 4 generations, 60+ years electrical legacy, leadership by CEO Naimil Vipul Patel, and industrial distribution across India.",
-    h1: "About Volamp Elektrikals Private Limited",
-    intro: "With roots dating back to 1964 established by Soma Bhai Khatubhai Patel in Ahmedabad's historical electrical market, Volamp Elektrikals has evolved over four generations into a trusted national distributor for mega infrastructure projects. Under the engineering leadership of CEO Naimil Vipul Patel, we combine deep technical specification expertise with state-of-the-art warehousing at Aslali Highway to deliver same-day dispatch and guaranteed test compliance."
-  },
-  "where-volamp-contributed": {
-    title: "Landmark Projects & Footprint | Volamp Elektrikals",
-    description: "Explore major infrastructure projects powered by Volamp Elektrikals: 200MW West Bengal Solar Park, Punjab 66kV Grid, and AMC Stadium Ahmedabad.",
-    h1: "Landmark Infrastructure Projects & National Footprint",
-    intro: "From high-voltage utility substations to utility-scale renewable solar parks and municipal infrastructure, Volamp Elektrikals has supplied mission-critical electrical materials to over 140 landmark projects across India. Our project footprint includes the 200MW West Bengal Solar Park, 66kV transmission substations in Punjab, Ahmedabad Municipal Corporation sports complexes, and key GIDC industrial corridors."
-  },
-  "business-segments": {
-    title: "Industries & Business Segments Served | Volamp",
-    description: "Electrical distribution solutions tailored for EPC contractors, solar power developers, industrial automation plants, and commercial infrastructure.",
-    h1: "Business Segments & Industries Served",
-    intro: "Volamp Elektrikals delivers end-to-end electrical procurement packages tailored to specific sector requirements: EPC infrastructure contractors requiring bulk HT armoured drum deliveries with CPRI type-test reports; solar developers needing 1500V DC UV-resistant PV cables; industrial manufacturing plants needing fast replacement switchgear; and commercial builders seeking IS:694 certified wiring."
-  },
-  "branch-locations": {
-    title: "Branch Locations & Central Warehouse | Volamp",
-    description: "Visit Volamp Elektrikals offices in Khadia, Ahmedabad and our central logistics distribution warehouse on Aslali Highway. Pan-India dispatch corridors.",
-    h1: "Branch Locations, Sales Desks & Distribution Terminals",
-    intro: "Our operations are centered in Ahmedabad, Gujarat with strategic distribution access: Corporate Sales Office at 1753, Dhobi's Pole, Sir Chinubhai Road, Khadia, Ahmedabad 380001 (Gandhi Road Electrical Market Belt), and Central Logistics Fulfillment Terminal at Aslali Highway Terminal, NH-48 & SP Ring Road Junction, Ahmedabad 382427. Same-day dispatch to Vatva, Sanand, Naroda, and Changodar GIDC zones."
-  },
-  "products": {
-    title: "Industrial Electrical Products Catalog | Volamp",
-    description: "Browse 3,385+ verified electrical products: LT/HT XLPE cables, solar DC wires, switchgear, MCBs, lugs, and earthing supplies. Instant BOM quotation.",
-    h1: "Industrial Electrical & Power Cable Catalog",
-    intro: "Explore over 3,385 active, genuine electrical SKUs from India's leading manufacturers: Polycab, Finolex, KEI Industries, Schneider Electric, L&T / Lauritz Knudsen, and Dowells. Every product is backed by full manufacturer warranties, IS/IEC standard compliance (IS 7098, IS 1554, IS 694, EN 50618, IEC 60947), and complete routine factory test reports delivered with every drum or carton."
-  },
-  "price-list": {
-    title: "Manufacturer Cable Price Lists 2026 | Volamp",
-    description: "Download official 2026 manufacturer price lists and discount circulars for Polycab, Finolex, KEI cables and Schneider, L&T switchgear.",
-    h1: "Official Manufacturer Price Lists & Circulars (2026)",
-    intro: "Access the latest authorized 2026 price lists and project discount matrices for industrial cables and electrical equipment. We stock verified rate circulars from Polycab India, Finolex Cables, KEI Industries, Schneider Electric, and Dowells lugs, helping EPC contractors and estimators calculate accurate project bill-of-quantities (BOQ)."
-  },
-  "certifications-and-awards": {
-    title: "Quality Certifications & IS Standards | Volamp",
-    description: "View quality certifications and compliance standards for Volamp Elektrikals: IS 7098, IS 1554, IS 694, EN 50618, ISO 9001, and CPRI test reports.",
-    h1: "Quality Certifications, Testing Standards & Compliance",
-    intro: "Volamp Elektrikals maintains rigorous quality standards for all supplied materials. All LT and HT cables adhere strictly to Bureau of Indian Standards (BIS) specifications including IS 7098 (Part 1 & 2) for XLPE insulated cables, IS 1554 for PVC power cables, IS 694 for building wires, and EN 50618 / IEC 62930 for solar PV cables. Routine spark test, insulation resistance, and conductor resistance test certificates accompany all consignments."
-  },
-  "calculator": {
-    title: "Online Cable Sizing & Voltage Drop Calculator | Volamp",
-    description: "Calculate cable size, current rating, and voltage drop for copper and aluminium cables. Compliant with IS 7098 and IEC standards.",
-    h1: "Interactive Cable Sizing & Voltage Drop Calculator",
-    intro: "Engineer your electrical runs with precision using Volamp's interactive cable sizing tool. Calculate required conductor cross-section (sqmm), current carrying capacity, and percentage voltage drop for 1-phase and 3-phase circuits across copper and aluminium conductors under standard ground and ambient temperature conditions according to IS 7098 derating factors."
-  },
-  "collaborate": {
-    title: "Partner & Collaborate With Volamp Elektrikals",
-    description: "Partner with Volamp Elektrikals as an electrical contractor, institutional buyer, or vendor. Access volume pricing and priority project dispatch.",
-    h1: "Contractor Partnerships & Institutional Supply Desk",
-    intro: "Volamp Elektrikals partners with electrical contractors, project OEMs, panel builders, and corporate purchasing teams across India. Benefit from dedicated account managers, transparent wholesale pricing based on LME commodity indexing, structured credit terms for approved projects, and priority dispatch from our Aslali logistics terminal."
-  },
-  "careers": {
-    title: "Careers at Volamp Elektrikals | Join Our Team",
-    description: "Explore career opportunities in electrical engineering, B2B sales, procurement, and logistics at Volamp Elektrikals in Ahmedabad, Gujarat.",
-    h1: "Careers at Volamp Elektrikals Private Limited",
-    intro: "Join a dynamic, fast-growing engineering distribution company that bridges traditional industrial excellence with modern digital supply chain technology. We are hiring electrical estimation engineers, B2B key account managers, logistics supervisors, and technical procurement specialists at our Ahmedabad facilities."
-  },
-  "enquire": {
-    title: "Request Quotation & Electrical RFQ Desk | Volamp",
-    description: "Submit your project Bill of Materials (BOM) for competitive wholesale pricing on power cables, switchgear, and earthing supplies. 24h response.",
-    h1: "Project Sourcing & Electrical BOM RFQ Desk",
-    intro: "Submit your project requirements, single-line diagrams (SLD), or Bill of Quantities (BOQ) directly to Volamp Elektrikals' engineering estimation desk. Our team evaluates conductor specifications, derating criteria, and manufacturer delivery schedules to provide guaranteed competitive wholesale pricing within 24 hours."
-  },
-  "in-the-news": {
-    title: "News & Media Coverage | Volamp Elektrikals",
-    description: "Latest industry news, market circulars, LME copper and aluminium commodity price updates, and company announcements from Volamp Elektrikals.",
-    h1: "Company Announcements & Electrical Industry News",
-    intro: "Stay informed with the latest updates from Volamp Elektrikals and the Indian electrical power infrastructure sector. Read our monthly analysis of London Metal Exchange (LME) copper and aluminium price movements, domestic tariff revisions, renewable energy tenders, and corporate milestones."
-  },
-  "blog": {
-    title: "Electrical Engineering Insights & Guides | Volamp",
-    description: "Technical guides on cable sizing, IS 7098 standards, solar DC specifications, and LME copper trends by Volamp Elektrikals engineers.",
-    h1: "Electrical Engineering Insights & Cable Selection Guides",
-    intro: "Authoritative technical articles and practical engineering selection guides written by Volamp Elektrikals electrical engineers. Covering LT/HT power cable selection, copper versus aluminium economic trade-offs, solar DC cable sizing per IEC 62930, and switchgear protection coordination."
-  },
-  "shipping-policy": {
-    title: "Shipping & Project Logistics Policy | Volamp",
-    description: "Review shipping, transit insurance, and delivery schedules for Volamp Elektrikals. Same-day Gujarat GIDC dispatch; pan-India freight.",
-    h1: "Shipping, Freight & Project Delivery Policy",
-    intro: "Volamp Elektrikals operates dedicated logistics operations to guarantee safe, on-schedule delivery of heavy industrial cable drums and switchgear consignments. Consignments are packed to export and CPWD transport standards with complete transit insurance coverage across 28 Indian states."
-  },
-  "terms-and-conditions": {
-    title: "Terms and Conditions of Supply | Volamp",
-    description: "Terms of wholesale supply, quotation validity, inspection protocols, and payment policies for Volamp Elektrikals Private Limited.",
-    h1: "Terms and Conditions of Commercial Supply",
-    intro: "Commercial terms governing wholesale quotations, purchase orders, delivery terms, inspection protocols, and warranty claims between Volamp Elektrikals Private Limited and purchasers."
-  },
-  "privacy-policy": {
-    title: "Privacy Policy | Volamp Elektrikals Private Limited",
-    description: "Privacy policy and data protection practices for Volamp Elektrikals Private Limited website, customer portal, and RFQ submissions.",
-    h1: "Privacy & Data Protection Policy",
-    intro: "Volamp Elektrikals Private Limited is committed to protecting the privacy, confidentiality, and security of all commercial, technical, and personal information shared across our web platform."
-  },
-  "complaints-cases": {
-    title: "Customer Redressal & Escalation Desk | Volamp",
-    description: "Official customer grievance and dispute resolution portal for Volamp Elektrikals. Track resolution status and file shortage or defect reports.",
-    h1: "Customer Grievance Redressal & Escalation Cell",
-    intro: "Volamp Elektrikals maintains an ISO-aligned grievance resolution mechanism to address any shipment transit damage, quantity discrepancies, test certificate inquiries, or specification escalations with a guaranteed 48-hour investigation timeline."
-  },
-  "export": {
-    title: "Global Cable Export & International Supply Desk | Volamp",
-    description: "Direct export of IEC & BS compliant power cables, solar DC cables, and switchgear from Mundra & Kandla ports. CIF & FOB terms for Middle East, Africa & Asia.",
-    h1: "Global Cable Export & International Electrical Supply Desk",
-    intro: "Volamp Elektrikals Private Limited is an international electrical procurement and export partner headquartered in Ahmedabad, Gujarat, India. Leveraging deep logistics proximity to India's premier western deep-water container ports (Mundra and Kandla, <350 km from our central Aslali stockyard), we supply certified HT/LT power cables, solar photovoltaic cables, switchgear, and earthing infrastructure to international EPC contractors, utility developers, and industrial projects across the Middle East, Africa, and Southeast Asia. All export drums comply with ISPM-15 phytosanitary heat-treatment standards, accompanied by SGS/Bureau Veritas pre-shipment inspection certificates and Letters of Credit (LC) facilitation."
-  },
-  "dealers/polycab-ahmedabad": {
-    title: "Polycab Dealer & Distributor Ahmedabad Gujarat | Volamp",
-    description: "Authorized Polycab cables & wires distributor in Ahmedabad. LT/HT XLPE armoured power cables, solar DC cables, flexible wires with CPRI test reports.",
-    h1: "Authorized Polycab Cable Dealer & Distributor in Ahmedabad, Gujarat",
-    intro: "Volamp Elektrikals Private Limited is an authorized master distributor and wholesale stockist for Polycab India Ltd. in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, we maintain extensive ready inventory of Polycab 1.1kV LT XLPE aluminium and copper armoured cables (IS 7098 Part 1), 11kV to 33kV HT XLPE power cables (IS 7098 Part 2), 1500V DC solar PV cables (EN 50618), Green Wire FRLS building wires, and multi-core flexible control cables. Every reel and coil is guaranteed 100% original, backed by original manufacturer Material Test Certificates (MTC) and CPRI type-test reports."
-  },
-  "dealers/finolex-cables-ahmedabad": {
-    title: "Finolex Cables Dealer & Wholesale Stockist Ahmedabad | Volamp",
-    description: "Authorized Finolex cables distributor in Ahmedabad, Gujarat. Flame retardant industrial flexible wires, 3-core flat submersible cables, and power cables.",
-    h1: "Finolex Cables Dealer & Wholesale Stockist in Ahmedabad, Gujarat",
-    intro: "Volamp Elektrikals Private Limited is a trusted authorized wholesale dealer and stockist for Finolex Cables Ltd. in Ahmedabad and across Gujarat. Renowned for 99.97% pure electrolytic grade copper conductors and proprietary in-house PVC compounding, Finolex wires deliver unmatched electrical conductivity, energy efficiency, and thermal longevity. We supply commercial contractors and industrial builders with Finolex Flame Guard FRLS wires, 3-core flat submersible cables, and multi-conductor industrial flexible cables."
-  },
-  "dealers/kei-cables-gujarat": {
-    title: "KEI Cables Distributor & Industrial Stockist Gujarat | Volamp",
-    description: "Authorized KEI Industries distributor in Ahmedabad & Gujarat. Heavy-duty HT/EHV power cables, rubber trailing cables, instrumentation cables, and solar wires.",
-    h1: "KEI Cables Industrial Distributor & Stockist in Gujarat",
-    intro: "Volamp Elektrikals Private Limited is a specialized industrial distributor and project stockist for KEI Industries Ltd. in Ahmedabad and throughout Gujarat. Catering to heavy engineering, steel plants, chemical manufacturing, infrastructure EPCs, and utility distribution, we supply KEI's engineered cable solutions including Extra High Voltage (EHV) cables up to 220kV, rubber EPR/CSP trailing cables for mining and cranes, and fire-survival FS cables."
-  },
-  "dealers/schneider-electric-ahmedabad": {
-    title: "Schneider Electric Switchgear Distributor Ahmedabad | Volamp",
-    description: "Authorized Schneider Electric distributor in Ahmedabad. Acti9 MCBs, EasyPact CVS/EZC MCCBs, TeSys contactors, and industrial power distribution boards.",
-    h1: "Schneider Electric Switchgear Distributor in Ahmedabad, Gujarat",
-    intro: "Volamp Elektrikals Private Limited is an authorized B2B distributor of Schneider Electric low-voltage switchgear and industrial automation components in Ahmedabad, Gujarat. We supply project contractors, OEM panel builders, and facility maintenance teams with authentic Schneider protection switchgear including Acti9 miniature circuit breakers (MCBs), EasyPact CVS and EZC molded case circuit breakers (MCCBs), TeSys D and TeSys F contactors, and motor protection circuit breakers (MPCBs)."
-  },
-  "locations/industrial-gidc-hubs": {
-    title: "Industrial Electrical Supply across Gujarat GIDC Hubs | Volamp",
-    description: "Same-day 24h electrical cable & switchgear delivery to Sanand, Vatva, Naroda, Changodar, Dahej, Ankleshwar GIDC estates from Aslali logistics terminal.",
-    h1: "Express Industrial Electrical Supply across Gujarat GIDC Corridors",
-    intro: "Volamp Elektrikals Private Limited operates a rapid-dispatch industrial supply network servicing major Gujarat Industrial Development Corporation (GIDC) estates. Centered at our modern logistics hub at the junction of NH-48 and SP Ring Road in Aslali, Ahmedabad, our delivery fleet provides guaranteed same-day to 24-hour turnaround for urgent maintenance, emergency breakdowns, and scheduled project installations across Sanand, Vatva, Naroda, Changodar, Dahej, Ankleshwar, and Jhagadia industrial belts."
-  },
-  "customer-portal": {
-    title: "Customer Account Portal | Volamp Elektrikals",
-    description: "Access real-time quotation history, order tracking, dispatch LR notes, and GST invoices on the Volamp Elektrikals customer portal.",
-    h1: "Volamp Customer Account & Order Portal",
-    intro: "Manage your commercial electrical procurement account, view live dispatch statuses with transporter LR details, download manufacturer test certificates (MTC), and access approved GST invoices."
-  }
-};
-var KNOWN_STATIC_PATHS = new Set(Object.keys(STATIC_ROUTES));
-var OTHER_VALID_PATHS = /* @__PURE__ */ new Set([
-  "portal",
-  "employee-portal",
-  "cart",
-  "checkout",
-  "login",
-  "register",
-  "track",
-  "pay-invoice"
-]);
-var CATEGORY_DATA = {
-  "wire-cables": {
-    name: "Wires & Cables (LT / HT Armoured & Flexible)",
-    desc: "Complete range of IS:7098 and IS:1554 certified LT and HT XLPE armoured power cables, flexible copper building wires (IS:694), control cables, submersible flat cables, and fire-survival cables."
-  },
-  "switch-gears": {
-    name: "Switchgear & Power Protection",
-    desc: "Low-voltage and medium-voltage switchgear including Air Circuit Breakers (ACB), Molded Case Circuit Breakers (MCCB), Miniature Circuit Breakers (MCB), Residual Current Breakers (RCCB), and contactors."
-  },
-  "switchgear": {
-    name: "Switchgear & Power Protection",
-    desc: "Low-voltage and medium-voltage switchgear including Air Circuit Breakers (ACB), Molded Case Circuit Breakers (MCCB), Miniature Circuit Breakers (MCB), Residual Current Breakers (RCCB), and contactors."
-  },
-  "solar": {
-    name: "Solar PV Cables & Renewable Balance of System",
-    desc: "T\xDCV and EN 50618 / IEC 62930 certified 1500V DC solar photovoltaic cables, MC4 connectors, solar array junction boxes, and UV-resistant earthing conductors."
-  },
-  "lugs": {
-    name: "Cable Lugs & Crimping Terminals",
-    desc: "Heavy-duty Dowells electrolytic tinned copper and aluminium crimping lugs, bi-metallic lugs, pin type terminals, and ring type terminal ends compliant with IS 8337."
-  },
-  "glands": {
-    name: "Cable Glands & Industrial Terminations",
-    desc: "High-integrity brass single compression and double compression weatherproof cable glands, flameproof (FLP) cable glands, and heat-shrink termination kits up to 33kV."
-  },
-  "conduit": {
-    name: "Conduit Pipes & Cable Containment",
-    desc: "Heavy-duty rigid PVC conduit pipes, GI flexible conduits, perforated cable trays, and containment accessories for industrial wiring protection."
-  },
-  "earthing-material": {
-    name: "Earthing Material & Lightning Protection",
-    desc: "CPRI and UL certified copper bonded earthing rods, pure electrolytic copper plates, chemical backfill earthing compounds (BFC), and GI earthing flats."
-  },
-  "wiring-device": {
-    name: "Wiring Devices & Industrial Enclosures",
-    desc: "Industrial plug sockets, junction boxes, weatherproof isolators, distribution boxes, and heavy-duty terminal blocks."
-  },
-  "substation-transmission": {
-    name: "Substation & Transmission Line Equipment",
-    desc: "Medium and high-voltage transmission fittings, post insulators, surge arresters, busbar accessories, and disconnectors up to 66kV."
-  },
-  "conduits-cable-management": {
-    name: "Cable Management & Raceways",
-    desc: "Ladder and perforated cable trays, cable ties, cleats, and flexible conduits for structured cable laying in industrial plants."
-  },
-  "earthing-lightning": {
-    name: "Earthing & Lightning Protection Systems",
-    desc: "Maintenance-free chemical earthing electrodes, copper bonded rods, test links, and lightning arresters for industrial and renewable installations."
-  },
-  "industrial-automation": {
-    name: "Industrial Automation & Motor Controls",
-    desc: "VFD drives, soft starters, PLC interface modules, auxiliary contactors, and motor protection circuit breakers (MPCB)."
-  },
-  "lighting-luminaires": {
-    name: "Industrial Lighting & Luminaires",
-    desc: "High-bay LED industrial lights, floodlights, cleanroom luminaires, and flameproof well glass fixtures for plant illumination."
-  }
-};
-var BLOG_POSTS = {
-  "copper-vs-aluminium-armoured-cable-sizing-guide": {
-    title: "Copper vs Aluminium Armoured Cable Sizing Guide | Volamp",
-    desc: "Technical comparison of copper vs aluminium conductors: ampacity, voltage drop, derating, and cost trade-offs under IS 7098 standards."
-  },
-  "solar-dc-cable-specifications-iec-62930": {
-    title: "Solar DC Cable Specifications: EN 50618 & IEC 62930 | Volamp",
-    desc: "Engineering guide to 1500V solar PV cables: cross-linked insulation, halogen-free flame retardancy, and UV weather resistance criteria."
-  },
-  "lme-copper-aluminium-market-analysis-q4-2026": {
-    title: "LME Copper & Aluminium Market Analysis Q4 2026 | Volamp",
-    desc: "In-depth market report on London Metal Exchange commodity trends, domestic Indian cable price circulars, and purchasing strategies."
-  },
-  "is-7098-vs-is-1554-cable-difference-guide": {
-    title: "IS 7098 vs IS 1554: XLPE vs PVC Cable Differences | Volamp",
-    desc: "Comprehensive engineering breakdown between IS 7098 XLPE insulated cables and IS 1554 PVC cables: temperature limits and short-circuit ratings."
-  },
-  "cable-gland-and-lug-size-selection-chart": {
-    title: "Cable Gland & Lug Size Selection Chart | Volamp",
-    desc: "Quick reference engineering chart matching armoured cable sizes to Dowells copper lugs and brass double compression cable glands."
-  }
-};
-function escapeXml2(str) {
-  return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-}
-var _indexTemplateCache = null;
-function loadBaseTemplate() {
-  if (_indexTemplateCache) return _indexTemplateCache;
-  const candidates = [
-    path3.resolve(process.cwd(), "dist/public/index.html"),
-    path3.resolve(process.cwd(), "client/index.html"),
-    path3.join(__dirname2, "../../dist/public/index.html"),
-    path3.join(__dirname2, "../dist/public/index.html"),
-    path3.join(__dirname2, "../../client/index.html"),
-    path3.join(__dirname2, "../client/index.html"),
-    "/var/task/dist/public/index.html",
-    "/var/task/client/index.html"
-  ];
-  for (const c of candidates) {
-    if (fs3.existsSync(c)) {
-      try {
-        _indexTemplateCache = fs3.readFileSync(c, "utf8");
-        return _indexTemplateCache;
-      } catch {
-      }
-    }
-  }
-  return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Industrial Cable &amp; Electrical Distributor | Volamp</title>
-    <meta name="description" content="Industrial cables &amp; electrical switchgear wholesale distributor in Ahmedabad, Gujarat." />
-    <link rel="canonical" href="https://volampelektrikals.com/" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>`;
-}
-function renderPageHtml({
-  title,
-  description,
-  canonical,
-  noIndex = false,
-  bodyHtml,
-  schemaJson
-}) {
-  let template = loadBaseTemplate();
-  const escapedTitle = escapeXml2(title);
-  if (template.includes("<title>")) {
-    template = template.replace(/<title>.*?<\/title>/s, `<title>${escapedTitle}</title>`);
-  } else {
-    template = template.replace("<head>", `<head>
-    <title>${escapedTitle}</title>`);
-  }
-  const escapedDesc = escapeXml2(description);
-  if (template.includes('name="description"')) {
-    template = template.replace(
-      /<meta\s+name="description"\s+content=".*?"\s*\/?>/i,
-      `<meta name="description" content="${escapedDesc}" />`
-    );
-  } else {
-    template = template.replace(
-      "</head>",
-      `    <meta name="description" content="${escapedDesc}" />
-  </head>`
-    );
-  }
-  if (template.includes('rel="canonical"')) {
-    template = template.replace(
-      /<link\s+rel="canonical"\s+href=".*?"\s*\/?>/i,
-      `<link rel="canonical" href="${canonical}" />`
-    );
-  } else {
-    template = template.replace(
-      "</head>",
-      `    <link rel="canonical" href="${canonical}" />
-  </head>`
-    );
-  }
-  if (noIndex) {
-    if (template.includes('name="robots"')) {
-      template = template.replace(
-        /<meta\s+name="robots"\s+content=".*?"\s*\/?>/i,
-        '<meta name="robots" content="noindex, nofollow" />'
-      );
-    } else {
-      template = template.replace(
-        "</head>",
-        '    <meta name="robots" content="noindex, nofollow" />\n  </head>'
-      );
-    }
-  }
-  template = template.replace(
-    /<meta\s+property="og:title"\s+content=".*?"\s*\/?>/i,
-    `<meta property="og:title" content="${escapedTitle}" />`
-  );
-  template = template.replace(
-    /<meta\s+property="og:description"\s+content=".*?"\s*\/?>/i,
-    `<meta property="og:description" content="${escapedDesc}" />`
-  );
-  template = template.replace(
-    /<meta\s+property="og:url"\s+content=".*?"\s*\/?>/i,
-    `<meta property="og:url" content="${canonical}" />`
-  );
-  template = template.replace(
-    /<meta\s+name="twitter:title"\s+content=".*?"\s*\/?>/i,
-    `<meta name="twitter:title" content="${escapedTitle}" />`
-  );
-  template = template.replace(
-    /<meta\s+name="twitter:description"\s+content=".*?"\s*\/?>/i,
-    `<meta name="twitter:description" content="${escapedDesc}" />`
-  );
-  if (schemaJson) {
-    template = template.replace(
-      "</head>",
-      `    <script type="application/ld+json">${schemaJson}</script>
-  </head>`
-    );
-  }
-  template = template.replace(
-    /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/,
-    `<div id="root">${bodyHtml}</div>`
-  );
-  return template;
-}
-function seoPrerenderMiddleware(req, res, next) {
-  if (req.method !== "GET" && req.method !== "HEAD") {
-    return next();
-  }
-  const rawPath = req.path || "/";
-  if (rawPath.startsWith("/api/") || rawPath.startsWith("/trpc/") || rawPath.startsWith("/assets/") || rawPath.startsWith("/storage-proxy/") || rawPath === "/sitemap.xml" || rawPath === "/robots.txt" || rawPath === "/google-merchant-feed.xml" || rawPath === "/llms.txt" || rawPath === "/llms-full.txt" || /\.(js|css|json|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|pdf|map)$/i.test(rawPath)) {
-    return next();
-  }
-  const cleanPath = rawPath.replace(/^\/+|\/+$/g, "");
-  if (cleanPath.startsWith("product/")) {
-    const rawId = cleanPath.replace(/^product\//, "").trim();
-    const product = getProductByProductId(rawId);
-    if (!product) {
-      res.status(404);
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      const html2 = renderPageHtml({
-        title: "Product Not Found (404) | Volamp",
-        description: "The requested electrical product could not be found. Browse over 3,385 active power cables, switchgear, and earthing supplies in our catalog.",
-        canonical: `${BASE_URL3}/404`,
-        noIndex: true,
-        bodyHtml: `
-          <div style="font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:80px auto;padding:32px;text-align:center;">
-            <p style="color:#c56718;font-weight:bold;font-size:14px;letter-spacing:1px;text-transform:uppercase;">Error 404</p>
-            <h1 style="font-size:32px;font-weight:800;color:#0f172a;margin:12px 0;">Product Not Found</h1>
-            <p style="color:#64748b;font-size:16px;line-height:1.6;margin-bottom:28px;">
-              The product code <code>${escapeXml2(rawId)}</code> does not exist in our catalog or may have been retired.
-              We stock over 3,385 genuine certified electrical products from Polycab, Finolex, KEI, Schneider, and L&T.
-            </p>
-            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-              <a href="/products" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Browse 3,385+ Products</a>
-              <a href="/enquire" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Contact Engineering Desk</a>
-              <a href="/" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Home</a>
-            </div>
-          </div>
-        `
-      });
-      return res.send(html2);
-    }
-    const brandPrefix = product.brand && !product.name.toLowerCase().includes(product.brand.toLowerCase()) ? `${product.brand} ` : "";
-    const sizeSuffix = product.size && !product.name.toLowerCase().includes(product.size.toLowerCase()) ? ` (${product.size})` : "";
-    const fullName = `${brandPrefix}${product.name}${sizeSuffix}`.trim();
-    const rawPrice = product.numericPrice || (typeof product.price === "string" ? parseFloat(product.price.replace(/[^0-9.]/g, "")) : 0);
-    const hasPrice = rawPrice > 0;
-    const priceFormatted = hasPrice ? rawPrice.toLocaleString("en-IN", { style: "currency", currency: "INR" }) : "Price on Request / RFQ";
-    const productUrl = `${BASE_URL3}/product/${encodeURIComponent(product.productId)}`;
-    const productSchema = {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      "name": fullName,
-      "image": product.imageUrl ? product.imageUrl.startsWith("http") ? product.imageUrl : `${BASE_URL3}${product.imageUrl}` : `${BASE_URL3}/products/default.jpg`,
-      "description": product.description || `${fullName} industrial supply from Volamp Elektrikals.`,
-      "sku": product.sku || product.productId,
-      "mpn": product.productId,
-      "brand": {
-        "@type": "Brand",
-        "name": product.brand || "Polycab"
-      }
-    };
-    if (hasPrice) {
-      productSchema.offers = {
-        "@type": "Offer",
-        "url": productUrl,
-        "priceCurrency": "INR",
-        "price": rawPrice.toFixed(2),
-        "availability": "https://schema.org/InStock",
-        "itemCondition": "https://schema.org/NewCondition",
-        "seller": {
-          "@type": "Organization",
-          "name": "VOLAMP ELEKTRIKALS PVT. LTD."
-        }
-      };
-    }
-    const schema = JSON.stringify(productSchema);
-    res.status(200);
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    const html = renderPageHtml({
-      title: `${fullName} | Volamp`,
-      description: `Buy ${fullName} (SKU: ${product.sku || product.productId}). Genuine ${product.brand || "Polycab"} electrical supply with MTC test certificate from Volamp.`,
-      canonical: productUrl,
-      schemaJson: schema,
-      bodyHtml: `
-        <article style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
-          <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
-            <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
-            <a href="/products" style="color:#64748b;text-decoration:none;">Products</a> &gt;
-            <a href="/category/${encodeURIComponent((product.category || "wire-cables").toLowerCase().replace(/\s+/g, "-"))}" style="color:#64748b;text-decoration:none;">${escapeXml2(product.category || "Electrical")}</a> &gt;
-            <span style="color:#0f172a;font-weight:600;">${escapeXml2(fullName)}</span>
-          </nav>
-          <header style="border-bottom:1px solid #e2e8f0;padding-bottom:24px;margin-bottom:28px;">
-            <div style="display:inline-block;padding:4px 10px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;border-radius:6px;margin-bottom:12px;">
-              ${escapeXml2(product.brand || "Polycab")} \u2022 Genuine Certified
-            </div>
-            <h1 style="font-size:28px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 12px 0;">${escapeXml2(fullName)}</h1>
-            <p style="font-size:14px;color:#64748b;margin:0;">
-              Product ID: <strong style="font-family:monospace;color:#0f172a;">${escapeXml2(product.productId)}</strong> |
-              SKU: <strong style="font-family:monospace;color:#0f172a;">${escapeXml2(product.sku || product.productId)}</strong> |
-              Category: <a href="/category/${encodeURIComponent((product.category || "wire-cables").toLowerCase().replace(/\s+/g, "-"))}" style="color:#c56718;font-weight:600;text-decoration:none;">${escapeXml2(product.category || "Wires & Cables")}</a>
-            </p>
-          </header>
-          <section style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:32px;margin-bottom:40px;">
-            <div>
-              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px;">
-                <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 6px 0;">B2B Wholesale Price (excl. GST)</p>
-                <div style="font-size:32px;font-weight:900;color:#0f172a;">${priceFormatted}</div>
-                <p style="font-size:12px;color:#16a34a;font-weight:700;margin:8px 0 0 0;">\u2713 In Stock \u2014 Same-day to 24h Gujarat GIDC; 48 to 72h Pan-India Dispatch</p>
-              </div>
-              <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                <a href="/enquire" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;display:inline-block;">Request Project Quotation</a>
-                <a href="/calculator" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;display:inline-block;">Calculate Voltage Drop</a>
-              </div>
-            </div>
-            <div>
-              <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin:0 0 16px 0;">Technical Specifications & Compliance</h2>
-              <table style="width:100%;border-collapse:collapse;font-size:13px;">
-                <tbody>
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Manufacturer / Brand</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml2(product.brand || "Polycab")}</td></tr>
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Conductor / Size</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml2(product.size || "Standard")}</td></tr>
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Quality Verification</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">Manufacturer Test Certificate (MTC) Included</td></tr>
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Dispatch Location</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">Aslali Central Warehouse, Ahmedabad</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-          <section style="background:#f8fafc;padding:24px;border-radius:12px;border:1px solid #e2e8f0;font-size:14px;line-height:1.7;color:#475569;">
-            <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin-top:0;">About This Product & Supply Assurance</h3>
-            <p>
-              ${escapeXml2(product.name)} is supplied directly by Volamp Elektrikals Private Limited, authorized industrial electrical distributor in Ahmedabad, Gujarat.
-              All cables and switchgear are sourced directly from manufacturer production lines with full batch traceability, routine test reports, and compliance with Indian (BIS) and International Electrotechnical Commission (IEC) standards.
-            </p>
-          </section>
-        </article>
-      `
-    });
-    return res.send(html);
-  }
-  if (cleanPath.startsWith("category/")) {
-    const slug = cleanPath.replace(/^category\//, "").trim().toLowerCase();
-    const catInfo = CATEGORY_DATA[slug];
-    if (!catInfo) {
-      res.status(404);
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      const html2 = renderPageHtml({
-        title: "Category Not Found (404) | Volamp",
-        description: "The requested electrical category does not exist. Browse our verified categories across power cables, switchgear, and solar PV.",
-        canonical: `${BASE_URL3}/404`,
-        noIndex: true,
-        bodyHtml: `
-          <div style="font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:80px auto;padding:32px;text-align:center;">
-            <p style="color:#c56718;font-weight:bold;font-size:14px;letter-spacing:1px;text-transform:uppercase;">Error 404</p>
-            <h1 style="font-size:32px;font-weight:800;color:#0f172a;margin:12px 0;">Category Not Found</h1>
-            <p style="color:#64748b;font-size:16px;line-height:1.6;margin-bottom:28px;">
-              The category <code>/category/${escapeXml2(slug)}</code> does not exist in our catalog.
-            </p>
-            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-              <a href="/products" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Browse All Products</a>
-              <a href="/" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Home</a>
-            </div>
-          </div>
-        `
-      });
-      return res.send(html2);
-    }
-    const allProducts = loadProductsFromDisk();
-    const categoryProducts = allProducts.filter((p) => {
-      const c = (p.category || "").toLowerCase();
-      if (slug === "wire-cables" || slug.includes("cable") || slug.includes("wire")) return c.includes("cable") || c.includes("wire");
-      if (slug === "switch-gears" || slug.includes("switch")) return c.includes("switch");
-      if (slug === "solar") return c.includes("solar");
-      if (slug === "lugs") return c.includes("lug");
-      if (slug === "glands") return c.includes("gland");
-      if (slug === "conduit") return c.includes("pipe") || c.includes("conduit");
-      if (slug === "earthing-material") return c.includes("earth");
-      if (slug === "wiring-device") return c.includes("device") || c.includes("wiring");
-      return false;
-    }).slice(0, 24);
-    const productLinksHtml = categoryProducts.map(
-      (p) => `
-        <li style="padding:12px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
-          <a href="/product/${encodeURIComponent(p.productId)}" style="color:#0f172a;font-weight:600;text-decoration:none;font-size:14px;">
-            ${escapeXml2(p.name)}
-          </a>
-          <span style="font-family:monospace;font-size:12px;color:#64748b;">${escapeXml2(p.productId)}</span>
-        </li>
-      `
-    ).join("");
-    res.status(200);
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    const html = renderPageHtml({
-      title: `${catInfo.name} | Volamp`,
-      description: `Authorized wholesale distributor of ${catInfo.name} in Ahmedabad, Gujarat. Genuine Polycab, Finolex, KEI, Schneider supplies with MTC test certificates.`,
-      canonical: `${BASE_URL3}/category/${slug}`,
-      bodyHtml: `
-        <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
-          <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
-            <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
-            <a href="/products" style="color:#64748b;text-decoration:none;">Products</a> &gt;
-            <span style="color:#0f172a;font-weight:600;">${escapeXml2(catInfo.name)}</span>
-          </nav>
-          <header style="margin-bottom:32px;">
-            <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.2;margin:0 0 16px 0;">${escapeXml2(catInfo.name)}</h1>
-            <p style="font-size:15px;line-height:1.7;color:#475569;max-width:900px;">
-              ${escapeXml2(catInfo.desc)}
-              Volamp Elektrikals Private Limited maintains extensive wholesale inventory across all standard specifications in our Aslali logistics terminal.
-              Every consignment is supplied with manufacturer Material Test Certificates (MTC) and undergoes strict quality verification to ensure flawless performance in continuous industrial and utility service.
-            </p>
-          </header>
-          <section>
-            <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0 0 16px 0;">Available Products in this Category</h2>
-            <ul style="list-style:none;padding:0;margin:0;">
-              ${productLinksHtml}
-            </ul>
-          </section>
-        </main>
-      `
-    });
-    return res.send(html);
-  }
-  if (cleanPath.startsWith("blog/")) {
-    const slug = cleanPath.replace(/^blog\//, "").trim().toLowerCase();
-    const blog = BLOG_POSTS[slug];
-    if (!blog) {
-      res.status(404);
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      const html2 = renderPageHtml({
-        title: "Article Not Found (404) | Volamp",
-        description: "The requested engineering article does not exist.",
-        canonical: `${BASE_URL3}/404`,
-        noIndex: true,
-        bodyHtml: `<div style="font-family:system-ui;max-width:800px;margin:80px auto;text-align:center;"><h1>Article Not Found (404)</h1><p><a href="/blog">Browse All Engineering Articles</a></p></div>`
-      });
-      return res.send(html2);
-    }
-    res.status(200);
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    const html = renderPageHtml({
-      title: blog.title,
-      description: blog.desc,
-      canonical: `${BASE_URL3}/blog/${slug}`,
-      bodyHtml: `
-        <article style="font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:40px auto;padding:24px;color:#1e293b;">
-          <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
-            <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
-            <a href="/blog" style="color:#64748b;text-decoration:none;">Blog</a> &gt;
-            <span style="color:#0f172a;font-weight:600;">${escapeXml2(blog.title)}</span>
-          </nav>
-          <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 16px 0;">${escapeXml2(blog.title)}</h1>
-          <p style="font-size:16px;line-height:1.7;color:#475569;">${escapeXml2(blog.desc)}</p>
-        </article>
-      `
-    });
-    return res.send(html);
-  }
-  if (KNOWN_STATIC_PATHS.has(cleanPath)) {
-    const meta = STATIC_ROUTES[cleanPath];
-    const canonical = cleanPath === "" ? `${BASE_URL3}/` : `${BASE_URL3}/${cleanPath}`;
-    let homeExtraHtml = "";
-    if (cleanPath === "") {
-      homeExtraHtml = `
-        <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
-          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:16px;">Core Electrical Categories</h2>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
-            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
-              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/wire-cables" style="color:#c56718;font-weight:bold;text-decoration:none;">Wires &amp; Cables</a></h3>
-              <p style="font-size:13px;color:#64748b;margin:0;">LT / HT XLPE armoured, flexible FRLS, submersible, control cables.</p>
-            </div>
-            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
-              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/switch-gears" style="color:#c56718;font-weight:bold;text-decoration:none;">Switchgear &amp; Protection</a></h3>
-              <p style="font-size:13px;color:#64748b;margin:0;">Schneider and L&T ACBs, MCCBs, MCBs, contactors, starters.</p>
-            </div>
-            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
-              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/solar" style="color:#c56718;font-weight:bold;text-decoration:none;">Solar PV Cables</a></h3>
-              <p style="font-size:13px;color:#64748b;margin:0;">1500V DC UV-resistant cross-linked halogen-free cables per EN 50618.</p>
-            </div>
-            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
-              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/earthing-material" style="color:#c56718;font-weight:bold;text-decoration:none;">Earthing &amp; Lightning</a></h3>
-              <p style="font-size:13px;color:#64748b;margin:0;">Copper bonded rods, chemical compound, GI flats, UL/CPRI certified.</p>
-            </div>
-          </div>
-        </section>
-        <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
-          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:16px;">Fast Moving B2B Electrical Products</h2>
-          <ul style="list-style:none;padding:0;margin:0;font-size:14px;">
-            <li style="padding:8px 0;"><a href="/product/CAB-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">1.1kV XLPE Aluminium Armoured Cable (3.5C x 185 sqmm)</a> \u2014 SKU: CAB-000001</li>
-            <li style="padding:8px 0;"><a href="/product/SOL-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">Solar DC Cable 1C x 4 sqmm (H1Z2Z2-K / EN 50618)</a> \u2014 SKU: SOL-000001</li>
-            <li style="padding:8px 0;"><a href="/product/SWG-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">10kA C-Curve Miniature Circuit Breaker (MCB) 4-Pole 63A</a> \u2014 SKU: SWG-000001</li>
-          </ul>
-        </section>
-      `;
-    }
-    res.status(200);
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    const html = renderPageHtml({
-      title: meta.title,
-      description: meta.description,
-      canonical,
-      bodyHtml: `
-        <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
-          <header style="margin-bottom:32px;">
-            <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.2;margin:0 0 16px 0;">${escapeXml2(meta.h1)}</h1>
-            <p style="font-size:15px;line-height:1.7;color:#475569;max-width:900px;">
-              ${escapeXml2(meta.intro)}
-            </p>
-          </header>
-          ${homeExtraHtml}
-        </main>
-      `
-    });
-    return res.send(html);
-  }
-  if (OTHER_VALID_PATHS.has(cleanPath)) {
-    res.status(200);
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    const html = renderPageHtml({
-      title: `${cleanPath.toUpperCase()} | Volamp Elektrikals`,
-      description: "Secure B2B electrical customer portal and ordering platform for Volamp Elektrikals.",
-      canonical: `${BASE_URL3}/${cleanPath}`,
-      bodyHtml: `
-        <div style="font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:60px auto;padding:24px;text-align:center;">
-          <h1 style="font-size:28px;font-weight:800;color:#0f172a;">${escapeXml2(cleanPath.toUpperCase())}</h1>
-          <p style="color:#64748b;margin-top:12px;">Loading secure Volamp portal application...</p>
-        </div>
-      `
-    });
-    return res.send(html);
-  }
-  res.status(404);
-  res.setHeader("Content-Type", "text/html; charset=utf-8");
-  const notFoundHtml = renderPageHtml({
-    title: "Page Not Found (404) | Volamp Elektrikals",
-    description: "The page you are looking for does not exist or has moved. Browse our full electrical catalog or contact our sales desk in Ahmedabad.",
-    canonical: `${BASE_URL3}/404`,
-    noIndex: true,
-    bodyHtml: `
-      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:80px auto;padding:32px;text-align:center;">
-        <p style="color:#c56718;font-weight:bold;font-size:14px;letter-spacing:1px;text-transform:uppercase;">Error 404</p>
-        <h1 style="font-size:36px;font-weight:800;color:#0f172a;margin:12px 0;">404 - Page Not Found</h1>
-        <p style="color:#64748b;font-size:16px;line-height:1.6;margin-bottom:28px;">
-          The URL <code>/${escapeXml2(cleanPath)}</code> could not be found on this server.
-          It may have been moved or removed during our platform migration.
-        </p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-          <a href="/" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Return to Homepage</a>
-          <a href="/products" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Browse 3,385+ Products</a>
-          <a href="/enquire" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Contact Sales Desk</a>
-        </div>
-      </div>
-    `
-  });
-  return res.send(notFoundHtml);
-}
-
 // shared/careersData.ts
 var VOLAMP_JOB_ROLES = [
   // 1. Sales Executive
@@ -7725,11 +7254,39 @@ var requireUser = t.middleware(async (opts) => {
   });
 });
 var protectedProcedure = t.procedure.use(requireUser);
+var employeeProcedure = t.procedure.use(
+  t.middleware(async (opts) => {
+    const { ctx, next } = opts;
+    if (!ctx.user) {
+      throw new TRPCError2({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    }
+    if (ctx.user.accountType !== "employee") {
+      throw new TRPCError2({ code: "FORBIDDEN", message: "Access restricted to VOLAMP employees." });
+    }
+    if (ctx.user.employeeStatus !== "approved" && ctx.user.role !== "admin") {
+      throw new TRPCError2({
+        code: "FORBIDDEN",
+        message: "Your employee account is pending authorization or inactive."
+      });
+    }
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user
+      }
+    });
+  })
+);
 var adminProcedure = t.procedure.use(
   t.middleware(async (opts) => {
     const { ctx, next } = opts;
-    if (!ctx.user || ctx.user.role !== "admin") {
-      throw new TRPCError2({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
+    if (!ctx.user) {
+      throw new TRPCError2({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    }
+    const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+    const isCeo = callerEmail === "ceo@volampelektrikals.com" || callerEmail === "admin@volampelektrikals.com" || ctx.user.role === "admin";
+    if (!isCeo) {
+      throw new TRPCError2({ code: "FORBIDDEN", message: "Administrative privileges required." });
     }
     return next({
       ctx: {
@@ -8953,6 +8510,412 @@ Vadodara, Gujarat, India
     })
   ]);
   return { internalDrop, userConfirmation };
+}
+async function dispatchEmployeeApprovalRequestEmail(data) {
+  const ceoInbox = "ceo@volampelektrikals.com";
+  const defaultSender = process.env.SMTP_FROM || "no-reply@volampelektrikals.com";
+  const formattedDate = (data.registrationDate || /* @__PURE__ */ new Date()).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    dateStyle: "medium",
+    timeStyle: "short"
+  });
+  const baseUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://volampelektrikals.com");
+  const approveUrl = data.approvalToken ? `${baseUrl}/ceo-authorization?token=${encodeURIComponent(data.approvalToken)}&action=approve` : `${baseUrl}/ceo-authorization?employeeEmail=${encodeURIComponent(data.employeeEmail)}&action=approve`;
+  const rejectUrl = data.rejectToken ? `${baseUrl}/ceo-authorization?token=${encodeURIComponent(data.rejectToken)}&action=reject` : `${baseUrl}/ceo-authorization?employeeEmail=${encodeURIComponent(data.employeeEmail)}&action=reject`;
+  const subject = `[ACTION REQUIRED] New Employee Account Authorization Request - ${data.employeeName} (${data.employeeEmail})`;
+  const textContent = `
+VOLAMP ELEKTRIKALS PVT. LTD. - EXECUTIVE LEADERSHIP & IT SECURITY DESK
+======================================================================
+OFFICIAL EMPLOYEE REGISTRATION PENDING CEO AUTHORIZATION
+======================================================================
+
+A new employee has completed registration and verified their official company email address.
+CEO authorization is required before this employee can access the VOLAMP Employee Portal.
+
+EMPLOYEE DOSSIER:
+- Full Name: ${data.employeeName}
+- Official Corporate Email: ${data.employeeEmail}
+- Employee ID: ${data.employeeId || "Not assigned yet"}
+- Department: ${data.department || "Operations"}
+- Designation: ${data.designation || "Staff Member"}
+- Registration Date & Time: ${formattedDate} IST
+- Company Email Verification: VERIFIED
+- Current Account Status: PENDING CEO APPROVAL
+
+SECURITY & ACCESS RULES:
+- Opening this email or its links does NOT automatically activate or reject the account.
+- The CEO must authenticate with multi-factor authentication (MFA) to finalize the decision.
+- These authorization links are secure, time-limited (24 hours), and single-use.
+
+ACTIONS:
+To APPROVE this employee for official portal access:
+${approveUrl}
+
+To REJECT this registration request:
+${rejectUrl}
+
+Or manage via the Executive Governance desk in the Employee Portal:
+${baseUrl}/employee-portal
+
+======================================================================
+VOLAMP Elektrikals Pvt. Ltd. \u2022 Executive Leadership Desk
+Vadodara, Gujarat, India \u2022 volampelektrikals.com
+`.trim();
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 40px 15px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 620px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0;">
+          <!-- Header Banner -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #0a1f33 0%, #102a40 60%, #1d4ed8 100%); padding: 32px 30px; text-align: center;">
+              <div style="font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: 2px; text-transform: uppercase;">
+                VOLAMP <span style="color: #f59e0b;">ELEKTRIKALS</span>
+              </div>
+              <div style="font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 2.5px; text-transform: uppercase; margin-top: 6px;">
+                Executive Leadership & IT Security Governance Desk
+              </div>
+            </td>
+          </tr>
+
+          <!-- Main Body -->
+          <tr>
+            <td style="padding: 36px 36px 28px 36px;">
+              <div style="display: inline-block; padding: 5px 14px; border-radius: 9999px; background-color: #fef3c7; color: #92400e; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; border: 1px solid #fde68a;">
+                Action Required &bull; Pending CEO Decision
+              </div>
+              <h1 style="font-size: 21px; font-weight: 800; color: #0f172a; margin: 0 0 12px 0; line-height: 1.3;">
+                Employee Registration Authorization Request
+              </h1>
+              <p style="font-size: 14px; line-height: 1.6; color: #475569; margin: 0 0 20px 0;">
+                A new staff member has completed registration using the verified corporate domain <strong style="color: #0f172a;">@volampelektrikals.com</strong>. Per company governance policy, access to the internal Employee Portal is locked until explicitly authorized by the CEO.
+              </p>
+
+              <!-- Employee Dossier Card -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; margin: 16px 0 24px 0;">
+                <tr>
+                  <td style="padding: 20px 22px;">
+                    <table width="100%" cellspacing="0" cellpadding="7">
+                      <tr>
+                        <td width="36%" style="font-size: 12px; color: #64748b; font-weight: 600;">Employee Full Name:</td>
+                        <td style="font-size: 14px; color: #0f172a; font-weight: 700;">${data.employeeName}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Official Corporate Email:</td>
+                        <td style="font-size: 13px; color: #0f172a; font-weight: 700; font-family: monospace;">${data.employeeEmail}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Employee ID:</td>
+                        <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.employeeId || "Not assigned yet"}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Department:</td>
+                        <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.department || "Operations"}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Job Designation:</td>
+                        <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.designation || "Staff Member"}</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Registration Timestamp:</td>
+                        <td style="font-size: 12px; color: #334155;">${formattedDate} IST</td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Company Email Status:</td>
+                        <td style="font-size: 12px; color: #059669; font-weight: 700;">
+                          <span style="display: inline-block; padding: 2px 8px; border-radius: 6px; background-color: #d1fae5; border: 1px solid #a7f3d0;">
+                            &#10003; Verified via OTP
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="font-size: 12px; color: #64748b; font-weight: 600;">Current Portal Status:</td>
+                        <td style="font-size: 12px; color: #b45309; font-weight: 700;">
+                          <span style="display: inline-block; padding: 2px 8px; border-radius: 6px; background-color: #fef3c7; border: 1px solid #fde68a;">
+                            Locked &bull; Pending CEO Approval
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Action Buttons -->
+              <div style="margin: 28px 0 20px 0;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="center" style="padding-bottom: 12px;">
+                      <a href="${approveUrl}" style="background-color: #059669; color: #ffffff; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(5,150,105,0.25); min-width: 180px; text-align: center;">
+                        &#10003; Approve Employee
+                      </a>
+                      &nbsp;&nbsp;
+                      <a href="${rejectUrl}" style="background-color: #dc2626; color: #ffffff; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(220,38,38,0.25); min-width: 180px; text-align: center;">
+                        &#10007; Reject Employee
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+
+              <!-- Security Policy Notice -->
+              <div style="background-color: #f8fafc; border-left: 4px solid #0284c7; padding: 12px 16px; border-radius: 6px; margin: 20px 0 16px 0;">
+                <p style="font-size: 11px; line-height: 1.5; color: #475569; margin: 0;">
+                  <strong style="color: #0369a1;">Zero-Touch Security Protocol:</strong> Clicking an action above opens a secure confirmation page on <em>volampelektrikals.com</em> requiring multi-factor CEO authentication. No account state changes until you review and confirm on-screen. Links expire in 24 hours and are single-use.
+                </p>
+              </div>
+
+              <p style="font-size: 12px; color: #64748b; text-align: center; margin: 16px 0 0 0;">
+                Or access the Executive Portal directly at: <a href="${baseUrl}/employee-portal" style="color: #1d73b7; text-decoration: underline;">${baseUrl}/employee-portal</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8fafc; border-top: 1px solid #edf2f7; padding: 22px 36px; text-align: center;">
+              <p style="font-size: 11px; color: #94a3b8; margin: 0; line-height: 1.5;">
+                VOLAMP Elektrikals Pvt. Ltd. &bull; Corporate Headquarters, Vadodara, Gujarat, India<br>
+                Official Website: <a href="https://volampelektrikals.com" style="color: #1d73b7; text-decoration: none;">volampelektrikals.com</a> &bull; CEO Executive Desk: <a href="mailto:ceo@volampelektrikals.com" style="color: #1d73b7; text-decoration: none;">ceo@volampelektrikals.com</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`.trim();
+  return sendTransactionalEmail({
+    to: ceoInbox,
+    from: defaultSender,
+    fromName: "VOLAMP IT & Security Governance Desk",
+    replyTo: data.employeeEmail,
+    subject,
+    text: textContent,
+    html: htmlContent,
+    category: "employee_approval_request"
+  });
+}
+async function dispatchEmployeeApprovedConfirmationEmail(data) {
+  const defaultSender = process.env.SMTP_FROM || "no-reply@volampelektrikals.com";
+  const baseUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://volampelektrikals.com");
+  const loginUrl = `${baseUrl}/employee-portal`;
+  const subject = `Official Employee Account Authorized - Welcome to VOLAMP Elektrikals`;
+  const textContent = `
+VOLAMP ELEKTRIKALS PVT. LTD. - EXECUTIVE LEADERSHIP DESK
+=========================================================
+OFFICIAL EMPLOYEE ACCESS AUTHORIZED
+=========================================================
+
+Dear ${data.employeeName},
+
+Your employee registration for ${data.employeeEmail} has been reviewed and explicitly authorized by Executive Leadership (${data.approvedBy || "ceo@volampelektrikals.com"}).
+
+ACCOUNT DETAILS:
+- Employee Name: ${data.employeeName}
+- Official Email: ${data.employeeEmail}
+- Employee ID: ${data.employeeId || "Assigned by HR"}
+- Department: ${data.department || "Operations"}
+- Designation: ${data.designation || "Staff Member"}
+- Account Status: ACTIVE (Authorized for Portal Access)
+
+ACCESS YOUR EMPLOYEE WORKSPACE:
+${loginUrl}
+
+Security Notice: All corporate employee accounts have Multi-Factor Authentication (MFA) enabled. When signing in, a secure verification code will be dispatched to your company email address.
+
+Regards,
+Executive Leadership & IT Administration Desk
+VOLAMP Elektrikals Pvt. Ltd.
+Vadodara, Gujarat, India \u2022 volampelektrikals.com
+`.trim();
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 40px 15px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0;">
+          <tr>
+            <td style="background: linear-gradient(135deg, #0a1f33 0%, #065f46 100%); padding: 32px 30px; text-align: center;">
+              <div style="font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: 2px; text-transform: uppercase;">
+                VOLAMP <span style="color: #f59e0b;">ELEKTRIKALS</span>
+              </div>
+              <div style="font-size: 11px; font-weight: 700; color: #a7f3d0; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;">
+                Official Employee Portal Access
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 36px 36px 28px 36px;">
+              <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; background-color: #d1fae5; color: #065f46; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">
+                &#10003; Account Authorized &bull; Access Granted
+              </div>
+              <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 12px 0;">
+                Welcome, ${data.employeeName}!
+              </h1>
+              <p style="font-size: 14px; line-height: 1.6; color: #475569; margin: 0 0 20px 0;">
+                Your corporate registration for <strong style="color: #0f172a;">${data.employeeEmail}</strong> has been authorized by Executive Management (<span style="color: #059669; font-weight: 600;">${data.approvedBy || "ceo@volampelektrikals.com"}</span>).
+              </p>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="6" style="background-color: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; margin: 16px 0 24px 0; padding: 12px;">
+                <tr>
+                  <td width="40%" style="font-size: 12px; color: #64748b; font-weight: 600;">Department:</td>
+                  <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.department || "Operations"}</td>
+                </tr>
+                <tr>
+                  <td style="font-size: 12px; color: #64748b; font-weight: 600;">Designation:</td>
+                  <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.designation || "Staff Member"}</td>
+                </tr>
+                <tr>
+                  <td style="font-size: 12px; color: #64748b; font-weight: 600;">Employee ID:</td>
+                  <td style="font-size: 13px; color: #0f172a; font-weight: 600;">${data.employeeId || "Assigned by HR"}</td>
+                </tr>
+                <tr>
+                  <td style="font-size: 12px; color: #64748b; font-weight: 600;">Security:</td>
+                  <td style="font-size: 13px; color: #059669; font-weight: 600;">Multi-Factor Authentication (MFA) Protected</td>
+                </tr>
+              </table>
+
+              <div style="text-align: center; margin: 26px 0 24px 0;">
+                <a href="${loginUrl}" style="background-color: #1d73b7; color: #ffffff; padding: 14px 28px; border-radius: 10px; font-size: 14px; font-weight: 700; text-decoration: none; display: inline-block; box-shadow: 0 4px 12px rgba(29,115,183,0.25);">
+                  Sign In to Employee Portal &rarr;
+                </a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; border-top: 1px solid #edf2f7; padding: 20px 36px; text-align: center;">
+              <p style="font-size: 11px; color: #8e9da9; margin: 0;">
+                VOLAMP Elektrikals Pvt. Ltd. &bull; Vadodara, Gujarat, India &bull; <a href="https://volampelektrikals.com" style="color: #1d73b7; text-decoration: none;">volampelektrikals.com</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`.trim();
+  return sendTransactionalEmail({
+    to: data.employeeEmail,
+    from: defaultSender,
+    fromName: "VOLAMP Executive Leadership Desk",
+    replyTo: "ceo@volampelektrikals.com",
+    subject,
+    text: textContent,
+    html: htmlContent,
+    category: "employee_approved_confirmation"
+  });
+}
+async function dispatchEmployeeRejectedNotificationEmail(data) {
+  const defaultSender = process.env.SMTP_FROM || "no-reply@volampelektrikals.com";
+  const subject = `Employee Registration Status Update - VOLAMP Elektrikals`;
+  const textContent = `
+VOLAMP ELEKTRIKALS PVT. LTD. - EXECUTIVE LEADERSHIP DESK
+=========================================================
+REGISTRATION NOT AUTHORIZED
+=========================================================
+
+Dear ${data.employeeName},
+
+We are writing to inform you that your request for access to the VOLAMP Employee Portal for ${data.employeeEmail} could not be authorized by company management at this time.
+
+${data.reason ? `Reason: ${data.reason}
+` : ""}
+If you believe this decision is in error or require official portal access as part of your employment duties, please contact your department supervisor or the Human Resources & IT administration desk directly.
+
+Regards,
+Executive Leadership & IT Administration Desk
+VOLAMP Elektrikals Pvt. Ltd.
+Vadodara, Gujarat, India \u2022 volampelektrikals.com
+`.trim();
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 40px 15px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.08); border: 1px solid #e2e8f0;">
+          <tr>
+            <td style="background: linear-gradient(135deg, #0a1f33 0%, #7f1d1d 100%); padding: 32px 30px; text-align: center;">
+              <div style="font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: 2px; text-transform: uppercase;">
+                VOLAMP <span style="color: #f59e0b;">ELEKTRIKALS</span>
+              </div>
+              <div style="font-size: 11px; font-weight: 700; color: #fecaca; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px;">
+                Employee Registration Update
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 36px 36px 28px 36px;">
+              <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; background-color: #fee2e2; color: #991b1b; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;">
+                Registration Not Authorized
+              </div>
+              <h1 style="font-size: 20px; font-weight: 800; color: #0f172a; margin: 0 0 12px 0;">
+                Notice Regarding Registration for ${data.employeeName}
+              </h1>
+              <p style="font-size: 14px; line-height: 1.6; color: #475569; margin: 0 0 16px 0;">
+                Your request to activate an Employee Portal account for <strong style="color: #0f172a;">${data.employeeEmail}</strong> was reviewed by Executive Leadership and could not be authorized at this time.
+              </p>
+
+              ${data.reason ? `
+              <div style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 14px 16px; margin: 16px 0; font-size: 13px; color: #991b1b;">
+                <strong>Management Remark:</strong> ${data.reason}
+              </div>` : ""}
+
+              <p style="font-size: 13px; line-height: 1.6; color: #475569; margin: 16px 0 0 0;">
+                If you believe this was in error, please contact your department manager or email the Human Resources & IT security desk at <a href="mailto:support@volampelektrikals.com" style="color: #1d73b7;">support@volampelektrikals.com</a>.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; border-top: 1px solid #edf2f7; padding: 20px 36px; text-align: center;">
+              <p style="font-size: 11px; color: #8e9da9; margin: 0;">
+                VOLAMP Elektrikals Pvt. Ltd. &bull; Vadodara, Gujarat, India &bull; <a href="https://volampelektrikals.com" style="color: #1d73b7; text-decoration: none;">volampelektrikals.com</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`.trim();
+  return sendTransactionalEmail({
+    to: data.employeeEmail,
+    from: defaultSender,
+    fromName: "VOLAMP Executive Leadership Desk",
+    replyTo: "ceo@volampelektrikals.com",
+    subject,
+    text: textContent,
+    html: htmlContent,
+    category: "employee_rejected_notification"
+  });
 }
 
 // server/services/voiceOrderParser.ts
@@ -11378,15 +11341,15 @@ To generate your official **Order Reference ID**, please share:
 }
 
 // server/services/employeeCmsService.ts
-import fs4 from "fs";
-import path4 from "path";
-var DATA_DIR = path4.resolve(process.cwd(), "server/data");
-var BLOGS_FILE = path4.join(DATA_DIR, "blogs_db.json");
-var NEWSLETTERS_FILE = path4.join(DATA_DIR, "newsletters_db.json");
-var PRICE_LISTS_FILE = path4.join(DATA_DIR, "price_lists_db.json");
+import fs3 from "fs";
+import path3 from "path";
+var DATA_DIR = path3.resolve(process.cwd(), "server/data");
+var BLOGS_FILE = path3.join(DATA_DIR, "blogs_db.json");
+var NEWSLETTERS_FILE = path3.join(DATA_DIR, "newsletters_db.json");
+var PRICE_LISTS_FILE = path3.join(DATA_DIR, "price_lists_db.json");
 function ensureDirectoryExists() {
-  if (!fs4.existsSync(DATA_DIR)) {
-    fs4.mkdirSync(DATA_DIR, { recursive: true });
+  if (!fs3.existsSync(DATA_DIR)) {
+    fs3.mkdirSync(DATA_DIR, { recursive: true });
   }
 }
 var INITIAL_BLOGS = [
@@ -11459,11 +11422,11 @@ var INITIAL_BLOGS = [
 function getBlogs() {
   ensureDirectoryExists();
   try {
-    if (fs4.existsSync(BLOGS_FILE)) {
-      const raw = fs4.readFileSync(BLOGS_FILE, "utf-8");
+    if (fs3.existsSync(BLOGS_FILE)) {
+      const raw = fs3.readFileSync(BLOGS_FILE, "utf-8");
       return JSON.parse(raw);
     }
-    fs4.writeFileSync(BLOGS_FILE, JSON.stringify(INITIAL_BLOGS, null, 2), "utf-8");
+    fs3.writeFileSync(BLOGS_FILE, JSON.stringify(INITIAL_BLOGS, null, 2), "utf-8");
     return INITIAL_BLOGS;
   } catch (err) {
     console.error("[EmployeeCms] Error reading blogs:", err);
@@ -11493,7 +11456,7 @@ function createBlog(input) {
     createdAt: (/* @__PURE__ */ new Date()).toISOString()
   };
   blogs.unshift(newBlog);
-  fs4.writeFileSync(BLOGS_FILE, JSON.stringify(blogs, null, 2), "utf-8");
+  fs3.writeFileSync(BLOGS_FILE, JSON.stringify(blogs, null, 2), "utf-8");
   return newBlog;
 }
 function deleteBlog(id) {
@@ -11501,7 +11464,7 @@ function deleteBlog(id) {
   const blogs = getBlogs();
   const filtered = blogs.filter((b) => b.id !== id);
   if (filtered.length !== blogs.length) {
-    fs4.writeFileSync(BLOGS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
+    fs3.writeFileSync(BLOGS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
     return true;
   }
   return false;
@@ -11520,11 +11483,11 @@ var INITIAL_NEWSLETTERS = [
 function getNewsletters() {
   ensureDirectoryExists();
   try {
-    if (fs4.existsSync(NEWSLETTERS_FILE)) {
-      const raw = fs4.readFileSync(NEWSLETTERS_FILE, "utf-8");
+    if (fs3.existsSync(NEWSLETTERS_FILE)) {
+      const raw = fs3.readFileSync(NEWSLETTERS_FILE, "utf-8");
       return JSON.parse(raw);
     }
-    fs4.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(INITIAL_NEWSLETTERS, null, 2), "utf-8");
+    fs3.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(INITIAL_NEWSLETTERS, null, 2), "utf-8");
     return INITIAL_NEWSLETTERS;
   } catch (err) {
     console.error("[EmployeeCms] Error reading newsletters:", err);
@@ -11544,17 +11507,17 @@ function publishNewsletter(input) {
     recipientCount: input.recipientCount || 240
   };
   newsletters.unshift(newNewsletter);
-  fs4.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(newsletters, null, 2), "utf-8");
+  fs3.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(newsletters, null, 2), "utf-8");
   return newNewsletter;
 }
 function getPushedPriceLists() {
   ensureDirectoryExists();
   try {
-    if (fs4.existsSync(PRICE_LISTS_FILE)) {
-      const raw = fs4.readFileSync(PRICE_LISTS_FILE, "utf-8");
+    if (fs3.existsSync(PRICE_LISTS_FILE)) {
+      const raw = fs3.readFileSync(PRICE_LISTS_FILE, "utf-8");
       return JSON.parse(raw);
     }
-    fs4.writeFileSync(PRICE_LISTS_FILE, JSON.stringify([], null, 2), "utf-8");
+    fs3.writeFileSync(PRICE_LISTS_FILE, JSON.stringify([], null, 2), "utf-8");
     return [];
   } catch (err) {
     console.error("[EmployeeCms] Error reading pushed price lists:", err);
@@ -11587,7 +11550,7 @@ function pushPriceList(input) {
     description: input.description
   };
   lists.unshift(newItem);
-  fs4.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(lists, null, 2), "utf-8");
+  fs3.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(lists, null, 2), "utf-8");
   return newItem;
 }
 function deletePushedPriceList(id) {
@@ -11595,7 +11558,7 @@ function deletePushedPriceList(id) {
   const lists = getPushedPriceLists();
   const filtered = lists.filter((item) => item.id !== id);
   if (filtered.length !== lists.length) {
-    fs4.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
+    fs3.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
     return true;
   }
   return false;
@@ -11990,8 +11953,7 @@ var appRouter = router({
       z2.object({
         email: z2.string().trim().email(),
         password: z2.string().min(1, "Password is required"),
-        rememberMe: z2.boolean().optional(),
-        expectedAccountType: z2.enum(["customer", "employee"]).optional()
+        rememberMe: z2.boolean().optional()
       })
     ).mutation(async ({ ctx, input }) => {
       const normalizedEmail = input.email.toLowerCase().trim();
@@ -12009,30 +11971,39 @@ var appRouter = router({
           message: "Invalid email address or password."
         });
       }
-      if (input.expectedAccountType && user.accountType !== input.expectedAccountType) {
-        if (input.expectedAccountType === "employee") {
+      const callerEmail = user.email?.toLowerCase().trim() || "";
+      const isAdmin = callerEmail === "ceo@volampelektrikals.com" || callerEmail === "admin@volampelektrikals.com" || user.role === "admin";
+      const effectiveRole = isAdmin ? "admin" : user.accountType === "employee" ? "employee" : "customer";
+      const redirectUrl = effectiveRole === "admin" ? "/employee-portal?tab=governance" : effectiveRole === "employee" ? "/employee-portal" : "/portal";
+      if (user.accountType === "employee") {
+        if (user.employeeStatus === "pending_verification") {
           throw new TRPCError3({
-            code: "BAD_REQUEST",
-            message: "This account is registered as a Customer. Please use Customer Login."
-          });
-        } else {
-          throw new TRPCError3({
-            code: "BAD_REQUEST",
-            message: "This is an official Employee account. Please use Employee Login."
+            code: "FORBIDDEN",
+            message: "Your official email address has not been verified yet. Please verify your company email with the OTP sent to your inbox."
           });
         }
-      }
-      if (user.accountType === "employee") {
         if (user.employeeStatus === "pending_approval") {
           throw new TRPCError3({
             code: "FORBIDDEN",
-            message: "Your employee account is pending administrator approval."
+            message: "Your employee registration has been successfully submitted and verified. Your account is currently awaiting authorization from VOLAMP management. You will receive an email once your registration is reviewed."
           });
         }
         if (user.employeeStatus === "rejected") {
           throw new TRPCError3({
             code: "FORBIDDEN",
-            message: "Your employee registration was not approved."
+            message: "Your employee registration was reviewed and not authorized by executive management. Please contact HR or IT administration."
+          });
+        }
+        if (user.employeeStatus === "suspended") {
+          throw new TRPCError3({
+            code: "FORBIDDEN",
+            message: "Your official employee portal access has been suspended. Please contact the Executive Administration desk."
+          });
+        }
+        if (user.employeeStatus === "deactivated") {
+          throw new TRPCError3({
+            code: "FORBIDDEN",
+            message: "This employee account has been deactivated. Please contact IT support."
           });
         }
       }
@@ -12050,7 +12021,8 @@ var appRouter = router({
           mfaPendingToken,
           email: user.email,
           accountType: user.accountType,
-          devOtpHint: process.env.NODE_ENV !== "production" ? otp : void 0
+          effectiveRole,
+          redirectUrl
         };
       }
       const expiresInMs = input.rememberMe ? 30 * 24 * 60 * 60 * 1e3 : 24 * 60 * 60 * 1e3;
@@ -12063,7 +12035,9 @@ var appRouter = router({
       await updateUser(user.id, { lastSignedIn: /* @__PURE__ */ new Date() });
       return {
         mfaRequired: false,
-        user
+        user,
+        effectiveRole,
+        redirectUrl
       };
     }),
     verifyMfaOtp: publicProcedure.input(
@@ -12094,6 +12068,10 @@ var appRouter = router({
           message: "User account not found."
         });
       }
+      const callerEmail = user.email?.toLowerCase().trim() || "";
+      const isAdmin = callerEmail === "ceo@volampelektrikals.com" || callerEmail === "admin@volampelektrikals.com" || user.role === "admin";
+      const effectiveRole = isAdmin ? "admin" : user.accountType === "employee" ? "employee" : "customer";
+      const redirectUrl = effectiveRole === "admin" ? "/employee-portal?tab=governance" : effectiveRole === "employee" ? "/employee-portal" : "/portal";
       const expiresInMs = input.rememberMe ? 30 * 24 * 60 * 60 * 1e3 : ONE_YEAR_MS;
       const sessionToken = await sdk.createSessionToken(user.openId, {
         expiresInMs,
@@ -12104,7 +12082,9 @@ var appRouter = router({
       await updateUser(user.id, { lastSignedIn: /* @__PURE__ */ new Date() });
       return {
         success: true,
-        user
+        user,
+        effectiveRole,
+        redirectUrl
       };
     }),
     resendMfaOtp: publicProcedure.input(z2.object({ mfaPendingToken: z2.string() })).mutation(async ({ input }) => {
@@ -12119,29 +12099,35 @@ var appRouter = router({
       saveOtp(payload.email, otp, "mfa", 5 * 60 * 1e3);
       await dispatchOtpEmail(payload.email, otp, "mfa");
       return {
-        success: true,
-        devOtpHint: process.env.NODE_ENV !== "production" ? otp : void 0
+        success: true
       };
     }),
     registerEmployee: publicProcedure.input(
       z2.object({
         name: z2.string().trim().min(2, "Name must be at least 2 characters"),
         email: z2.string().trim().email("Please enter a valid email address"),
-        password: z2.string().min(6, "Password must be at least 6 characters")
+        employeeId: z2.string().trim().max(64).optional(),
+        department: z2.string().trim().min(2, "Please select or enter your department"),
+        designation: z2.string().trim().min(2, "Please enter your job designation"),
+        password: z2.string().min(8, "Password must be at least 8 characters").regex(/[A-Z]/, "Password must contain at least one uppercase letter").regex(/[a-z]/, "Password must contain at least one lowercase letter").regex(/[0-9]/, "Password must contain at least one number").regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
+        termsAccepted: z2.boolean().refine((val) => val === true, {
+          message: "You must accept company terms and privacy policy to register."
+        })
       })
     ).mutation(async ({ input }) => {
       const normalizedEmail = input.email.toLowerCase().trim();
-      if (!normalizedEmail.endsWith("@volampelektrikals.com")) {
+      const domain = normalizedEmail.split("@")[1];
+      if (domain !== "volampelektrikals.com") {
         throw new TRPCError3({
           code: "BAD_REQUEST",
-          message: "Employee registration requires an official VOLAMP email address ending in @volampelektrikals.com."
+          message: "Employee registration requires an official VOLAMP corporate email address ending in @volampelektrikals.com. Personal email addresses (Gmail, Yahoo, Outlook, etc.) are strictly prohibited."
         });
       }
       const existing = await getUserByEmail(normalizedEmail);
       if (existing) {
         throw new TRPCError3({
           code: "CONFLICT",
-          message: "An account with this official email already exists."
+          message: "An account with this official email already exists. If your account is awaiting authorization or you forgot your password, please use the status recovery or sign-in options."
         });
       }
       const newUser = await createLocalUser({
@@ -12149,9 +12135,20 @@ var appRouter = router({
         email: normalizedEmail,
         password: input.password,
         accountType: "employee",
-        employeeStatus: "pending_approval",
+        employeeStatus: "pending_verification",
+        employeeId: input.employeeId?.trim() || void 0,
+        department: input.department.trim(),
+        designation: input.designation.trim(),
+        termsAccepted: input.termsAccepted,
         mfaEnabled: true,
         emailVerified: false
+      });
+      await recordEmployeeAuditLog({
+        userId: newUser.id,
+        employeeEmail: normalizedEmail,
+        action: "REGISTERED",
+        actorEmail: normalizedEmail,
+        details: `Employee submitted registration for ${input.department} - ${input.designation}. Email verification pending.`
       });
       const otp = generate6DigitOtp();
       saveOtp(normalizedEmail, otp, "email_verification", 15 * 60 * 1e3);
@@ -12159,7 +12156,7 @@ var appRouter = router({
       return {
         success: true,
         email: newUser.email,
-        devOtpHint: process.env.NODE_ENV !== "production" ? otp : void 0
+        status: "pending_verification"
       };
     }),
     registerCustomer: publicProcedure.input(
@@ -12170,6 +12167,12 @@ var appRouter = router({
       })
     ).mutation(async ({ input }) => {
       const normalizedEmail = input.email.toLowerCase().trim();
+      if (normalizedEmail.endsWith("@volampelektrikals.com")) {
+        throw new TRPCError3({
+          code: "BAD_REQUEST",
+          message: "Corporate email addresses ending in @volampelektrikals.com are reserved for VOLAMP staff and require official employee registration with CEO authorization."
+        });
+      }
       const existing = await getUserByEmail(normalizedEmail);
       if (existing) {
         throw new TRPCError3({
@@ -12214,8 +12217,7 @@ var appRouter = router({
       await dispatchOtpEmail(normalizedEmail, otp, "registration");
       return {
         success: true,
-        alreadyVerified: false,
-        devOtpHint: process.env.NODE_ENV !== "production" ? otp : void 0
+        alreadyVerified: false
       };
     }),
     verifyEmailOtp: publicProcedure.input(
@@ -12241,11 +12243,49 @@ var appRouter = router({
       }
       await updateUser(user.id, { emailVerified: true });
       if (user.accountType === "employee") {
+        await updateUser(user.id, { employeeStatus: "pending_approval" });
+        await recordEmployeeAuditLog({
+          userId: user.id,
+          employeeEmail: normalizedEmail,
+          action: "EMAIL_VERIFIED",
+          actorEmail: normalizedEmail,
+          details: "Official corporate email verified successfully with OTP."
+        });
+        const approveToken = await createEmployeeApprovalToken({
+          userId: user.id,
+          employeeEmail: normalizedEmail,
+          action: "approve",
+          expiresInMs: 24 * 60 * 60 * 1e3
+        });
+        const rejectToken = await createEmployeeApprovalToken({
+          userId: user.id,
+          employeeEmail: normalizedEmail,
+          action: "reject",
+          expiresInMs: 24 * 60 * 60 * 1e3
+        });
+        await dispatchEmployeeApprovalRequestEmail({
+          employeeName: user.name || "Employee",
+          employeeEmail: normalizedEmail,
+          employeeId: user.employeeId || void 0,
+          department: user.department || void 0,
+          designation: user.designation || void 0,
+          registrationDate: user.createdAt,
+          emailVerified: true,
+          approvalToken: approveToken.token,
+          rejectToken: rejectToken.token
+        });
+        await recordEmployeeAuditLog({
+          userId: user.id,
+          employeeEmail: normalizedEmail,
+          action: "CEO_APPROVAL_DISPATCHED",
+          actorEmail: "system",
+          details: `Approval notification dispatched to ceo@volampelektrikals.com with 24-hour single-use tokens.`
+        });
         return {
           success: true,
           accountType: "employee",
           status: "pending_approval",
-          message: "Your official email has been verified. Your account is now pending administrator approval before access to the employee portal is granted."
+          message: "Your employee registration has been successfully submitted and verified. Your account is currently awaiting authorization from VOLAMP management. You will receive an email once your registration is reviewed."
         };
       }
       const sessionToken = await sdk.createSessionToken(user.openId, {
@@ -12260,15 +12300,6 @@ var appRouter = router({
         status: "active",
         user
       };
-    }),
-    quickApproveEmployee: publicProcedure.input(z2.object({ email: z2.string().trim().email() })).mutation(async ({ input }) => {
-      const normalized = input.email.toLowerCase().trim();
-      const user = await getUserByEmail(normalized);
-      if (!user) {
-        throw new TRPCError3({ code: "NOT_FOUND", message: "User account not found." });
-      }
-      await updateUser(user.id, { employeeStatus: "approved", emailVerified: true });
-      return { success: true, email: normalized };
     }),
     forgotPassword: publicProcedure.input(z2.object({ email: z2.string().trim().email() })).mutation(async ({ input }) => {
       const normalizedEmail = input.email.toLowerCase().trim();
@@ -12317,27 +12348,271 @@ var appRouter = router({
     })
   }),
   employee: router({
-    dashboard: protectedProcedure.query(async ({ ctx }) => {
-      if (ctx.user.accountType !== "employee") {
-        throw new TRPCError3({
-          code: "FORBIDDEN",
-          message: "Access restricted to VOLAMP employees."
-        });
-      }
+    dashboard: employeeProcedure.query(async () => {
       return getEmployeeDashboardData();
     }),
-    approveEmployee: protectedProcedure.input(z2.object({ userId: z2.number().int().positive() })).mutation(async ({ ctx, input }) => {
-      if (ctx.user.accountType !== "employee" || ctx.user.role !== "admin") {
+    // Public procedure to inspect token for CEO authorization page (safe dossier)
+    getApprovalRequestInfo: publicProcedure.input(z2.object({ token: z2.string().trim() })).query(async ({ input }) => {
+      const tokenRecord = await getEmployeeApprovalToken(input.token);
+      if (!tokenRecord) {
+        return {
+          valid: false,
+          error: "The authorization link is invalid or could not be found."
+        };
+      }
+      const now = /* @__PURE__ */ new Date();
+      if (new Date(tokenRecord.expiresAt) < now) {
+        return {
+          valid: false,
+          expired: true,
+          error: "This CEO authorization link expired after 24 hours. A new authorization link can be requested from executive administration."
+        };
+      }
+      if (tokenRecord.usedAt) {
+        return {
+          valid: false,
+          alreadyUsed: true,
+          usedAt: tokenRecord.usedAt,
+          usedBy: tokenRecord.usedBy,
+          error: `This authorization link has already been used on ${new Date(tokenRecord.usedAt).toLocaleString("en-IN")} by ${tokenRecord.usedBy || "executive management"}.`
+        };
+      }
+      const employee = await getUserById(tokenRecord.userId);
+      if (!employee) {
+        return {
+          valid: false,
+          error: "Associated employee account was not found."
+        };
+      }
+      return {
+        valid: true,
+        token: tokenRecord.token,
+        action: tokenRecord.action,
+        expiresAt: tokenRecord.expiresAt,
+        employee: {
+          id: employee.id,
+          name: employee.name || "Employee",
+          email: employee.email || "",
+          employeeId: employee.employeeId || "Not assigned yet",
+          department: employee.department || "Operations",
+          designation: employee.designation || "Staff Member",
+          emailVerified: Boolean(employee.emailVerified),
+          currentStatus: employee.employeeStatus,
+          createdAt: employee.createdAt
+        }
+      };
+    }),
+    // Protected procedure for CEO to finalize approval or rejection decision
+    processCeoDecision: protectedProcedure.input(
+      z2.object({
+        token: z2.string().trim(),
+        decision: z2.enum(["approve", "reject"]),
+        reason: z2.string().trim().max(500).optional()
+      })
+    ).mutation(async ({ ctx, input }) => {
+      const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+      const isCeo = callerEmail === "ceo@volampelektrikals.com" || ctx.user.role === "admin";
+      if (!isCeo) {
         throw new TRPCError3({
           code: "FORBIDDEN",
-          message: "Only administrator employees can approve employee registrations."
+          message: "Access denied. Only the CEO (ceo@volampelektrikals.com) or Executive Administrator can authorize employee accounts."
         });
       }
-      const approved = await approveEmployee(input.userId);
+      const tokenRecord = await getEmployeeApprovalToken(input.token);
+      if (!tokenRecord) {
+        throw new TRPCError3({
+          code: "NOT_FOUND",
+          message: "Authorization token is invalid or does not exist."
+        });
+      }
+      if (tokenRecord.usedAt) {
+        throw new TRPCError3({
+          code: "BAD_REQUEST",
+          message: "This authorization token has already been processed and cannot be reused."
+        });
+      }
+      if (new Date(tokenRecord.expiresAt) < /* @__PURE__ */ new Date()) {
+        throw new TRPCError3({
+          code: "BAD_REQUEST",
+          message: "This authorization token has expired (24h limit)."
+        });
+      }
+      const employee = await getUserById(tokenRecord.userId);
+      if (!employee) {
+        throw new TRPCError3({
+          code: "NOT_FOUND",
+          message: "Employee account was not found."
+        });
+      }
+      await markEmployeeApprovalTokenUsed(tokenRecord.token, callerEmail);
+      if (input.decision === "approve") {
+        await approveEmployee(employee.id, callerEmail);
+        if (employee.email) {
+          await dispatchEmployeeApprovedConfirmationEmail({
+            employeeName: employee.name || "Employee",
+            employeeEmail: employee.email,
+            employeeId: employee.employeeId || void 0,
+            department: employee.department || void 0,
+            designation: employee.designation || void 0,
+            approvedBy: callerEmail
+          });
+        }
+      } else {
+        await rejectEmployee(employee.id, input.reason || "Registration not authorized by CEO.", callerEmail);
+        if (employee.email) {
+          await dispatchEmployeeRejectedNotificationEmail({
+            employeeName: employee.name || "Employee",
+            employeeEmail: employee.email,
+            reason: input.reason || "Registration not authorized by CEO."
+          });
+        }
+      }
+      return {
+        success: true,
+        decision: input.decision,
+        employeeName: employee.name,
+        employeeEmail: employee.email,
+        decidedBy: callerEmail,
+        decidedAt: /* @__PURE__ */ new Date()
+      };
+    }),
+    // Direct approve from dashboard
+    approveEmployee: adminProcedure.input(z2.object({ userId: z2.number().int().positive() })).mutation(async ({ ctx, input }) => {
+      const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+      const user = await getUserById(input.userId);
+      const approved = await approveEmployee(input.userId, callerEmail);
       if (!approved) {
         throw new TRPCError3({ code: "NOT_FOUND", message: "Employee not found." });
       }
+      if (user && user.email) {
+        await dispatchEmployeeApprovedConfirmationEmail({
+          employeeName: user.name || "Employee",
+          employeeEmail: user.email,
+          employeeId: user.employeeId || void 0,
+          department: user.department || void 0,
+          designation: user.designation || void 0,
+          approvedBy: callerEmail
+        });
+      }
       return { success: true };
+    }),
+    // Direct reject from dashboard
+    rejectEmployee: adminProcedure.input(z2.object({ userId: z2.number().int().positive(), reason: z2.string().optional() })).mutation(async ({ ctx, input }) => {
+      const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+      const user = await getUserById(input.userId);
+      const rejected = await rejectEmployee(input.userId, input.reason || "Registration not approved by CEO.", callerEmail);
+      if (!rejected) {
+        throw new TRPCError3({ code: "NOT_FOUND", message: "Employee not found." });
+      }
+      if (user && user.email) {
+        await dispatchEmployeeRejectedNotificationEmail({
+          employeeName: user.name || "Employee",
+          employeeEmail: user.email,
+          reason: input.reason
+        });
+      }
+      return { success: true };
+    }),
+    // Administrative lifecycle action: suspend, reactivate, deactivate
+    manageEmployeeStatus: adminProcedure.input(
+      z2.object({
+        userId: z2.number().int().positive(),
+        action: z2.enum(["approve", "reject", "suspend", "reactivate", "deactivate"]),
+        reason: z2.string().optional()
+      })
+    ).mutation(async ({ ctx, input }) => {
+      const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+      const user = await getUserById(input.userId);
+      if (!user) throw new TRPCError3({ code: "NOT_FOUND", message: "Employee not found." });
+      if (input.action === "approve" || input.action === "reactivate") {
+        await (input.action === "approve" ? approveEmployee(input.userId, callerEmail) : reactivateEmployee(input.userId, callerEmail));
+        if (user.email) {
+          await dispatchEmployeeApprovedConfirmationEmail({
+            employeeName: user.name || "Employee",
+            employeeEmail: user.email,
+            department: user.department || void 0,
+            designation: user.designation || void 0,
+            approvedBy: callerEmail
+          });
+        }
+      } else if (input.action === "reject") {
+        await rejectEmployee(input.userId, input.reason || "Registration not authorized by CEO.", callerEmail);
+        if (user.email) {
+          await dispatchEmployeeRejectedNotificationEmail({
+            employeeName: user.name || "Employee",
+            employeeEmail: user.email,
+            reason: input.reason
+          });
+        }
+      } else if (input.action === "suspend") {
+        await suspendEmployee(input.userId, callerEmail);
+      } else if (input.action === "deactivate") {
+        await deactivateEmployee(input.userId, callerEmail);
+      }
+      return { success: true, action: input.action, userId: input.userId };
+    }),
+    // Update employee profile & role
+    updateEmployee: adminProcedure.input(
+      z2.object({
+        userId: z2.number().int().positive(),
+        department: z2.string().optional(),
+        designation: z2.string().optional(),
+        employeeId: z2.string().optional(),
+        role: z2.enum(["user", "admin"]).optional()
+      })
+    ).mutation(async ({ ctx, input }) => {
+      const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+      await updateEmployeeProfile(
+        input.userId,
+        {
+          department: input.department,
+          designation: input.designation,
+          employeeId: input.employeeId,
+          role: input.role
+        },
+        callerEmail
+      );
+      return { success: true };
+    }),
+    // Resend CEO approval email with fresh 24h tokens
+    resendCeoApprovalEmail: adminProcedure.input(z2.object({ userId: z2.number().int().positive() })).mutation(async ({ ctx, input }) => {
+      const callerEmail = ctx.user.email?.toLowerCase().trim() || "";
+      const user = await getUserById(input.userId);
+      if (!user || user.accountType !== "employee") {
+        throw new TRPCError3({ code: "NOT_FOUND", message: "Employee not found." });
+      }
+      const approveToken = await createEmployeeApprovalToken({
+        userId: user.id,
+        employeeEmail: user.email || "",
+        action: "approve",
+        expiresInMs: 24 * 60 * 60 * 1e3
+      });
+      const rejectToken = await createEmployeeApprovalToken({
+        userId: user.id,
+        employeeEmail: user.email || "",
+        action: "reject",
+        expiresInMs: 24 * 60 * 60 * 1e3
+      });
+      await dispatchEmployeeApprovalRequestEmail({
+        employeeName: user.name || "Employee",
+        employeeEmail: user.email || "",
+        employeeId: user.employeeId || void 0,
+        department: user.department || void 0,
+        designation: user.designation || void 0,
+        registrationDate: user.createdAt,
+        emailVerified: true,
+        approvalToken: approveToken.token,
+        rejectToken: rejectToken.token
+      });
+      return { success: true };
+    }),
+    // List all employees for admin/CEO
+    listEmployees: adminProcedure.query(async () => {
+      return listAllEmployees();
+    }),
+    // List audit logs for admin/CEO
+    listAuditLogs: adminProcedure.input(z2.object({ limit: z2.number().min(1).max(200).optional() }).optional()).query(async ({ input }) => {
+      return getEmployeeAuditLogs(input?.limit || 100);
     })
   }),
   ai: router({
@@ -13291,6 +13566,20 @@ async function createContext(opts) {
 function createExpressApp() {
   const app2 = express();
   app2.use(securityHeadersMiddleware);
+  const clientPublicVideos = path4.resolve(process.cwd(), "client/public/videos");
+  if (fs4.existsSync(clientPublicVideos)) {
+    app2.use("/videos", express.static(clientPublicVideos, {
+      acceptRanges: true,
+      maxAge: "30d"
+    }));
+  }
+  const distPublicVideos = path4.resolve(process.cwd(), "dist/public/videos");
+  if (fs4.existsSync(distPublicVideos)) {
+    app2.use("/videos", express.static(distPublicVideos, {
+      acceptRanges: true,
+      maxAge: "30d"
+    }));
+  }
   app2.use(express.json({ limit: "50mb" }));
   app2.use(express.urlencoded({ limit: "50mb", extended: true }));
   app2.use(redirectsMiddleware);
@@ -13314,12 +13603,761 @@ function createExpressApp() {
     }
     next();
   });
-  app2.use(seoPrerenderMiddleware);
   return app2;
+}
+
+// server/seoPrerender.ts
+import fs5 from "fs";
+import path5 from "path";
+import { fileURLToPath as fileURLToPath2 } from "url";
+var __filename2 = fileURLToPath2(import.meta.url);
+var __dirname2 = path5.dirname(__filename2);
+var BASE_URL3 = "https://volampelektrikals.com";
+var STATIC_ROUTES = {
+  "": {
+    title: "Industrial Cable & Electrical Distributor | Volamp",
+    description: "Authorized wholesale distributor of Polycab, Finolex, KEI cables and Schneider, L&T switchgear in Ahmedabad, Gujarat. 3,385+ SKUs with test certificates.",
+    h1: "Industrial Cable & Electrical Distributor in Ahmedabad",
+    intro: "Volamp Elektrikals Private Limited is Gujarat's premier B2B master distributor and authorized wholesale stockist of industrial cables, HT/LT power cables, solar PV cables, switchgear, and earthing infrastructure. Backed by a 60+ year family legacy established in 1964 and modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across 28 Indian states."
+  },
+  "about-volamp": {
+    title: "About Volamp Elektrikals | 60+ Years Electrical Legacy",
+    description: "Learn about Volamp Elektrikals: 4 generations, 60+ years electrical legacy, leadership by CEO Naimil Vipul Patel, and industrial distribution across India.",
+    h1: "About Volamp Elektrikals Private Limited",
+    intro: "With roots dating back to 1964 established by Soma Bhai Khatubhai Patel in Ahmedabad's historical electrical market, Volamp Elektrikals has evolved over four generations into a trusted national distributor for mega infrastructure projects. Under the engineering leadership of CEO Naimil Vipul Patel, we combine deep technical specification expertise with state-of-the-art warehousing at Aslali Highway to deliver same-day dispatch and guaranteed test compliance."
+  },
+  "where-volamp-contributed": {
+    title: "Landmark Projects & Footprint | Volamp Elektrikals",
+    description: "Explore major infrastructure projects powered by Volamp Elektrikals: 200MW West Bengal Solar Park, Punjab 66kV Grid, and AMC Stadium Ahmedabad.",
+    h1: "Landmark Infrastructure Projects & National Footprint",
+    intro: "From high-voltage utility substations to utility-scale renewable solar parks and municipal infrastructure, Volamp Elektrikals has supplied mission-critical electrical materials to over 140 landmark projects across India. Our project footprint includes the 200MW West Bengal Solar Park, 66kV transmission substations in Punjab, Ahmedabad Municipal Corporation sports complexes, and key GIDC industrial corridors."
+  },
+  "business-segments": {
+    title: "Industries & Business Segments Served | Volamp",
+    description: "Electrical distribution solutions tailored for EPC contractors, solar power developers, industrial automation plants, and commercial infrastructure.",
+    h1: "Business Segments & Industries Served",
+    intro: "Volamp Elektrikals delivers end-to-end electrical procurement packages tailored to specific sector requirements: EPC infrastructure contractors requiring bulk HT armoured drum deliveries with CPRI type-test reports; solar developers needing 1500V DC UV-resistant PV cables; industrial manufacturing plants needing fast replacement switchgear; and commercial builders seeking IS:694 certified wiring."
+  },
+  "branch-locations": {
+    title: "Branch Locations & Central Warehouse | Volamp",
+    description: "Visit Volamp Elektrikals offices in Khadia, Ahmedabad and our central logistics distribution warehouse on Aslali Highway. Pan-India dispatch corridors.",
+    h1: "Branch Locations, Sales Desks & Distribution Terminals",
+    intro: "Our operations are centered in Ahmedabad, Gujarat with strategic distribution access: Corporate Sales Office at 1753, Dhobi's Pole, Sir Chinubhai Road, Khadia, Ahmedabad 380001 (Gandhi Road Electrical Market Belt), and Central Logistics Fulfillment Terminal at Aslali Highway Terminal, NH-48 & SP Ring Road Junction, Ahmedabad 382427. Same-day dispatch to Vatva, Sanand, Naroda, and Changodar GIDC zones."
+  },
+  "products": {
+    title: "Industrial Electrical Products Catalog | Volamp",
+    description: "Browse 3,385+ verified electrical products: LT/HT XLPE cables, solar DC wires, switchgear, MCBs, lugs, and earthing supplies. Instant BOM quotation.",
+    h1: "Industrial Electrical & Power Cable Catalog",
+    intro: "Explore over 3,385 active, genuine electrical SKUs from India's leading manufacturers: Polycab, Finolex, KEI Industries, Schneider Electric, L&T / Lauritz Knudsen, and Dowells. Every product is backed by full manufacturer warranties, IS/IEC standard compliance (IS 7098, IS 1554, IS 694, EN 50618, IEC 60947), and complete routine factory test reports delivered with every drum or carton."
+  },
+  "price-list": {
+    title: "Manufacturer Cable Price Lists 2026 | Volamp",
+    description: "Download official 2026 manufacturer price lists and discount circulars for Polycab, Finolex, KEI cables and Schneider, L&T switchgear.",
+    h1: "Official Manufacturer Price Lists & Circulars (2026)",
+    intro: "Access the latest authorized 2026 price lists and project discount matrices for industrial cables and electrical equipment. We stock verified rate circulars from Polycab India, Finolex Cables, KEI Industries, Schneider Electric, and Dowells lugs, helping EPC contractors and estimators calculate accurate project bill-of-quantities (BOQ)."
+  },
+  "certifications-and-awards": {
+    title: "Quality Certifications & IS Standards | Volamp",
+    description: "View quality certifications and compliance standards for Volamp Elektrikals: IS 7098, IS 1554, IS 694, EN 50618, ISO 9001, and CPRI test reports.",
+    h1: "Quality Certifications, Testing Standards & Compliance",
+    intro: "Volamp Elektrikals maintains rigorous quality standards for all supplied materials. All LT and HT cables adhere strictly to Bureau of Indian Standards (BIS) specifications including IS 7098 (Part 1 & 2) for XLPE insulated cables, IS 1554 for PVC power cables, IS 694 for building wires, and EN 50618 / IEC 62930 for solar PV cables. Routine spark test, insulation resistance, and conductor resistance test certificates accompany all consignments."
+  },
+  "calculator": {
+    title: "Online Cable Sizing & Voltage Drop Calculator | Volamp",
+    description: "Calculate cable size, current rating, and voltage drop for copper and aluminium cables. Compliant with IS 7098 and IEC standards.",
+    h1: "Interactive Cable Sizing & Voltage Drop Calculator",
+    intro: "Engineer your electrical runs with precision using Volamp's interactive cable sizing tool. Calculate required conductor cross-section (sqmm), current carrying capacity, and percentage voltage drop for 1-phase and 3-phase circuits across copper and aluminium conductors under standard ground and ambient temperature conditions according to IS 7098 derating factors."
+  },
+  "collaborate": {
+    title: "Partner & Collaborate With Volamp Elektrikals",
+    description: "Partner with Volamp Elektrikals as an electrical contractor, institutional buyer, or vendor. Access volume pricing and priority project dispatch.",
+    h1: "Contractor Partnerships & Institutional Supply Desk",
+    intro: "Volamp Elektrikals partners with electrical contractors, project OEMs, panel builders, and corporate purchasing teams across India. Benefit from dedicated account managers, transparent wholesale pricing based on LME commodity indexing, structured credit terms for approved projects, and priority dispatch from our Aslali logistics terminal."
+  },
+  "careers": {
+    title: "Careers at Volamp Elektrikals | Join Our Team",
+    description: "Explore career opportunities in electrical engineering, B2B sales, procurement, and logistics at Volamp Elektrikals in Ahmedabad, Gujarat.",
+    h1: "Careers at Volamp Elektrikals Private Limited",
+    intro: "Join a dynamic, fast-growing engineering distribution company that bridges traditional industrial excellence with modern digital supply chain technology. We are hiring electrical estimation engineers, B2B key account managers, logistics supervisors, and technical procurement specialists at our Ahmedabad facilities."
+  },
+  "enquire": {
+    title: "Request Quotation & Electrical RFQ Desk | Volamp",
+    description: "Submit your project Bill of Materials (BOM) for competitive wholesale pricing on power cables, switchgear, and earthing supplies. 24h response.",
+    h1: "Project Sourcing & Electrical BOM RFQ Desk",
+    intro: "Submit your project requirements, single-line diagrams (SLD), or Bill of Quantities (BOQ) directly to Volamp Elektrikals' engineering estimation desk. Our team evaluates conductor specifications, derating criteria, and manufacturer delivery schedules to provide guaranteed competitive wholesale pricing within 24 hours."
+  },
+  "in-the-news": {
+    title: "News & Media Coverage | Volamp Elektrikals",
+    description: "Latest industry news, market circulars, LME copper and aluminium commodity price updates, and company announcements from Volamp Elektrikals.",
+    h1: "Company Announcements & Electrical Industry News",
+    intro: "Stay informed with the latest updates from Volamp Elektrikals and the Indian electrical power infrastructure sector. Read our monthly analysis of London Metal Exchange (LME) copper and aluminium price movements, domestic tariff revisions, renewable energy tenders, and corporate milestones."
+  },
+  "blog": {
+    title: "Electrical Engineering Insights & Guides | Volamp",
+    description: "Technical guides on cable sizing, IS 7098 standards, solar DC specifications, and LME copper trends by Volamp Elektrikals engineers.",
+    h1: "Electrical Engineering Insights & Cable Selection Guides",
+    intro: "Authoritative technical articles and practical engineering selection guides written by Volamp Elektrikals electrical engineers. Covering LT/HT power cable selection, copper versus aluminium economic trade-offs, solar DC cable sizing per IEC 62930, and switchgear protection coordination."
+  },
+  "shipping-policy": {
+    title: "Shipping & Project Logistics Policy | Volamp",
+    description: "Review shipping, transit insurance, and delivery schedules for Volamp Elektrikals. Same-day Gujarat GIDC dispatch; pan-India freight.",
+    h1: "Shipping, Freight & Project Delivery Policy",
+    intro: "Volamp Elektrikals operates dedicated logistics operations to guarantee safe, on-schedule delivery of heavy industrial cable drums and switchgear consignments. Consignments are packed to export and CPWD transport standards with complete transit insurance coverage across 28 Indian states."
+  },
+  "terms-and-conditions": {
+    title: "Terms and Conditions of Supply | Volamp",
+    description: "Terms of wholesale supply, quotation validity, inspection protocols, and payment policies for Volamp Elektrikals Private Limited.",
+    h1: "Terms and Conditions of Commercial Supply",
+    intro: "Commercial terms governing wholesale quotations, purchase orders, delivery terms, inspection protocols, and warranty claims between Volamp Elektrikals Private Limited and purchasers."
+  },
+  "privacy-policy": {
+    title: "Privacy Policy | Volamp Elektrikals Private Limited",
+    description: "Privacy policy and data protection practices for Volamp Elektrikals Private Limited website, customer portal, and RFQ submissions.",
+    h1: "Privacy & Data Protection Policy",
+    intro: "Volamp Elektrikals Private Limited is committed to protecting the privacy, confidentiality, and security of all commercial, technical, and personal information shared across our web platform."
+  },
+  "complaints-cases": {
+    title: "Customer Redressal & Escalation Desk | Volamp",
+    description: "Official customer grievance and dispute resolution portal for Volamp Elektrikals. Track resolution status and file shortage or defect reports.",
+    h1: "Customer Grievance Redressal & Escalation Cell",
+    intro: "Volamp Elektrikals maintains an ISO-aligned grievance resolution mechanism to address any shipment transit damage, quantity discrepancies, test certificate inquiries, or specification escalations with a guaranteed 48-hour investigation timeline."
+  },
+  "export": {
+    title: "Global Cable Export & International Supply Desk | Volamp",
+    description: "Direct export of IEC & BS compliant power cables, solar DC cables, and switchgear from Mundra & Kandla ports. CIF & FOB terms for Middle East, Africa & Asia.",
+    h1: "Global Cable Export & International Electrical Supply Desk",
+    intro: "Volamp Elektrikals Private Limited is an international electrical procurement and export partner headquartered in Ahmedabad, Gujarat, India. Leveraging deep logistics proximity to India's premier western deep-water container ports (Mundra and Kandla, <350 km from our central Aslali stockyard), we supply certified HT/LT power cables, solar photovoltaic cables, switchgear, and earthing infrastructure to international EPC contractors, utility developers, and industrial projects across the Middle East, Africa, and Southeast Asia. All export drums comply with ISPM-15 phytosanitary heat-treatment standards, accompanied by SGS/Bureau Veritas pre-shipment inspection certificates and Letters of Credit (LC) facilitation."
+  },
+  "dealers/polycab-ahmedabad": {
+    title: "Polycab Dealer & Distributor Ahmedabad Gujarat | Volamp",
+    description: "Authorized Polycab cables & wires distributor in Ahmedabad. LT/HT XLPE armoured power cables, solar DC cables, flexible wires with CPRI test reports.",
+    h1: "Authorized Polycab Cable Dealer & Distributor in Ahmedabad, Gujarat",
+    intro: "Volamp Elektrikals Private Limited is an authorized master distributor and wholesale stockist for Polycab India Ltd. in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, we maintain extensive ready inventory of Polycab 1.1kV LT XLPE aluminium and copper armoured cables (IS 7098 Part 1), 11kV to 33kV HT XLPE power cables (IS 7098 Part 2), 1500V DC solar PV cables (EN 50618), Green Wire FRLS building wires, and multi-core flexible control cables. Every reel and coil is guaranteed 100% original, backed by original manufacturer Material Test Certificates (MTC) and CPRI type-test reports."
+  },
+  "dealers/finolex-cables-ahmedabad": {
+    title: "Finolex Cables Dealer & Wholesale Stockist Ahmedabad | Volamp",
+    description: "Authorized Finolex cables distributor in Ahmedabad, Gujarat. Flame retardant industrial flexible wires, 3-core flat submersible cables, and power cables.",
+    h1: "Finolex Cables Dealer & Wholesale Stockist in Ahmedabad, Gujarat",
+    intro: "Volamp Elektrikals Private Limited is a trusted authorized wholesale dealer and stockist for Finolex Cables Ltd. in Ahmedabad and across Gujarat. Renowned for 99.97% pure electrolytic grade copper conductors and proprietary in-house PVC compounding, Finolex wires deliver unmatched electrical conductivity, energy efficiency, and thermal longevity. We supply commercial contractors and industrial builders with Finolex Flame Guard FRLS wires, 3-core flat submersible cables, and multi-conductor industrial flexible cables."
+  },
+  "dealers/kei-cables-gujarat": {
+    title: "KEI Cables Distributor & Industrial Stockist Gujarat | Volamp",
+    description: "Authorized KEI Industries distributor in Ahmedabad & Gujarat. Heavy-duty HT/EHV power cables, rubber trailing cables, instrumentation cables, and solar wires.",
+    h1: "KEI Cables Industrial Distributor & Stockist in Gujarat",
+    intro: "Volamp Elektrikals Private Limited is a specialized industrial distributor and project stockist for KEI Industries Ltd. in Ahmedabad and throughout Gujarat. Catering to heavy engineering, steel plants, chemical manufacturing, infrastructure EPCs, and utility distribution, we supply KEI's engineered cable solutions including Extra High Voltage (EHV) cables up to 220kV, rubber EPR/CSP trailing cables for mining and cranes, and fire-survival FS cables."
+  },
+  "dealers/schneider-electric-ahmedabad": {
+    title: "Schneider Electric Switchgear Distributor Ahmedabad | Volamp",
+    description: "Authorized Schneider Electric distributor in Ahmedabad. Acti9 MCBs, EasyPact CVS/EZC MCCBs, TeSys contactors, and industrial power distribution boards.",
+    h1: "Schneider Electric Switchgear Distributor in Ahmedabad, Gujarat",
+    intro: "Volamp Elektrikals Private Limited is an authorized B2B distributor of Schneider Electric low-voltage switchgear and industrial automation components in Ahmedabad, Gujarat. We supply project contractors, OEM panel builders, and facility maintenance teams with authentic Schneider protection switchgear including Acti9 miniature circuit breakers (MCBs), EasyPact CVS and EZC molded case circuit breakers (MCCBs), TeSys D and TeSys F contactors, and motor protection circuit breakers (MPCBs)."
+  },
+  "locations/industrial-gidc-hubs": {
+    title: "Industrial Electrical Supply across Gujarat GIDC Hubs | Volamp",
+    description: "Same-day 24h electrical cable & switchgear delivery to Sanand, Vatva, Naroda, Changodar, Dahej, Ankleshwar GIDC estates from Aslali logistics terminal.",
+    h1: "Express Industrial Electrical Supply across Gujarat GIDC Corridors",
+    intro: "Volamp Elektrikals Private Limited operates a rapid-dispatch industrial supply network servicing major Gujarat Industrial Development Corporation (GIDC) estates. Centered at our modern logistics hub at the junction of NH-48 and SP Ring Road in Aslali, Ahmedabad, our delivery fleet provides guaranteed same-day to 24-hour turnaround for urgent maintenance, emergency breakdowns, and scheduled project installations across Sanand, Vatva, Naroda, Changodar, Dahej, Ankleshwar, and Jhagadia industrial belts."
+  },
+  "customer-portal": {
+    title: "Customer Account Portal | Volamp Elektrikals",
+    description: "Access real-time quotation history, order tracking, dispatch LR notes, and GST invoices on the Volamp Elektrikals customer portal.",
+    h1: "Volamp Customer Account & Order Portal",
+    intro: "Manage your commercial electrical procurement account, view live dispatch statuses with transporter LR details, download manufacturer test certificates (MTC), and access approved GST invoices."
+  }
+};
+var KNOWN_STATIC_PATHS = new Set(Object.keys(STATIC_ROUTES));
+var OTHER_VALID_PATHS = /* @__PURE__ */ new Set([
+  "portal",
+  "employee-portal",
+  "employee-registration",
+  "employee/register",
+  "employee-register",
+  "ceo-authorization",
+  "ceo/authorize",
+  "ceo-approval",
+  "cart",
+  "checkout",
+  "login",
+  "register",
+  "track",
+  "pay-invoice"
+]);
+var CATEGORY_DATA = {
+  "wire-cables": {
+    name: "Wires & Cables (LT / HT Armoured & Flexible)",
+    desc: "Complete range of IS:7098 and IS:1554 certified LT and HT XLPE armoured power cables, flexible copper building wires (IS:694), control cables, submersible flat cables, and fire-survival cables."
+  },
+  "switch-gears": {
+    name: "Switchgear & Power Protection",
+    desc: "Low-voltage and medium-voltage switchgear including Air Circuit Breakers (ACB), Molded Case Circuit Breakers (MCCB), Miniature Circuit Breakers (MCB), Residual Current Breakers (RCCB), and contactors."
+  },
+  "switchgear": {
+    name: "Switchgear & Power Protection",
+    desc: "Low-voltage and medium-voltage switchgear including Air Circuit Breakers (ACB), Molded Case Circuit Breakers (MCCB), Miniature Circuit Breakers (MCB), Residual Current Breakers (RCCB), and contactors."
+  },
+  "solar": {
+    name: "Solar PV Cables & Renewable Balance of System",
+    desc: "T\xDCV and EN 50618 / IEC 62930 certified 1500V DC solar photovoltaic cables, MC4 connectors, solar array junction boxes, and UV-resistant earthing conductors."
+  },
+  "lugs": {
+    name: "Cable Lugs & Crimping Terminals",
+    desc: "Heavy-duty Dowells electrolytic tinned copper and aluminium crimping lugs, bi-metallic lugs, pin type terminals, and ring type terminal ends compliant with IS 8337."
+  },
+  "glands": {
+    name: "Cable Glands & Industrial Terminations",
+    desc: "High-integrity brass single compression and double compression weatherproof cable glands, flameproof (FLP) cable glands, and heat-shrink termination kits up to 33kV."
+  },
+  "conduit": {
+    name: "Conduit Pipes & Cable Containment",
+    desc: "Heavy-duty rigid PVC conduit pipes, GI flexible conduits, perforated cable trays, and containment accessories for industrial wiring protection."
+  },
+  "earthing-material": {
+    name: "Earthing Material & Lightning Protection",
+    desc: "CPRI and UL certified copper bonded earthing rods, pure electrolytic copper plates, chemical backfill earthing compounds (BFC), and GI earthing flats."
+  },
+  "wiring-device": {
+    name: "Wiring Devices & Industrial Enclosures",
+    desc: "Industrial plug sockets, junction boxes, weatherproof isolators, distribution boxes, and heavy-duty terminal blocks."
+  },
+  "substation-transmission": {
+    name: "Substation & Transmission Line Equipment",
+    desc: "Medium and high-voltage transmission fittings, post insulators, surge arresters, busbar accessories, and disconnectors up to 66kV."
+  },
+  "conduits-cable-management": {
+    name: "Cable Management & Raceways",
+    desc: "Ladder and perforated cable trays, cable ties, cleats, and flexible conduits for structured cable laying in industrial plants."
+  },
+  "earthing-lightning": {
+    name: "Earthing & Lightning Protection Systems",
+    desc: "Maintenance-free chemical earthing electrodes, copper bonded rods, test links, and lightning arresters for industrial and renewable installations."
+  },
+  "industrial-automation": {
+    name: "Industrial Automation & Motor Controls",
+    desc: "VFD drives, soft starters, PLC interface modules, auxiliary contactors, and motor protection circuit breakers (MPCB)."
+  },
+  "lighting-luminaires": {
+    name: "Industrial Lighting & Luminaires",
+    desc: "High-bay LED industrial lights, floodlights, cleanroom luminaires, and flameproof well glass fixtures for plant illumination."
+  }
+};
+var BLOG_POSTS = {
+  "copper-vs-aluminium-armoured-cable-sizing-guide": {
+    title: "Copper vs Aluminium Armoured Cable Sizing Guide | Volamp",
+    desc: "Technical comparison of copper vs aluminium conductors: ampacity, voltage drop, derating, and cost trade-offs under IS 7098 standards."
+  },
+  "solar-dc-cable-specifications-iec-62930": {
+    title: "Solar DC Cable Specifications: EN 50618 & IEC 62930 | Volamp",
+    desc: "Engineering guide to 1500V solar PV cables: cross-linked insulation, halogen-free flame retardancy, and UV weather resistance criteria."
+  },
+  "lme-copper-aluminium-market-analysis-q4-2026": {
+    title: "LME Copper & Aluminium Market Analysis Q4 2026 | Volamp",
+    desc: "In-depth market report on London Metal Exchange commodity trends, domestic Indian cable price circulars, and purchasing strategies."
+  },
+  "is-7098-vs-is-1554-cable-difference-guide": {
+    title: "IS 7098 vs IS 1554: XLPE vs PVC Cable Differences | Volamp",
+    desc: "Comprehensive engineering breakdown between IS 7098 XLPE insulated cables and IS 1554 PVC cables: temperature limits and short-circuit ratings."
+  },
+  "cable-gland-and-lug-size-selection-chart": {
+    title: "Cable Gland & Lug Size Selection Chart | Volamp",
+    desc: "Quick reference engineering chart matching armoured cable sizes to Dowells copper lugs and brass double compression cable glands."
+  }
+};
+function escapeXml2(str) {
+  return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+var _indexTemplateCache = null;
+function loadBaseTemplate() {
+  if (_indexTemplateCache) return _indexTemplateCache;
+  const isDev = process.env.NODE_ENV !== "production";
+  const candidates = isDev ? [
+    path5.resolve(process.cwd(), "client/index.html"),
+    path5.join(__dirname2, "../../client/index.html"),
+    path5.join(__dirname2, "../client/index.html"),
+    path5.resolve(process.cwd(), "dist/public/index.html")
+  ] : [
+    path5.resolve(process.cwd(), "dist/public/index.html"),
+    path5.resolve(process.cwd(), "client/index.html"),
+    path5.join(__dirname2, "../../dist/public/index.html"),
+    path5.join(__dirname2, "../dist/public/index.html"),
+    path5.join(__dirname2, "../../client/index.html"),
+    path5.join(__dirname2, "../client/index.html"),
+    "/var/task/dist/public/index.html",
+    "/var/task/client/index.html"
+  ];
+  for (const c of candidates) {
+    if (fs5.existsSync(c)) {
+      try {
+        _indexTemplateCache = fs5.readFileSync(c, "utf8");
+        return _indexTemplateCache;
+      } catch {
+      }
+    }
+  }
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Industrial Cable &amp; Electrical Distributor | Volamp</title>
+    <meta name="description" content="Industrial cables &amp; electrical switchgear wholesale distributor in Ahmedabad, Gujarat." />
+    <link rel="canonical" href="https://volampelektrikals.com/" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>`;
+}
+function renderPageHtml({
+  title,
+  description,
+  canonical,
+  noIndex = false,
+  bodyHtml,
+  schemaJson
+}) {
+  let template = loadBaseTemplate();
+  const escapedTitle = escapeXml2(title);
+  if (template.includes("<title>")) {
+    template = template.replace(/<title>.*?<\/title>/s, `<title>${escapedTitle}</title>`);
+  } else {
+    template = template.replace("<head>", `<head>
+    <title>${escapedTitle}</title>`);
+  }
+  const escapedDesc = escapeXml2(description);
+  if (template.includes('name="description"')) {
+    template = template.replace(
+      /<meta\s+name="description"\s+content=".*?"\s*\/?>/i,
+      `<meta name="description" content="${escapedDesc}" />`
+    );
+  } else {
+    template = template.replace(
+      "</head>",
+      `    <meta name="description" content="${escapedDesc}" />
+  </head>`
+    );
+  }
+  if (template.includes('rel="canonical"')) {
+    template = template.replace(
+      /<link\s+rel="canonical"\s+href=".*?"\s*\/?>/i,
+      `<link rel="canonical" href="${canonical}" />`
+    );
+  } else {
+    template = template.replace(
+      "</head>",
+      `    <link rel="canonical" href="${canonical}" />
+  </head>`
+    );
+  }
+  if (noIndex) {
+    if (template.includes('name="robots"')) {
+      template = template.replace(
+        /<meta\s+name="robots"\s+content=".*?"\s*\/?>/i,
+        '<meta name="robots" content="noindex, nofollow" />'
+      );
+    } else {
+      template = template.replace(
+        "</head>",
+        '    <meta name="robots" content="noindex, nofollow" />\n  </head>'
+      );
+    }
+  }
+  template = template.replace(
+    /<meta\s+property="og:title"\s+content=".*?"\s*\/?>/i,
+    `<meta property="og:title" content="${escapedTitle}" />`
+  );
+  template = template.replace(
+    /<meta\s+property="og:description"\s+content=".*?"\s*\/?>/i,
+    `<meta property="og:description" content="${escapedDesc}" />`
+  );
+  template = template.replace(
+    /<meta\s+property="og:url"\s+content=".*?"\s*\/?>/i,
+    `<meta property="og:url" content="${canonical}" />`
+  );
+  template = template.replace(
+    /<meta\s+name="twitter:title"\s+content=".*?"\s*\/?>/i,
+    `<meta name="twitter:title" content="${escapedTitle}" />`
+  );
+  template = template.replace(
+    /<meta\s+name="twitter:description"\s+content=".*?"\s*\/?>/i,
+    `<meta name="twitter:description" content="${escapedDesc}" />`
+  );
+  if (schemaJson) {
+    template = template.replace(
+      "</head>",
+      `    <script type="application/ld+json">${schemaJson}</script>
+  </head>`
+    );
+  }
+  template = template.replace(
+    /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/,
+    `<div id="root">${bodyHtml}</div>`
+  );
+  return template;
+}
+function seoPrerenderMiddleware(req, res, next) {
+  if (req.method !== "GET" && req.method !== "HEAD") {
+    return next();
+  }
+  const rawPath = req.path || "/";
+  if (rawPath.startsWith("/api/") || rawPath.startsWith("/trpc/") || rawPath.startsWith("/assets/") || rawPath.startsWith("/videos/") || rawPath.startsWith("/storage-proxy/") || rawPath === "/sitemap.xml" || rawPath === "/robots.txt" || rawPath === "/google-merchant-feed.xml" || rawPath === "/llms.txt" || rawPath === "/llms-full.txt" || /\.(js|css|json|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|pdf|map|mp4|webm|mov|m4v|ogg)$/i.test(rawPath)) {
+    return next();
+  }
+  const cleanPath = rawPath.replace(/^\/+|\/+$/g, "");
+  if (cleanPath.startsWith("product/")) {
+    const rawId = cleanPath.replace(/^product\//, "").trim();
+    const product = getProductByProductId(rawId);
+    if (!product) {
+      res.status(404);
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      const html2 = renderPageHtml({
+        title: "Product Not Found (404) | Volamp",
+        description: "The requested electrical product could not be found. Browse over 3,385 active power cables, switchgear, and earthing supplies in our catalog.",
+        canonical: `${BASE_URL3}/404`,
+        noIndex: true,
+        bodyHtml: `
+          <div style="font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:80px auto;padding:32px;text-align:center;">
+            <p style="color:#c56718;font-weight:bold;font-size:14px;letter-spacing:1px;text-transform:uppercase;">Error 404</p>
+            <h1 style="font-size:32px;font-weight:800;color:#0f172a;margin:12px 0;">Product Not Found</h1>
+            <p style="color:#64748b;font-size:16px;line-height:1.6;margin-bottom:28px;">
+              The product code <code>${escapeXml2(rawId)}</code> does not exist in our catalog or may have been retired.
+              We stock over 3,385 genuine certified electrical products from Polycab, Finolex, KEI, Schneider, and L&T.
+            </p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+              <a href="/products" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Browse 3,385+ Products</a>
+              <a href="/enquire" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Contact Engineering Desk</a>
+              <a href="/" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Home</a>
+            </div>
+          </div>
+        `
+      });
+      return res.send(html2);
+    }
+    const brandPrefix = product.brand && !product.name.toLowerCase().includes(product.brand.toLowerCase()) ? `${product.brand} ` : "";
+    const sizeSuffix = product.size && !product.name.toLowerCase().includes(product.size.toLowerCase()) ? ` (${product.size})` : "";
+    const fullName = `${brandPrefix}${product.name}${sizeSuffix}`.trim();
+    const rawPrice = product.numericPrice || (typeof product.price === "string" ? parseFloat(product.price.replace(/[^0-9.]/g, "")) : 0);
+    const hasPrice = rawPrice > 0;
+    const priceFormatted = hasPrice ? rawPrice.toLocaleString("en-IN", { style: "currency", currency: "INR" }) : "Price on Request / RFQ";
+    const productUrl = `${BASE_URL3}/product/${encodeURIComponent(product.productId)}`;
+    const productSchema = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": fullName,
+      "image": product.imageUrl ? product.imageUrl.startsWith("http") ? product.imageUrl : `${BASE_URL3}${product.imageUrl}` : `${BASE_URL3}/products/default.jpg`,
+      "description": product.description || `${fullName} industrial supply from Volamp Elektrikals.`,
+      "sku": product.sku || product.productId,
+      "mpn": product.productId,
+      "brand": {
+        "@type": "Brand",
+        "name": product.brand || "Polycab"
+      }
+    };
+    if (hasPrice) {
+      productSchema.offers = {
+        "@type": "Offer",
+        "url": productUrl,
+        "priceCurrency": "INR",
+        "price": rawPrice.toFixed(2),
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "seller": {
+          "@type": "Organization",
+          "name": "VOLAMP ELEKTRIKALS PVT. LTD."
+        }
+      };
+    }
+    const schema = JSON.stringify(productSchema);
+    res.status(200);
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    const html = renderPageHtml({
+      title: `${fullName} | Volamp`,
+      description: `Buy ${fullName} (SKU: ${product.sku || product.productId}). Genuine ${product.brand || "Polycab"} electrical supply with MTC test certificate from Volamp.`,
+      canonical: productUrl,
+      schemaJson: schema,
+      bodyHtml: `
+        <article style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
+          <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
+            <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
+            <a href="/products" style="color:#64748b;text-decoration:none;">Products</a> &gt;
+            <a href="/category/${encodeURIComponent((product.category || "wire-cables").toLowerCase().replace(/\s+/g, "-"))}" style="color:#64748b;text-decoration:none;">${escapeXml2(product.category || "Electrical")}</a> &gt;
+            <span style="color:#0f172a;font-weight:600;">${escapeXml2(fullName)}</span>
+          </nav>
+          <header style="border-bottom:1px solid #e2e8f0;padding-bottom:24px;margin-bottom:28px;">
+            <div style="display:inline-block;padding:4px 10px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;border-radius:6px;margin-bottom:12px;">
+              ${escapeXml2(product.brand || "Polycab")} \u2022 Genuine Certified
+            </div>
+            <h1 style="font-size:28px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 12px 0;">${escapeXml2(fullName)}</h1>
+            <p style="font-size:14px;color:#64748b;margin:0;">
+              Product ID: <strong style="font-family:monospace;color:#0f172a;">${escapeXml2(product.productId)}</strong> |
+              SKU: <strong style="font-family:monospace;color:#0f172a;">${escapeXml2(product.sku || product.productId)}</strong> |
+              Category: <a href="/category/${encodeURIComponent((product.category || "wire-cables").toLowerCase().replace(/\s+/g, "-"))}" style="color:#c56718;font-weight:600;text-decoration:none;">${escapeXml2(product.category || "Wires & Cables")}</a>
+            </p>
+          </header>
+          <section style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:32px;margin-bottom:40px;">
+            <div>
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px;">
+                <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 6px 0;">B2B Wholesale Price (excl. GST)</p>
+                <div style="font-size:32px;font-weight:900;color:#0f172a;">${priceFormatted}</div>
+                <p style="font-size:12px;color:#16a34a;font-weight:700;margin:8px 0 0 0;">\u2713 In Stock \u2014 Same-day to 24h Gujarat GIDC; 48 to 72h Pan-India Dispatch</p>
+              </div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                <a href="/enquire" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;display:inline-block;">Request Project Quotation</a>
+                <a href="/calculator" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;display:inline-block;">Calculate Voltage Drop</a>
+              </div>
+            </div>
+            <div>
+              <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin:0 0 16px 0;">Technical Specifications & Compliance</h2>
+              <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <tbody>
+                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Manufacturer / Brand</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml2(product.brand || "Polycab")}</td></tr>
+                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Conductor / Size</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml2(product.size || "Standard")}</td></tr>
+                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Quality Verification</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">Manufacturer Test Certificate (MTC) Included</td></tr>
+                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Dispatch Location</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">Aslali Central Warehouse, Ahmedabad</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <section style="background:#f8fafc;padding:24px;border-radius:12px;border:1px solid #e2e8f0;font-size:14px;line-height:1.7;color:#475569;">
+            <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin-top:0;">About This Product & Supply Assurance</h3>
+            <p>
+              ${escapeXml2(product.name)} is supplied directly by Volamp Elektrikals Private Limited, authorized industrial electrical distributor in Ahmedabad, Gujarat.
+              All cables and switchgear are sourced directly from manufacturer production lines with full batch traceability, routine test reports, and compliance with Indian (BIS) and International Electrotechnical Commission (IEC) standards.
+            </p>
+          </section>
+        </article>
+      `
+    });
+    return res.send(html);
+  }
+  if (cleanPath.startsWith("category/")) {
+    const slug = cleanPath.replace(/^category\//, "").trim().toLowerCase();
+    const catInfo = CATEGORY_DATA[slug];
+    if (!catInfo) {
+      res.status(404);
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      const html2 = renderPageHtml({
+        title: "Category Not Found (404) | Volamp",
+        description: "The requested electrical category does not exist. Browse our verified categories across power cables, switchgear, and solar PV.",
+        canonical: `${BASE_URL3}/404`,
+        noIndex: true,
+        bodyHtml: `
+          <div style="font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:80px auto;padding:32px;text-align:center;">
+            <p style="color:#c56718;font-weight:bold;font-size:14px;letter-spacing:1px;text-transform:uppercase;">Error 404</p>
+            <h1 style="font-size:32px;font-weight:800;color:#0f172a;margin:12px 0;">Category Not Found</h1>
+            <p style="color:#64748b;font-size:16px;line-height:1.6;margin-bottom:28px;">
+              The category <code>/category/${escapeXml2(slug)}</code> does not exist in our catalog.
+            </p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+              <a href="/products" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Browse All Products</a>
+              <a href="/" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Home</a>
+            </div>
+          </div>
+        `
+      });
+      return res.send(html2);
+    }
+    const allProducts = loadProductsFromDisk();
+    const categoryProducts = allProducts.filter((p) => {
+      const c = (p.category || "").toLowerCase();
+      if (slug === "wire-cables" || slug.includes("cable") || slug.includes("wire")) return c.includes("cable") || c.includes("wire");
+      if (slug === "switch-gears" || slug.includes("switch")) return c.includes("switch");
+      if (slug === "solar") return c.includes("solar");
+      if (slug === "lugs") return c.includes("lug");
+      if (slug === "glands") return c.includes("gland");
+      if (slug === "conduit") return c.includes("pipe") || c.includes("conduit");
+      if (slug === "earthing-material") return c.includes("earth");
+      if (slug === "wiring-device") return c.includes("device") || c.includes("wiring");
+      return false;
+    }).slice(0, 24);
+    const productLinksHtml = categoryProducts.map(
+      (p) => `
+        <li style="padding:12px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
+          <a href="/product/${encodeURIComponent(p.productId)}" style="color:#0f172a;font-weight:600;text-decoration:none;font-size:14px;">
+            ${escapeXml2(p.name)}
+          </a>
+          <span style="font-family:monospace;font-size:12px;color:#64748b;">${escapeXml2(p.productId)}</span>
+        </li>
+      `
+    ).join("");
+    res.status(200);
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    const html = renderPageHtml({
+      title: `${catInfo.name} | Volamp`,
+      description: `Authorized wholesale distributor of ${catInfo.name} in Ahmedabad, Gujarat. Genuine Polycab, Finolex, KEI, Schneider supplies with MTC test certificates.`,
+      canonical: `${BASE_URL3}/category/${slug}`,
+      bodyHtml: `
+        <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
+          <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
+            <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
+            <a href="/products" style="color:#64748b;text-decoration:none;">Products</a> &gt;
+            <span style="color:#0f172a;font-weight:600;">${escapeXml2(catInfo.name)}</span>
+          </nav>
+          <header style="margin-bottom:32px;">
+            <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.2;margin:0 0 16px 0;">${escapeXml2(catInfo.name)}</h1>
+            <p style="font-size:15px;line-height:1.7;color:#475569;max-width:900px;">
+              ${escapeXml2(catInfo.desc)}
+              Volamp Elektrikals Private Limited maintains extensive wholesale inventory across all standard specifications in our Aslali logistics terminal.
+              Every consignment is supplied with manufacturer Material Test Certificates (MTC) and undergoes strict quality verification to ensure flawless performance in continuous industrial and utility service.
+            </p>
+          </header>
+          <section>
+            <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0 0 16px 0;">Available Products in this Category</h2>
+            <ul style="list-style:none;padding:0;margin:0;">
+              ${productLinksHtml}
+            </ul>
+          </section>
+        </main>
+      `
+    });
+    return res.send(html);
+  }
+  if (cleanPath.startsWith("blog/")) {
+    const slug = cleanPath.replace(/^blog\//, "").trim().toLowerCase();
+    const blog = BLOG_POSTS[slug];
+    if (!blog) {
+      res.status(404);
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      const html2 = renderPageHtml({
+        title: "Article Not Found (404) | Volamp",
+        description: "The requested engineering article does not exist.",
+        canonical: `${BASE_URL3}/404`,
+        noIndex: true,
+        bodyHtml: `<div style="font-family:system-ui;max-width:800px;margin:80px auto;text-align:center;"><h1>Article Not Found (404)</h1><p><a href="/blog">Browse All Engineering Articles</a></p></div>`
+      });
+      return res.send(html2);
+    }
+    res.status(200);
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    const html = renderPageHtml({
+      title: blog.title,
+      description: blog.desc,
+      canonical: `${BASE_URL3}/blog/${slug}`,
+      bodyHtml: `
+        <article style="font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:40px auto;padding:24px;color:#1e293b;">
+          <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
+            <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
+            <a href="/blog" style="color:#64748b;text-decoration:none;">Blog</a> &gt;
+            <span style="color:#0f172a;font-weight:600;">${escapeXml2(blog.title)}</span>
+          </nav>
+          <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 16px 0;">${escapeXml2(blog.title)}</h1>
+          <p style="font-size:16px;line-height:1.7;color:#475569;">${escapeXml2(blog.desc)}</p>
+        </article>
+      `
+    });
+    return res.send(html);
+  }
+  if (KNOWN_STATIC_PATHS.has(cleanPath)) {
+    const meta = STATIC_ROUTES[cleanPath];
+    const canonical = cleanPath === "" ? `${BASE_URL3}/` : `${BASE_URL3}/${cleanPath}`;
+    let homeExtraHtml = "";
+    if (cleanPath === "") {
+      homeExtraHtml = `
+        <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:16px;">Core Electrical Categories</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
+            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/wire-cables" style="color:#c56718;font-weight:bold;text-decoration:none;">Wires &amp; Cables</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">LT / HT XLPE armoured, flexible FRLS, submersible, control cables.</p>
+            </div>
+            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/switch-gears" style="color:#c56718;font-weight:bold;text-decoration:none;">Switchgear &amp; Protection</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">Schneider and L&T ACBs, MCCBs, MCBs, contactors, starters.</p>
+            </div>
+            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/solar" style="color:#c56718;font-weight:bold;text-decoration:none;">Solar PV Cables</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">1500V DC UV-resistant cross-linked halogen-free cables per EN 50618.</p>
+            </div>
+            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/earthing-material" style="color:#c56718;font-weight:bold;text-decoration:none;">Earthing &amp; Lightning</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">Copper bonded rods, chemical compound, GI flats, UL/CPRI certified.</p>
+            </div>
+          </div>
+        </section>
+        <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:16px;">Fast Moving B2B Electrical Products</h2>
+          <ul style="list-style:none;padding:0;margin:0;font-size:14px;">
+            <li style="padding:8px 0;"><a href="/product/CAB-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">1.1kV XLPE Aluminium Armoured Cable (3.5C x 185 sqmm)</a> \u2014 SKU: CAB-000001</li>
+            <li style="padding:8px 0;"><a href="/product/SOL-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">Solar DC Cable 1C x 4 sqmm (H1Z2Z2-K / EN 50618)</a> \u2014 SKU: SOL-000001</li>
+            <li style="padding:8px 0;"><a href="/product/SWG-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">10kA C-Curve Miniature Circuit Breaker (MCB) 4-Pole 63A</a> \u2014 SKU: SWG-000001</li>
+          </ul>
+        </section>
+      `;
+    }
+    res.status(200);
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    const html = renderPageHtml({
+      title: meta.title,
+      description: meta.description,
+      canonical,
+      bodyHtml: `
+        <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
+          <header style="margin-bottom:32px;">
+            <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.2;margin:0 0 16px 0;">${escapeXml2(meta.h1)}</h1>
+            <p style="font-size:15px;line-height:1.7;color:#475569;max-width:900px;">
+              ${escapeXml2(meta.intro)}
+            </p>
+          </header>
+          ${homeExtraHtml}
+        </main>
+      `
+    });
+    return res.send(html);
+  }
+  if (OTHER_VALID_PATHS.has(cleanPath) || cleanPath.startsWith("employee-registration") || cleanPath.startsWith("employee/register") || cleanPath.startsWith("employee-register") || cleanPath.startsWith("ceo-authorization") || cleanPath.startsWith("ceo/authorize") || cleanPath.startsWith("ceo-approval")) {
+    res.status(200);
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    let pageTitle = `${cleanPath.toUpperCase()} | Volamp Elektrikals`;
+    let pageDesc = "Secure B2B electrical customer portal and ordering platform for Volamp Elektrikals.";
+    if (cleanPath.startsWith("employee-registration") || cleanPath.startsWith("employee/register") || cleanPath.startsWith("employee-register")) {
+      pageTitle = "Official Employee Registration | Volamp Elektrikals";
+      pageDesc = "Corporate employee onboarding and portal registration portal for VOLTAMP ELEKTRIKALS PVT. LTD.";
+    } else if (cleanPath.startsWith("ceo-authorization") || cleanPath.startsWith("ceo/authorize") || cleanPath.startsWith("ceo-approval")) {
+      pageTitle = "Executive CEO Authorization Desk | Volamp Elektrikals";
+      pageDesc = "Executive email authorization and digital signing desk for VOLTAMP ELEKTRIKALS PVT. LTD.";
+    }
+    const html = renderPageHtml({
+      title: pageTitle,
+      description: pageDesc,
+      canonical: `${BASE_URL3}/${cleanPath}`,
+      bodyHtml: `
+        <div style="font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:60px auto;padding:24px;text-align:center;">
+          <h1 style="font-size:28px;font-weight:800;color:#0f172a;">${escapeXml2(pageTitle)}</h1>
+          <p style="color:#64748b;margin-top:12px;">Loading secure Volamp portal application...</p>
+        </div>
+      `
+    });
+    return res.send(html);
+  }
+  res.status(404);
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  const notFoundHtml = renderPageHtml({
+    title: "Page Not Found (404) | Volamp Elektrikals",
+    description: "The page you are looking for does not exist or has moved. Browse our full electrical catalog or contact our sales desk in Ahmedabad.",
+    canonical: `${BASE_URL3}/404`,
+    noIndex: true,
+    bodyHtml: `
+      <div style="font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:80px auto;padding:32px;text-align:center;">
+        <p style="color:#c56718;font-weight:bold;font-size:14px;letter-spacing:1px;text-transform:uppercase;">Error 404</p>
+        <h1 style="font-size:36px;font-weight:800;color:#0f172a;margin:12px 0;">404 - Page Not Found</h1>
+        <p style="color:#64748b;font-size:16px;line-height:1.6;margin-bottom:28px;">
+          The URL <code>/${escapeXml2(cleanPath)}</code> could not be found on this server.
+          It may have been moved or removed during our platform migration.
+        </p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+          <a href="/" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Return to Homepage</a>
+          <a href="/products" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Browse 3,385+ Products</a>
+          <a href="/enquire" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Contact Sales Desk</a>
+        </div>
+      </div>
+    `
+  });
+  return res.send(notFoundHtml);
 }
 
 // server/vercelEntry.ts
 var app = createExpressApp();
+app.use(seoPrerenderMiddleware);
 var vercelEntry_default = app;
 export {
   vercelEntry_default as default

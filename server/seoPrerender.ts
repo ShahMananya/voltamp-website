@@ -222,6 +222,12 @@ const KNOWN_STATIC_PATHS = new Set(Object.keys(STATIC_ROUTES));
 const OTHER_VALID_PATHS = new Set([
   "portal",
   "employee-portal",
+  "employee-registration",
+  "employee/register",
+  "employee-register",
+  "ceo-authorization",
+  "ceo/authorize",
+  "ceo-approval",
   "cart",
   "checkout",
   "login",
@@ -327,16 +333,24 @@ let _indexTemplateCache: string | null = null;
 function loadBaseTemplate(): string {
   if (_indexTemplateCache) return _indexTemplateCache;
 
-  const candidates = [
-    path.resolve(process.cwd(), "dist/public/index.html"),
-    path.resolve(process.cwd(), "client/index.html"),
-    path.join(__dirname, "../../dist/public/index.html"),
-    path.join(__dirname, "../dist/public/index.html"),
-    path.join(__dirname, "../../client/index.html"),
-    path.join(__dirname, "../client/index.html"),
-    "/var/task/dist/public/index.html",
-    "/var/task/client/index.html",
-  ];
+  const isDev = process.env.NODE_ENV !== "production";
+  const candidates = isDev
+    ? [
+        path.resolve(process.cwd(), "client/index.html"),
+        path.join(__dirname, "../../client/index.html"),
+        path.join(__dirname, "../client/index.html"),
+        path.resolve(process.cwd(), "dist/public/index.html"),
+      ]
+    : [
+        path.resolve(process.cwd(), "dist/public/index.html"),
+        path.resolve(process.cwd(), "client/index.html"),
+        path.join(__dirname, "../../dist/public/index.html"),
+        path.join(__dirname, "../dist/public/index.html"),
+        path.join(__dirname, "../../client/index.html"),
+        path.join(__dirname, "../client/index.html"),
+        "/var/task/dist/public/index.html",
+        "/var/task/client/index.html",
+      ];
 
   for (const c of candidates) {
     if (fs.existsSync(c)) {
@@ -493,13 +507,14 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
     rawPath.startsWith("/api/") ||
     rawPath.startsWith("/trpc/") ||
     rawPath.startsWith("/assets/") ||
+    rawPath.startsWith("/videos/") ||
     rawPath.startsWith("/storage-proxy/") ||
     rawPath === "/sitemap.xml" ||
     rawPath === "/robots.txt" ||
     rawPath === "/google-merchant-feed.xml" ||
     rawPath === "/llms.txt" ||
     rawPath === "/llms-full.txt" ||
-    /\.(js|css|json|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|pdf|map)$/i.test(rawPath)
+    /\.(js|css|json|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|pdf|map|mp4|webm|mov|m4v|ogg)$/i.test(rawPath)
   ) {
     return next();
   }
@@ -851,16 +866,42 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
   // =========================================================================
   // 5. OTHER VALID CLIENT PORTAL / UTILITY ROUTES (portal, cart, etc.)
   // =========================================================================
-  if (OTHER_VALID_PATHS.has(cleanPath)) {
+  if (
+    OTHER_VALID_PATHS.has(cleanPath) ||
+    cleanPath.startsWith("employee-registration") ||
+    cleanPath.startsWith("employee/register") ||
+    cleanPath.startsWith("employee-register") ||
+    cleanPath.startsWith("ceo-authorization") ||
+    cleanPath.startsWith("ceo/authorize") ||
+    cleanPath.startsWith("ceo-approval")
+  ) {
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
+    let pageTitle = `${cleanPath.toUpperCase()} | Volamp Elektrikals`;
+    let pageDesc = "Secure B2B electrical customer portal and ordering platform for Volamp Elektrikals.";
+    if (
+      cleanPath.startsWith("employee-registration") ||
+      cleanPath.startsWith("employee/register") ||
+      cleanPath.startsWith("employee-register")
+    ) {
+      pageTitle = "Official Employee Registration | Volamp Elektrikals";
+      pageDesc = "Corporate employee onboarding and portal registration portal for VOLTAMP ELEKTRIKALS PVT. LTD.";
+    } else if (
+      cleanPath.startsWith("ceo-authorization") ||
+      cleanPath.startsWith("ceo/authorize") ||
+      cleanPath.startsWith("ceo-approval")
+    ) {
+      pageTitle = "Executive CEO Authorization Desk | Volamp Elektrikals";
+      pageDesc = "Executive email authorization and digital signing desk for VOLTAMP ELEKTRIKALS PVT. LTD.";
+    }
+
     const html = renderPageHtml({
-      title: `${cleanPath.toUpperCase()} | Volamp Elektrikals`,
-      description: "Secure B2B electrical customer portal and ordering platform for Volamp Elektrikals.",
+      title: pageTitle,
+      description: pageDesc,
       canonical: `${BASE_URL}/${cleanPath}`,
       bodyHtml: `
         <div style="font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:60px auto;padding:24px;text-align:center;">
-          <h1 style="font-size:28px;font-weight:800;color:#0f172a;">${escapeXml(cleanPath.toUpperCase())}</h1>
+          <h1 style="font-size:28px;font-weight:800;color:#0f172a;">${escapeXml(pageTitle)}</h1>
           <p style="color:#64748b;margin-top:12px;">Loading secure Volamp portal application...</p>
         </div>
       `,

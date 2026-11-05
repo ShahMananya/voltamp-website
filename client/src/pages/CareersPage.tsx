@@ -872,10 +872,10 @@ export default function CareersPage() {
           <div className="pt-2">
             <Button
               onClick={() => handleOpenApply()}
-              className="bg-[#c56718] hover:bg-[#b45309] text-white text-sm font-bold px-6 py-3 rounded-lg shadow-md cursor-pointer transition-all"
+              className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs sm:text-sm font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg shadow-md cursor-pointer transition-all max-w-full text-center whitespace-normal"
             >
               <span>Submit Spontaneous Application / CV</span>
-              <ArrowRight className="size-4 ml-1.5" />
+              <ArrowRight className="size-4 ml-1.5 shrink-0" />
             </Button>
           </div>
         </div>

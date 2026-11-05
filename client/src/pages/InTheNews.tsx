@@ -447,8 +447,8 @@ export default function InTheNews() {
 
       {/* Press Inquiries / Media Contact */}
       <section className="py-12 market-container">
-        <div className="rounded-3xl border border-[#ebd7c7] bg-[#fbf8f5] p-6 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
-          <div className="space-y-1.5 text-center md:text-left">
+        <div className="rounded-3xl border border-[#ebd7c7] bg-[#fbf8f5] p-6 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-xs">
+          <div className="space-y-1.5 text-center lg:text-left">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c56718]">
               <Mail className="size-3.5" />
               <span>MEDIA DESK</span>
@@ -460,7 +460,7 @@ export default function InTheNews() {
               For journalist inquiries, executive commentary, brand assets, or supply chain case studies, connect directly with the Volamp corporate media desk.
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <div className="flex flex-wrap items-center justify-center lg:justify-end gap-3 w-full lg:w-auto">
             <button
               type="button"
               onClick={() => {

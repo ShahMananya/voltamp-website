@@ -33,6 +33,8 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
 type ModalView =
+  | "login"
+  | "register"
   | "type-selection"
   | "employee-login"
   | "employee-register"
@@ -47,6 +49,7 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialAccountType?: "employee" | "customer";
+  initialView?: "login" | "register";
   customerRedirectUrl?: string;
   employeeRedirectUrl?: string;
 }
@@ -55,6 +58,7 @@ export function AuthModal({
   isOpen,
   onClose,
   initialAccountType,
+  initialView = "login",
   customerRedirectUrl = "/",
   employeeRedirectUrl = "/employee-portal",
 }: AuthModalProps) {
@@ -62,11 +66,7 @@ export function AuthModal({
   const utils = trpc.useUtils();
 
   // Navigation / View State
-  const [view, setView] = useState<ModalView>(() => {
-    if (initialAccountType === "employee") return "employee-login";
-    if (initialAccountType === "customer") return "customer-login";
-    return "type-selection";
-  });
+  const [view, setView] = useState<ModalView>(initialView || "login");
 
   // Login Form State
   const [email, setEmail] = useState("");
@@ -76,6 +76,10 @@ export function AuthModal({
   // Register Form State
   const [name, setName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [empDepartment, setEmpDepartment] = useState("Engineering");
+  const [empDesignation, setEmpDesignation] = useState("");
+  const [empId, setEmpId] = useState("");
+  const [empTermsAccepted, setEmpTermsAccepted] = useState(true);
 
   // OTP State
   const [otpCode, setOtpCode] = useState("");
@@ -92,26 +96,11 @@ export function AuthModal({
 
   useEffect(() => {
     if (isOpen) {
-      if (initialAccountType === "employee") setView("employee-login");
-      else if (initialAccountType === "customer") setView("customer-login");
-      else setView("type-selection");
+      setView(initialView || "login");
       setDomainError(null);
       setOtpCode("");
     }
-  }, [isOpen, initialAccountType]);
-
-  // Quick approve mutation for testing & verification
-  const quickApproveMutation = trpc.auth.quickApproveEmployee.useMutation({
-    onSuccess: (data) => {
-      toast.success("Account Approved!", {
-        description: `${data.email} is now approved. You can sign in immediately.`,
-      });
-      setView("employee-login");
-    },
-    onError: (err) => {
-      toast.error("Approval Failed", { description: err.message });
-    },
-  });
+  }, [isOpen, initialView]);
 
   // Mutations
   const loginMutation = trpc.auth.login.useMutation({
@@ -120,43 +109,40 @@ export function AuthModal({
         setMfaPendingToken(data.mfaPendingToken);
         setActiveEmail(data.email ?? email);
         setTargetAccountType(data.accountType);
-        if (data.devOtpHint) {
-          setOtpCode(data.devOtpHint);
-          toast.success(`Verification Code: ${data.devOtpHint}`, {
-            description: "Code has been automatically prefilled for you.",
-          });
-        } else {
-          setOtpCode("");
-          toast.info("MFA Verification Required", {
-            description: `Enter the 6-digit code sent to ${data.email}.`,
-          });
-        }
+        setOtpCode("");
+        toast.info("MFA Verification Required", {
+          description: `Enter the 6-digit verification code sent to ${data.email}.`,
+        });
         setView("mfa-verify");
       } else {
         utils.auth.me.setData(undefined, data.user);
-        toast.success("Welcome back!", {
+        const welcomeTitle =
+          data.effectiveRole === "admin"
+            ? "Executive Management Desk"
+            : data.effectiveRole === "employee"
+            ? "Staff Workspace"
+            : "Welcome back!";
+        toast.success(welcomeTitle, {
           description: `Signed in as ${data.user.name || data.user.email}`,
         });
         onClose();
-        if (data.user.accountType === "employee") {
-          setLocation(employeeRedirectUrl || "/employee-portal");
-        } else {
-          setLocation(customerRedirectUrl || "/");
-        }
+        const destination =
+          data.redirectUrl ||
+          (data.user.accountType === "employee"
+            ? employeeRedirectUrl
+            : customerRedirectUrl);
+        setLocation(destination);
       }
     },
     onError: (err) => {
-      if (err.message.includes("pending administrator approval")) {
-        const targetEmail = email.trim();
-        toast.error("Employee Account Pending Approval", {
-          description: "Click 'Approve Now' to instantly verify your account, or log in with Admin credentials.",
-          action: {
-            label: "Approve Now",
-            onClick: () => {
-              if (targetEmail) quickApproveMutation.mutate({ email: targetEmail });
-            },
-          },
-          duration: 12000,
+      if (
+        err.message.includes("pending administrator approval") ||
+        err.message.includes("awaiting authorization")
+      ) {
+        toast.error("Employee Account Pending CEO Approval", {
+          description:
+            "Your official registration is awaiting executive approval from ceo@volampelektrikals.com. Access will be unlocked once authorized.",
+          duration: 10000,
         });
       } else {
         toast.error("Sign-in Failed", { description: err.message });
@@ -167,15 +153,22 @@ export function AuthModal({
   const mfaMutation = trpc.auth.verifyMfaOtp.useMutation({
     onSuccess: (data) => {
       utils.auth.me.setData(undefined, data.user);
-      toast.success("Verification successful!", {
+      const welcomeTitle =
+        data.effectiveRole === "admin"
+          ? "Executive Management Desk"
+          : data.effectiveRole === "employee"
+          ? "Staff Workspace"
+          : "Verification successful!";
+      toast.success(welcomeTitle, {
         description: `Authenticated as ${data.user.name || data.user.email}`,
       });
       onClose();
-      if (data.user.accountType === "employee") {
-        setLocation(employeeRedirectUrl || "/employee-portal");
-      } else {
-        setLocation(customerRedirectUrl || "/");
-      }
+      const destination =
+        data.redirectUrl ||
+        (data.user.accountType === "employee"
+          ? employeeRedirectUrl
+          : customerRedirectUrl);
+      setLocation(destination);
     },
     onError: (err) => {
       toast.error("Verification Error", { description: err.message });
@@ -183,13 +176,8 @@ export function AuthModal({
   });
 
   const resendMfaMutation = trpc.auth.resendMfaOtp.useMutation({
-    onSuccess: (data) => {
-      if (data.devOtpHint) {
-        setOtpCode(data.devOtpHint);
-        toast.success(`New Verification Code: ${data.devOtpHint}`);
-      } else {
-        toast.info("Code resent", { description: `A new 6-digit verification code has been dispatched to ${activeEmail || email}.` });
-      }
+    onSuccess: () => {
+      toast.info("Code resent", { description: `A new 6-digit verification code has been dispatched to ${activeEmail || email}.` });
     },
     onError: (err) => toast.error(err.message),
   });
@@ -198,17 +186,10 @@ export function AuthModal({
     onSuccess: (data) => {
       setActiveEmail(data.email ?? email);
       setTargetAccountType("employee");
-      if (data.devOtpHint) {
-        setOtpCode(data.devOtpHint);
-        toast.success(`Verification Code: ${data.devOtpHint}`, {
-          description: "Code has been automatically prefilled for testing.",
-        });
-      } else {
-        setOtpCode("");
-        toast.success("Verification code sent", {
-          description: `Sent to official address ${data.email}`,
-        });
-      }
+      setOtpCode("");
+      toast.success("Verification code sent", {
+        description: `Sent to official company address ${data.email}`,
+      });
       setView("email-verify");
     },
     onError: (err) => {
@@ -276,7 +257,7 @@ export function AuthModal({
   const resetPasswordMutation = trpc.auth.resetPassword.useMutation({
     onSuccess: () => {
       toast.success("Password Updated", { description: "You can now log in with your new password." });
-      setView(targetAccountType === "employee" ? "employee-login" : "customer-login");
+      setView("login");
     },
     onError: (err) => toast.error(err.message),
   });
@@ -284,51 +265,79 @@ export function AuthModal({
   if (!isOpen) return null;
 
   // Handlers
-  const handleEmployeeRegisterSubmit = (e: React.FormEvent) => {
+  const isWorkEmail = email.toLowerCase().trim().endsWith("@volampelektrikals.com");
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const normalized = email.toLowerCase().trim();
-    if (!normalized.endsWith("@volampelektrikals.com")) {
-      setDomainError(
-        "Employee registration requires an official VOLAMP email address ending in @volampelektrikals.com."
-      );
-      return;
-    }
-    if (password !== confirmPassword) {
-      toast.error("Password mismatch", { description: "Passwords do not match." });
-      return;
-    }
     setDomainError(null);
-    registerEmployeeMutation.mutate({ name, email: normalized, password });
-  };
+    const normalized = email.toLowerCase().trim();
 
-  const handleCustomerRegisterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
     if (password !== confirmPassword) {
       toast.error("Password mismatch", { description: "Passwords do not match." });
       return;
     }
-    registerCustomerMutation.mutate({ name, email: email.trim(), password });
+
+    if (isWorkEmail) {
+      if (password.length < 8) {
+        toast.error("Password too short", {
+          description: "Employee password must be at least 8 characters.",
+        });
+        return;
+      }
+      if (!empDesignation.trim()) {
+        toast.error("Job Designation Required", {
+          description: "Please specify your official job designation for CEO authorization.",
+        });
+        return;
+      }
+      if (!empTermsAccepted) {
+        toast.error("Terms Acceptance Required", {
+          description: "You must accept company terms and privacy policy to register.",
+        });
+        return;
+      }
+      registerEmployeeMutation.mutate({
+        name: name.trim(),
+        email: normalized,
+        password,
+        department: empDepartment || "Engineering",
+        designation: empDesignation.trim(),
+        employeeId: empId.trim() || undefined,
+        termsAccepted: empTermsAccepted,
+      });
+    } else {
+      if (password.length < 6) {
+        toast.error("Password too short", {
+          description: "Password must be at least 6 characters.",
+        });
+        return;
+      }
+      registerCustomerMutation.mutate({
+        name: name.trim(),
+        email: normalized,
+        password,
+      });
+    }
   };
 
-  const handleEmployeeLoginSubmit = (e: React.FormEvent) => {
+  const handleEmployeeRegisterSubmit = handleRegisterSubmit;
+  const handleCustomerRegisterSubmit = handleRegisterSubmit;
+
+  const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email.trim() || !password) {
+      toast.error("Please enter both email and password.");
+      return;
+    }
     loginMutation.mutate({
       email: email.trim(),
       password,
       rememberMe,
-      expectedAccountType: "employee",
     });
   };
 
-  const handleCustomerLoginSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    loginMutation.mutate({
-      email: email.trim(),
-      password,
-      rememberMe,
-      expectedAccountType: "customer",
-    });
-  };
+  const handleEmployeeLoginSubmit = handleLoginSubmit;
+  const handleCustomerLoginSubmit = handleLoginSubmit;
 
   const handleMfaSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -363,183 +372,41 @@ export function AuthModal({
         </button>
 
         {/* ------------------------------------------------------------------ */}
-        {/* VIEW 1: ACCOUNT TYPE SELECTION                                     */}
+        {/* VIEW: UNIFIED ROLE-BASED LOGIN                                     */}
         {/* ------------------------------------------------------------------ */}
-        {view === "type-selection" && (
-          <div className="flex flex-col items-center text-center">
-            <div className="size-14 rounded-2xl bg-[#1d73b7]/10 dark:bg-[#1d73b7]/20 flex items-center justify-center text-[#1d73b7] mb-4">
-              <UserRound className="size-7" />
-            </div>
-
-            <h2 className="text-2xl font-bold tracking-tight text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
-              Welcome to <span className="text-[#c46b19]">VOLAMP</span>
-            </h2>
-            <p className="text-xs text-[#5a6b78] mt-1 mb-6 max-w-[340px]">
-              Please select your account type to proceed to your dedicated portal.
-            </p>
-
-            <div className="grid grid-cols-1 gap-3.5 w-full">
-              {/* Employee Option */}
-              <div className="flex flex-col items-start p-4 rounded-xl border-2 border-[#d2e0e8] dark:border-[#254259] hover:border-[#1d73b7] dark:hover:border-[#1d73b7] bg-[#f8fafc] dark:bg-[#15344d] transition-all text-left group shadow-xs">
-                <div className="flex items-center justify-between w-full mb-2">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg bg-[#1d73b7]/10 text-[#1d73b7]">
-                      <Briefcase className="size-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-[#102a40] dark:text-white flex items-center gap-1.5">
-                        Employee
-                        <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-[#1d73b7]/10 text-[#1d73b7] dark:bg-[#1d73b7]/30 dark:text-blue-300">
-                          Staff Only
-                        </span>
-                      </h3>
-                      <p className="text-[11px] text-[#6e808b] dark:text-[#b6c8d3]">
-                        For VOLAMP employees (@volampelektrikals.com)
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2 Options for Employee */}
-                <div className="grid grid-cols-2 gap-2 w-full mt-2">
-                  <Button
-                    type="button"
-                    onClick={() => setView("employee-login")}
-                    className="w-full bg-[#1d73b7] hover:bg-[#155a90] text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                  >
-                    <LogIn className="size-3.5" />
-                    <span>Login</span>
-                    <ArrowRight className="size-3 hidden sm:inline" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setDomainError(null);
-                      setView("employee-register");
-                    }}
-                    className="w-full border-[#1d73b7] text-[#1d73b7] hover:bg-[#1d73b7]/10 dark:text-blue-300 dark:border-blue-400 bg-white dark:bg-[#102b42] text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-                  >
-                    <UserPlus className="size-3.5" />
-                    <span>Register</span>
-                  </Button>
-                </div>
-              </div>
-
-              {/* Customer Option */}
-              <div className="flex flex-col items-start p-4 rounded-xl border-2 border-[#d2e0e8] dark:border-[#254259] hover:border-[#d97818] dark:hover:border-[#d97818] bg-[#f8fafc] dark:bg-[#15344d] transition-all text-left group shadow-xs">
-                <div className="flex items-center justify-between w-full mb-2">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2.5 rounded-lg bg-[#d97818]/10 text-[#d97818]">
-                      <Building2 className="size-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-bold text-[#102a40] dark:text-white flex items-center gap-1.5">
-                        Customer
-                        <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-[#d97818]/10 text-[#d97818] dark:bg-[#d97818]/30 dark:text-amber-300">
-                          B2B & Retail
-                        </span>
-                      </h3>
-                      <p className="text-[11px] text-[#6e808b] dark:text-[#b6c8d3]">
-                        For VOLAMP customers & project contractors
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* 2 Options for Customer */}
-                <div className="grid grid-cols-2 gap-2 w-full mt-2">
-                  <Button
-                    type="button"
-                    onClick={() => setView("customer-login")}
-                    className="w-full bg-[#d97818] hover:bg-[#b86412] text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                  >
-                    <LogIn className="size-3.5" />
-                    <span>Login</span>
-                    <ArrowRight className="size-3 hidden sm:inline" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setView("customer-register")}
-                    className="w-full border-[#d97818] text-[#d97818] hover:bg-[#d97818]/10 dark:text-amber-300 dark:border-amber-400 bg-white dark:bg-[#102b42] text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer"
-                  >
-                    <UserPlus className="size-3.5" />
-                    <span>Register</span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ------------------------------------------------------------------ */}
-        {/* VIEW 2: EMPLOYEE LOGIN                                             */}
-        {/* ------------------------------------------------------------------ */}
-        {view === "employee-login" && (
+        {(view === "login" || view === "type-selection" || view === "employee-login" || view === "customer-login") && (
           <div>
-            <button
-              onClick={() => setView("type-selection")}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[#1d73b7] hover:underline mb-4"
-            >
-              <ArrowLeft className="size-3.5" /> Change account type
-            </button>
-
-            <div className="flex items-center gap-2.5 mb-1">
-              <div className="p-1.5 rounded-md bg-[#1d73b7]/10 text-[#1d73b7]">
-                <Briefcase className="size-4" />
+            <div className="flex items-center gap-2.5 mb-1.5">
+              <div className="p-2 rounded-xl bg-[#1d73b7]/10 dark:bg-[#1d73b7]/25 text-[#1d73b7]">
+                <ShieldCheck className="size-5" />
               </div>
-              <span className="text-[10px] font-black tracking-widest text-[#1d73b7] uppercase">
-                OFFICIAL WORKSPACE
-              </span>
+              <div>
+                <span className="text-[10px] font-black tracking-widest text-[#1d73b7] uppercase">
+                  VOLTAMP SECURE PORTAL
+                </span>
+                <h2 className="text-xl font-bold text-[#102a40] dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
+                  Sign In
+                </h2>
+              </div>
             </div>
-            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
-              Employee Login
-            </h2>
-            <p className="text-xs text-[#5a6b78] mt-0.5 mb-3">
-              Sign in with your official VOLAMP credentials.
+            <p className="text-xs text-[#5a6b78] dark:text-[#9bb2c2] mb-5">
+              Enter your email and password to automatically access your dashboard.
             </p>
 
-            {/* Pre-Approved CEO Account Fast Fill */}
-            <div className="p-3 mb-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs">
-              <div className="flex items-center justify-between mb-1">
-                <strong className="flex items-center gap-1 font-bold text-amber-900 dark:text-amber-200 text-[11px]">
-                  <ShieldCheck className="size-3.5 text-amber-600" /> Authorized CEO Account (Website Maintenance)
-                </strong>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmail("ceo@volampelektrikals.com");
-                    setPassword("Volamp@2026");
-                    toast.info("Filled CEO credentials (ceo@volampelektrikals.com / Volamp@2026). Mandatory OTP required.");
-                  }}
-                  className="text-[11px] font-bold text-[#c56718] hover:underline cursor-pointer"
-                >
-                  Auto-Fill
-                </button>
-              </div>
-              <p className="text-[11px] text-slate-600 dark:text-slate-300">
-                Email: <code className="font-mono font-bold text-slate-800 dark:text-slate-200">ceo@volampelektrikals.com</code> &middot; Pass: <code className="font-mono font-bold text-slate-800 dark:text-slate-200">Volamp@2026</code>
-              </p>
-              <p className="text-[10px] text-amber-700/80 dark:text-amber-300/80 mt-1">
-                Mandatory 6-digit verification code (OTP) will be dispatched directly to this email upon login.
-              </p>
-            </div>
-
-            <form onSubmit={handleEmployeeLoginSubmit} className="space-y-4">
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="emp-email" className="text-xs font-semibold">
+                <Label htmlFor="unified-email" className="text-xs font-semibold">
                   Email Address
                 </Label>
                 <div className="relative mt-1">
                   <Mail className="size-4 absolute left-3 top-3 text-gray-400" />
                   <Input
-                    id="emp-email"
+                    id="unified-email"
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@volampelektrikals.com"
+                    placeholder="name@example.com or name@volampelektrikals.com"
                     className="pl-9 text-xs"
                   />
                 </div>
@@ -547,13 +414,12 @@ export function AuthModal({
 
               <div>
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="emp-password" className="text-xs font-semibold">
+                  <Label htmlFor="unified-password" className="text-xs font-semibold">
                     Password
                   </Label>
                   <button
                     type="button"
                     onClick={() => {
-                      setTargetAccountType("employee");
                       setForgotStep("email");
                       setView("forgot-password");
                     }}
@@ -565,7 +431,7 @@ export function AuthModal({
                 <div className="relative mt-1">
                   <Lock className="size-4 absolute left-3 top-3 text-gray-400" />
                   <Input
-                    id="emp-password"
+                    id="unified-password"
                     type="password"
                     required
                     value={password}
@@ -578,11 +444,11 @@ export function AuthModal({
 
               <div className="flex items-center space-x-2 pt-1">
                 <Checkbox
-                  id="emp-remember"
+                  id="unified-remember"
                   checked={rememberMe}
                   onCheckedChange={(v) => setRememberMe(Boolean(v))}
                 />
-                <Label htmlFor="emp-remember" className="text-xs font-normal cursor-pointer">
+                <Label htmlFor="unified-remember" className="text-xs font-normal cursor-pointer">
                   Remember Me
                 </Label>
               </div>
@@ -596,48 +462,68 @@ export function AuthModal({
               </Button>
             </form>
 
-            <div className="mt-6 pt-4 border-t border-[#e2ecf2] text-center">
-              <span className="text-xs text-[#5a6b78]">
-                New Employee?{" "}
-              </span>
+            <div className="mt-6 pt-4 border-t border-[#e2ecf2] dark:border-[#254259] text-center text-xs text-[#5a6b78] dark:text-[#9bb2c2]">
+              <span>Don't have an account? </span>
               <button
+                type="button"
                 onClick={() => {
                   setDomainError(null);
-                  setView("employee-register");
+                  setView("register");
                 }}
-                className="text-xs font-bold text-[#1d73b7] hover:underline"
+                className="font-bold text-[#1d73b7] hover:underline cursor-pointer"
               >
-                Register
+                Create Account
               </button>
             </div>
           </div>
         )}
 
         {/* ------------------------------------------------------------------ */}
-        {/* VIEW 3: EMPLOYEE REGISTRATION                                      */}
+        {/* VIEW: UNIFIED REGISTRATION (ADAPTIVE BASED ON EMAIL DOMAIN)        */}
         {/* ------------------------------------------------------------------ */}
-        {view === "employee-register" && (
+        {(view === "register" || view === "customer-register" || view === "employee-register") && (
           <div>
             <button
-              onClick={() => setView("employee-login")}
+              onClick={() => {
+                setDomainError(null);
+                setView("login");
+              }}
               className="flex items-center gap-1.5 text-xs font-semibold text-[#1d73b7] hover:underline mb-4"
             >
-              <ArrowLeft className="size-3.5" /> Back to Employee Login
+              <ArrowLeft className="size-3.5" /> Back to Sign In
             </button>
 
-            <div className="flex items-center gap-2 mb-1">
-              <Shield className="size-4 text-[#1d73b7]" />
-              <span className="text-[10px] font-black tracking-widest text-[#1d73b7] uppercase">
-                OFFICIAL ONBOARDING
-              </span>
-            </div>
-            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
-              Employee Registration
-            </h2>
-            <p className="text-xs text-[#5a6b78] mt-0.5 mb-4">
-              Requires an official VOLAMP address ending in{" "}
-              <strong className="text-[#102a40]">@volampelektrikals.com</strong>.
-            </p>
+            {isWorkEmail ? (
+              <>
+                <div className="flex items-center gap-2 mb-1">
+                  <Shield className="size-4 text-[#1d73b7]" />
+                  <span className="text-[10px] font-black tracking-widest text-[#1d73b7] uppercase">
+                    OFFICIAL STAFF ONBOARDING
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold text-[#102a40] dark:text-[#f0f4f8] font-['Plus_Jakarta_Sans',sans-serif]">
+                  Staff Registration
+                </h2>
+                <p className="text-xs text-[#5a6b78] dark:text-[#9bb2c2] mt-0.5 mb-4">
+                  Official VOLAMP corporate domain recognized. Requires email OTP and explicit CEO authorization.
+                </p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 mb-1">
+                  <UserPlus className="size-4 text-[#1d73b7]" />
+                  <span className="text-[10px] font-black tracking-widest text-[#1d73b7] uppercase">
+                    CREATE ACCOUNT
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold text-[#102a40] dark:text-[#f0f4f8] font-['Plus_Jakarta_Sans',sans-serif]">
+                  Create Your Account
+                </h2>
+                <p className="text-xs text-[#5a6b78] dark:text-[#9bb2c2] mt-0.5 mb-4">
+                  Sign up to manage quotations, track orders, and access portal services.
+                </p>
+              </>
+            )}
 
             {domainError && (
               <div className="p-3 mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 flex items-start gap-2.5 text-xs text-red-700 dark:text-red-300">
@@ -646,15 +532,15 @@ export function AuthModal({
               </div>
             )}
 
-            <form onSubmit={handleEmployeeRegisterSubmit} className="space-y-3.5">
+            <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
               <div>
-                <Label htmlFor="emp-reg-name" className="text-xs font-semibold">
+                <Label htmlFor="reg-name" className="text-xs font-semibold">
                   Full Name
                 </Label>
                 <div className="relative mt-1">
                   <User className="size-4 absolute left-3 top-3 text-gray-400" />
                   <Input
-                    id="emp-reg-name"
+                    id="reg-name"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
@@ -665,13 +551,13 @@ export function AuthModal({
               </div>
 
               <div>
-                <Label htmlFor="emp-reg-email" className="text-xs font-semibold">
-                  Official Email Address
+                <Label htmlFor="reg-email" className="text-xs font-semibold">
+                  Email Address
                 </Label>
                 <div className="relative mt-1">
                   <Mail className="size-4 absolute left-3 top-3 text-gray-400" />
                   <Input
-                    id="emp-reg-email"
+                    id="reg-email"
                     type="email"
                     required
                     value={email}
@@ -679,23 +565,91 @@ export function AuthModal({
                       setEmail(e.target.value);
                       if (domainError) setDomainError(null);
                     }}
-                    placeholder="name@volampelektrikals.com"
+                    placeholder={isWorkEmail ? "name@volampelektrikals.com" : "name@example.com"}
                     className="pl-9 text-xs"
                   />
                 </div>
+                {isWorkEmail ? (
+                  <div className="mt-1.5 p-2 rounded bg-blue-50 dark:bg-[#152e4d] border border-blue-200 dark:border-blue-900/60 flex items-center gap-2 text-[11px] text-[#1d73b7] dark:text-blue-300 font-semibold">
+                    <Building2 className="size-3.5 shrink-0" />
+                    <span>Official @volampelektrikals.com domain detected &mdash; Staff authorization route enabled</span>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-[#7a8b98] mt-1">
+                    VOLAMP staff members: enter your official company email to register for staff portal access.
+                  </p>
+                )}
               </div>
 
+              {/* Conditional staff fields */}
+              {isWorkEmail && (
+                <>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div>
+                      <Label htmlFor="reg-dept" className="text-xs font-semibold">
+                        Department
+                      </Label>
+                      <select
+                        id="reg-dept"
+                        value={empDepartment}
+                        onChange={(e) => setEmpDepartment(e.target.value)}
+                        className="w-full mt-1 border border-input rounded-md h-9 px-2.5 text-xs bg-background text-foreground"
+                      >
+                        <option value="Engineering">Engineering</option>
+                        <option value="Quality Assurance">Quality Assurance</option>
+                        <option value="Production & Testing">Production & Testing</option>
+                        <option value="Sales & Marketing">Sales & Marketing</option>
+                        <option value="Supply Chain & Logistics">Supply Chain & Logistics</option>
+                        <option value="Finance & Accounts">Finance & Accounts</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Executive Office">Executive Office</option>
+                        <option value="Customer Operations">Customer Operations</option>
+                        <option value="Maintenance & Facilities">Maintenance & Facilities</option>
+                        <option value="IT & Systems">IT & Systems</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="reg-desig" className="text-xs font-semibold">
+                        Job Designation
+                      </Label>
+                      <Input
+                        id="reg-desig"
+                        required
+                        value={empDesignation}
+                        onChange={(e) => setEmpDesignation(e.target.value)}
+                        placeholder="e.g. Electrical Engineer"
+                        className="mt-1 text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="reg-empid" className="text-xs font-semibold">
+                      Employee ID <span className="text-gray-400 font-normal">(if assigned)</span>
+                    </Label>
+                    <Input
+                      id="reg-empid"
+                      value={empId}
+                      onChange={(e) => setEmpId(e.target.value)}
+                      placeholder="e.g. VLT-2026-ENG04"
+                      className="mt-1 text-xs"
+                    />
+                  </div>
+                </>
+              )}
+
               <div>
-                <Label htmlFor="emp-reg-pwd" className="text-xs font-semibold">
-                  Password (min 6 characters)
+                <Label htmlFor="reg-pwd" className="text-xs font-semibold">
+                  Password {isWorkEmail ? "(min 8 chars, mixed case, number & symbol)" : "(min 6 chars)"}
                 </Label>
                 <div className="relative mt-1">
                   <Lock className="size-4 absolute left-3 top-3 text-gray-400" />
                   <Input
-                    id="emp-reg-pwd"
+                    id="reg-pwd"
                     type="password"
                     required
-                    minLength={6}
+                    minLength={isWorkEmail ? 8 : 6}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
@@ -705,16 +659,16 @@ export function AuthModal({
               </div>
 
               <div>
-                <Label htmlFor="emp-reg-cpwd" className="text-xs font-semibold">
+                <Label htmlFor="reg-cpwd" className="text-xs font-semibold">
                   Confirm Password
                 </Label>
                 <div className="relative mt-1">
                   <KeyRound className="size-4 absolute left-3 top-3 text-gray-400" />
                   <Input
-                    id="emp-reg-cpwd"
+                    id="reg-cpwd"
                     type="password"
                     required
-                    minLength={6}
+                    minLength={isWorkEmail ? 8 : 6}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
@@ -723,239 +677,68 @@ export function AuthModal({
                 </div>
               </div>
 
+              {isWorkEmail && (
+                <div className="flex items-start gap-2 pt-1">
+                  <Checkbox
+                    id="reg-terms"
+                    checked={empTermsAccepted}
+                    onCheckedChange={(c) => setEmpTermsAccepted(Boolean(c))}
+                    className="mt-0.5"
+                  />
+                  <Label htmlFor="reg-terms" className="text-[11px] text-gray-600 dark:text-gray-300 leading-tight">
+                    I accept VOLAMP's employment guidelines, IT security policy, and CEO authorization protocol.
+                  </Label>
+                </div>
+              )}
+
               <Button
                 type="submit"
-                disabled={registerEmployeeMutation.isPending}
+                disabled={registerEmployeeMutation.isPending || registerCustomerMutation.isPending}
                 className="w-full bg-[#1d73b7] hover:bg-[#155a90] text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2 mt-2"
               >
-                {registerEmployeeMutation.isPending ? "Creating Account..." : "Register as Employee"}{" "}
-                <ArrowRight className="size-3.5" />
+                {registerEmployeeMutation.isPending || registerCustomerMutation.isPending ? (
+                  "Processing Registration..."
+                ) : isWorkEmail ? (
+                  <>
+                    Submit for CEO Authorization <ArrowRight className="size-3.5" />
+                  </>
+                ) : (
+                  <>
+                    Create Account <ArrowRight className="size-3.5" />
+                  </>
+                )}
               </Button>
-            </form>
-          </div>
-        )}
 
-        {/* ------------------------------------------------------------------ */}
-        {/* VIEW 4: CUSTOMER LOGIN                                             */}
-        {/* ------------------------------------------------------------------ */}
-        {view === "customer-login" && (
-          <div>
-            <button
-              onClick={() => setView("type-selection")}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[#d97818] hover:underline mb-4"
-            >
-              <ArrowLeft className="size-3.5" /> Change account type
-            </button>
-
-            <div className="flex items-center gap-2.5 mb-1">
-              <div className="p-1.5 rounded-md bg-[#d97818]/10 text-[#d97818]">
-                <Building2 className="size-4" />
-              </div>
-              <span className="text-[10px] font-black tracking-widest text-[#d97818] uppercase">
-                CUSTOMER PORTAL
-              </span>
-            </div>
-            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
-              Customer Login
-            </h2>
-            <p className="text-xs text-[#5a6b78] mt-0.5 mb-5">
-              Access your quotation requests, orders, documents and support.
-            </p>
-
-            <form onSubmit={handleCustomerLoginSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="cust-email" className="text-xs font-semibold">
-                  Email Address
-                </Label>
-                <div className="relative mt-1">
-                  <Mail className="size-4 absolute left-3 top-3 text-gray-400" />
-                  <Input
-                    id="cust-email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@company.com or personal"
-                    className="pl-9 text-xs"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="cust-password" className="text-xs font-semibold">
-                    Password
-                  </Label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTargetAccountType("customer");
-                      setForgotStep("email");
-                      setView("forgot-password");
-                    }}
-                    className="text-[11px] font-medium text-[#d97818] hover:underline"
+              {isWorkEmail && (
+                <div className="text-center pt-2">
+                  <a
+                    href="/employee-registration"
+                    onClick={() => onClose()}
+                    className="text-[11px] text-[#1d73b7] hover:underline font-semibold"
                   >
-                    Forgot Password?
-                  </button>
+                    Open Dedicated Full Employee Registration Page &rarr;
+                  </a>
                 </div>
-                <div className="relative mt-1">
-                  <Lock className="size-4 absolute left-3 top-3 text-gray-400" />
-                  <Input
-                    id="cust-password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="pl-9 text-xs"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2 pt-1">
-                <Checkbox
-                  id="cust-remember"
-                  checked={rememberMe}
-                  onCheckedChange={(v) => setRememberMe(Boolean(v))}
-                />
-                <Label htmlFor="cust-remember" className="text-xs font-normal cursor-pointer">
-                  Remember Me
-                </Label>
-              </div>
-
-              <Button
-                type="submit"
-                disabled={loginMutation.isPending}
-                className="w-full bg-[#d97818] hover:bg-[#b86412] text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2 mt-2"
-              >
-                {loginMutation.isPending ? "Authenticating..." : "Login"} <ArrowRight className="size-3.5" />
-              </Button>
+              )}
             </form>
 
-            <div className="mt-6 pt-4 border-t border-[#e2ecf2] text-center">
-              <span className="text-xs text-[#5a6b78]">
-                New Customer?{" "}
-              </span>
+            <div className="mt-6 pt-4 border-t border-[#e2ecf2] dark:border-[#254259] text-center text-xs text-[#5a6b78] dark:text-[#9bb2c2]">
+              <span>Already have an account? </span>
               <button
-                onClick={() => setView("customer-register")}
-                className="text-xs font-bold text-[#d97818] hover:underline"
+                type="button"
+                onClick={() => {
+                  setDomainError(null);
+                  setView("login");
+                }}
+                className="font-bold text-[#1d73b7] hover:underline cursor-pointer"
               >
-                Create an Account
+                Sign In
               </button>
             </div>
           </div>
         )}
 
-        {/* ------------------------------------------------------------------ */}
-        {/* VIEW 5: CUSTOMER REGISTRATION                                      */}
-        {/* ------------------------------------------------------------------ */}
-        {view === "customer-register" && (
-          <div>
-            <button
-              onClick={() => setView("customer-login")}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[#d97818] hover:underline mb-4"
-            >
-              <ArrowLeft className="size-3.5" /> Back to Customer Login
-            </button>
 
-            <div className="flex items-center gap-2 mb-1">
-              <Building2 className="size-4 text-[#d97818]" />
-              <span className="text-[10px] font-black tracking-widest text-[#d97818] uppercase">
-                CUSTOMER ACCOUNT
-              </span>
-            </div>
-            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">
-              Create Customer Account
-            </h2>
-            <p className="text-xs text-[#5a6b78] mt-0.5 mb-4">
-              Register using your personal or business email address.
-            </p>
-
-            <form onSubmit={handleCustomerRegisterSubmit} className="space-y-3.5">
-              <div>
-                <Label htmlFor="cust-reg-name" className="text-xs font-semibold">
-                  Full Name / Contact Person
-                </Label>
-                <div className="relative mt-1">
-                  <User className="size-4 absolute left-3 top-3 text-gray-400" />
-                  <Input
-                    id="cust-reg-name"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Your name"
-                    className="pl-9 text-xs"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="cust-reg-email" className="text-xs font-semibold">
-                  Email Address
-                </Label>
-                <div className="relative mt-1">
-                  <Mail className="size-4 absolute left-3 top-3 text-gray-400" />
-                  <Input
-                    id="cust-reg-email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@company.com or personal"
-                    className="pl-9 text-xs"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="cust-reg-pwd" className="text-xs font-semibold">
-                  Password (min 6 characters)
-                </Label>
-                <div className="relative mt-1">
-                  <Lock className="size-4 absolute left-3 top-3 text-gray-400" />
-                  <Input
-                    id="cust-reg-pwd"
-                    type="password"
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="pl-9 text-xs"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="cust-reg-cpwd" className="text-xs font-semibold">
-                  Confirm Password
-                </Label>
-                <div className="relative mt-1">
-                  <KeyRound className="size-4 absolute left-3 top-3 text-gray-400" />
-                  <Input
-                    id="cust-reg-cpwd"
-                    type="password"
-                    required
-                    minLength={6}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="pl-9 text-xs"
-                  />
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                disabled={registerCustomerMutation.isPending}
-                className="w-full bg-[#d97818] hover:bg-[#b86412] text-white text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2 mt-2"
-              >
-                {registerCustomerMutation.isPending ? "Creating Account..." : "Create Account"}{" "}
-                <ArrowRight className="size-3.5" />
-              </Button>
-            </form>
-          </div>
-        )}
 
         {/* ------------------------------------------------------------------ */}
         {/* VIEW 6: MFA VERIFICATION                                           */}
@@ -1015,12 +798,10 @@ export function AuthModal({
               <div className="flex items-center justify-between w-full text-xs text-[#6e808b] dark:text-[#b6c8d3] pt-2">
                 <button
                   type="button"
-                  onClick={() =>
-                    setView(targetAccountType === "employee" ? "employee-login" : "customer-login")
-                  }
+                  onClick={() => setView("login")}
                   className="hover:underline flex items-center gap-1"
                 >
-                  <ArrowLeft className="size-3" /> Back
+                  <ArrowLeft className="size-3" /> Back to Sign In
                 </button>
                 <button
                   type="button"
@@ -1099,9 +880,7 @@ export function AuthModal({
               <div className="flex items-center justify-between w-full text-xs text-[#6e808b] dark:text-[#b6c8d3] pt-2">
                 <button
                   type="button"
-                  onClick={() =>
-                    setView(targetAccountType === "employee" ? "employee-register" : "customer-register")
-                  }
+                  onClick={() => setView("register")}
                   className="hover:underline flex items-center gap-1"
                 >
                   <ArrowLeft className="size-3" /> Back
@@ -1134,47 +913,17 @@ export function AuthModal({
               <CheckCircle2 className="size-3.5" /> Official Email Verified
             </div>
 
-            <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] mt-1">
-              Pending Admin Approval
+            <h2 className="text-xl font-bold text-[#102a40] dark:text-white font-['Plus_Jakarta_Sans',sans-serif] mt-1">
+              Awaiting CEO Authorization
             </h2>
-            <p className="text-xs text-[#5a6b78] mt-2 mb-4 leading-relaxed max-w-[360px] mx-auto">
-              Your employee account has been created and verified. A VOLAMP administrator must approve your official access before you can log in to the Employee Portal.
+            <p className="text-xs text-[#5a6b78] dark:text-[#94a3b8] mt-2 mb-6 leading-relaxed max-w-[380px] mx-auto">
+              Your employee registration has been successfully submitted and verified. Your account is currently awaiting authorization from VOLAMP management. You will receive an email once your registration is reviewed.
             </p>
 
-            {/* Quick Actions to Complete Verification */}
-            <div className="space-y-2.5 mb-4">
-              <Button
-                onClick={() => {
-                  const targetEmail = activeEmail || email;
-                  if (targetEmail) {
-                    quickApproveMutation.mutate({ email: targetEmail });
-                  }
-                }}
-                disabled={quickApproveMutation.isPending}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-lg flex items-center justify-center gap-2 shadow-sm"
-              >
-                <CheckCircle2 className="size-4" />
-                {quickApproveMutation.isPending ? "Approving Account..." : "Instant Approve My Account"}
-              </Button>
-
-              <Button
-                onClick={() => {
-                  setEmail("admin@volampelektrikals.com");
-                  setPassword("Volamp@2026");
-                  setView("employee-login");
-                  toast.info("Filled Master Admin credentials.");
-                }}
-                variant="outline"
-                className="w-full text-xs font-semibold py-2.5 rounded-lg border-amber-300 text-amber-800 dark:text-amber-300 hover:bg-amber-50"
-              >
-                <ShieldCheck className="size-3.5 mr-1 text-amber-600" /> Sign In as Master Admin (admin@volampelektrikals.com)
-              </Button>
-            </div>
-
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={onClose}
-              className="w-full text-xs text-slate-500 hover:text-slate-800 py-2"
+              className="w-full text-xs font-semibold py-2.5 rounded-lg border-slate-300 dark:border-slate-700"
             >
               Return to Website
             </Button>
@@ -1187,12 +936,10 @@ export function AuthModal({
         {view === "forgot-password" && (
           <div>
             <button
-              onClick={() =>
-                setView(targetAccountType === "employee" ? "employee-login" : "customer-login")
-              }
+              onClick={() => setView("login")}
               className="flex items-center gap-1.5 text-xs font-semibold text-[#1d73b7] hover:underline mb-4"
             >
-              <ArrowLeft className="size-3.5" /> Back to Login
+              <ArrowLeft className="size-3.5" /> Back to Sign In
             </button>
 
             <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif]">

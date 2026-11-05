@@ -26,6 +26,12 @@ import {
   careerApplications,
   CareerApplication,
   InsertCareerApplication,
+  employeeApprovalTokens,
+  EmployeeApprovalToken,
+  InsertEmployeeApprovalToken,
+  employeeAuditLogs,
+  EmployeeAuditLog,
+  InsertEmployeeAuditLog,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -99,6 +105,13 @@ const memoryUsers: Map<string, StoredUser> = new Map([
       role: "admin",
       accountType: "employee",
       employeeStatus: "approved",
+      employeeId: "VLT-EXEC-001",
+      department: "Executive Office",
+      designation: "Chief Executive Officer",
+      rejectionReason: null,
+      approvedBy: "Board of Directors",
+      approvedAt: new Date("2026-01-01"),
+      termsAccepted: true,
       passwordHash: hashPassword("Volamp@2026", adminSalt),
       passwordSalt: adminSalt,
       mfaEnabled: true,
@@ -119,6 +132,13 @@ const memoryUsers: Map<string, StoredUser> = new Map([
       role: "admin",
       accountType: "employee",
       employeeStatus: "approved",
+      employeeId: "VLT-ADMIN-001",
+      department: "IT & Systems",
+      designation: "Systems Administrator",
+      rejectionReason: null,
+      approvedBy: "Board of Directors",
+      approvedAt: new Date("2026-01-01"),
+      termsAccepted: true,
       passwordHash: hashPassword("Volamp@2026", adminSalt),
       passwordSalt: adminSalt,
       mfaEnabled: true,
@@ -139,6 +159,13 @@ const memoryUsers: Map<string, StoredUser> = new Map([
       role: "user",
       accountType: "customer",
       employeeStatus: "approved",
+      employeeId: null,
+      department: null,
+      designation: null,
+      rejectionReason: null,
+      approvedBy: null,
+      approvedAt: null,
+      termsAccepted: true,
       passwordHash: hashPassword("Volamp@2026", customerSalt),
       passwordSalt: customerSalt,
       mfaEnabled: false,
@@ -151,6 +178,10 @@ const memoryUsers: Map<string, StoredUser> = new Map([
 ]);
 
 let memoryNextUserId = 3;
+let memoryNextTokenId = 1;
+let memoryNextAuditId = 1;
+const memoryApprovalTokens: Map<string, EmployeeApprovalToken> = new Map();
+const memoryAuditLogs: EmployeeAuditLog[] = [];
 const memoryOtps: StoredOtp[] = [];
 const memoryCustomerProfiles = new Map<number, any>();
 const memoryQuotations: any[] = [
@@ -304,7 +335,11 @@ export async function createLocalUser(params: {
   email: string;
   password?: string;
   accountType: "customer" | "employee";
-  employeeStatus?: "pending_approval" | "approved" | "rejected";
+  employeeStatus?: "pending_verification" | "pending_approval" | "approved" | "rejected" | "suspended" | "deactivated";
+  employeeId?: string;
+  department?: string;
+  designation?: string;
+  termsAccepted?: boolean;
   mfaEnabled?: boolean;
   emailVerified?: boolean;
   role?: "user" | "admin";
@@ -326,6 +361,13 @@ export async function createLocalUser(params: {
     role: userRole,
     accountType: params.accountType,
     employeeStatus: params.employeeStatus ?? (isEmployee ? "pending_approval" : "approved"),
+    employeeId: params.employeeId || null,
+    department: params.department || null,
+    designation: params.designation || null,
+    termsAccepted: params.termsAccepted ?? false,
+    rejectionReason: null,
+    approvedAt: null,
+    approvedBy: null,
     passwordHash: hash,
     passwordSalt: salt,
     mfaEnabled: isEmployee ? true : Boolean(params.mfaEnabled),
@@ -386,6 +428,13 @@ export async function upsertUser(user: InsertUser): Promise<void> {
         role: user.role ?? "user",
         accountType: (user as any).accountType ?? "customer",
         employeeStatus: (user as any).employeeStatus ?? "approved",
+        employeeId: null,
+        department: null,
+        designation: null,
+        rejectionReason: null,
+        approvedAt: null,
+        approvedBy: null,
+        termsAccepted: true,
         passwordHash: null,
         passwordSalt: null,
         mfaEnabled: false,
@@ -430,6 +479,176 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 }
 
+export async function createEmployeeApprovalToken(params: {
+  userId: number;
+  employeeEmail: string;
+  action?: "approve" | "reject" | "review";
+  expiresInMs?: number;
+}): Promise<EmployeeApprovalToken> {
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + (params.expiresInMs ?? 24 * 60 * 60 * 1000));
+  const record: EmployeeApprovalToken = {
+    id: memoryNextTokenId++,
+    token,
+    userId: params.userId,
+    employeeEmail: params.employeeEmail.toLowerCase().trim(),
+    action: params.action || "approve",
+    expiresAt,
+    usedAt: null,
+    usedBy: null,
+    createdAt: new Date(),
+  };
+
+  const db = await getDb();
+  if (db) {
+    try {
+      await db.insert(employeeApprovalTokens).values(record as any);
+    } catch (e) {
+      console.warn("[Database] Failed to insert approval token into DB:", e);
+    }
+  }
+
+  memoryApprovalTokens.set(token, record);
+  return record;
+}
+
+export async function getEmployeeApprovalToken(token: string): Promise<EmployeeApprovalToken | undefined> {
+  const db = await getDb();
+  if (db) {
+    try {
+      const res = await db.select().from(employeeApprovalTokens).where(eq(employeeApprovalTokens.token, token)).limit(1);
+      if (res && res.length > 0) return res[0];
+    } catch (e) {
+      console.warn("[Database] Failed to fetch approval token:", e);
+    }
+  }
+  return memoryApprovalTokens.get(token);
+}
+
+export async function getLatestApprovalTokenForEmail(
+  email: string,
+  action?: "approve" | "reject" | "review"
+): Promise<EmployeeApprovalToken | undefined> {
+  const normEmail = email.toLowerCase().trim();
+  const tokens = Array.from(memoryApprovalTokens.values()).filter(
+    (t) => t.employeeEmail.toLowerCase() === normEmail && (!action || t.action === action)
+  );
+  if (tokens.length > 0) {
+    return tokens[tokens.length - 1];
+  }
+  const db = await getDb();
+  if (db) {
+    try {
+      const res = await db
+        .select()
+        .from(employeeApprovalTokens)
+        .where(
+          action
+            ? and(
+                eq(employeeApprovalTokens.employeeEmail, normEmail),
+                eq(employeeApprovalTokens.action, action)
+              )
+            : eq(employeeApprovalTokens.employeeEmail, normEmail)
+        );
+      if (res && res.length > 0) {
+        return res[res.length - 1];
+      }
+    } catch (e) {
+      console.warn("[Database] Failed to fetch latest approval token for email:", e);
+    }
+  }
+  return undefined;
+}
+
+export async function markEmployeeApprovalTokenUsed(token: string, actorEmail: string): Promise<boolean> {
+  const db = await getDb();
+  const now = new Date();
+  if (db) {
+    try {
+      await db
+        .update(employeeApprovalTokens)
+        .set({ usedAt: now, usedBy: actorEmail.toLowerCase().trim() })
+        .where(eq(employeeApprovalTokens.token, token));
+    } catch (e) {
+      console.warn("[Database] Failed to mark approval token used in DB:", e);
+    }
+  }
+
+  const inMem = memoryApprovalTokens.get(token);
+  if (inMem) {
+    inMem.usedAt = now;
+    inMem.usedBy = actorEmail.toLowerCase().trim();
+    return true;
+  }
+  return true;
+}
+
+export async function recordEmployeeAuditLog(params: {
+  userId: number;
+  employeeEmail: string;
+  action: string;
+  actorEmail: string;
+  actorIp?: string;
+  actorUserAgent?: string;
+  details?: string;
+}): Promise<EmployeeAuditLog> {
+  const log: EmployeeAuditLog = {
+    id: memoryNextAuditId++,
+    userId: params.userId,
+    employeeEmail: params.employeeEmail.toLowerCase().trim(),
+    action: params.action,
+    actorEmail: params.actorEmail.toLowerCase().trim(),
+    actorIp: params.actorIp || null,
+    actorUserAgent: params.actorUserAgent || null,
+    details: params.details || null,
+    createdAt: new Date(),
+  };
+
+  const db = await getDb();
+  if (db) {
+    try {
+      await db.insert(employeeAuditLogs).values(log as any);
+    } catch (e) {
+      console.warn("[Database] Failed to insert audit log into DB:", e);
+    }
+  }
+
+  memoryAuditLogs.unshift(log);
+  return log;
+}
+
+export async function getEmployeeAuditLogs(limit: number = 100): Promise<EmployeeAuditLog[]> {
+  const db = await getDb();
+  if (db) {
+    try {
+      const logs = await db.select().from(employeeAuditLogs).limit(limit);
+      return logs;
+    } catch (e) {
+      console.warn("[Database] Failed to list audit logs from DB:", e);
+    }
+  }
+  return memoryAuditLogs.slice(0, limit);
+}
+
+export async function listAllEmployees(): Promise<User[]> {
+  const db = await getDb();
+  if (db) {
+    try {
+      const list = await db.select().from(users).where(eq(users.accountType, "employee"));
+      return list;
+    } catch (e) {
+      console.warn("[Database] Failed to list employees from DB:", e);
+    }
+  }
+  const emps: User[] = [];
+  for (const user of Array.from(memoryUsers.values())) {
+    if (user.accountType === "employee") {
+      emps.push(user);
+    }
+  }
+  return emps;
+}
+
 export async function listPendingEmployees(): Promise<User[]> {
   const db = await getDb();
   if (db) {
@@ -441,17 +660,110 @@ export async function listPendingEmployees(): Promise<User[]> {
   }
   const pending: User[] = [];
   for (const user of Array.from(memoryUsers.values())) {
-    if (user.accountType === "employee" && user.employeeStatus === "pending_approval") {
+    if (user.accountType === "employee" && (user.employeeStatus === "pending_approval" || user.employeeStatus === "pending_verification")) {
       pending.push(user);
     }
   }
   return pending;
 }
 
-export async function approveEmployee(userId: number): Promise<boolean> {
+export async function approveEmployee(userId: number, actorEmail: string = "ceo@volampelektrikals.com"): Promise<boolean> {
+  const user = await getUserById(userId);
+  if (!user || user.accountType !== "employee") return false;
+  const now = new Date();
+  await updateUser(userId, {
+    employeeStatus: "approved",
+    approvedAt: now,
+    approvedBy: actorEmail,
+  });
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "CEO_APPROVED",
+    actorEmail,
+    details: `Employee account authorized for official portal access by ${actorEmail}`,
+  });
+  return true;
+}
+
+export async function rejectEmployee(
+  userId: number,
+  reason: string = "Registration not authorized by executive management.",
+  actorEmail: string = "ceo@volampelektrikals.com"
+): Promise<boolean> {
+  const user = await getUserById(userId);
+  if (!user || user.accountType !== "employee") return false;
+  await updateUser(userId, {
+    employeeStatus: "rejected",
+    rejectionReason: reason,
+  });
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "CEO_REJECTED",
+    actorEmail,
+    details: `Employee account rejected by ${actorEmail}. Reason: ${reason}`,
+  });
+  return true;
+}
+
+export async function suspendEmployee(userId: number, actorEmail: string = "ceo@volampelektrikals.com"): Promise<boolean> {
+  const user = await getUserById(userId);
+  if (!user || user.accountType !== "employee") return false;
+  await updateUser(userId, { employeeStatus: "suspended" });
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "EMPLOYEE_SUSPENDED",
+    actorEmail,
+    details: `Employee account suspended by ${actorEmail}`,
+  });
+  return true;
+}
+
+export async function reactivateEmployee(userId: number, actorEmail: string = "ceo@volampelektrikals.com"): Promise<boolean> {
   const user = await getUserById(userId);
   if (!user || user.accountType !== "employee") return false;
   await updateUser(userId, { employeeStatus: "approved" });
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "EMPLOYEE_REACTIVATED",
+    actorEmail,
+    details: `Employee account reactivated by ${actorEmail}`,
+  });
+  return true;
+}
+
+export async function deactivateEmployee(userId: number, actorEmail: string = "ceo@volampelektrikals.com"): Promise<boolean> {
+  const user = await getUserById(userId);
+  if (!user || user.accountType !== "employee") return false;
+  await updateUser(userId, { employeeStatus: "deactivated" });
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "EMPLOYEE_DEACTIVATED",
+    actorEmail,
+    details: `Employee account deactivated by ${actorEmail}`,
+  });
+  return true;
+}
+
+export async function updateEmployeeProfile(
+  userId: number,
+  fields: { department?: string; designation?: string; employeeId?: string; role?: "user" | "admin" },
+  actorEmail: string = "ceo@volampelektrikals.com"
+): Promise<boolean> {
+  const user = await getUserById(userId);
+  if (!user || user.accountType !== "employee") return false;
+  await updateUser(userId, fields);
+  await recordEmployeeAuditLog({
+    userId,
+    employeeEmail: user.email || "",
+    action: "PROFILE_UPDATED",
+    actorEmail,
+    details: `Employee profile updated: ${JSON.stringify(fields)}`,
+  });
   return true;
 }
 

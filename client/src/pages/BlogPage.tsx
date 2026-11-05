@@ -200,19 +200,19 @@ export default function BlogPage() {
                   <h4 className="text-base font-bold text-[#4d1217]">Subscribe to Volamp Industrial Pulse</h4>
                   <p className="text-xs text-[#5d4a4b] mt-0.5">Receive new technical publications, cable sizing advisories, and price list circulars.</p>
                 </div>
-                <form onSubmit={handleSubscribe} className="flex gap-2 shrink-0">
+                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto shrink-0">
                   <Input
                     required
                     type="email"
                     placeholder="Enter your work email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="text-xs h-10 border-[#ebd7c7] bg-white min-w-[220px]"
+                    className="text-xs h-10 border-[#ebd7c7] bg-white w-full sm:min-w-[220px]"
                   />
                   <Button
                     type="submit"
                     disabled={subscribeMutation.isPending}
-                    className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold h-10 px-4"
+                    className="bg-[#c56718] hover:bg-[#b45309] text-white text-xs font-bold h-10 px-4 w-full sm:w-auto"
                   >
                     Subscribe
                   </Button>

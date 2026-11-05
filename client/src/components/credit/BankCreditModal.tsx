@@ -60,13 +60,13 @@ export function BankCreditModal({ isOpen, onClose }: BankCreditModalProps) {
       onClick={onClose}
     >
       <div
-        className="account-modal relative w-full max-w-[620px] max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-[#d2e0e8] p-6 sm:p-7 shadow-2xl transition-all"
+        className="account-modal relative w-full max-w-[620px] max-h-[85dvh] overflow-y-auto overscroll-contain rounded-2xl bg-white border border-[#d2e0e8] p-5 sm:p-7 shadow-2xl transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 rounded-full p-2 text-gray-400 hover:text-gray-700 transition-colors"
+          className="sticky top-0 float-right -mt-1 -mr-1 z-30 rounded-full p-2 text-gray-400 hover:text-gray-700 bg-white/90 backdrop-blur-xs transition-colors cursor-pointer"
           aria-label="Close credit program modal"
         >
           <X className="size-5" />

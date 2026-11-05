@@ -318,17 +318,18 @@ function HeroTeamPortrait({ onShowHq }: { onShowHq: (e: React.MouseEvent) => voi
             transform: tilt.isHovered ? "translateZ(36px)" : "translateZ(0px)",
             transition: "transform 0.25s ease-out",
           }}
-          className="absolute top-3.5 right-3.5 z-30 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-950/90 hover:bg-slate-900 active:scale-95 backdrop-blur-md border border-amber-400/60 hover:border-amber-400 text-[11px] font-mono font-bold text-amber-300 shadow-2xl transition-all duration-200 hover:scale-105 group/hqbtn cursor-pointer"
+          className="absolute top-3 right-3 sm:top-3.5 sm:right-3.5 z-30 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-slate-950/90 hover:bg-slate-900 active:scale-95 backdrop-blur-md border border-amber-400/60 hover:border-amber-400 text-[10px] sm:text-[11px] font-mono font-bold text-amber-300 shadow-2xl transition-all duration-200 hover:scale-105 group/hqbtn cursor-pointer max-w-[calc(100%-1.5rem)]"
         >
-          <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-          <span>23° 01' N · 72° 35' E · Khadia HQ</span>
+          <span className="size-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
+          <span className="truncate">Khadia HQ</span>
+          <span className="hidden sm:inline">· 23° 01' N 72° 35' E</span>
           {istTime && (
-            <span className="hidden sm:inline-block text-[10px] text-amber-200/90 font-mono px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40">
+            <span className="hidden md:inline-block text-[10px] text-amber-200/90 font-mono px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 shrink-0">
               {istTime}
             </span>
           )}
-          <span className="inline-flex items-center gap-1 text-[10px] text-amber-400/90 group-hover/hqbtn:text-amber-200 border-l border-amber-500/40 pl-2 ml-0.5">
-            View on Map ↗
+          <span className="inline-flex items-center gap-1 text-[10px] text-amber-400/90 group-hover/hqbtn:text-amber-200 border-l border-amber-500/40 pl-1.5 ml-0.5 shrink-0">
+            Map ↗
           </span>
         </button>
 
@@ -607,7 +608,7 @@ export default function AboutVolamp() {
       </header>
 
       <main>
-        <section className="about-hero relative">
+        <section className="about-hero relative overflow-hidden">
           {/* Ambient Electrical Energy Background Orbs & Circuit Grid */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden -z-0">
             <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-amber-400/10 dark:bg-amber-500/15 blur-3xl" />
@@ -815,9 +816,9 @@ export default function AboutVolamp() {
                 </p>
               </div>
 
-              {/* Animated & Interactive Electrical Legacy Stepper */}
-              <div className="legacy-stepper-container">
-                <div className="legacy-stepper-bar" role="navigation" aria-label="Volamp historical milestones">
+              {/* Animated & Interactive Electrical Legacy Stepper (100% accessible via smooth touch scroll on mobile) */}
+              <div className="legacy-stepper-container overflow-x-auto no-scrollbar pb-3 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth">
+                <div className="legacy-stepper-bar min-w-[560px] sm:min-w-0" role="navigation" aria-label="Volamp historical milestones">
                   {/* Glowing electrical power line & moving current pulse */}
                   <div className="stepper-track-rail">
                     <div className="stepper-track-pulse" />

@@ -8,7 +8,14 @@ export const users = mysqlTable("users", {
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
   accountType: mysqlEnum("accountType", ["customer", "employee"]).default("customer").notNull(),
-  employeeStatus: mysqlEnum("employeeStatus", ["pending_approval", "approved", "rejected"]).default("approved").notNull(),
+  employeeStatus: varchar("employeeStatus", { length: 64 }).default("approved").notNull(),
+  employeeId: varchar("employeeId", { length: 64 }),
+  department: varchar("department", { length: 120 }),
+  designation: varchar("designation", { length: 120 }),
+  rejectionReason: text("rejectionReason"),
+  approvedAt: timestamp("approvedAt"),
+  approvedBy: varchar("approvedBy", { length: 320 }),
+  termsAccepted: boolean("termsAccepted").default(false),
   passwordHash: varchar("passwordHash", { length: 255 }),
   passwordSalt: varchar("passwordSalt", { length: 64 }),
   mfaEnabled: boolean("mfaEnabled").default(false).notNull(),
@@ -227,8 +234,36 @@ export const careerApplications = mysqlTable("career_applications", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
+export const employeeApprovalTokens = mysqlTable("employee_approval_tokens", {
+  id: int("id").autoincrement().primaryKey(),
+  token: varchar("token", { length: 128 }).notNull().unique(),
+  userId: int("userId").notNull(),
+  employeeEmail: varchar("employeeEmail", { length: 320 }).notNull(),
+  action: varchar("action", { length: 32 }).default("approve").notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  usedAt: timestamp("usedAt"),
+  usedBy: varchar("usedBy", { length: 320 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export const employeeAuditLogs = mysqlTable("employee_audit_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  employeeEmail: varchar("employeeEmail", { length: 320 }).notNull(),
+  action: varchar("action", { length: 64 }).notNull(),
+  actorEmail: varchar("actorEmail", { length: 320 }).notNull(),
+  actorIp: varchar("actorIp", { length: 64 }),
+  actorUserAgent: text("actorUserAgent"),
+  details: text("details"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
+export type EmployeeApprovalToken = typeof employeeApprovalTokens.$inferSelect;
+export type InsertEmployeeApprovalToken = typeof employeeApprovalTokens.$inferInsert;
+export type EmployeeAuditLog = typeof employeeAuditLogs.$inferSelect;
+export type InsertEmployeeAuditLog = typeof employeeAuditLogs.$inferInsert;
 export type CustomerProfile = typeof customerProfiles.$inferSelect;
 export type InsertCustomerProfile = typeof customerProfiles.$inferInsert;
 export type Quotation = typeof quotations.$inferSelect;

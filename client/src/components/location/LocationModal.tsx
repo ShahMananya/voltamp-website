@@ -220,13 +220,13 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
           onClick={() => setIsLocationModalOpen(false)}
         >
           <div
-            className="account-modal relative w-full max-w-[580px] rounded-2xl bg-white border border-[#d2e0e8] p-6 sm:p-7 shadow-2xl transition-all"
+            className="account-modal relative w-full max-w-[580px] max-h-[85dvh] overflow-y-auto overscroll-contain rounded-2xl bg-white border border-[#d2e0e8] p-5 sm:p-7 shadow-2xl transition-all"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close */}
             <button
               onClick={() => setIsLocationModalOpen(false)}
-              className="absolute right-5 top-5 rounded-full p-2 text-gray-400 hover:text-gray-700 transition-colors"
+              className="sticky top-0 float-right -mt-1 -mr-1 z-30 rounded-full p-2 text-gray-400 hover:text-gray-700 bg-white/90 backdrop-blur-xs transition-colors cursor-pointer"
               aria-label="Close location selector"
             >
               <X className="size-5" />
@@ -372,11 +372,11 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
           onClick={() => dismissWelcome()}
         >
           <div
-            className="account-modal relative w-full max-w-[520px] rounded-2xl bg-white border border-[#d2e0e8] p-7 shadow-2xl text-center overflow-hidden"
+            className="account-modal relative w-full max-w-[520px] max-h-[85dvh] overflow-y-auto overscroll-contain rounded-2xl bg-white border border-[#d2e0e8] p-5 sm:p-7 shadow-2xl text-center"
             onClick={(e) => e.stopPropagation()}
           >
             {/* 1.5s Auto-dismiss timer indicator */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-amber-100 overflow-hidden rounded-t-2xl">
+            <div className="absolute top-0 left-0 right-0 h-1 bg-amber-100 overflow-hidden rounded-t-2xl z-20">
               <div
                 className="h-full bg-gradient-to-r from-amber-500 to-[#c46b19]"
                 style={{
@@ -395,7 +395,7 @@ export function LocationModal({ onQuoteClick }: LocationModalProps) {
             <button
               type="button"
               onClick={(e) => dismissWelcome(e)}
-              className="absolute right-4 top-4 z-50 rounded-full p-2.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer flex items-center justify-center"
+              className="sticky top-0 float-right -mt-1 -mr-1 z-30 rounded-full p-2 text-stone-400 hover:text-stone-700 bg-white/90 backdrop-blur-xs transition-colors cursor-pointer flex items-center justify-center"
               aria-label="Close welcome popup"
               title="Close"
             >

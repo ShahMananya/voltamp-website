@@ -17,9 +17,12 @@ import {
   LogOut,
   MessageCircle,
   PackageSearch,
+  Shield,
   ShieldAlert,
   ShieldCheck,
+  Building2,
   UserCheck,
+  UserX,
   Users,
   Zap,
   Database,
@@ -55,9 +58,53 @@ const WORKSPACE_URL = "https://script.google.com/macros/s/AKfycbwgYP4k3qFbgwxfsa
 export default function EmployeePortal() {
   const [, setLocation] = useLocation();
   const { user, loading, logout } = useAuth();
-  const isCeo = user?.email?.toLowerCase() === "ceo@volampelektrikals.com" || user?.email?.toLowerCase() === "admin@volampelektrikals.com";
-  const [activeTab, setActiveTab] = useState<"options" | "maintenance" | "pricing" | "blogs" | "newsletters" | "pricelists" | "queues">("options");
+  const isCeo =
+    user?.email?.toLowerCase() === "ceo@volampelektrikals.com" ||
+    user?.email?.toLowerCase() === "admin@volampelektrikals.com" ||
+    (user?.role === "admin" && user?.accountType === "employee");
+
+  const [activeTab, setActiveTab] = useState<
+    "options" | "maintenance" | "pricing" | "blogs" | "newsletters" | "pricelists" | "queues" | "governance"
+  >(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get("tab");
+      if (
+        tabParam &&
+        ["options", "maintenance", "pricing", "blogs", "newsletters", "pricelists", "queues", "governance"].includes(
+          tabParam
+        )
+      ) {
+        return tabParam as any;
+      }
+    }
+    return "options";
+  });
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get("tab");
+      if (
+        tabParam &&
+        ["options", "maintenance", "pricing", "blogs", "newsletters", "pricelists", "queues", "governance"].includes(
+          tabParam
+        )
+      ) {
+        setActiveTab(tabParam as any);
+      }
+    }
+  }, []);
   const [approvingId, setApprovingId] = useState<number | null>(null);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectTarget, setRejectTarget] = useState<{ id: number; name: string; email: string } | null>(null);
+  const [rejectReasonInput, setRejectReasonInput] = useState("");
+  const [editEmployeeModalOpen, setEditEmployeeModalOpen] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState<any | null>(null);
+  const [editEmpDept, setEditEmpDept] = useState("Engineering");
+  const [editEmpDesig, setEditEmpDesig] = useState("");
+  const [editEmpId, setEditEmpId] = useState("");
+  const [editEmpRole, setEditEmpRole] = useState<"user" | "admin">("user");
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [invoiceDefaults, setInvoiceDefaults] = useState({
     customer: "",
@@ -133,6 +180,12 @@ export default function EmployeePortal() {
   const pushedPriceListsQuery = trpc.priceLists.list.useQuery();
   const dashboardQuery = trpc.employee.dashboard.useQuery(undefined, {
     enabled: Boolean(user && user.accountType === "employee"),
+  });
+  const allEmployeesQuery = trpc.employee.listEmployees.useQuery(undefined, {
+    enabled: Boolean(isCeo),
+  });
+  const auditLogsQuery = trpc.employee.listAuditLogs.useQuery(undefined, {
+    enabled: Boolean(isCeo),
   });
 
   // Mutations
@@ -234,15 +287,95 @@ export default function EmployeePortal() {
         description: "The employee account has been granted official access.",
       });
       dashboardQuery.refetch();
+      allEmployeesQuery.refetch();
+      auditLogsQuery.refetch();
     },
     onError: (err) => {
       toast.error("Approval Failed", { description: err.message });
     },
   });
 
+  const rejectMutation = trpc.employee.rejectEmployee.useMutation({
+    onSuccess: () => {
+      toast.success("Employee Registration Rejected", {
+        description: "Status updated to rejected and notification dispatched.",
+      });
+      setRejectModalOpen(false);
+      setRejectTarget(null);
+      setRejectReasonInput("");
+      dashboardQuery.refetch();
+      allEmployeesQuery.refetch();
+      auditLogsQuery.refetch();
+    },
+    onError: (err) => toast.error("Rejection Failed", { description: err.message }),
+  });
+
+  const manageStatusMutation = trpc.employee.manageEmployeeStatus.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Employee Status Updated: ${data.action.toUpperCase()}`);
+      allEmployeesQuery.refetch();
+      dashboardQuery.refetch();
+      auditLogsQuery.refetch();
+    },
+    onError: (err) => toast.error("Action Failed", { description: err.message }),
+  });
+
+  const resendCeoEmailMutation = trpc.employee.resendCeoApprovalEmail.useMutation({
+    onSuccess: () => {
+      toast.success("CEO Authorization Email Dispatched", {
+        description: "Fresh 24-hour approval & rejection links sent to ceo@volampelektrikals.com.",
+      });
+    },
+    onError: (err) => toast.error("Email Dispatch Error", { description: err.message }),
+  });
+
+  const updateEmployeeMutation = trpc.employee.updateEmployee.useMutation({
+    onSuccess: () => {
+      toast.success("Employee Profile Updated");
+      setEditEmployeeModalOpen(false);
+      allEmployeesQuery.refetch();
+      auditLogsQuery.refetch();
+    },
+    onError: (err) => toast.error("Update Failed", { description: err.message }),
+  });
+
   const handleApprove = (userId: number) => {
     setApprovingId(userId);
     approveMutation.mutate({ userId });
+  };
+
+  const handleRejectClick = (emp: { id: number; name: string | null; email: string | null }) => {
+    setRejectTarget({ id: emp.id, name: emp.name || "Employee", email: emp.email || "" });
+    setRejectReasonInput("");
+    setRejectModalOpen(true);
+  };
+
+  const handleConfirmReject = () => {
+    if (!rejectTarget) return;
+    rejectMutation.mutate({
+      userId: rejectTarget.id,
+      reason: rejectReasonInput.trim() || undefined,
+    });
+  };
+
+  const handleEditClick = (emp: any) => {
+    setEditingEmployee(emp);
+    setEditEmpDept(emp.department || "Engineering");
+    setEditEmpDesig(emp.designation || "");
+    setEditEmpId(emp.employeeId || "");
+    setEditEmpRole(emp.role || "user");
+    setEditEmployeeModalOpen(true);
+  };
+
+  const handleSaveEmployeeProfile = () => {
+    if (!editingEmployee) return;
+    updateEmployeeMutation.mutate({
+      userId: editingEmployee.id,
+      department: editEmpDept,
+      designation: editEmpDesig,
+      employeeId: editEmpId,
+      role: editEmpRole,
+    });
   };
 
   const handleLogout = async () => {
@@ -298,12 +431,89 @@ export default function EmployeePortal() {
               <span>Sign In as Employee</span>
             </Button>
 
-            <Link href="/">
+            <Link href="/employee-registration">
               <Button
                 variant="outline"
                 className="w-full border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold py-2.5 cursor-pointer"
               >
-                Back to Homepage <ArrowRight className="ml-2 size-4" />
+                Register New Employee Account <ArrowRight className="ml-2 size-4" />
+              </Button>
+            </Link>
+
+            <Link href="/">
+              <Button
+                variant="ghost"
+                className="w-full text-slate-500 hover:text-slate-700 text-xs py-2 cursor-pointer"
+              >
+                Back to Homepage
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Pending CEO Approval or Status Guard for non-admin employees
+  if (user.employeeStatus !== "approved" && !isCeo) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-[#fdfbf9] dark:bg-[#071b2d]">
+        <div className="max-w-md w-full p-8 rounded-2xl bg-white dark:bg-[#102b42] border border-[#d2e0e8] dark:border-[#29465b] text-center shadow-xl">
+          {user.employeeStatus === "pending_approval" || user.employeeStatus === "pending_verification" ? (
+            <>
+              <div className="size-16 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center mx-auto mb-4 border border-amber-200 dark:border-amber-900">
+                <Clock className="size-8" />
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold mb-3 border border-emerald-200 dark:border-emerald-800">
+                <CheckCircle2 className="size-3.5" /> Official Email Verified
+              </div>
+              <h1 className="text-xl font-bold text-[#102a40] dark:text-white font-['Plus_Jakarta_Sans',sans-serif]">
+                Awaiting CEO Authorization
+              </h1>
+              <div className="my-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs leading-relaxed text-slate-700 dark:text-slate-300 font-medium text-center">
+                "Your employee registration has been successfully submitted and verified. Your account is currently awaiting authorization from VOLAMP management. You will receive an email once your registration is reviewed."
+              </div>
+              <p className="text-[11px] text-slate-500 mb-6">
+                Registration for <strong>{user.email}</strong> is under review by ceo@volampelektrikals.com.
+              </p>
+            </>
+          ) : user.employeeStatus === "rejected" ? (
+            <>
+              <div className="size-16 rounded-2xl bg-red-50 dark:bg-red-950/40 text-red-600 flex items-center justify-center mx-auto mb-4 border border-red-200 dark:border-red-900">
+                <ShieldAlert className="size-8" />
+              </div>
+              <h1 className="text-xl font-bold text-red-600 dark:text-red-400 font-['Plus_Jakarta_Sans',sans-serif]">
+                Registration Not Authorized
+              </h1>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 mb-6 leading-relaxed">
+                Your employee registration was reviewed and not authorized by executive management. Please contact HR or IT administration at support@volampelektrikals.com.
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="size-16 rounded-2xl bg-red-50 dark:bg-red-950/40 text-red-600 flex items-center justify-center mx-auto mb-4 border border-red-200 dark:border-red-900">
+                <Lock className="size-8" />
+              </div>
+              <h1 className="text-xl font-bold text-red-600 dark:text-red-400 font-['Plus_Jakarta_Sans',sans-serif]">
+                Account Access Suspended
+              </h1>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 mb-6 leading-relaxed">
+                Your official employee portal access has been revoked or suspended. Please contact executive administration.
+              </p>
+            </>
+          )}
+
+          <div className="space-y-2.5">
+            <Button
+              variant="outline"
+              onClick={handleLogout}
+              className="w-full border-slate-200 dark:border-slate-700 text-xs font-semibold py-2.5"
+            >
+              <LogOut className="size-3.5 mr-1.5" /> Sign Out
+            </Button>
+            <Link href="/">
+              <Button variant="ghost" className="w-full text-xs text-slate-500 hover:text-slate-700">
+                Back to Homepage
               </Button>
             </Link>
           </div>
@@ -584,7 +794,7 @@ export default function EmployeePortal() {
 
             <button
               onClick={() => setActiveTab("queues")}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ml-auto ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeTab === "queues"
                   ? "bg-slate-800 text-white shadow-sm"
                   : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -596,6 +806,25 @@ export default function EmployeePortal() {
                 <span className="size-2 rounded-full bg-red-500 animate-ping" />
               )}
             </button>
+
+            {isCeo && (
+              <button
+                onClick={() => setActiveTab("governance")}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ml-auto ${
+                  activeTab === "governance"
+                    ? "bg-[#102a40] text-[#f59e0b] shadow-sm border border-amber-500/40"
+                    : "text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 font-bold"
+                }`}
+              >
+                <ShieldCheck className="size-4 text-[#f59e0b]" />
+                <span>CEO Governance & Staff Desk</span>
+                {pendingEmployees.length > 0 && (
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-red-600 text-white font-mono">
+                    {pendingEmployees.length}
+                  </span>
+                )}
+              </button>
+            )}
           </div>
 
           {/* TAB 1: PRODUCT PRICING & ADD PRODUCTS */}
@@ -1321,7 +1550,7 @@ export default function EmployeePortal() {
             <div className="space-y-6">
               {/* Section 1: Employee Registrations & Approvals */}
               <section className="p-6 rounded-2xl bg-white dark:bg-[#102b42] border border-[#d2e0e8] dark:border-[#29465b] shadow-sm">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
                   <div className="flex items-center gap-2">
                     <Users className="size-5 text-[#c56718]" />
                     <h2 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif]">
@@ -1329,7 +1558,7 @@ export default function EmployeePortal() {
                     </h2>
                   </div>
                   <span className="text-xs text-[#6e808b] dark:text-[#b6c8d3]">
-                    Official domain: <strong>@volampelektrikals.com</strong>
+                    Official corporate domain: <strong>@volampelektrikals.com</strong>
                   </span>
                 </div>
 
@@ -1344,7 +1573,7 @@ export default function EmployeePortal() {
                       All employee accounts are reviewed
                     </p>
                     <span className="text-[11px] text-[#6e808b] dark:text-[#b6c8d3] block mt-0.5">
-                      When new staff register with their @volampelektrikals.com email, their authorization requests will appear here.
+                      When new staff register with their @volampelektrikals.com email and verify their OTP, their authorization requests will appear here.
                     </span>
                   </div>
                 ) : (
@@ -1352,30 +1581,71 @@ export default function EmployeePortal() {
                     {pendingEmployees.map((emp) => (
                       <div
                         key={emp.id}
-                        className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                        className="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4"
                       >
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <strong className="text-xs font-bold">{emp.name}</strong>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300">
-                              Pending Admin Approval
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <strong className="text-sm font-bold text-slate-900 dark:text-white">
+                              {emp.name}
+                            </strong>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900">
+                              Pending CEO Authorization
+                            </span>
+                            {emp.emailVerified && (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200">
+                                &#10003; Email Verified
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs font-mono text-[#1d73b7] dark:text-[#38bdf8]">
+                            {emp.email}
+                          </div>
+                          <div className="text-[11px] text-slate-500 flex flex-wrap gap-x-3 gap-y-1 pt-0.5">
+                            <span>
+                              <strong>Dept:</strong> {emp.department || "Operations"}
+                            </span>
+                            <span>
+                              <strong>Designation:</strong> {emp.designation || "Staff Member"}
+                            </span>
+                            <span>
+                              <strong>ID:</strong> {emp.employeeId || "Not assigned"}
                             </span>
                           </div>
-                          <span className="text-xs text-[#6e808b] dark:text-[#b6c8d3] font-mono">
-                            {emp.email}
-                          </span>
                         </div>
 
-                        <Button
-                          size="sm"
-                          disabled={approvingId === emp.id && approveMutation.isPending}
-                          onClick={() => handleApprove(emp.id)}
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold self-start sm:self-center cursor-pointer"
-                        >
-                          {approvingId === emp.id && approveMutation.isPending
-                            ? "Approving..."
-                            : "Approve Employee Access"}
-                        </Button>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Button
+                            size="sm"
+                            disabled={approvingId === emp.id && approveMutation.isPending}
+                            onClick={() => handleApprove(emp.id)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs cursor-pointer"
+                          >
+                            <CheckCircle2 className="size-3.5 mr-1" />
+                            {approvingId === emp.id && approveMutation.isPending
+                              ? "Approving..."
+                              : "Approve Access"}
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleRejectClick(emp)}
+                            className="border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs font-semibold cursor-pointer"
+                          >
+                            <UserX className="size-3.5 mr-1" /> Reject
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => resendCeoEmailMutation.mutate({ userId: emp.id })}
+                            disabled={resendCeoEmailMutation.isPending}
+                            title="Re-send CEO Authorization Email"
+                            className="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                          >
+                            <Mail className="size-3.5 mr-1" /> Resend Link
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1483,9 +1753,482 @@ export default function EmployeePortal() {
               </div>
             </div>
           )}
+
+          {/* TAB 6: CEO GOVERNANCE & STAFF ACCESS DESK */}
+          {activeTab === "governance" && isCeo && (
+            <div className="space-y-6">
+              {/* Executive Banner */}
+              <div className="p-6 rounded-2xl bg-gradient-to-r from-[#0a1f33] via-[#102a40] to-[#1e4e75] text-white shadow-md border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-[#f59e0b] text-[11px] font-bold tracking-wider uppercase mb-2 border border-amber-500/30">
+                    <ShieldCheck className="size-3.5" /> CEO Authorization & Executive Governance
+                  </div>
+                  <h2 className="text-xl font-bold font-['Plus_Jakarta_Sans',sans-serif]">
+                    Employee Access Roster & Security Audit Trail
+                  </h2>
+                  <p className="text-xs text-slate-300 mt-1">
+                    Manage corporate staff registrations, authorize/suspend employee portal permissions, and inspect security audit events.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link href="/employee-registration">
+                    <Button
+                      size="sm"
+                      className="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold border border-white/20"
+                    >
+                      <Plus className="size-3.5 mr-1.5" /> New Registration Page
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* SECTION A: PENDING CEO APPROVALS */}
+              <section className="p-6 rounded-2xl bg-white dark:bg-[#102b42] border border-[#d2e0e8] dark:border-[#29465b] shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Clock className="size-5 text-amber-500" />
+                    <h3 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif]">
+                      Pending Authorization Requests ({pendingEmployees.length})
+                    </h3>
+                  </div>
+                  <span className="text-xs text-slate-500">
+                    CEO Email: <strong className="text-slate-800 dark:text-slate-200">ceo@volampelektrikals.com</strong>
+                  </span>
+                </div>
+
+                {pendingEmployees.length === 0 ? (
+                  <div className="p-6 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 text-center">
+                    <CheckCircle2 className="size-8 text-emerald-500 mx-auto mb-2 opacity-80" />
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      No pending authorization requests
+                    </p>
+                    <span className="text-[11px] text-slate-500 mt-0.5 block">
+                      All employee candidate dossiers are authorized or reviewed.
+                    </span>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {pendingEmployees.map((emp) => (
+                      <div
+                        key={emp.id}
+                        className="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-bold text-sm text-slate-900 dark:text-white">
+                              {emp.name}
+                            </span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-200">
+                              PENDING CEO APPROVAL
+                            </span>
+                            {emp.emailVerified && (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200">
+                                &#10003; Verified OTP
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs font-mono text-[#1d73b7] dark:text-[#38bdf8]">
+                            {emp.email}
+                          </div>
+                          <div className="text-[11px] text-slate-500 flex flex-wrap gap-x-3 gap-y-1 pt-0.5">
+                            <span>
+                              <strong>Dept:</strong> {emp.department || "Operations"}
+                            </span>
+                            <span>
+                              <strong>Designation:</strong> {emp.designation || "Staff Member"}
+                            </span>
+                            <span>
+                              <strong>ID:</strong> {emp.employeeId || "Not assigned"}
+                            </span>
+                            <span>
+                              <strong>Registered:</strong>{" "}
+                              {new Date(emp.createdAt).toLocaleDateString("en-IN")}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Button
+                            size="sm"
+                            disabled={approvingId === emp.id && approveMutation.isPending}
+                            onClick={() => handleApprove(emp.id)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold cursor-pointer"
+                          >
+                            <CheckCircle2 className="size-3.5 mr-1" />
+                            {approvingId === emp.id && approveMutation.isPending
+                              ? "Authorizing..."
+                              : "Approve Employee"}
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleRejectClick(emp)}
+                            className="border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs font-semibold cursor-pointer"
+                          >
+                            <UserX className="size-3.5 mr-1" /> Reject Request
+                          </Button>
+
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => resendCeoEmailMutation.mutate({ userId: emp.id })}
+                            disabled={resendCeoEmailMutation.isPending}
+                            title="Re-send CEO Authorization Email"
+                            className="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                          >
+                            <Mail className="size-3.5 mr-1" /> Resend CEO Email
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+
+              {/* SECTION B: COMPLETE CORPORATE EMPLOYEE ROSTER */}
+              <section className="p-6 rounded-2xl bg-white dark:bg-[#102b42] border border-[#d2e0e8] dark:border-[#29465b] shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="size-5 text-[#1d73b7]" />
+                    <h3 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif]">
+                      Official Corporate Staff Roster ({allEmployeesQuery.data?.length ?? 0})
+                    </h3>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => allEmployeesQuery.refetch()}
+                    className="text-xs font-semibold h-8"
+                  >
+                    <RefreshCw className={`size-3 mr-1 ${allEmployeesQuery.isFetching ? "animate-spin" : ""}`} /> Refresh Roster
+                  </Button>
+                </div>
+
+                {allEmployeesQuery.isLoading ? (
+                  <div className="py-8 flex justify-center">
+                    <Loader2 className="animate-spin text-[#1d73b7] size-6" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 uppercase text-[10px] tracking-wider font-bold">
+                          <th className="py-2.5 px-3">Employee</th>
+                          <th className="py-2.5 px-3">Dept & Designation</th>
+                          <th className="py-2.5 px-3">Employee ID</th>
+                          <th className="py-2.5 px-3">Role</th>
+                          <th className="py-2.5 px-3">Status</th>
+                          <th className="py-2.5 px-3 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                        {allEmployeesQuery.data?.map((emp: any) => (
+                          <tr key={emp.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30">
+                            <td className="py-3 px-3">
+                              <span className="font-bold text-slate-900 dark:text-white block">
+                                {emp.name || "Employee"}
+                              </span>
+                              <span className="font-mono text-slate-500 text-[11px]">{emp.email}</span>
+                            </td>
+                            <td className="py-3 px-3">
+                              <span className="font-semibold block">{emp.department || "Operations"}</span>
+                              <span className="text-slate-500 text-[11px]">{emp.designation || "Staff Member"}</span>
+                            </td>
+                            <td className="py-3 px-3 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+                              {emp.employeeId || "—"}
+                            </td>
+                            <td className="py-3 px-3">
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${emp.role === "admin" ? "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300" : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}>
+                                {emp.role}
+                              </span>
+                            </td>
+                            <td className="py-3 px-3">
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                                  emp.employeeStatus === "approved"
+                                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                                    : emp.employeeStatus === "suspended"
+                                    ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
+                                    : emp.employeeStatus === "rejected"
+                                    ? "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"
+                                    : "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300"
+                                }`}
+                              >
+                                {emp.employeeStatus}
+                              </span>
+                            </td>
+                            <td className="py-3 px-3 text-right">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditClick(emp)}
+                                  className="h-7 text-[11px] px-2 text-slate-600 hover:text-slate-900"
+                                >
+                                  <Edit3 className="size-3 mr-1" /> Edit
+                                </Button>
+
+                                {emp.employeeStatus === "approved" ? (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      if (confirm(`Suspend access for ${emp.name}?`)) {
+                                        manageStatusMutation.mutate({ userId: emp.id, action: "suspend" });
+                                      }
+                                    }}
+                                    className="h-7 text-[11px] px-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40"
+                                  >
+                                    Suspend
+                                  </Button>
+                                ) : emp.employeeStatus === "suspended" ? (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => manageStatusMutation.mutate({ userId: emp.id, action: "reactivate" })}
+                                    className="h-7 text-[11px] px-2 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 font-bold"
+                                  >
+                                    Reactivate
+                                  </Button>
+                                ) : emp.employeeStatus === "pending_approval" ? (
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleApprove(emp.id)}
+                                    className="h-7 text-[11px] px-2 bg-emerald-600 text-white font-bold"
+                                  >
+                                    Approve
+                                  </Button>
+                                ) : null}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </section>
+
+              {/* SECTION C: EXECUTIVE SECURITY AUDIT LOGS */}
+              <section className="p-6 rounded-2xl bg-white dark:bg-[#102b42] border border-[#d2e0e8] dark:border-[#29465b] shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Shield className="size-5 text-emerald-600" />
+                    <h3 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif]">
+                      Executive Authorization & Security Audit Trail ({auditLogsQuery.data?.length ?? 0})
+                    </h3>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => auditLogsQuery.refetch()}
+                    className="text-xs font-semibold h-8"
+                  >
+                    <RefreshCw className={`size-3 mr-1 ${auditLogsQuery.isFetching ? "animate-spin" : ""}`} /> Refresh Logs
+                  </Button>
+                </div>
+
+                {auditLogsQuery.isLoading ? (
+                  <div className="py-8 flex justify-center">
+                    <Loader2 className="animate-spin text-emerald-600 size-6" />
+                  </div>
+                ) : auditLogsQuery.data?.length === 0 ? (
+                  <p className="text-xs text-slate-500 py-4 text-center">No audit log records logged yet.</p>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 uppercase text-[10px] tracking-wider font-bold">
+                          <th className="py-2 px-3">Timestamp (IST)</th>
+                          <th className="py-2 px-3">Action</th>
+                          <th className="py-2 px-3">Target Employee</th>
+                          <th className="py-2 px-3">Actor / Decided By</th>
+                          <th className="py-2 px-3">Audit Details</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                        {auditLogsQuery.data?.map((log: any) => (
+                          <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/30">
+                            <td className="py-2.5 px-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">
+                              {new Date(log.createdAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}
+                            </td>
+                            <td className="py-2.5 px-3">
+                              <span
+                                className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase whitespace-nowrap ${
+                                  log.action === "CEO_APPROVED"
+                                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                                    : log.action === "CEO_REJECTED"
+                                    ? "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"
+                                    : log.action === "EMAIL_VERIFIED"
+                                    ? "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300"
+                                    : log.action === "REGISTERED"
+                                    ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300"
+                                    : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                                }`}
+                              >
+                                {log.action}
+                              </span>
+                            </td>
+                            <td className="py-2.5 px-3 font-mono text-[11px] text-slate-800 dark:text-slate-200">
+                              {log.employeeEmail}
+                            </td>
+                            <td className="py-2.5 px-3 font-mono text-[11px] text-slate-600 dark:text-slate-400">
+                              {log.actorEmail}
+                            </td>
+                            <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300 text-[11px] max-w-xs truncate">
+                              {log.details || "—"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </section>
+            </div>
+          )}
         </div>
         )}
       </main>
+
+      {/* =========================================================================
+          REJECTION MODAL
+          ========================================================================= */}
+      {rejectModalOpen && rejectTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-white dark:bg-[#102b42] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 text-center">
+            <div className="size-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-3">
+              <UserX className="size-7" />
+            </div>
+            <h3 className="text-lg font-bold font-['Plus_Jakarta_Sans',sans-serif] text-slate-900 dark:text-white">
+              Reject Employee Registration?
+            </h3>
+            <p className="text-xs text-slate-500 mt-1 mb-4 leading-relaxed">
+              Decline official portal access for <strong>{rejectTarget.name}</strong> ({rejectTarget.email}).
+            </p>
+
+            <div className="text-left mb-4">
+              <Label className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                Reason for Rejection <span className="text-slate-400 font-normal">(optional)</span>
+              </Label>
+              <Textarea
+                value={rejectReasonInput}
+                onChange={(e) => setRejectReasonInput(e.target.value)}
+                placeholder="e.g. Identity does not match company payroll records"
+                className="mt-1 text-xs h-20"
+              />
+            </div>
+
+            <div className="flex gap-2.5">
+              <Button
+                variant="outline"
+                onClick={() => setRejectModalOpen(false)}
+                className="flex-1 text-xs font-semibold"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmReject}
+                disabled={rejectMutation.isPending}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold"
+              >
+                {rejectMutation.isPending ? "Rejecting..." : "Confirm Rejection"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          EDIT EMPLOYEE PROFILE MODAL
+          ========================================================================= */}
+      {editEmployeeModalOpen && editingEmployee && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="w-full max-w-md bg-white dark:bg-[#102b42] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="text-base font-bold font-['Plus_Jakarta_Sans',sans-serif]">
+                Edit Employee Record: {editingEmployee.name}
+              </h3>
+              <button onClick={() => setEditEmployeeModalOpen(false)}>
+                <X className="size-4 text-slate-500" />
+              </button>
+            </div>
+
+            <div className="space-y-3.5 text-xs">
+              <div>
+                <Label className="text-xs font-bold">Department</Label>
+                <select
+                  value={editEmpDept}
+                  onChange={(e) => setEditEmpDept(e.target.value)}
+                  className="w-full mt-1 h-9 px-3 text-xs rounded-md border border-input bg-background"
+                >
+                  <option value="Engineering">Engineering</option>
+                  <option value="Quality Assurance">Quality Assurance</option>
+                  <option value="Production & Testing">Production & Testing</option>
+                  <option value="Sales & Marketing">Sales & Marketing</option>
+                  <option value="Supply Chain & Logistics">Supply Chain & Logistics</option>
+                  <option value="Finance & Accounts">Finance & Accounts</option>
+                  <option value="Human Resources">Human Resources</option>
+                  <option value="Executive Office">Executive Office</option>
+                  <option value="Customer Operations">Customer Operations</option>
+                  <option value="Maintenance & Facilities">Maintenance & Facilities</option>
+                  <option value="IT & Systems">IT & Systems</option>
+                </select>
+              </div>
+
+              <div>
+                <Label className="text-xs font-bold">Job Designation</Label>
+                <Input
+                  value={editEmpDesig}
+                  onChange={(e) => setEditEmpDesig(e.target.value)}
+                  className="mt-1 text-xs"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs font-bold">Employee ID</Label>
+                <Input
+                  value={editEmpId}
+                  onChange={(e) => setEditEmpId(e.target.value)}
+                  placeholder="e.g. VLT-2026-ENG04"
+                  className="mt-1 text-xs"
+                />
+              </div>
+
+              <div>
+                <Label className="text-xs font-bold">Administrative Role</Label>
+                <select
+                  value={editEmpRole}
+                  onChange={(e) => setEditEmpRole(e.target.value as any)}
+                  className="w-full mt-1 h-9 px-3 text-xs rounded-md border border-input bg-background font-semibold"
+                >
+                  <option value="user">Standard Employee (Staff)</option>
+                  <option value="admin">Administrator (Executive / Management)</option>
+                </select>
+              </div>
+
+              <div className="pt-3 flex gap-2.5">
+                <Button
+                  variant="outline"
+                  onClick={() => setEditEmployeeModalOpen(false)}
+                  className="flex-1 text-xs font-semibold"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSaveEmployeeProfile}
+                  disabled={updateEmployeeMutation.isPending}
+                  className="flex-1 bg-[#1d73b7] hover:bg-[#155a90] text-white text-xs font-bold"
+                >
+                  {updateEmployeeMutation.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* =========================================================================
           ADD PRODUCT MODAL (FOR EMPLOYEES)

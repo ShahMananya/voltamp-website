@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import express from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
@@ -9,7 +11,6 @@ import { registerSeoRoutes } from "../seoRoutes";
 import { registerLiveMetalRoutes } from "../liveMetalRoutes";
 import { securityHeadersMiddleware } from "../securityHeaders";
 import { redirectsMiddleware } from "../redirects";
-import { seoPrerenderMiddleware } from "../seoPrerender";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 
@@ -18,6 +19,22 @@ export function createExpressApp() {
 
   // 1. Security Headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Staging Noindex)
   app.use(securityHeadersMiddleware);
+
+  // 1.5. Static Video Assets streaming with Byte-Range support (served before any routing / prerender)
+  const clientPublicVideos = path.resolve(process.cwd(), "client/public/videos");
+  if (fs.existsSync(clientPublicVideos)) {
+    app.use("/videos", express.static(clientPublicVideos, {
+      acceptRanges: true,
+      maxAge: "30d",
+    }));
+  }
+  const distPublicVideos = path.resolve(process.cwd(), "dist/public/videos");
+  if (fs.existsSync(distPublicVideos)) {
+    app.use("/videos", express.static(distPublicVideos, {
+      acceptRanges: true,
+      maxAge: "30d",
+    }));
+  }
 
   // 2. Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
@@ -52,9 +69,6 @@ export function createExpressApp() {
     }
     next();
   });
-
-  // 6. Server-Side SEO Prerender & Real 404 handler for HTML routes
-  app.use(seoPrerenderMiddleware);
 
   return app;
 }
