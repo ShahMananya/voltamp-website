@@ -1643,8 +1643,14 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                 </h3>
                 <button
                   type="button"
-                  onClick={() => setActiveTab("specs")}
-                  className="text-xs text-[#c56718] dark:text-sky-400 font-bold hover:underline"
+                  onClick={() => {
+                    setActiveTab("specs");
+                    const el = document.getElementById("product-specifications");
+                    if (el) {
+                      el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                  }}
+                  className="text-xs text-[#c56718] dark:text-sky-400 font-bold hover:underline cursor-pointer"
                 >
                   View All Specs →
                 </button>
@@ -1659,18 +1665,6 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                     </span>
                   </div>
                 ))}
-              </div>
-
-              {/* Report an Issue Link */}
-              <div className="pt-1 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setEnquireOpen(true)}
-                  className="text-[11px] text-slate-400 hover:text-red-500 transition-colors flex items-center gap-1 cursor-pointer font-medium"
-                >
-                  <HelpCircle className="size-3" />
-                  <span>Report data discrepancy / request clarification</span>
-                </button>
               </div>
             </div>
           </div>
@@ -1913,7 +1907,10 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
         {/* ========================================================================= */}
         {/* BOTTOM SECTION: EXPANDED TABBED ENGINEERING SPECIFICATIONS DOCKET        */}
         {/* ========================================================================= */}
-        <section className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <section
+          id="product-specifications"
+          className="scroll-mt-24 bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6"
+        >
           
           {/* Tab Navigation Pill Bar */}
           <div className="flex items-center gap-2 sm:gap-3 border-b border-slate-200/80 dark:border-slate-800/80 pb-4 overflow-x-auto">
