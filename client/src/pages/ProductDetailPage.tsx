@@ -243,8 +243,11 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
   const [pincodeResult, setPincodeResult] = useState<{
     pincode: string;
     isAvailable: boolean;
+    isAhmedabad: boolean;
     isSameDay: boolean;
+    title: string;
     message: string;
+    timingNotice?: string;
   } | null>(null);
   const [isCheckingPincode, setIsCheckingPincode] = useState(false);
   const [activeTab, setActiveTab] = useState<"specs" | "details" | "downloads" | "policy">("specs");
@@ -532,6 +535,56 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
     return ahmedabadGreaterPins.includes(pin);
   };
 
+  // Helper to determine delivery timing based on business hours & days in Indian Standard Time (IST)
+  const getAhmedabadDeliverySchedule = () => {
+    // Current time in IST (UTC+5:30)
+    const now = new Date();
+    const istFormatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Kolkata",
+      hour12: false,
+      weekday: "short",
+      hour: "numeric",
+      minute: "numeric",
+    });
+    const parts = istFormatter.formatToParts(now);
+    const partMap: Record<string, string> = {};
+    parts.forEach((p) => (partMap[p.type] = p.value));
+
+    const currentHour = parseInt(partMap.hour, 10);
+    const currentMinute = parseInt(partMap.minute, 10);
+    const weekday = partMap.weekday; // 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'
+
+    // Business Days: Monday through Saturday (Sunday is closed/non-business day)
+    const isBusinessDay = weekday !== "Sun";
+    // Business Hours Cutoff for Same-Day delivery: 5:00 PM (17:00)
+    const isBefore5PM = currentHour < 17;
+
+    const isSameDay = isBusinessDay && isBefore5PM;
+
+    if (isSameDay) {
+      const minutesLeft = (16 - currentHour) * 60 + (60 - currentMinute);
+      const hours = Math.floor(minutesLeft / 60);
+      const mins = minutesLeft % 60;
+      const countdown = hours > 0 ? `Order within ${hours}h ${mins}m` : `Order within ${mins}m`;
+      return {
+        isSameDay: true,
+        title: "Same-Day Delivery Available!",
+        message: "Place order before 5:00 PM today for Same-Day Delivery across Ahmedabad.",
+        timingNotice: `${countdown} (before 5:00 PM cutoff) · Ahmedabad Direct Express Hub`,
+      };
+    } else {
+      const reasonNotice = !isBusinessDay
+        ? "Sunday / Non-Business Day"
+        : "Order placed after 5:00 PM cutoff";
+      return {
+        isSameDay: false,
+        title: "Next-Day Delivery Available!",
+        message: "Orders placed during non-business hours or after 5:00 PM are prioritized for Next-Day Delivery across Ahmedabad.",
+        timingNotice: `${reasonNotice} · Priority First-Wave Morning Dispatch`,
+      };
+    }
+  };
+
   // Handle Pincode Check
   const handleCheckPincode = (e: React.FormEvent) => {
     e.preventDefault();
@@ -540,7 +593,9 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
       setPincodeResult({
         pincode: cleanPin,
         isAvailable: false,
+        isAhmedabad: false,
         isSameDay: false,
+        title: "Invalid Pincode",
         message: "Please enter a valid 6-digit Indian Postal Code.",
       });
       return;
@@ -550,19 +605,26 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
       setIsCheckingPincode(false);
       const isAhmedabad = isAhmedabadPincode(cleanPin);
       if (isAhmedabad) {
+        const schedule = getAhmedabadDeliverySchedule();
         setPincodeResult({
           pincode: cleanPin,
           isAvailable: true,
-          isSameDay: true,
-          message: `Direct warehouse dispatch to ${cleanPin}. Same-Day Delivery available for orders confirmed before 2:00 PM.`,
+          isAhmedabad: true,
+          isSameDay: schedule.isSameDay,
+          title: schedule.title,
+          message: `Direct warehouse dispatch to ${cleanPin}. ${schedule.message}`,
+          timingNotice: schedule.timingNotice,
         });
       } else {
         const days = (parseInt(cleanPin.slice(-1), 10) % 2) + 2;
         setPincodeResult({
           pincode: cleanPin,
           isAvailable: true,
+          isAhmedabad: false,
           isSameDay: false,
+          title: "Express Delivery Available",
           message: `Pan-India express dispatch to ${cleanPin} within ${days} business days via surface/air cargo.`,
+          timingNotice: "Standard National Logistics",
         });
       }
     }, 350);
@@ -1928,6 +1990,8 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                     className={`p-3 rounded-2xl border text-xs space-y-1.5 transition-all animate-in fade-in duration-200 ${
                       pincodeResult.isSameDay
                         ? "bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border-amber-300 dark:border-amber-700/60 text-amber-950 dark:text-amber-200"
+                        : pincodeResult.isAhmedabad
+                        ? "bg-gradient-to-r from-blue-500/10 via-indigo-500/5 to-transparent border-blue-300 dark:border-blue-700/60 text-blue-950 dark:text-blue-200"
                         : pincodeResult.isAvailable
                         ? "bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-300"
                         : "bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800 text-rose-600"
@@ -1938,20 +2002,27 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                         <>
                           <Zap className="size-4 text-amber-600 dark:text-amber-400 fill-amber-500 shrink-0" />
                           <span className="text-amber-700 dark:text-amber-300 font-black uppercase tracking-wide text-[11px]">
-                            Same-Day Delivery Available!
+                            {pincodeResult.title}
+                          </span>
+                        </>
+                      ) : pincodeResult.isAhmedabad ? (
+                        <>
+                          <Truck className="size-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                          <span className="text-blue-700 dark:text-blue-300 font-black uppercase tracking-wide text-[11px]">
+                            {pincodeResult.title}
                           </span>
                         </>
                       ) : pincodeResult.isAvailable ? (
                         <>
                           <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                           <span className="text-emerald-700 dark:text-emerald-300 font-bold text-[11px]">
-                            Express Delivery Available
+                            {pincodeResult.title}
                           </span>
                         </>
                       ) : (
                         <>
                           <AlertCircle className="size-4 text-rose-500 shrink-0" />
-                          <span className="text-rose-700 text-[11px] font-bold">Invalid Pincode</span>
+                          <span className="text-rose-700 text-[11px] font-bold">{pincodeResult.title}</span>
                         </>
                       )}
                     </div>
@@ -1960,10 +2031,18 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                       {pincodeResult.message}
                     </p>
 
-                    {pincodeResult.isSameDay && (
-                      <div className="text-[10px] font-semibold text-amber-800/90 dark:text-amber-300/90 pt-1 border-t border-amber-200/60 dark:border-amber-800/40 flex items-center gap-1.5">
-                        <Clock className="size-3 text-amber-600 dark:text-amber-400" />
-                        <span>Ahmedabad Direct Express · Place order before 2:00 PM</span>
+                    {pincodeResult.timingNotice && (
+                      <div
+                        className={`text-[10px] font-semibold pt-1 border-t flex items-center gap-1.5 ${
+                          pincodeResult.isSameDay
+                            ? "text-amber-800/90 dark:text-amber-300/90 border-amber-200/60 dark:border-amber-800/40"
+                            : pincodeResult.isAhmedabad
+                            ? "text-blue-800/90 dark:text-blue-300/90 border-blue-200/60 dark:border-blue-800/40"
+                            : "text-slate-500 dark:text-slate-400 border-slate-200/60 dark:border-slate-800/40"
+                        }`}
+                      >
+                        <Clock className="size-3 shrink-0" />
+                        <span>{pincodeResult.timingNotice}</span>
                       </div>
                     )}
                   </div>
