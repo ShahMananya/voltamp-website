@@ -40,6 +40,8 @@ import {
   ZoomIn,
   ZoomOut,
   Crosshair,
+  Clock,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -238,7 +240,12 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
   const [selectedVariant, setSelectedVariant] = useState("");
   const [quantity, setQuantity] = useState(100);
   const [pincode, setPincode] = useState("");
-  const [pincodeStatus, setPincodeStatus] = useState<string | null>(null);
+  const [pincodeResult, setPincodeResult] = useState<{
+    pincode: string;
+    isAvailable: boolean;
+    isSameDay: boolean;
+    message: string;
+  } | null>(null);
   const [isCheckingPincode, setIsCheckingPincode] = useState(false);
   const [activeTab, setActiveTab] = useState<"specs" | "details" | "downloads" | "policy">("specs");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -510,19 +517,55 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
     setTimeout(() => setCopiedKey(null), 1800);
   };
 
+  // Helper to check if a pincode is within Ahmedabad
+  const isAhmedabadPincode = (pin: string): boolean => {
+    if (!/^\d{6}$/.test(pin)) return false;
+    // 380xxx is Ahmedabad City & Municipal zones (380001 - 380099)
+    if (pin.startsWith("380")) return true;
+    // Key Ahmedabad District / Industrial Estates (Narol, Vatva, Odhav, Naroda, Changodar, Sanand, etc.)
+    const ahmedabadGreaterPins = [
+      "382405", "382415", "382418", "382421", "382424", "382427", "382430", 
+      "382440", "382443", "382445", "382470", "382475", "382480", "382481", 
+      "382330", "382340", "382345", "382346", "382350",
+      "382210", "382213", "382110", "382115", "382170"
+    ];
+    return ahmedabadGreaterPins.includes(pin);
+  };
+
   // Handle Pincode Check
   const handleCheckPincode = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pincode || pincode.length !== 6 || !/^\d{6}$/.test(pincode)) {
-      setPincodeStatus("Please enter a valid 6-digit Indian Postal Code.");
+    const cleanPin = pincode.trim();
+    if (!cleanPin || cleanPin.length !== 6 || !/^\d{6}$/.test(cleanPin)) {
+      setPincodeResult({
+        pincode: cleanPin,
+        isAvailable: false,
+        isSameDay: false,
+        message: "Please enter a valid 6-digit Indian Postal Code.",
+      });
       return;
     }
     setIsCheckingPincode(true);
     setTimeout(() => {
       setIsCheckingPincode(false);
-      const days = (parseInt(pincode.slice(-1), 10) % 2) + 2;
-      setPincodeStatus(`Available! Pan-India express dispatch to ${pincode} within ${days} business days.`);
-    }, 400);
+      const isAhmedabad = isAhmedabadPincode(cleanPin);
+      if (isAhmedabad) {
+        setPincodeResult({
+          pincode: cleanPin,
+          isAvailable: true,
+          isSameDay: true,
+          message: `Direct warehouse dispatch to ${cleanPin}. Same-Day Delivery available for orders confirmed before 2:00 PM.`,
+        });
+      } else {
+        const days = (parseInt(cleanPin.slice(-1), 10) % 2) + 2;
+        setPincodeResult({
+          pincode: cleanPin,
+          isAvailable: true,
+          isSameDay: false,
+          message: `Pan-India express dispatch to ${cleanPin} within ${days} business days via surface/air cargo.`,
+        });
+      }
+    }, 350);
   };
 
   // Helper to load image as Data URL for jsPDF
@@ -1880,10 +1923,50 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
                     {isCheckingPincode ? "Checking..." : "Check"}
                   </Button>
                 </form>
-                {pincodeStatus && (
-                  <p className={`text-[11px] leading-tight font-medium ${pincodeStatus.startsWith("Available") ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500"}`}>
-                    {pincodeStatus}
-                  </p>
+                {pincodeResult && (
+                  <div
+                    className={`p-3 rounded-2xl border text-xs space-y-1.5 transition-all animate-in fade-in duration-200 ${
+                      pincodeResult.isSameDay
+                        ? "bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border-amber-300 dark:border-amber-700/60 text-amber-950 dark:text-amber-200"
+                        : pincodeResult.isAvailable
+                        ? "bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60 text-emerald-900 dark:text-emerald-300"
+                        : "bg-rose-50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-800 text-rose-600"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      {pincodeResult.isSameDay ? (
+                        <>
+                          <Zap className="size-4 text-amber-600 dark:text-amber-400 fill-amber-500 shrink-0" />
+                          <span className="text-amber-700 dark:text-amber-300 font-black uppercase tracking-wide text-[11px]">
+                            Same-Day Delivery Available!
+                          </span>
+                        </>
+                      ) : pincodeResult.isAvailable ? (
+                        <>
+                          <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <span className="text-emerald-700 dark:text-emerald-300 font-bold text-[11px]">
+                            Express Delivery Available
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle className="size-4 text-rose-500 shrink-0" />
+                          <span className="text-rose-700 text-[11px] font-bold">Invalid Pincode</span>
+                        </>
+                      )}
+                    </div>
+
+                    <p className="text-[11px] leading-relaxed">
+                      {pincodeResult.message}
+                    </p>
+
+                    {pincodeResult.isSameDay && (
+                      <div className="text-[10px] font-semibold text-amber-800/90 dark:text-amber-300/90 pt-1 border-t border-amber-200/60 dark:border-amber-800/40 flex items-center gap-1.5">
+                        <Clock className="size-3 text-amber-600 dark:text-amber-400" />
+                        <span>Ahmedabad Direct Express · Place order before 2:00 PM</span>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
 
