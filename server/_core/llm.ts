@@ -215,14 +215,39 @@ const normalizeToolChoice = (
   return toolChoice;
 };
 
-const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
+const resolveApiUrl = () => {
+  if (ENV.huggingFaceApiKey) {
+    return "https://router.huggingface.co/v1/chat/completions";
+  }
+  if (ENV.groqApiKey) {
+    return "https://api.groq.com/openai/v1/chat/completions";
+  }
+  if (ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0) {
+    return `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`;
+  }
+  return "https://api.openai.com/v1/chat/completions";
+};
+
+const resolveApiKey = () => {
+  if (ENV.huggingFaceApiKey) return ENV.huggingFaceApiKey;
+  if (ENV.groqApiKey) return ENV.groqApiKey;
+  return ENV.forgeApiKey;
+};
+
+const resolveDefaultModel = () => {
+  if (ENV.huggingFaceApiKey) {
+    return ENV.huggingFaceModel || "meta-llama/Llama-3.3-70B-Instruct";
+  }
+  if (ENV.groqApiKey) {
+    return "llama-3.3-70b-versatile";
+  }
+  return "gpt-4o-mini";
+};
 
 const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+  const key = resolveApiKey();
+  if (!key) {
+    throw new Error("No AI API key is configured. Please provide HUGGINGFACE_API_KEY, GROQ_API_KEY, or OPENAI_API_KEY.");
   }
 };
 
@@ -311,7 +336,14 @@ const fetchWithBackoff = async (
   for (let attempt = 0; attempt <= RETRY_MAX_RETRIES; attempt++) {
     try {
       const response = await fetch(url, init);
-      if (response.ok || attempt === RETRY_MAX_RETRIES) {
+      if (
+        response.ok ||
+        attempt === RETRY_MAX_RETRIES ||
+        response.status === 401 ||
+        response.status === 402 ||
+        response.status === 403 ||
+        response.status === 404
+      ) {
         return response;
       }
 
@@ -367,6 +399,8 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
 
   if (model) {
     payload.model = model;
+  } else {
+    payload.model = resolveDefaultModel();
   }
 
   if (tools && tools.length > 0) {
@@ -408,7 +442,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
+      authorization: `Bearer ${resolveApiKey()}`,
     },
     body: JSON.stringify(payload),
   });

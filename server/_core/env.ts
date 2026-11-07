@@ -13,5 +13,10 @@ export const ENV = {
     process.env.BUILT_IN_FORGE_API_KEY ||
     process.env.OPENAI_API_KEY ||
     process.env.GROQ_API_KEY ||
+    process.env.HUGGINGFACE_API_KEY ||
+    process.env.HF_TOKEN ||
     "",
+  huggingFaceApiKey: process.env.HUGGINGFACE_API_KEY || process.env.HF_TOKEN || "",
+  huggingFaceModel: process.env.HUGGINGFACE_MODEL || "meta-llama/Llama-3.3-70B-Instruct",
+  groqApiKey: process.env.GROQ_API_KEY || "",
 };

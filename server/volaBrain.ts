@@ -644,11 +644,11 @@ function handleAboutUsAndHeritage(query: string): string | null {
   const lower = query.toLowerCase().trim();
 
   const isAboutQuery =
-    /\b(?:about\s*volamp|about\s*us|who\s*are\s*you|history|heritage|legacy|4\s*generation|four\s*generation|founder|origin|founded|soma\s*bhai|chaturbhai|vipulbhai|naimil|patel|ceo|quote|message|vision|team|headquarters|office|address|where\s*(?:are\s*you|is\s*volamp)|location|khadia|aslali|sanand|cin|gstin|gem\s*registration)\b/i.test(lower);
+    /\b(?:about\s*volamp|about\s*us|who\s*are\s*you|history|story|heritage|legacy|4[\s-]*generation|four[\s-]*generation|60[\s-]*(?:years?|yr)|founder|origin|founded|soma\s*bhai|chaturbhai|vipulbhai|naimil|patel|ceo|quote|message|vision|team|headquarters|office|address|contact\s*(?:us|number|details|info)?|phone|email|whatsapp|where\s*(?:are\s*you|is\s*volamp)|location|khadia|aslali|sanand|cin|gstin|gem\s*registration)\b/i.test(lower);
 
   if (!isAboutQuery) return null;
 
-  const isHistoryOr4Gen = /\b(?:history|story|heritage|legacy|4\s*generation|four\s*generation|origin|founded|1964|soma\s*bhai)\b/i.test(lower);
+  const isHistoryOr4Gen = /\b(?:history|story|heritage|legacy|4[\s-]*generation|four[\s-]*generation|60[\s-]*(?:years?|yr)|origin|founded|1964|soma\s*bhai)\b/i.test(lower);
 
   // CEO Message specifically: only if NOT asking about history or 4 generations
   if (!isHistoryOr4Gen && /\b(?:ceo|message|quote|vision|leader|director|naimil)\b/i.test(lower) && !lower.includes("price") && !lower.includes("order")) {
@@ -1461,7 +1461,31 @@ export async function generateVolaResponse(
     return greetings[Math.floor(Math.random() * greetings.length)];
   }
 
-  // 4. PRICING, COSTS, CONTRACTOR DISCOUNTS & CHARGES (run first if pricing intent)
+  // 4. ABOUT US, 4 GENERATIONS, HERITAGE, CEO MESSAGE, CONTACT & HEADQUARTERS
+  const aboutResponse = handleAboutUsAndHeritage(lastUserMsg);
+  if (aboutResponse) {
+    return aboutResponse;
+  }
+
+  // 5. BUSINESS SEGMENTS (All 10 Specialized Segments)
+  const segmentResponse = handleBusinessSegments(lastUserMsg);
+  if (segmentResponse) {
+    return segmentResponse;
+  }
+
+  // 6. TECHNICAL SIZING & ELECTRICAL FORMULAS (kW, HP, Amps, Cable Size, Voltage Drop)
+  const sizingResponse = handleTechnicalEngineeringAndSizing(lastUserMsg);
+  if (sizingResponse) {
+    return sizingResponse;
+  }
+
+  // 7. MATH & STATUTORY GST CALCULATIONS
+  const mathResponse = handleMathAndFormulas(lastUserMsg);
+  if (mathResponse) {
+    return mathResponse;
+  }
+
+  // 8. PRICING, COSTS, CONTRACTOR DISCOUNTS & CHARGES
   const isPricingIntent = /\b(?:prices?|costs?|rates?|pricing|charge|charges|how\s*much|bhav|discounts?|quotations?|rfqs?)\b/i.test(lower);
   if (isPricingIntent) {
     const pricingResponse = handlePricingCostsAndDiscounts(lastUserMsg);
@@ -1470,54 +1494,30 @@ export async function generateVolaResponse(
     }
   }
 
-  // 5. PRODUCT CATALOG & SPECIFICATION INTELLIGENCE (3,385+ items across 8 categories)
+  // 9. PRODUCT CATALOG & SPECIFICATION INTELLIGENCE (3,385+ items across 8 categories)
   const productResponse = handleProductAndCatalogQuery(lastUserMsg);
   if (productResponse) {
     return productResponse;
   }
 
-  // 6. PRICING FALLBACK (if not caught earlier)
-  const pricingResponse = handlePricingCostsAndDiscounts(lastUserMsg);
-  if (pricingResponse) {
-    return pricingResponse;
+  // 10. PRICING FALLBACK (if not caught earlier)
+  const fallbackPricing = handlePricingCostsAndDiscounts(lastUserMsg);
+  if (fallbackPricing) {
+    return fallbackPricing;
   }
 
-  // 6. TECHNICAL SIZING & ELECTRICAL FORMULAS
-  const sizingResponse = handleTechnicalEngineeringAndSizing(lastUserMsg);
-  if (sizingResponse) {
-    return sizingResponse;
-  }
-
-  // 7. BUSINESS SEGMENTS (All 10 Specialized Segments)
-  const segmentResponse = handleBusinessSegments(lastUserMsg);
-  if (segmentResponse) {
-    return segmentResponse;
-  }
-
-  // 8. ABOUT US, 4 GENERATIONS, HERITAGE, CEO MESSAGE & TEAM
-  const aboutResponse = handleAboutUsAndHeritage(lastUserMsg);
-  if (aboutResponse) {
-    return aboutResponse;
-  }
-
-  // 9. MATH & GST FORMULAS
-  const mathResponse = handleMathAndFormulas(lastUserMsg);
-  if (mathResponse) {
-    return mathResponse;
-  }
-
-  // 10. ELECTRICAL SCIENCE & TECHNICAL COMPARISONS
+  // 11. ELECTRICAL SCIENCE & TECHNICAL COMPARISONS
   const scienceResponse = handleScienceAndElectrical(lastUserMsg);
   if (scienceResponse) {
     return scienceResponse;
   }
 
-  // 11. GENERAL KNOWLEDGE, JOKES, POEMS & CHIT-CHAT
+  // 12. GENERAL KNOWLEDGE, JOKES, POEMS & CHIT-CHAT
   const generalResponse = handleGeneralKnowledgeAndChitChat(lastUserMsg);
   if (generalResponse) {
     return generalResponse;
   }
 
-  // 12. HIGH-VOLTAGE UNIVERSAL OPEN-ENDED TOPIC SYNTHESIZER
+  // 13. HIGH-VOLTAGE UNIVERSAL OPEN-ENDED TOPIC SYNTHESIZER
   return await synthesizeOpenEndedResponse(lastUserMsg);
 }
