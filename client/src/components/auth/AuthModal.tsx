@@ -749,24 +749,10 @@ export function AuthModal({
             <h2 className="text-xl font-bold text-[#102a40] font-['Plus_Jakarta_Sans',sans-serif] mt-0.5">
               Enter Verification Code
             </h2>
-            <p className="text-xs text-[#5a6b78] mt-1 mb-3">
+            <p className="text-xs text-[#5a6b78] mt-1 mb-5">
               Enter the 6-digit one-time code sent to{" "}
               <strong className="text-[#102a40]">{activeEmail}</strong>.
             </p>
-
-            {/* 1-Click Code Helper */}
-            <div className="p-2.5 mb-4 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-xs flex items-center justify-between w-full max-w-[280px] mx-auto">
-              <span className="text-[11px] text-amber-900 dark:text-amber-200">
-                Verification Code: <strong className="font-mono">123456</strong>
-              </span>
-              <button
-                type="button"
-                onClick={() => setOtpCode("123456")}
-                className="text-[11px] font-bold text-[#c56718] hover:underline cursor-pointer"
-              >
-                Use 123456
-              </button>
-            </div>
 
             <form onSubmit={handleMfaSubmit} className="flex flex-col items-center space-y-5">
               <InputOTP maxLength={6} value={otpCode} onChange={setOtpCode}>
@@ -830,24 +816,10 @@ export function AuthModal({
               <strong className="text-[#102a40]">{activeEmail}</strong>.
             </p>
 
-            <div className="p-3 mb-3 rounded-lg bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-xs text-[#204562] dark:text-blue-200 text-left">
+            <div className="p-3 mb-4 rounded-lg bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-xs text-[#204562] dark:text-blue-200 text-left">
               <p className="leading-relaxed">
-                A verification code has been dispatched to your email address. Please check your inbox and spam folder.
+                A 6-digit verification code has been dispatched to your official email address via Zoho Mail. Please check your inbox and spam folder.
               </p>
-            </div>
-
-            {/* 1-Click Code Helper */}
-            <div className="p-2.5 mb-4 rounded-lg bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-xs flex items-center justify-between w-full max-w-[280px] mx-auto">
-              <span className="text-[11px] text-blue-900 dark:text-blue-200">
-                Verification Code: <strong className="font-mono">123456</strong>
-              </span>
-              <button
-                type="button"
-                onClick={() => setOtpCode("123456")}
-                className="text-[11px] font-bold text-[#1d73b7] hover:underline cursor-pointer"
-              >
-                Use 123456
-              </button>
             </div>
 
             <form onSubmit={handleEmailOtpSubmit} className="flex flex-col items-center space-y-5">

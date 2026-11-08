@@ -1038,10 +1038,41 @@ export const appRouter = router({
 
     // Public procedure to inspect token for CEO authorization page (safe dossier)
     getApprovalRequestInfo: publicProcedure
-      .input(z.object({ token: z.string().trim() }))
+      .input(
+        z.object({
+          token: z.string().trim().optional(),
+          employeeEmail: z.string().trim().optional(),
+        })
+      )
       .query(async ({ input }) => {
-        const tokenRecord = await getEmployeeApprovalToken(input.token);
+        let tokenRecord = input.token ? await getEmployeeApprovalToken(input.token) : undefined;
+        if (!tokenRecord && input.employeeEmail) {
+          tokenRecord = await getLatestApprovalTokenForEmail(input.employeeEmail, "approve");
+        }
+
         if (!tokenRecord) {
+          if (input.employeeEmail) {
+            const employee = await getUserByEmail(input.employeeEmail);
+            if (employee && employee.accountType === "employee") {
+              return {
+                valid: true as const,
+                token: "direct-approval",
+                action: "approve" as const,
+                expiresAt: new Date(Date.now() + 86400000),
+                employee: {
+                  id: employee.id,
+                  name: employee.name || "Employee",
+                  email: employee.email || "",
+                  employeeId: employee.employeeId || "Not assigned yet",
+                  department: employee.department || "Operations",
+                  designation: employee.designation || "Staff Member",
+                  emailVerified: Boolean(employee.emailVerified),
+                  currentStatus: employee.employeeStatus,
+                  createdAt: employee.createdAt,
+                },
+              };
+            }
+          }
           return {
             valid: false as const,
             error: "The authorization link is invalid or could not be found.",
@@ -1098,7 +1129,8 @@ export const appRouter = router({
     processCeoDecision: protectedProcedure
       .input(
         z.object({
-          token: z.string().trim(),
+          token: z.string().trim().optional(),
+          employeeEmail: z.string().trim().optional(),
           decision: z.enum(["approve", "reject"]),
           reason: z.string().trim().max(500).optional(),
         })
@@ -1113,38 +1145,40 @@ export const appRouter = router({
           });
         }
 
-        const tokenRecord = await getEmployeeApprovalToken(input.token);
-        if (!tokenRecord) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Authorization token is invalid or does not exist.",
-          });
+        let employee: any = undefined;
+
+        if (input.token && input.token !== "direct-approval") {
+          const tokenRecord = await getEmployeeApprovalToken(input.token);
+          if (tokenRecord) {
+            if (tokenRecord.usedAt) {
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "This authorization token has already been processed and cannot be reused.",
+              });
+            }
+
+            if (new Date(tokenRecord.expiresAt) < new Date()) {
+              throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "This authorization token has expired (24h limit).",
+              });
+            }
+
+            employee = await getUserById(tokenRecord.userId);
+            await markEmployeeApprovalTokenUsed(tokenRecord.token, callerEmail);
+          }
         }
 
-        if (tokenRecord.usedAt) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "This authorization token has already been processed and cannot be reused.",
-          });
+        if (!employee && input.employeeEmail) {
+          employee = await getUserByEmail(input.employeeEmail);
         }
 
-        if (new Date(tokenRecord.expiresAt) < new Date()) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "This authorization token has expired (24h limit).",
-          });
-        }
-
-        const employee = await getUserById(tokenRecord.userId);
         if (!employee) {
           throw new TRPCError({
             code: "NOT_FOUND",
             message: "Employee account was not found.",
           });
         }
-
-        // Atomically mark token as used
-        await markEmployeeApprovalTokenUsed(tokenRecord.token, callerEmail);
 
         if (input.decision === "approve") {
           await approveEmployee(employee.id, callerEmail);

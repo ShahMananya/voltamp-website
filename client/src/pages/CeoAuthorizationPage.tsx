@@ -49,6 +49,7 @@ export default function CeoAuthorizationPage() {
   // Parse URL search parameters
   const params = new URLSearchParams(searchString);
   const token = params.get("token") || "";
+  const employeeEmail = params.get("employeeEmail") || "";
   const initialAction = params.get("action") === "reject" ? "reject" : "approve";
 
   // Selected decision state
@@ -77,9 +78,12 @@ export default function CeoAuthorizationPage() {
 
   // Query token info
   const tokenInfoQuery = trpc.employee.getApprovalRequestInfo.useQuery(
-    { token },
     {
-      enabled: Boolean(token),
+      token: token || undefined,
+      employeeEmail: employeeEmail || undefined,
+    },
+    {
+      enabled: Boolean(token || employeeEmail),
       retry: false,
     }
   );
@@ -157,9 +161,10 @@ export default function CeoAuthorizationPage() {
   };
 
   const handleExecuteDecision = () => {
-    if (!token) return;
+    if (!token && !employeeEmail) return;
     processDecisionMutation.mutate({
-      token,
+      token: token || undefined,
+      employeeEmail: employeeEmail || undefined,
       decision: selectedDecision,
       reason: remarks.trim() || undefined,
     });
@@ -219,8 +224,8 @@ export default function CeoAuthorizationPage() {
 
       {/* Main Container */}
       <main className="max-w-3xl mx-auto px-4 py-8 md:py-12 w-full flex-1">
-        {/* Token not supplied */}
-        {!token && (
+        {/* Token and employee email not supplied */}
+        {!token && !employeeEmail && (
           <div className="bg-white dark:bg-[#102b42] rounded-2xl border border-slate-200 dark:border-slate-800 p-8 text-center shadow-lg">
             <div className="size-14 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center mx-auto mb-4">
               <ShieldAlert className="size-7" />
@@ -230,18 +235,18 @@ export default function CeoAuthorizationPage() {
             </h1>
             <p className="text-xs text-slate-500 mt-2 mb-6 max-w-md mx-auto">
               Please open this page using the direct authorization link received at{" "}
-              <strong>ceo@volampelektrikals.com</strong>.
+              <strong>ceo@volampelektrikals.com</strong>, or manage authorizations directly in the Employee Portal.
             </p>
-            <Link href="/employee-portal">
+            <Link href="/employee-portal?tab=governance">
               <Button className="bg-[#1d73b7] text-white text-xs font-semibold">
-                Go to Employee Governance Portal &rarr;
+                Go to Executive Governance Portal &rarr;
               </Button>
             </Link>
           </div>
         )}
 
         {/* Loading Token Info */}
-        {token && tokenInfoQuery.isLoading && (
+        {(token || employeeEmail) && tokenInfoQuery.isLoading && (
           <div className="bg-white dark:bg-[#102b42] rounded-2xl border border-slate-200 dark:border-slate-800 p-12 text-center shadow-lg">
             <RefreshCw className="size-8 text-[#1d73b7] animate-spin mx-auto mb-4" />
             <h2 className="text-base font-bold text-slate-700 dark:text-slate-200">
@@ -252,7 +257,7 @@ export default function CeoAuthorizationPage() {
         )}
 
         {/* Invalid or Expired Token Alert */}
-        {token && tokenInfoQuery.data && !tokenInfoQuery.data.valid && (
+        {(token || employeeEmail) && tokenInfoQuery.data && !tokenInfoQuery.data.valid && (
           <div className="bg-white dark:bg-[#102b42] rounded-2xl border border-slate-200 dark:border-slate-800 p-8 text-center shadow-xl">
             <div className="size-16 rounded-2xl bg-red-50 dark:bg-red-950/40 text-red-600 flex items-center justify-center mx-auto mb-4 border border-red-200 dark:border-red-900">
               <ShieldAlert className="size-8" />
@@ -298,7 +303,7 @@ export default function CeoAuthorizationPage() {
         )}
 
         {/* Valid Token Card */}
-        {token && tokenInfoQuery.data && tokenInfoQuery.data.valid && (
+        {(token || employeeEmail) && tokenInfoQuery.data && tokenInfoQuery.data.valid && (
           <div className="space-y-6">
             {/* Step 1: Check CEO Authentication */}
             {!isCeo ? (

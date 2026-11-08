@@ -1214,7 +1214,11 @@ export async function dispatchEmployeeApprovalRequestEmail(
 
   const baseUrl =
     process.env.APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://volampelektrikals.com");
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NODE_ENV === "production"
+      ? "https://volampelektrikals.com"
+      : "http://localhost:3000");
   
   const approveUrl = data.approvalToken
     ? `${baseUrl}/ceo-authorization?token=${encodeURIComponent(data.approvalToken)}&action=approve`
@@ -1427,7 +1431,11 @@ export async function dispatchEmployeeApprovedConfirmationEmail(
   const defaultSender = process.env.SMTP_FROM || "no-reply@volampelektrikals.com";
   const baseUrl =
     process.env.APP_URL ||
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://volampelektrikals.com");
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NODE_ENV === "production"
+      ? "https://volampelektrikals.com"
+      : "http://localhost:3000");
   const loginUrl = `${baseUrl}/employee-portal`;
 
   const subject = `Official Employee Account Authorized - Welcome to VOLAMP Elektrikals`;

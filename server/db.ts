@@ -1,4 +1,6 @@
 import crypto from "crypto";
+import fs from "fs";
+import path from "path";
 import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
@@ -183,6 +185,82 @@ let memoryNextAuditId = 1;
 const memoryApprovalTokens: Map<string, EmployeeApprovalToken> = new Map();
 const memoryAuditLogs: EmployeeAuditLog[] = [];
 const memoryOtps: StoredOtp[] = [];
+
+const USERS_STORE_FILE = path.join(process.cwd(), "server", "data", "users_store.json");
+
+function loadUsersStore() {
+  try {
+    if (fs.existsSync(USERS_STORE_FILE)) {
+      const raw = fs.readFileSync(USERS_STORE_FILE, "utf-8");
+      const data = JSON.parse(raw);
+      if (data.users && Array.isArray(data.users)) {
+        for (const u of data.users) {
+          memoryUsers.set(u.email.toLowerCase().trim(), {
+            ...u,
+            createdAt: u.createdAt ? new Date(u.createdAt) : new Date(),
+            updatedAt: u.updatedAt ? new Date(u.updatedAt) : new Date(),
+            approvedAt: u.approvedAt ? new Date(u.approvedAt) : null,
+            lastSignedIn: u.lastSignedIn ? new Date(u.lastSignedIn) : new Date(),
+          });
+          if (u.id >= memoryNextUserId) {
+            memoryNextUserId = u.id + 1;
+          }
+        }
+      }
+      if (data.tokens && Array.isArray(data.tokens)) {
+        for (const t of data.tokens) {
+          memoryApprovalTokens.set(t.token, {
+            ...t,
+            expiresAt: new Date(t.expiresAt),
+            createdAt: new Date(t.createdAt),
+            usedAt: t.usedAt ? new Date(t.usedAt) : null,
+          });
+          if (t.id >= memoryNextTokenId) {
+            memoryNextTokenId = t.id + 1;
+          }
+        }
+      }
+      if (data.auditLogs && Array.isArray(data.auditLogs)) {
+        for (const l of data.auditLogs) {
+          memoryAuditLogs.push({
+            ...l,
+            createdAt: new Date(l.createdAt),
+          });
+          if (l.id >= memoryNextAuditId) {
+            memoryNextAuditId = l.id + 1;
+          }
+        }
+      }
+      if (data.otps && Array.isArray(data.otps)) {
+        for (const o of data.otps) {
+          memoryOtps.push(o);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[AuthStore] Failed to load persistent users store:", err);
+  }
+}
+
+export function saveUsersStore() {
+  try {
+    const dir = path.dirname(USERS_STORE_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    const data = {
+      users: Array.from(memoryUsers.values()),
+      tokens: Array.from(memoryApprovalTokens.values()),
+      auditLogs: memoryAuditLogs,
+      otps: memoryOtps,
+    };
+    fs.writeFileSync(USERS_STORE_FILE, JSON.stringify(data, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("[AuthStore] Failed to save persistent users store:", err);
+  }
+}
+
+loadUsersStore();
 const memoryCustomerProfiles = new Map<number, any>();
 const memoryQuotations: any[] = [
   {
@@ -252,6 +330,7 @@ export function saveOtp(
     }
   }
   memoryOtps.push({ email: normalizedEmail, code, purpose, expiresAt });
+  saveUsersStore();
   console.log(`[OTP] Generated for ${normalizedEmail} (${purpose}): ${code} (expires in ${Math.round(expiresInMs / 1000)}s)`);
 }
 
@@ -383,6 +462,7 @@ export async function createLocalUser(params: {
   }
 
   memoryUsers.set(normalizedEmail, newUser);
+  saveUsersStore();
   return newUser;
 }
 
@@ -399,6 +479,7 @@ export async function updateUser(
     if (user.id === id) {
       const updated = { ...user, ...fields, updatedAt: new Date() };
       memoryUsers.set(key, updated);
+      saveUsersStore();
       return updated;
     }
   }
@@ -509,6 +590,7 @@ export async function createEmployeeApprovalToken(params: {
   }
 
   memoryApprovalTokens.set(token, record);
+  saveUsersStore();
   return record;
 }
 
@@ -578,8 +660,10 @@ export async function markEmployeeApprovalTokenUsed(token: string, actorEmail: s
   if (inMem) {
     inMem.usedAt = now;
     inMem.usedBy = actorEmail.toLowerCase().trim();
+    saveUsersStore();
     return true;
   }
+  saveUsersStore();
   return true;
 }
 
@@ -614,6 +698,7 @@ export async function recordEmployeeAuditLog(params: {
   }
 
   memoryAuditLogs.unshift(log);
+  saveUsersStore();
   return log;
 }
 
@@ -673,6 +758,7 @@ export async function approveEmployee(userId: number, actorEmail: string = "ceo@
   const now = new Date();
   await updateUser(userId, {
     employeeStatus: "approved",
+    emailVerified: true,
     approvedAt: now,
     approvedBy: actorEmail,
   });
@@ -683,6 +769,7 @@ export async function approveEmployee(userId: number, actorEmail: string = "ceo@
     actorEmail,
     details: `Employee account authorized for official portal access by ${actorEmail}`,
   });
+  saveUsersStore();
   return true;
 }
 
