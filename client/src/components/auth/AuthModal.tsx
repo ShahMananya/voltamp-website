@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Briefcase,
-  Building2,
   CheckCircle2,
   Clock,
   KeyRound,
@@ -359,7 +358,7 @@ export function AuthModal({
       onClick={onClose}
     >
       <div
-        className="account-modal relative w-full max-w-[480px] rounded-2xl bg-white dark:bg-[#102b42] border border-[#d2e0e8] dark:border-[#29465b] p-7 shadow-2xl transition-all"
+        className="account-modal relative w-full max-w-[480px] max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-[#102b42] border border-[#d2e0e8] dark:border-[#29465b] p-6 sm:p-7 shadow-2xl transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
@@ -494,7 +493,7 @@ export function AuthModal({
             </button>
 
             {isWorkEmail ? (
-              <>
+              <div className="mb-4">
                 <div className="flex items-center gap-2 mb-1">
                   <Shield className="size-4 text-[#1d73b7]" />
                   <span className="text-[10px] font-black tracking-widest text-[#1d73b7] uppercase">
@@ -504,10 +503,7 @@ export function AuthModal({
                 <h2 className="text-xl font-bold text-[#102a40] dark:text-[#f0f4f8] font-['Plus_Jakarta_Sans',sans-serif]">
                   Staff Registration
                 </h2>
-                <p className="text-xs text-[#5a6b78] dark:text-[#9bb2c2] mt-0.5 mb-4">
-                  Official VOLAMP corporate domain recognized. Requires email OTP and explicit CEO authorization.
-                </p>
-              </>
+              </div>
             ) : (
               <>
                 <div className="flex items-center gap-2 mb-1">
@@ -569,16 +565,6 @@ export function AuthModal({
                     className="pl-9 text-xs"
                   />
                 </div>
-                {isWorkEmail ? (
-                  <div className="mt-1.5 p-2 rounded bg-blue-50 dark:bg-[#152e4d] border border-blue-200 dark:border-blue-900/60 flex items-center gap-2 text-[11px] text-[#1d73b7] dark:text-blue-300 font-semibold">
-                    <Building2 className="size-3.5 shrink-0" />
-                    <span>Official @volampelektrikals.com domain detected &mdash; Staff authorization route enabled</span>
-                  </div>
-                ) : (
-                  <p className="text-[11px] text-[#7a8b98] mt-1">
-                    VOLAMP staff members: enter your official company email to register for staff portal access.
-                  </p>
-                )}
               </div>
 
               {/* Conditional staff fields */}
