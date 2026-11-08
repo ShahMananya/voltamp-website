@@ -592,9 +592,18 @@ export function AuthModal({
                       <select
                         id="reg-dept"
                         value={empDepartment}
-                        onChange={(e) => setEmpDepartment(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setEmpDepartment(val);
+                          if ((val === "CEO" || val === "CEO & Executive Leadership") && !empDesignation) {
+                            setEmpDesignation("Chief Executive Officer (CEO)");
+                          }
+                        }}
                         className="w-full mt-1 border border-input rounded-md h-9 px-2.5 text-xs bg-background text-foreground"
                       >
+                        <option value="CEO">CEO</option>
+                        <option value="CEO & Executive Leadership">CEO & Executive Leadership</option>
+                        <option value="Executive Office">Executive Office (Office of the CEO)</option>
                         <option value="Engineering">Engineering</option>
                         <option value="Quality Assurance">Quality Assurance</option>
                         <option value="Production & Testing">Production & Testing</option>
@@ -602,7 +611,6 @@ export function AuthModal({
                         <option value="Supply Chain & Logistics">Supply Chain & Logistics</option>
                         <option value="Finance & Accounts">Finance & Accounts</option>
                         <option value="Human Resources">Human Resources</option>
-                        <option value="Executive Office">Executive Office</option>
                         <option value="Customer Operations">Customer Operations</option>
                         <option value="Maintenance & Facilities">Maintenance & Facilities</option>
                         <option value="IT & Systems">IT & Systems</option>
@@ -618,7 +626,7 @@ export function AuthModal({
                         required
                         value={empDesignation}
                         onChange={(e) => setEmpDesignation(e.target.value)}
-                        placeholder="e.g. Electrical Engineer"
+                        placeholder="e.g. Chief Executive Officer (CEO) / Electrical Engineer"
                         className="mt-1 text-xs"
                       />
                     </div>

@@ -38,6 +38,9 @@ import {
 } from "lucide-react";
 
 const DEPARTMENTS = [
+  "CEO",
+  "CEO & Executive Leadership",
+  "Executive Office (Office of the CEO)",
   "Engineering",
   "Quality Assurance",
   "Production & Testing",
@@ -45,7 +48,6 @@ const DEPARTMENTS = [
   "Supply Chain & Logistics",
   "Finance & Accounts",
   "Human Resources",
-  "Executive Office",
   "Customer Operations",
   "Maintenance & Facilities",
   "IT & Systems",
@@ -372,7 +374,13 @@ export default function EmployeeRegistrationPage() {
                   <select
                     id="reg-dept"
                     value={department}
-                    onChange={(e) => setDepartment(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setDepartment(val);
+                      if ((val === "CEO" || val === "CEO & Executive Leadership") && !designation) {
+                        setDesignation("Chief Executive Officer (CEO)");
+                      }
+                    }}
                     className="w-full mt-1.5 h-11 px-3 text-sm rounded-md border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   >
                     {DEPARTMENTS.map((dept) => (
@@ -392,7 +400,7 @@ export default function EmployeeRegistrationPage() {
                     required
                     value={designation}
                     onChange={(e) => setDesignation(e.target.value)}
-                    placeholder="e.g. Senior Electrical Engineer"
+                    placeholder="e.g. Chief Executive Officer (CEO) / Senior Electrical Engineer"
                     className="mt-1.5 text-sm h-11"
                   />
                 </div>

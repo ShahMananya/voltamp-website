@@ -2164,6 +2164,9 @@ export default function EmployeePortal() {
                   onChange={(e) => setEditEmpDept(e.target.value)}
                   className="w-full mt-1 h-9 px-3 text-xs rounded-md border border-input bg-background"
                 >
+                  <option value="CEO">CEO</option>
+                  <option value="CEO & Executive Leadership">CEO & Executive Leadership</option>
+                  <option value="Executive Office">Executive Office (Office of the CEO)</option>
                   <option value="Engineering">Engineering</option>
                   <option value="Quality Assurance">Quality Assurance</option>
                   <option value="Production & Testing">Production & Testing</option>
@@ -2171,7 +2174,6 @@ export default function EmployeePortal() {
                   <option value="Supply Chain & Logistics">Supply Chain & Logistics</option>
                   <option value="Finance & Accounts">Finance & Accounts</option>
                   <option value="Human Resources">Human Resources</option>
-                  <option value="Executive Office">Executive Office</option>
                   <option value="Customer Operations">Customer Operations</option>
                   <option value="Maintenance & Facilities">Maintenance & Facilities</option>
                   <option value="IT & Systems">IT & Systems</option>
