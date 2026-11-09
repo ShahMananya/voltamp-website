@@ -171,9 +171,6 @@ export default function UniversalFooter({
             <Link href="/price-list" className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline">
               Manufacturer Price Lists 2026
             </Link>
-            <Link href="/employee-portal" className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline flex items-center gap-1 font-semibold text-[#c25e0a] dark:text-[#ef7d19]">
-              Staff &amp; Employee Portal
-            </Link>
           </div>
         </div>
 
