@@ -75,15 +75,27 @@ body {
 /* Google Translate styling & banner suppression */
 .goog-te-banner-frame.skiptranslate,
 .goog-te-banner-frame,
-iframe.goog-te-banner-frame {
-  display: none !important;
-  visibility: hidden !important;
-  height: 0 !important;
-  width: 0 !important;
-}
+iframe.goog-te-banner-frame,
+iframe.skiptranslate,
+iframe[class*="skiptranslate"],
+iframe[id*=":1.container"],
+iframe[id*=":2.container"],
+.VIpgJd-ZVi9od-ORHb-Oxf5Fd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-xl07Ob-Oxf5Fd,
+.VIpgJd-ZVi9od-l4eHX-hSRGPd,
 #goog-gt-tt,
 .goog-te-balloon-frame {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0px !important;
+  width: 0px !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
+  z-index: -9999 !important;
 }
 .goog-text-highlight {
   background: none !important;
@@ -95,6 +107,9 @@ iframe.goog-te-banner-frame {
   left: -9999px !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
 }
 
 /* Ensure form controls and buttons strictly inherit Plus Jakarta Sans */

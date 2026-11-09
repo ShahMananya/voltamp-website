@@ -213,6 +213,37 @@
         ]
       }
     </script>
+    <style>
+      /* Suppress Google Translate Top Banner Frame & Body Shifting */
+      .goog-te-banner-frame,
+      .goog-te-banner-frame.skiptranslate,
+      iframe.goog-te-banner-frame,
+      iframe.skiptranslate,
+      iframe[class*="skiptranslate"],
+      iframe[id*=":1.container"],
+      iframe[id*=":2.container"],
+      .VIpgJd-ZVi9od-ORHb-Oxf5Fd,
+      .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+      .VIpgJd-ZVi9od-xl07Ob-Oxf5Fd,
+      .VIpgJd-ZVi9od-l4eHX-hSRGPd,
+      #goog-gt-tt,
+      .goog-te-balloon-frame {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        height: 0px !important;
+        width: 0px !important;
+        pointer-events: none !important;
+        position: absolute !important;
+        top: -9999px !important;
+        left: -9999px !important;
+        z-index: -9999 !important;
+      }
+      body {
+        top: 0px !important;
+        position: static !important;
+      }
+    </style>
   </head>
   <body>
     <!-- Google Translate Engine Container -->
@@ -227,6 +258,39 @@
           }, 'google_translate_element');
         }
       }
+
+      // Cleanup to ensure body stays flush at top 0 and any injected banner iframe remains suppressed
+      (function() {
+        function removeGoogleBanner() {
+          if (document.body && document.body.style.top !== '0px') {
+            document.body.style.top = '0px';
+          }
+          var frames = document.querySelectorAll('iframe.skiptranslate, iframe.goog-te-banner-frame, .VIpgJd-ZVi9od-ORHb-Oxf5Fd');
+          frames.forEach(function(frame) {
+            frame.style.setProperty('display', 'none', 'important');
+            frame.style.setProperty('visibility', 'hidden', 'important');
+            frame.style.setProperty('height', '0px', 'important');
+            frame.style.setProperty('width', '0px', 'important');
+            frame.style.setProperty('top', '-9999px', 'important');
+          });
+        }
+
+        if (typeof window !== 'undefined') {
+          var observer = new MutationObserver(function() {
+            removeGoogleBanner();
+          });
+          if (document.documentElement) {
+            observer.observe(document.documentElement, {
+              attributes: true,
+              childList: true,
+              subtree: true,
+              attributeFilter: ['style', 'class']
+            });
+          }
+          window.addEventListener('load', removeGoogleBanner);
+          setInterval(removeGoogleBanner, 400);
+        }
+      })();
     </script>
     <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 
