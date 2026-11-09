@@ -375,7 +375,7 @@ export function AuthModal({
         {/* ------------------------------------------------------------------ */}
         {(view === "login" || view === "type-selection" || view === "employee-login" || view === "customer-login") && (
           <div>
-            <div className="flex items-center gap-2.5 mb-1.5">
+            <div className="flex items-center gap-2.5 mb-5">
               <div className="p-2 rounded-xl bg-[#1d73b7]/10 dark:bg-[#1d73b7]/25 text-[#1d73b7]">
                 <ShieldCheck className="size-5" />
               </div>
@@ -388,9 +388,6 @@ export function AuthModal({
                 </h2>
               </div>
             </div>
-            <p className="text-xs text-[#5a6b78] dark:text-[#9bb2c2] mb-5">
-              Enter your email and password to automatically access your dashboard.
-            </p>
 
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
