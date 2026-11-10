@@ -55,10 +55,11 @@ describe("Authentication and MFA Flow", () => {
   it("accepts employee registration with @volampelektrikals.com email", async () => {
     const { ctx } = createTestContext();
     const caller = appRouter.createCaller(ctx);
+    const empEmail = `rohan.${Date.now()}@volampelektrikals.com`;
 
     const result = await caller.auth.registerEmployee({
       name: "Rohan Patel",
-      email: "rohan@volampelektrikals.com",
+      email: empEmail,
       department: "Engineering",
       designation: "Senior Cable Specialist",
       employeeId: "VLT-2026-ENG99",
@@ -67,16 +68,16 @@ describe("Authentication and MFA Flow", () => {
     });
 
     expect(result.success).toBe(true);
-    expect(result.email).toBe("rohan@volampelektrikals.com");
+    expect(result.email).toBe(empEmail);
 
     // Code is dispatched to email, verified from backend OTP storage
-    const otp = getLatestOtpForEmail("rohan@volampelektrikals.com", "email_verification");
+    const otp = getLatestOtpForEmail(empEmail, "email_verification");
     expect(otp).toBeDefined();
     expect(otp).toMatch(/^\d{6}$/);
 
     // Verify email OTP
     const verifyResult = await caller.auth.verifyEmailOtp({
-      email: "rohan@volampelektrikals.com",
+      email: empEmail,
       code: otp!,
     });
 
@@ -140,23 +141,24 @@ describe("Authentication and MFA Flow", () => {
   it("allows customer registration with any valid email and logs in", async () => {
     const { ctx, setCookies } = createTestContext();
     const caller = appRouter.createCaller(ctx);
+    const custEmail = `contractor.${Date.now()}@megabuild.in`;
 
     const regResult = await caller.auth.registerCustomer({
       name: "Industrial Contractor",
-      email: "contractor@megabuild.in",
+      email: custEmail,
       password: "ClientPassword2026",
     });
 
     expect(regResult.success).toBe(true);
-    expect(regResult.email).toBe("contractor@megabuild.in");
+    expect(regResult.email).toBe(custEmail);
 
-    const customerOtp = getLatestOtpForEmail("contractor@megabuild.in", "email_verification");
+    const customerOtp = getLatestOtpForEmail(custEmail, "email_verification");
     expect(customerOtp).toBeDefined();
     expect(customerOtp).toMatch(/^\d{6}$/);
 
     // Verify email OTP
     const verifyResult = await caller.auth.verifyEmailOtp({
-      email: "contractor@megabuild.in",
+      email: custEmail,
       code: customerOtp!,
     });
 
@@ -164,5 +166,49 @@ describe("Authentication and MFA Flow", () => {
     expect(verifyResult.status).toBe("active");
     expect(setCookies).toHaveLength(1);
     expect(setCookies[0]?.name).toBe(COOKIE_NAME);
+  });
+
+  it("blocks customer from logging in when email is unverified and requires verification code", async () => {
+    const { ctx, setCookies } = createTestContext();
+    const caller = appRouter.createCaller(ctx);
+
+    const testEmail = `unverified.${Date.now()}@sitebuild.com`;
+    await caller.auth.registerCustomer({
+      name: "Unverified Buyer",
+      email: testEmail,
+      password: "BuyerPassword2026",
+    });
+
+    // Attempting login directly without email verification
+    const loginAttempt = await caller.auth.login({
+      email: testEmail,
+      password: "BuyerPassword2026",
+    });
+
+    expect(loginAttempt.emailVerificationRequired).toBe(true);
+    expect(loginAttempt.mfaRequired).toBe(false);
+    expect(setCookies).toHaveLength(0); // No session cookie issued!
+
+    // Verify OTP dispatched
+    const otp = getLatestOtpForEmail(testEmail, "email_verification");
+    expect(otp).toBeDefined();
+
+    // Verify email with OTP
+    const verifyRes = await caller.auth.verifyEmailOtp({
+      email: testEmail,
+      code: otp!,
+    });
+    expect(verifyRes.success).toBe(true);
+    expect(setCookies).toHaveLength(1);
+
+    // Subsequent login now succeeds directly with session cookie
+    const { ctx: ctx2, setCookies: setCookies2 } = createTestContext();
+    const caller2 = appRouter.createCaller(ctx2);
+    const subsequentLogin = await caller2.auth.login({
+      email: testEmail,
+      password: "BuyerPassword2026",
+    });
+    expect(subsequentLogin.emailVerificationRequired).toBe(false);
+    expect(setCookies2).toHaveLength(1);
   });
 });

@@ -58,7 +58,7 @@ export function AuthModal({
   onClose,
   initialAccountType,
   initialView = "login",
-  customerRedirectUrl = "/",
+  customerRedirectUrl,
   employeeRedirectUrl = "/employee-portal",
 }: AuthModalProps) {
   const [, setLocation] = useLocation();
@@ -103,7 +103,18 @@ export function AuthModal({
 
   // Mutations
   const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      if (data.emailVerificationRequired) {
+        setActiveEmail(data.email ?? email);
+        setTargetAccountType((data.accountType as "customer" | "employee") || "customer");
+        setOtpCode("");
+        setView("email-verify");
+        toast.info("Verification Code Required", {
+          description: `A 6-digit verification code has been sent to ${data.email}. Please verify your email before signing in.`,
+        });
+        return;
+      }
+
       if (data.mfaRequired) {
         setMfaPendingToken(data.mfaPendingToken);
         setActiveEmail(data.email ?? email);
@@ -115,6 +126,7 @@ export function AuthModal({
         setView("mfa-verify");
       } else {
         utils.auth.me.setData(undefined, data.user);
+        await utils.auth.me.invalidate();
         const welcomeTitle =
           data.effectiveRole === "admin"
             ? "Executive Management Desk"
@@ -125,12 +137,12 @@ export function AuthModal({
           description: `Signed in as ${data.user.name || data.user.email}`,
         });
         onClose();
-        const destination =
-          data.redirectUrl ||
-          (data.user.accountType === "employee"
-            ? employeeRedirectUrl
-            : customerRedirectUrl);
-        setLocation(destination);
+        if (data.effectiveRole === "admin" || data.user.accountType === "employee") {
+          const destination = data.redirectUrl || employeeRedirectUrl || "/employee-portal";
+          setLocation(destination);
+        } else if (customerRedirectUrl) {
+          setLocation(customerRedirectUrl);
+        }
       }
     },
     onError: (err) => {
@@ -150,8 +162,9 @@ export function AuthModal({
   });
 
   const mfaMutation = trpc.auth.verifyMfaOtp.useMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       utils.auth.me.setData(undefined, data.user);
+      await utils.auth.me.invalidate();
       const welcomeTitle =
         data.effectiveRole === "admin"
           ? "Executive Management Desk"
@@ -162,12 +175,12 @@ export function AuthModal({
         description: `Authenticated as ${data.user.name || data.user.email}`,
       });
       onClose();
-      const destination =
-        data.redirectUrl ||
-        (data.user.accountType === "employee"
-          ? employeeRedirectUrl
-          : customerRedirectUrl);
-      setLocation(destination);
+      if (data.effectiveRole === "admin" || data.user.accountType === "employee") {
+        const destination = data.redirectUrl || employeeRedirectUrl || "/employee-portal";
+        setLocation(destination);
+      } else if (customerRedirectUrl) {
+        setLocation(customerRedirectUrl);
+      }
     },
     onError: (err) => {
       toast.error("Verification Error", { description: err.message });
@@ -228,14 +241,17 @@ export function AuthModal({
   });
 
   const verifyEmailOtpMutation = trpc.auth.verifyEmailOtp.useMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data.accountType === "employee") {
         setView("pending-approval");
       } else {
         utils.auth.me.setData(undefined, data.user);
-        toast.success("Account active!", { description: "Welcome to VOLAMP customer portal." });
+        await utils.auth.me.invalidate();
+        toast.success("Account active!", { description: "Welcome to VOLAMP." });
         onClose();
-        setLocation(customerRedirectUrl || "/");
+        if (customerRedirectUrl) {
+          setLocation(customerRedirectUrl);
+        }
       }
     },
     onError: (err) => {
@@ -810,12 +826,16 @@ export function AuthModal({
             </h2>
             <p className="text-xs text-[#5a6b78] mt-1 mb-4">
               Enter the 6-digit confirmation code sent to{" "}
-              <strong className="text-[#102a40]">{activeEmail}</strong>.
+              <strong className="text-[#102a40]">{activeEmail || email}</strong>.
             </p>
 
             <div className="p-3 mb-4 rounded-lg bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-xs text-[#204562] dark:text-blue-200 text-left">
               <p className="leading-relaxed">
-                A 6-digit verification code has been dispatched to your official email address via Zoho Mail. Please check your inbox and spam folder.
+                A 6-digit verification code has been sent to{" "}
+                <strong className="font-semibold text-[#102a40] dark:text-white">
+                  {activeEmail || email}
+                </strong>
+                .
               </p>
             </div>
 

@@ -150,6 +150,10 @@ export default function UniversalFooter({
             HELP &amp; SUPPORT
           </span>
           <div className="flex flex-col space-y-2">
+            <Link href="/portal" className="text-left text-[#1d73b7] dark:text-blue-400 font-bold hover:underline flex items-center gap-1">
+              <span>Customer Workspace</span>
+              <ArrowRight className="size-3" />
+            </Link>
             <Link href="/enquire" className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline">
               Project RFQ &amp; Quotation
             </Link>

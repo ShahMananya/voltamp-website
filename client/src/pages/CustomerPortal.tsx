@@ -288,6 +288,7 @@ export default function CustomerPortal() {
           isOpen={authModalOpen}
           onClose={() => setAuthModalOpen(false)}
           initialView={authModalView}
+          customerRedirectUrl="/portal"
         />
       </div>
     );
@@ -714,6 +715,7 @@ export default function CustomerPortal() {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         initialView={authModalView}
+        customerRedirectUrl="/portal"
       />
       <WhatsAppInvoiceModal
         isOpen={invoiceModalOpen}

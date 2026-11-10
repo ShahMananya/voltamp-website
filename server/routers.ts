@@ -594,6 +594,24 @@ export const appRouter = router({
         // MFA Enforcement:
         // Employees: strictly required.
         // Customers: required if mfaEnabled is set on the account.
+        // Customer Email Verification Enforcement:
+        // Unverified customer accounts CANNOT log in without completing email verification.
+        if (user.accountType === "customer" && !user.emailVerified) {
+          const otp = generate6DigitOtp();
+          saveOtp(normalizedEmail, otp, "email_verification", 15 * 60 * 1000);
+          await dispatchOtpEmail(normalizedEmail, otp, "registration");
+
+          return {
+            mfaRequired: false as const,
+            emailVerificationRequired: true as const,
+            email: user.email ?? normalizedEmail,
+            accountType: user.accountType,
+            effectiveRole,
+            redirectUrl,
+            message: `A 6-digit verification code has been sent to ${user.email ?? normalizedEmail}. Please verify your email before signing in.`,
+          };
+        }
+
         const isMfaRequired = user.accountType === "employee" || Boolean(user.mfaEnabled);
 
         if (isMfaRequired) {
@@ -608,6 +626,7 @@ export const appRouter = router({
           // Return MFA challenge without issuing session cookie
           return {
             mfaRequired: true as const,
+            emailVerificationRequired: false as const,
             mfaPendingToken,
             email: user.email,
             accountType: user.accountType,
@@ -629,6 +648,7 @@ export const appRouter = router({
 
         return {
           mfaRequired: false as const,
+          emailVerificationRequired: false as const,
           user,
           effectiveRole,
           redirectUrl,

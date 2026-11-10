@@ -3321,6 +3321,11 @@ async function getPressInquiryById(pressTicketId) {
 }
 
 // server/_core/cookies.ts
+var LOCAL_HOSTS = /* @__PURE__ */ new Set(["localhost", "127.0.0.1", "::1"]);
+function isIpAddress(host) {
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return true;
+  return host.includes(":");
+}
 function isSecureRequest(req) {
   if (req.protocol === "https") return true;
   const forwardedProto = req.headers["x-forwarded-proto"];
@@ -3329,11 +3334,20 @@ function isSecureRequest(req) {
   return protoList.some((proto) => proto.trim().toLowerCase() === "https");
 }
 function getSessionCookieOptions(req) {
+  const hostname = req.hostname || (req.headers.host ? req.headers.host.split(":")[0] : "");
+  const isSecure = isSecureRequest(req);
+  let domain = void 0;
+  if (hostname && !LOCAL_HOSTS.has(hostname) && !isIpAddress(hostname)) {
+    if (hostname.endsWith("volampelektrikals.com")) {
+      domain = ".volampelektrikals.com";
+    }
+  }
   return {
     httpOnly: true,
     path: "/",
-    sameSite: "none",
-    secure: isSecureRequest(req)
+    sameSite: "lax",
+    secure: isSecure,
+    domain
   };
 }
 
@@ -12147,6 +12161,20 @@ var appRouter = router({
           });
         }
       }
+      if (user.accountType === "customer" && !user.emailVerified) {
+        const otp = generate6DigitOtp();
+        saveOtp(normalizedEmail, otp, "email_verification", 15 * 60 * 1e3);
+        await dispatchOtpEmail(normalizedEmail, otp, "registration");
+        return {
+          mfaRequired: false,
+          emailVerificationRequired: true,
+          email: user.email ?? normalizedEmail,
+          accountType: user.accountType,
+          effectiveRole,
+          redirectUrl,
+          message: `A 6-digit verification code has been sent to ${user.email ?? normalizedEmail}. Please verify your email before signing in.`
+        };
+      }
       const isMfaRequired = user.accountType === "employee" || Boolean(user.mfaEnabled);
       if (isMfaRequired) {
         const otp = generate6DigitOtp();
@@ -12158,6 +12186,7 @@ var appRouter = router({
         );
         return {
           mfaRequired: true,
+          emailVerificationRequired: false,
           mfaPendingToken,
           email: user.email,
           accountType: user.accountType,
@@ -12175,6 +12204,7 @@ var appRouter = router({
       await updateUser(user.id, { lastSignedIn: /* @__PURE__ */ new Date() });
       return {
         mfaRequired: false,
+        emailVerificationRequired: false,
         user,
         effectiveRole,
         redirectUrl
@@ -13738,6 +13768,7 @@ async function createContext(opts) {
 // server/_core/app.ts
 function createExpressApp() {
   const app2 = express();
+  app2.set("trust proxy", 1);
   app2.use(securityHeadersMiddleware);
   const clientPublicVideos = path5.resolve(process.cwd(), "client/public/videos");
   if (fs5.existsSync(clientPublicVideos)) {

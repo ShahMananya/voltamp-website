@@ -215,7 +215,7 @@ export function UserProfileModal({ isOpen, onClose }: UserProfileModalProps) {
               className="text-xs font-semibold h-8"
             >
               <FileText className="size-3.5 mr-1" />
-              <span>{isEmployee ? "Employee Portal" : "Orders & Quotes"}</span>
+              <span>{isEmployee ? "Employee Portal" : "Customer Workspace"}</span>
               <ArrowRight className="size-3 ml-1" />
             </Button>
           </div>

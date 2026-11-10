@@ -17,6 +17,9 @@ import { createContext } from "./context";
 export function createExpressApp() {
   const app = express();
 
+  // Trust first proxy (Nginx reverse proxy) for accurate IP and protocol detection
+  app.set("trust proxy", 1);
+
   // 1. Security Headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Staging Noindex)
   app.use(securityHeadersMiddleware);
 
