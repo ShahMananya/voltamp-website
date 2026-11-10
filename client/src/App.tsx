@@ -179,9 +179,14 @@ function Router() {
       <Route path="/employee-registration" component={EmployeeRegistrationPage} />
       <Route path="/employee/register" component={EmployeeRegistrationPage} />
       <Route path="/employee-register" component={EmployeeRegistrationPage} />
+      <Route path="/ceo-authorize" component={CeoAuthorizationPage} />
       <Route path="/ceo-authorization" component={CeoAuthorizationPage} />
       <Route path="/ceo/authorize" component={CeoAuthorizationPage} />
+      <Route path="/ceo/authorization" component={CeoAuthorizationPage} />
       <Route path="/ceo-approval" component={CeoAuthorizationPage} />
+      <Route path="/ceo-approve" component={CeoAuthorizationPage} />
+      <Route path="/ceo/approve" component={CeoAuthorizationPage} />
+      <Route path="/ceo/approval" component={CeoAuthorizationPage} />
       <Route path="/about-volamp" component={AboutVolamp} />
       <Route path="/about" component={AboutVolamp} />
       <Route path="/about-us" component={AboutVolamp} />

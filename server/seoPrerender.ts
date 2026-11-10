@@ -225,9 +225,13 @@ const OTHER_VALID_PATHS = new Set([
   "employee-registration",
   "employee/register",
   "employee-register",
+  "ceo-authorize",
   "ceo-authorization",
   "ceo/authorize",
+  "ceo/authorization",
   "ceo-approval",
+  "ceo-approve",
+  "ceo/approve",
   "cart",
   "checkout",
   "login",
@@ -871,9 +875,11 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
     cleanPath.startsWith("employee-registration") ||
     cleanPath.startsWith("employee/register") ||
     cleanPath.startsWith("employee-register") ||
+    cleanPath.startsWith("ceo-authorize") ||
     cleanPath.startsWith("ceo-authorization") ||
     cleanPath.startsWith("ceo/authorize") ||
-    cleanPath.startsWith("ceo-approval")
+    cleanPath.startsWith("ceo-approval") ||
+    cleanPath.startsWith("ceo-approve")
   ) {
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
@@ -887,9 +893,11 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       pageTitle = "Official Employee Registration | Volamp Elektrikals";
       pageDesc = "Corporate employee onboarding and portal registration portal for VOLTAMP ELEKTRIKALS PVT. LTD.";
     } else if (
+      cleanPath.startsWith("ceo-authorize") ||
       cleanPath.startsWith("ceo-authorization") ||
       cleanPath.startsWith("ceo/authorize") ||
-      cleanPath.startsWith("ceo-approval")
+      cleanPath.startsWith("ceo-approval") ||
+      cleanPath.startsWith("ceo-approve")
     ) {
       pageTitle = "Executive CEO Authorization Desk | Volamp Elektrikals";
       pageDesc = "Executive email authorization and digital signing desk for VOLTAMP ELEKTRIKALS PVT. LTD.";
