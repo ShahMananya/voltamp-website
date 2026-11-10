@@ -25,6 +25,7 @@ import {
   listPendingEmployees,
   createEmployeeApprovalToken,
   getEmployeeApprovalToken,
+  getLatestApprovalTokenForEmail,
   markEmployeeApprovalTokenUsed,
   recordEmployeeAuditLog,
   getEmployeeAuditLogs,

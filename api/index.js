@@ -1,6 +1,6 @@
 // server/_core/app.ts
-import fs4 from "fs";
-import path4 from "path";
+import fs5 from "fs";
+import path5 from "path";
 import express from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 
@@ -30,6 +30,8 @@ import { parse as parseCookieHeader2 } from "cookie";
 
 // server/db.ts
 import crypto from "crypto";
+import fs from "fs";
+import path from "path";
 import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 
@@ -288,7 +290,10 @@ var ENV = {
   ownerOpenId: process.env.OWNER_OPEN_ID ?? "",
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL || process.env.OPENAI_BASE_URL || "https://api.openai.com/v1",
-  forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY || process.env.OPENAI_API_KEY || process.env.GROQ_API_KEY || ""
+  forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY || process.env.OPENAI_API_KEY || process.env.GROQ_API_KEY || process.env.HUGGINGFACE_API_KEY || process.env.HF_TOKEN || "",
+  huggingFaceApiKey: process.env.HUGGINGFACE_API_KEY || process.env.HF_TOKEN || "",
+  huggingFaceModel: process.env.HUGGINGFACE_MODEL || "meta-llama/Llama-3.3-70B-Instruct",
+  groqApiKey: process.env.GROQ_API_KEY || ""
 };
 
 // server/db.ts
@@ -412,6 +417,78 @@ var memoryNextAuditId = 1;
 var memoryApprovalTokens = /* @__PURE__ */ new Map();
 var memoryAuditLogs = [];
 var memoryOtps = [];
+var USERS_STORE_FILE = path.join(process.cwd(), "server", "data", "users_store.json");
+function loadUsersStore() {
+  try {
+    if (fs.existsSync(USERS_STORE_FILE)) {
+      const raw = fs.readFileSync(USERS_STORE_FILE, "utf-8");
+      const data = JSON.parse(raw);
+      if (data.users && Array.isArray(data.users)) {
+        for (const u of data.users) {
+          memoryUsers.set(u.email.toLowerCase().trim(), {
+            ...u,
+            createdAt: u.createdAt ? new Date(u.createdAt) : /* @__PURE__ */ new Date(),
+            updatedAt: u.updatedAt ? new Date(u.updatedAt) : /* @__PURE__ */ new Date(),
+            approvedAt: u.approvedAt ? new Date(u.approvedAt) : null,
+            lastSignedIn: u.lastSignedIn ? new Date(u.lastSignedIn) : /* @__PURE__ */ new Date()
+          });
+          if (u.id >= memoryNextUserId) {
+            memoryNextUserId = u.id + 1;
+          }
+        }
+      }
+      if (data.tokens && Array.isArray(data.tokens)) {
+        for (const t2 of data.tokens) {
+          memoryApprovalTokens.set(t2.token, {
+            ...t2,
+            expiresAt: new Date(t2.expiresAt),
+            createdAt: new Date(t2.createdAt),
+            usedAt: t2.usedAt ? new Date(t2.usedAt) : null
+          });
+          if (t2.id >= memoryNextTokenId) {
+            memoryNextTokenId = t2.id + 1;
+          }
+        }
+      }
+      if (data.auditLogs && Array.isArray(data.auditLogs)) {
+        for (const l of data.auditLogs) {
+          memoryAuditLogs.push({
+            ...l,
+            createdAt: new Date(l.createdAt)
+          });
+          if (l.id >= memoryNextAuditId) {
+            memoryNextAuditId = l.id + 1;
+          }
+        }
+      }
+      if (data.otps && Array.isArray(data.otps)) {
+        for (const o of data.otps) {
+          memoryOtps.push(o);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[AuthStore] Failed to load persistent users store:", err);
+  }
+}
+function saveUsersStore() {
+  try {
+    const dir = path.dirname(USERS_STORE_FILE);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    const data = {
+      users: Array.from(memoryUsers.values()),
+      tokens: Array.from(memoryApprovalTokens.values()),
+      auditLogs: memoryAuditLogs,
+      otps: memoryOtps
+    };
+    fs.writeFileSync(USERS_STORE_FILE, JSON.stringify(data, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("[AuthStore] Failed to save persistent users store:", err);
+  }
+}
+loadUsersStore();
 var memoryCustomerProfiles = /* @__PURE__ */ new Map();
 var memoryQuotations = [
   {
@@ -470,6 +547,7 @@ function saveOtp(email, code, purpose, expiresInMs = 10 * 60 * 1e3) {
     }
   }
   memoryOtps.push({ email: normalizedEmail, code, purpose, expiresAt });
+  saveUsersStore();
   console.log(`[OTP] Generated for ${normalizedEmail} (${purpose}): ${code} (expires in ${Math.round(expiresInMs / 1e3)}s)`);
 }
 function verifyOtp(email, code, purpose) {
@@ -555,6 +633,7 @@ async function createLocalUser(params) {
     await db.insert(users).values(newUser);
   }
   memoryUsers.set(normalizedEmail, newUser);
+  saveUsersStore();
   return newUser;
 }
 async function updateUser(id, fields) {
@@ -566,6 +645,7 @@ async function updateUser(id, fields) {
     if (user.id === id) {
       const updated = { ...user, ...fields, updatedAt: /* @__PURE__ */ new Date() };
       memoryUsers.set(key, updated);
+      saveUsersStore();
       return updated;
     }
   }
@@ -664,6 +744,7 @@ async function createEmployeeApprovalToken(params) {
     }
   }
   memoryApprovalTokens.set(token, record);
+  saveUsersStore();
   return record;
 }
 async function getEmployeeApprovalToken(token) {
@@ -677,6 +758,32 @@ async function getEmployeeApprovalToken(token) {
     }
   }
   return memoryApprovalTokens.get(token);
+}
+async function getLatestApprovalTokenForEmail(email, action) {
+  const normEmail = email.toLowerCase().trim();
+  const tokens = Array.from(memoryApprovalTokens.values()).filter(
+    (t2) => t2.employeeEmail.toLowerCase() === normEmail && (!action || t2.action === action)
+  );
+  if (tokens.length > 0) {
+    return tokens[tokens.length - 1];
+  }
+  const db = await getDb();
+  if (db) {
+    try {
+      const res = await db.select().from(employeeApprovalTokens).where(
+        action ? and(
+          eq(employeeApprovalTokens.employeeEmail, normEmail),
+          eq(employeeApprovalTokens.action, action)
+        ) : eq(employeeApprovalTokens.employeeEmail, normEmail)
+      );
+      if (res && res.length > 0) {
+        return res[res.length - 1];
+      }
+    } catch (e) {
+      console.warn("[Database] Failed to fetch latest approval token for email:", e);
+    }
+  }
+  return void 0;
 }
 async function markEmployeeApprovalTokenUsed(token, actorEmail) {
   const db = await getDb();
@@ -692,8 +799,10 @@ async function markEmployeeApprovalTokenUsed(token, actorEmail) {
   if (inMem) {
     inMem.usedAt = now;
     inMem.usedBy = actorEmail.toLowerCase().trim();
+    saveUsersStore();
     return true;
   }
+  saveUsersStore();
   return true;
 }
 async function recordEmployeeAuditLog(params) {
@@ -717,6 +826,7 @@ async function recordEmployeeAuditLog(params) {
     }
   }
   memoryAuditLogs.unshift(log);
+  saveUsersStore();
   return log;
 }
 async function getEmployeeAuditLogs(limit = 100) {
@@ -769,6 +879,7 @@ async function approveEmployee(userId, actorEmail = "ceo@volampelektrikals.com")
   const now = /* @__PURE__ */ new Date();
   await updateUser(userId, {
     employeeStatus: "approved",
+    emailVerified: true,
     approvedAt: now,
     approvedBy: actorEmail
   });
@@ -779,6 +890,7 @@ async function approveEmployee(userId, actorEmail = "ceo@volampelektrikals.com")
     actorEmail,
     details: `Employee account authorized for official portal access by ${actorEmail}`
   });
+  saveUsersStore();
   return true;
 }
 async function rejectEmployee(userId, reason = "Registration not authorized by executive management.", actorEmail = "ceo@volampelektrikals.com") {
@@ -3556,8 +3668,8 @@ function registerOAuthRoutes(app2) {
 }
 
 // server/_core/storageProxy.ts
-import fs from "fs";
-import path from "path";
+import fs2 from "fs";
+import path2 from "path";
 function registerStorageProxy(app2) {
   app2.get("/manus-storage/*", async (req, res, next) => {
     const key = req.params[0];
@@ -3566,11 +3678,11 @@ function registerStorageProxy(app2) {
       return;
     }
     const localCandidates = [
-      path.resolve(process.cwd(), "client", "public", "manus-storage", key),
-      path.resolve(process.cwd(), "client", "public", key)
+      path2.resolve(process.cwd(), "client", "public", "manus-storage", key),
+      path2.resolve(process.cwd(), "client", "public", key)
     ];
     for (const candidate of localCandidates) {
-      if (fs.existsSync(candidate)) {
+      if (fs2.existsSync(candidate)) {
         res.sendFile(candidate);
         return;
       }
@@ -3859,28 +3971,28 @@ function registerQuickOrderPdfRoute(app2) {
 }
 
 // server/services/productService.ts
-import fs2 from "fs";
-import path2 from "path";
+import fs3 from "fs";
+import path3 from "path";
 import { fileURLToPath } from "url";
 var __filename = fileURLToPath(import.meta.url);
-var __dirname = path2.dirname(__filename);
+var __dirname = path3.dirname(__filename);
 function findProductsDbPath() {
   const candidates = [
-    path2.resolve(process.cwd(), "server/data/products_db.json"),
-    path2.resolve(process.cwd(), "api/data/products_db.json"),
-    path2.resolve(process.cwd(), "api/products_db.json"),
-    path2.resolve(process.cwd(), "data/products_db.json"),
-    path2.resolve(process.cwd(), "client/public/products_db.json"),
-    path2.resolve(process.cwd(), "dist/public/products_db.json"),
-    path2.join(__dirname, "../data/products_db.json"),
-    path2.join(__dirname, "../../server/data/products_db.json"),
-    path2.join(__dirname, "./data/products_db.json"),
-    path2.join(__dirname, "../api/data/products_db.json"),
-    path2.join(__dirname, "../../api/data/products_db.json"),
-    path2.join(__dirname, "../api/products_db.json"),
-    path2.join(__dirname, "../../api/products_db.json"),
-    path2.join(__dirname, "products_db.json"),
-    path2.join(__dirname, "../products_db.json"),
+    path3.resolve(process.cwd(), "server/data/products_db.json"),
+    path3.resolve(process.cwd(), "api/data/products_db.json"),
+    path3.resolve(process.cwd(), "api/products_db.json"),
+    path3.resolve(process.cwd(), "data/products_db.json"),
+    path3.resolve(process.cwd(), "client/public/products_db.json"),
+    path3.resolve(process.cwd(), "dist/public/products_db.json"),
+    path3.join(__dirname, "../data/products_db.json"),
+    path3.join(__dirname, "../../server/data/products_db.json"),
+    path3.join(__dirname, "./data/products_db.json"),
+    path3.join(__dirname, "../api/data/products_db.json"),
+    path3.join(__dirname, "../../api/data/products_db.json"),
+    path3.join(__dirname, "../api/products_db.json"),
+    path3.join(__dirname, "../../api/products_db.json"),
+    path3.join(__dirname, "products_db.json"),
+    path3.join(__dirname, "../products_db.json"),
     "/var/task/server/data/products_db.json",
     "/var/task/api/data/products_db.json",
     "/var/task/api/products_db.json",
@@ -3889,20 +4001,20 @@ function findProductsDbPath() {
     "/var/task/dist/public/products_db.json"
   ];
   for (const candidate of candidates) {
-    if (fs2.existsSync(candidate)) {
+    if (fs3.existsSync(candidate)) {
       return candidate;
     }
   }
   return null;
 }
-var DB_PATH = findProductsDbPath() || path2.resolve(process.cwd(), "server/data/products_db.json");
+var DB_PATH = findProductsDbPath() || path3.resolve(process.cwd(), "server/data/products_db.json");
 var _productsCache = null;
 function loadProductsFromDisk() {
   try {
     const dbPath = findProductsDbPath();
-    if (dbPath && fs2.existsSync(dbPath)) {
+    if (dbPath && fs3.existsSync(dbPath)) {
       console.log(`[ProductService] Loading catalog from: ${dbPath}`);
-      const raw = fs2.readFileSync(dbPath, "utf-8");
+      const raw = fs3.readFileSync(dbPath, "utf-8");
       const parsed = JSON.parse(raw);
       _productsCache = parsed.map((item, idx) => ({
         id: item.id || idx + 1,
@@ -3942,9 +4054,9 @@ function loadProductsFromDisk() {
 var _lastDbMtime = 0;
 function getCachedProducts() {
   const dbPath = findProductsDbPath();
-  if (dbPath && fs2.existsSync(dbPath)) {
+  if (dbPath && fs3.existsSync(dbPath)) {
     try {
-      const mtime = fs2.statSync(dbPath).mtimeMs;
+      const mtime = fs3.statSync(dbPath).mtimeMs;
       if (!_productsCache || mtime !== _lastDbMtime) {
         _lastDbMtime = mtime;
         return loadProductsFromDisk();
@@ -4721,7 +4833,7 @@ function updateProductPrice(input) {
   if (input.discount !== void 0) target.discount = input.discount;
   if (input.status !== void 0) target.status = input.status;
   target.lastUpdated = /* @__PURE__ */ new Date();
-  fs2.writeFileSync(DB_PATH, JSON.stringify(all, null, 2), "utf-8");
+  fs3.writeFileSync(DB_PATH, JSON.stringify(all, null, 2), "utf-8");
   _productsCache = all;
   return target;
 }
@@ -4760,7 +4872,7 @@ function addNewProduct(input) {
     createdAt: /* @__PURE__ */ new Date()
   };
   all.unshift(newProd);
-  fs2.writeFileSync(DB_PATH, JSON.stringify(all, null, 2), "utf-8");
+  fs3.writeFileSync(DB_PATH, JSON.stringify(all, null, 2), "utf-8");
   _productsCache = all;
   return newProd;
 }
@@ -6998,10 +7110,36 @@ var normalizeToolChoice = (toolChoice, tools) => {
   }
   return toolChoice;
 };
-var resolveApiUrl = () => ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0 ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions` : "https://forge.manus.im/v1/chat/completions";
+var resolveApiUrl = () => {
+  if (ENV.huggingFaceApiKey) {
+    return "https://router.huggingface.co/v1/chat/completions";
+  }
+  if (ENV.groqApiKey) {
+    return "https://api.groq.com/openai/v1/chat/completions";
+  }
+  if (ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0) {
+    return `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`;
+  }
+  return "https://api.openai.com/v1/chat/completions";
+};
+var resolveApiKey = () => {
+  if (ENV.huggingFaceApiKey) return ENV.huggingFaceApiKey;
+  if (ENV.groqApiKey) return ENV.groqApiKey;
+  return ENV.forgeApiKey;
+};
+var resolveDefaultModel = () => {
+  if (ENV.huggingFaceApiKey) {
+    return ENV.huggingFaceModel || "meta-llama/Llama-3.3-70B-Instruct";
+  }
+  if (ENV.groqApiKey) {
+    return "llama-3.3-70b-versatile";
+  }
+  return "gpt-4o-mini";
+};
 var assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+  const key = resolveApiKey();
+  if (!key) {
+    throw new Error("No AI API key is configured. Please provide HUGGINGFACE_API_KEY, GROQ_API_KEY, or OPENAI_API_KEY.");
   }
 };
 var normalizeResponseFormat = ({
@@ -7054,7 +7192,7 @@ var fetchWithBackoff = async (url, init) => {
   for (let attempt = 0; attempt <= RETRY_MAX_RETRIES; attempt++) {
     try {
       const response = await fetch(url, init);
-      if (response.ok || attempt === RETRY_MAX_RETRIES) {
+      if (response.ok || attempt === RETRY_MAX_RETRIES || response.status === 401 || response.status === 402 || response.status === 403 || response.status === 404) {
         return response;
       }
       const retryAfterMs = parseRetryAfter(
@@ -7101,6 +7239,8 @@ async function invokeLLM(params) {
   };
   if (model) {
     payload.model = model;
+  } else {
+    payload.model = resolveDefaultModel();
   }
   if (tools && tools.length > 0) {
     payload.tools = tools;
@@ -7135,7 +7275,7 @@ async function invokeLLM(params) {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`
+      authorization: `Bearer ${resolveApiKey()}`
     },
     body: JSON.stringify(payload)
   });
@@ -8519,7 +8659,7 @@ async function dispatchEmployeeApprovalRequestEmail(data) {
     dateStyle: "medium",
     timeStyle: "short"
   });
-  const baseUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://volampelektrikals.com");
+  const baseUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.NODE_ENV === "production" ? "https://volampelektrikals.com" : "http://localhost:3000");
   const approveUrl = data.approvalToken ? `${baseUrl}/ceo-authorization?token=${encodeURIComponent(data.approvalToken)}&action=approve` : `${baseUrl}/ceo-authorization?employeeEmail=${encodeURIComponent(data.employeeEmail)}&action=approve`;
   const rejectUrl = data.rejectToken ? `${baseUrl}/ceo-authorization?token=${encodeURIComponent(data.rejectToken)}&action=reject` : `${baseUrl}/ceo-authorization?employeeEmail=${encodeURIComponent(data.employeeEmail)}&action=reject`;
   const subject = `[ACTION REQUIRED] New Employee Account Authorization Request - ${data.employeeName} (${data.employeeEmail})`;
@@ -8708,7 +8848,7 @@ Vadodara, Gujarat, India \u2022 volampelektrikals.com
 }
 async function dispatchEmployeeApprovedConfirmationEmail(data) {
   const defaultSender = process.env.SMTP_FROM || "no-reply@volampelektrikals.com";
-  const baseUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://volampelektrikals.com");
+  const baseUrl = process.env.APP_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.NODE_ENV === "production" ? "https://volampelektrikals.com" : "http://localhost:3000");
   const loginUrl = `${baseUrl}/employee-portal`;
   const subject = `Official Employee Account Authorized - Welcome to VOLAMP Elektrikals`;
   const textContent = `
@@ -10568,9 +10708,9 @@ Which business segment matches your site? Tell me your load or required BOM, and
 }
 function handleAboutUsAndHeritage(query) {
   const lower = query.toLowerCase().trim();
-  const isAboutQuery = /\b(?:about\s*volamp|about\s*us|who\s*are\s*you|history|heritage|legacy|4\s*generation|four\s*generation|founder|origin|founded|soma\s*bhai|chaturbhai|vipulbhai|naimil|patel|ceo|quote|message|vision|team|headquarters|office|address|where\s*(?:are\s*you|is\s*volamp)|location|khadia|aslali|sanand|cin|gstin|gem\s*registration)\b/i.test(lower);
+  const isAboutQuery = /\b(?:about\s*volamp|about\s*us|who\s*are\s*you|history|story|heritage|legacy|4[\s-]*generation|four[\s-]*generation|60[\s-]*(?:years?|yr)|founder|origin|founded|soma\s*bhai|chaturbhai|vipulbhai|naimil|patel|ceo|quote|message|vision|team|headquarters|office|address|contact\s*(?:us|number|details|info)?|phone|email|whatsapp|where\s*(?:are\s*you|is\s*volamp)|location|khadia|aslali|sanand|cin|gstin|gem\s*registration)\b/i.test(lower);
   if (!isAboutQuery) return null;
-  const isHistoryOr4Gen = /\b(?:history|story|heritage|legacy|4\s*generation|four\s*generation|origin|founded|1964|soma\s*bhai)\b/i.test(lower);
+  const isHistoryOr4Gen = /\b(?:history|story|heritage|legacy|4[\s-]*generation|four[\s-]*generation|60[\s-]*(?:years?|yr)|origin|founded|1964|soma\s*bhai)\b/i.test(lower);
   if (!isHistoryOr4Gen && /\b(?:ceo|message|quote|vision|leader|director|naimil)\b/i.test(lower) && !lower.includes("price") && !lower.includes("order")) {
     return `### \u{1F4AC} CEO Message \u2014 Naimil Patel: *"Saath Milkar Growth Ki Ek Nayi Pehchaan Banayein"*
 
@@ -11298,36 +11438,36 @@ To generate your official **Order Reference ID**, please share:
     ];
     return greetings[Math.floor(Math.random() * greetings.length)];
   }
+  const aboutResponse = handleAboutUsAndHeritage(lastUserMsg);
+  if (aboutResponse) {
+    return aboutResponse;
+  }
+  const segmentResponse = handleBusinessSegments(lastUserMsg);
+  if (segmentResponse) {
+    return segmentResponse;
+  }
+  const sizingResponse = handleTechnicalEngineeringAndSizing(lastUserMsg);
+  if (sizingResponse) {
+    return sizingResponse;
+  }
+  const mathResponse = handleMathAndFormulas(lastUserMsg);
+  if (mathResponse) {
+    return mathResponse;
+  }
   const isPricingIntent = /\b(?:prices?|costs?|rates?|pricing|charge|charges|how\s*much|bhav|discounts?|quotations?|rfqs?)\b/i.test(lower);
   if (isPricingIntent) {
-    const pricingResponse2 = handlePricingCostsAndDiscounts(lastUserMsg);
-    if (pricingResponse2) {
-      return pricingResponse2;
+    const pricingResponse = handlePricingCostsAndDiscounts(lastUserMsg);
+    if (pricingResponse) {
+      return pricingResponse;
     }
   }
   const productResponse = handleProductAndCatalogQuery(lastUserMsg);
   if (productResponse) {
     return productResponse;
   }
-  const pricingResponse = handlePricingCostsAndDiscounts(lastUserMsg);
-  if (pricingResponse) {
-    return pricingResponse;
-  }
-  const sizingResponse = handleTechnicalEngineeringAndSizing(lastUserMsg);
-  if (sizingResponse) {
-    return sizingResponse;
-  }
-  const segmentResponse = handleBusinessSegments(lastUserMsg);
-  if (segmentResponse) {
-    return segmentResponse;
-  }
-  const aboutResponse = handleAboutUsAndHeritage(lastUserMsg);
-  if (aboutResponse) {
-    return aboutResponse;
-  }
-  const mathResponse = handleMathAndFormulas(lastUserMsg);
-  if (mathResponse) {
-    return mathResponse;
+  const fallbackPricing = handlePricingCostsAndDiscounts(lastUserMsg);
+  if (fallbackPricing) {
+    return fallbackPricing;
   }
   const scienceResponse = handleScienceAndElectrical(lastUserMsg);
   if (scienceResponse) {
@@ -11341,15 +11481,15 @@ To generate your official **Order Reference ID**, please share:
 }
 
 // server/services/employeeCmsService.ts
-import fs3 from "fs";
-import path3 from "path";
-var DATA_DIR = path3.resolve(process.cwd(), "server/data");
-var BLOGS_FILE = path3.join(DATA_DIR, "blogs_db.json");
-var NEWSLETTERS_FILE = path3.join(DATA_DIR, "newsletters_db.json");
-var PRICE_LISTS_FILE = path3.join(DATA_DIR, "price_lists_db.json");
+import fs4 from "fs";
+import path4 from "path";
+var DATA_DIR = path4.resolve(process.cwd(), "server/data");
+var BLOGS_FILE = path4.join(DATA_DIR, "blogs_db.json");
+var NEWSLETTERS_FILE = path4.join(DATA_DIR, "newsletters_db.json");
+var PRICE_LISTS_FILE = path4.join(DATA_DIR, "price_lists_db.json");
 function ensureDirectoryExists() {
-  if (!fs3.existsSync(DATA_DIR)) {
-    fs3.mkdirSync(DATA_DIR, { recursive: true });
+  if (!fs4.existsSync(DATA_DIR)) {
+    fs4.mkdirSync(DATA_DIR, { recursive: true });
   }
 }
 var INITIAL_BLOGS = [
@@ -11422,11 +11562,11 @@ var INITIAL_BLOGS = [
 function getBlogs() {
   ensureDirectoryExists();
   try {
-    if (fs3.existsSync(BLOGS_FILE)) {
-      const raw = fs3.readFileSync(BLOGS_FILE, "utf-8");
+    if (fs4.existsSync(BLOGS_FILE)) {
+      const raw = fs4.readFileSync(BLOGS_FILE, "utf-8");
       return JSON.parse(raw);
     }
-    fs3.writeFileSync(BLOGS_FILE, JSON.stringify(INITIAL_BLOGS, null, 2), "utf-8");
+    fs4.writeFileSync(BLOGS_FILE, JSON.stringify(INITIAL_BLOGS, null, 2), "utf-8");
     return INITIAL_BLOGS;
   } catch (err) {
     console.error("[EmployeeCms] Error reading blogs:", err);
@@ -11456,7 +11596,7 @@ function createBlog(input) {
     createdAt: (/* @__PURE__ */ new Date()).toISOString()
   };
   blogs.unshift(newBlog);
-  fs3.writeFileSync(BLOGS_FILE, JSON.stringify(blogs, null, 2), "utf-8");
+  fs4.writeFileSync(BLOGS_FILE, JSON.stringify(blogs, null, 2), "utf-8");
   return newBlog;
 }
 function deleteBlog(id) {
@@ -11464,7 +11604,7 @@ function deleteBlog(id) {
   const blogs = getBlogs();
   const filtered = blogs.filter((b) => b.id !== id);
   if (filtered.length !== blogs.length) {
-    fs3.writeFileSync(BLOGS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
+    fs4.writeFileSync(BLOGS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
     return true;
   }
   return false;
@@ -11483,11 +11623,11 @@ var INITIAL_NEWSLETTERS = [
 function getNewsletters() {
   ensureDirectoryExists();
   try {
-    if (fs3.existsSync(NEWSLETTERS_FILE)) {
-      const raw = fs3.readFileSync(NEWSLETTERS_FILE, "utf-8");
+    if (fs4.existsSync(NEWSLETTERS_FILE)) {
+      const raw = fs4.readFileSync(NEWSLETTERS_FILE, "utf-8");
       return JSON.parse(raw);
     }
-    fs3.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(INITIAL_NEWSLETTERS, null, 2), "utf-8");
+    fs4.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(INITIAL_NEWSLETTERS, null, 2), "utf-8");
     return INITIAL_NEWSLETTERS;
   } catch (err) {
     console.error("[EmployeeCms] Error reading newsletters:", err);
@@ -11507,17 +11647,17 @@ function publishNewsletter(input) {
     recipientCount: input.recipientCount || 240
   };
   newsletters.unshift(newNewsletter);
-  fs3.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(newsletters, null, 2), "utf-8");
+  fs4.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(newsletters, null, 2), "utf-8");
   return newNewsletter;
 }
 function getPushedPriceLists() {
   ensureDirectoryExists();
   try {
-    if (fs3.existsSync(PRICE_LISTS_FILE)) {
-      const raw = fs3.readFileSync(PRICE_LISTS_FILE, "utf-8");
+    if (fs4.existsSync(PRICE_LISTS_FILE)) {
+      const raw = fs4.readFileSync(PRICE_LISTS_FILE, "utf-8");
       return JSON.parse(raw);
     }
-    fs3.writeFileSync(PRICE_LISTS_FILE, JSON.stringify([], null, 2), "utf-8");
+    fs4.writeFileSync(PRICE_LISTS_FILE, JSON.stringify([], null, 2), "utf-8");
     return [];
   } catch (err) {
     console.error("[EmployeeCms] Error reading pushed price lists:", err);
@@ -11550,7 +11690,7 @@ function pushPriceList(input) {
     description: input.description
   };
   lists.unshift(newItem);
-  fs3.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(lists, null, 2), "utf-8");
+  fs4.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(lists, null, 2), "utf-8");
   return newItem;
 }
 function deletePushedPriceList(id) {
@@ -11558,7 +11698,7 @@ function deletePushedPriceList(id) {
   const lists = getPushedPriceLists();
   const filtered = lists.filter((item) => item.id !== id);
   if (filtered.length !== lists.length) {
-    fs3.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
+    fs4.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
     return true;
   }
   return false;
@@ -12352,9 +12492,39 @@ var appRouter = router({
       return getEmployeeDashboardData();
     }),
     // Public procedure to inspect token for CEO authorization page (safe dossier)
-    getApprovalRequestInfo: publicProcedure.input(z2.object({ token: z2.string().trim() })).query(async ({ input }) => {
-      const tokenRecord = await getEmployeeApprovalToken(input.token);
+    getApprovalRequestInfo: publicProcedure.input(
+      z2.object({
+        token: z2.string().trim().optional(),
+        employeeEmail: z2.string().trim().optional()
+      })
+    ).query(async ({ input }) => {
+      let tokenRecord = input.token ? await getEmployeeApprovalToken(input.token) : void 0;
+      if (!tokenRecord && input.employeeEmail) {
+        tokenRecord = await getLatestApprovalTokenForEmail(input.employeeEmail, "approve");
+      }
       if (!tokenRecord) {
+        if (input.employeeEmail) {
+          const employee2 = await getUserByEmail(input.employeeEmail);
+          if (employee2 && employee2.accountType === "employee") {
+            return {
+              valid: true,
+              token: "direct-approval",
+              action: "approve",
+              expiresAt: new Date(Date.now() + 864e5),
+              employee: {
+                id: employee2.id,
+                name: employee2.name || "Employee",
+                email: employee2.email || "",
+                employeeId: employee2.employeeId || "Not assigned yet",
+                department: employee2.department || "Operations",
+                designation: employee2.designation || "Staff Member",
+                emailVerified: Boolean(employee2.emailVerified),
+                currentStatus: employee2.employeeStatus,
+                createdAt: employee2.createdAt
+              }
+            };
+          }
+        }
         return {
           valid: false,
           error: "The authorization link is invalid or could not be found."
@@ -12405,7 +12575,8 @@ var appRouter = router({
     // Protected procedure for CEO to finalize approval or rejection decision
     processCeoDecision: protectedProcedure.input(
       z2.object({
-        token: z2.string().trim(),
+        token: z2.string().trim().optional(),
+        employeeEmail: z2.string().trim().optional(),
         decision: z2.enum(["approve", "reject"]),
         reason: z2.string().trim().max(500).optional()
       })
@@ -12418,33 +12589,35 @@ var appRouter = router({
           message: "Access denied. Only the CEO (ceo@volampelektrikals.com) or Executive Administrator can authorize employee accounts."
         });
       }
-      const tokenRecord = await getEmployeeApprovalToken(input.token);
-      if (!tokenRecord) {
-        throw new TRPCError3({
-          code: "NOT_FOUND",
-          message: "Authorization token is invalid or does not exist."
-        });
+      let employee = void 0;
+      if (input.token && input.token !== "direct-approval") {
+        const tokenRecord = await getEmployeeApprovalToken(input.token);
+        if (tokenRecord) {
+          if (tokenRecord.usedAt) {
+            throw new TRPCError3({
+              code: "BAD_REQUEST",
+              message: "This authorization token has already been processed and cannot be reused."
+            });
+          }
+          if (new Date(tokenRecord.expiresAt) < /* @__PURE__ */ new Date()) {
+            throw new TRPCError3({
+              code: "BAD_REQUEST",
+              message: "This authorization token has expired (24h limit)."
+            });
+          }
+          employee = await getUserById(tokenRecord.userId);
+          await markEmployeeApprovalTokenUsed(tokenRecord.token, callerEmail);
+        }
       }
-      if (tokenRecord.usedAt) {
-        throw new TRPCError3({
-          code: "BAD_REQUEST",
-          message: "This authorization token has already been processed and cannot be reused."
-        });
+      if (!employee && input.employeeEmail) {
+        employee = await getUserByEmail(input.employeeEmail);
       }
-      if (new Date(tokenRecord.expiresAt) < /* @__PURE__ */ new Date()) {
-        throw new TRPCError3({
-          code: "BAD_REQUEST",
-          message: "This authorization token has expired (24h limit)."
-        });
-      }
-      const employee = await getUserById(tokenRecord.userId);
       if (!employee) {
         throw new TRPCError3({
           code: "NOT_FOUND",
           message: "Employee account was not found."
         });
       }
-      await markEmployeeApprovalTokenUsed(tokenRecord.token, callerEmail);
       if (input.decision === "approve") {
         await approveEmployee(employee.id, callerEmail);
         if (employee.email) {
@@ -13566,15 +13739,15 @@ async function createContext(opts) {
 function createExpressApp() {
   const app2 = express();
   app2.use(securityHeadersMiddleware);
-  const clientPublicVideos = path4.resolve(process.cwd(), "client/public/videos");
-  if (fs4.existsSync(clientPublicVideos)) {
+  const clientPublicVideos = path5.resolve(process.cwd(), "client/public/videos");
+  if (fs5.existsSync(clientPublicVideos)) {
     app2.use("/videos", express.static(clientPublicVideos, {
       acceptRanges: true,
       maxAge: "30d"
     }));
   }
-  const distPublicVideos = path4.resolve(process.cwd(), "dist/public/videos");
-  if (fs4.existsSync(distPublicVideos)) {
+  const distPublicVideos = path5.resolve(process.cwd(), "dist/public/videos");
+  if (fs5.existsSync(distPublicVideos)) {
     app2.use("/videos", express.static(distPublicVideos, {
       acceptRanges: true,
       maxAge: "30d"
@@ -13607,11 +13780,11 @@ function createExpressApp() {
 }
 
 // server/seoPrerender.ts
-import fs5 from "fs";
-import path5 from "path";
+import fs6 from "fs";
+import path6 from "path";
 import { fileURLToPath as fileURLToPath2 } from "url";
 var __filename2 = fileURLToPath2(import.meta.url);
-var __dirname2 = path5.dirname(__filename2);
+var __dirname2 = path6.dirname(__filename2);
 var BASE_URL3 = "https://volampelektrikals.com";
 var STATIC_ROUTES = {
   "": {
@@ -13772,9 +13945,13 @@ var OTHER_VALID_PATHS = /* @__PURE__ */ new Set([
   "employee-registration",
   "employee/register",
   "employee-register",
+  "ceo-authorize",
   "ceo-authorization",
   "ceo/authorize",
+  "ceo/authorization",
   "ceo-approval",
+  "ceo-approve",
+  "ceo/approve",
   "cart",
   "checkout",
   "login",
@@ -13870,24 +14047,24 @@ function loadBaseTemplate() {
   if (_indexTemplateCache) return _indexTemplateCache;
   const isDev = process.env.NODE_ENV !== "production";
   const candidates = isDev ? [
-    path5.resolve(process.cwd(), "client/index.html"),
-    path5.join(__dirname2, "../../client/index.html"),
-    path5.join(__dirname2, "../client/index.html"),
-    path5.resolve(process.cwd(), "dist/public/index.html")
+    path6.resolve(process.cwd(), "client/index.html"),
+    path6.join(__dirname2, "../../client/index.html"),
+    path6.join(__dirname2, "../client/index.html"),
+    path6.resolve(process.cwd(), "dist/public/index.html")
   ] : [
-    path5.resolve(process.cwd(), "dist/public/index.html"),
-    path5.resolve(process.cwd(), "client/index.html"),
-    path5.join(__dirname2, "../../dist/public/index.html"),
-    path5.join(__dirname2, "../dist/public/index.html"),
-    path5.join(__dirname2, "../../client/index.html"),
-    path5.join(__dirname2, "../client/index.html"),
+    path6.resolve(process.cwd(), "dist/public/index.html"),
+    path6.resolve(process.cwd(), "client/index.html"),
+    path6.join(__dirname2, "../../dist/public/index.html"),
+    path6.join(__dirname2, "../dist/public/index.html"),
+    path6.join(__dirname2, "../../client/index.html"),
+    path6.join(__dirname2, "../client/index.html"),
     "/var/task/dist/public/index.html",
     "/var/task/client/index.html"
   ];
   for (const c of candidates) {
-    if (fs5.existsSync(c)) {
+    if (fs6.existsSync(c)) {
       try {
-        _indexTemplateCache = fs5.readFileSync(c, "utf8");
+        _indexTemplateCache = fs6.readFileSync(c, "utf8");
         return _indexTemplateCache;
       } catch {
       }
@@ -14304,7 +14481,7 @@ function seoPrerenderMiddleware(req, res, next) {
     });
     return res.send(html);
   }
-  if (OTHER_VALID_PATHS.has(cleanPath) || cleanPath.startsWith("employee-registration") || cleanPath.startsWith("employee/register") || cleanPath.startsWith("employee-register") || cleanPath.startsWith("ceo-authorization") || cleanPath.startsWith("ceo/authorize") || cleanPath.startsWith("ceo-approval")) {
+  if (OTHER_VALID_PATHS.has(cleanPath) || cleanPath.startsWith("employee-registration") || cleanPath.startsWith("employee/register") || cleanPath.startsWith("employee-register") || cleanPath.startsWith("ceo-authorize") || cleanPath.startsWith("ceo-authorization") || cleanPath.startsWith("ceo/authorize") || cleanPath.startsWith("ceo-approval") || cleanPath.startsWith("ceo-approve")) {
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     let pageTitle = `${cleanPath.toUpperCase()} | Volamp Elektrikals`;
@@ -14312,7 +14489,7 @@ function seoPrerenderMiddleware(req, res, next) {
     if (cleanPath.startsWith("employee-registration") || cleanPath.startsWith("employee/register") || cleanPath.startsWith("employee-register")) {
       pageTitle = "Official Employee Registration | Volamp Elektrikals";
       pageDesc = "Corporate employee onboarding and portal registration portal for VOLTAMP ELEKTRIKALS PVT. LTD.";
-    } else if (cleanPath.startsWith("ceo-authorization") || cleanPath.startsWith("ceo/authorize") || cleanPath.startsWith("ceo-approval")) {
+    } else if (cleanPath.startsWith("ceo-authorize") || cleanPath.startsWith("ceo-authorization") || cleanPath.startsWith("ceo/authorize") || cleanPath.startsWith("ceo-approval") || cleanPath.startsWith("ceo-approve")) {
       pageTitle = "Executive CEO Authorization Desk | Volamp Elektrikals";
       pageDesc = "Executive email authorization and digital signing desk for VOLTAMP ELEKTRIKALS PVT. LTD.";
     }
