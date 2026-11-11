@@ -248,7 +248,7 @@ function buildDynamicCinematicJourney(
     title: "Global Supply & Export Footprint",
     eyebrow: "STAGE 1 · ORBITAL 3D EARTH",
     narrative:
-      "Originating in Ahmedabad, Volamp operates an integrated global and domestic delivery corridor spanning 28 Indian States and export gateways across the GCC, Africa, and Southeast Asia.",
+      "Originating in Ahmedabad, Volamp operates an integrated global and domestic delivery network spanning 28 Indian States and export corridors across North America, Africa, the Middle East, Europe, and Southeast Asia.",
     coords: { lat: 20.5, lng: 50.0, altitude: 2.3 },
     flyDurationMs: 1800,
     dwellMs: 5000,
