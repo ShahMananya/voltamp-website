@@ -652,6 +652,7 @@ export const appRouter = router({
           user,
           effectiveRole,
           redirectUrl,
+          sessionToken,
         };
       }),
 
@@ -722,6 +723,7 @@ export const appRouter = router({
           user,
           effectiveRole,
           redirectUrl,
+          sessionToken,
         };
       }),
 
@@ -993,6 +995,7 @@ export const appRouter = router({
           accountType: "customer" as const,
           status: "active" as const,
           user,
+          sessionToken,
         };
       }),
 

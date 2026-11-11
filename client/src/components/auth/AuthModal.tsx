@@ -125,6 +125,12 @@ export function AuthModal({
         });
         setView("mfa-verify");
       } else {
+        if ((data as any).sessionToken) {
+          try {
+            localStorage.setItem("volamp_auth_token", (data as any).sessionToken);
+            sessionStorage.setItem("manus-cookie", `${COOKIE_NAME}=${(data as any).sessionToken}`);
+          } catch {}
+        }
         utils.auth.me.setData(undefined, data.user);
         await utils.auth.me.invalidate();
         const welcomeTitle =
@@ -163,6 +169,12 @@ export function AuthModal({
 
   const mfaMutation = trpc.auth.verifyMfaOtp.useMutation({
     onSuccess: async (data) => {
+      if ((data as any).sessionToken) {
+        try {
+          localStorage.setItem("volamp_auth_token", (data as any).sessionToken);
+          sessionStorage.setItem("manus-cookie", `${COOKIE_NAME}=${(data as any).sessionToken}`);
+        } catch {}
+      }
       utils.auth.me.setData(undefined, data.user);
       await utils.auth.me.invalidate();
       const welcomeTitle =
@@ -245,6 +257,12 @@ export function AuthModal({
       if (data.accountType === "employee") {
         setView("pending-approval");
       } else {
+        if ((data as any).sessionToken) {
+          try {
+            localStorage.setItem("volamp_auth_token", (data as any).sessionToken);
+            sessionStorage.setItem("manus-cookie", `${COOKIE_NAME}=${(data as any).sessionToken}`);
+          } catch {}
+        }
         utils.auth.me.setData(undefined, data.user);
         await utils.auth.me.invalidate();
         toast.success("Account active!", { description: "Welcome to VOLAMP." });

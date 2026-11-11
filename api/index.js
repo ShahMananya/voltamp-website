@@ -283,7 +283,7 @@ var employeeAuditLogs = mysqlTable("employee_audit_logs", {
 
 // server/_core/env.ts
 var ENV = {
-  appId: process.env.VITE_APP_ID ?? "",
+  appId: process.env.VITE_APP_ID || "volamp-app",
   cookieSecret: process.env.JWT_SECRET ?? "",
   databaseUrl: process.env.DATABASE_URL ?? "",
   oAuthServerUrl: process.env.OAUTH_SERVER_URL ?? "",
@@ -3478,8 +3478,8 @@ var SDKServer = class {
     return this.signSession(
       {
         openId,
-        appId: ENV.appId,
-        name: options.name || ""
+        appId: ENV.appId || "volamp-app",
+        name: options.name || "User"
       },
       options
     );
@@ -3505,14 +3505,14 @@ var SDKServer = class {
         algorithms: ["HS256"]
       });
       const { openId, appId, name } = payload;
-      if (!isNonEmptyString(openId) || !isNonEmptyString(appId) || !isNonEmptyString(name)) {
-        console.warn("[Auth] Session payload missing required fields");
+      if (!isNonEmptyString(openId)) {
+        console.warn("[Auth] Session payload missing required openId");
         return null;
       }
       return {
-        openId,
-        appId,
-        name
+        openId: String(openId),
+        appId: typeof appId === "string" && appId.trim().length > 0 ? appId : ENV.appId || "volamp-app",
+        name: typeof name === "string" ? name : ""
       };
     } catch (error) {
       console.warn("[Auth] Session verification failed", String(error));
@@ -3567,13 +3567,17 @@ var SDKServer = class {
   async authenticateRequest(req) {
     const cookies = this.parseCookies(req.headers.cookie);
     let sessionToken = cookies.get(COOKIE_NAME);
-    if (!sessionToken) {
+    let session = sessionToken ? await this.verifySession(sessionToken) : null;
+    if (!session) {
       const authHeader = req.headers.authorization;
       if (typeof authHeader === "string" && authHeader.startsWith("Bearer ")) {
-        sessionToken = authHeader.slice(7);
+        const bearerToken = authHeader.slice(7).trim();
+        session = await this.verifySession(bearerToken);
+        if (session) {
+          sessionToken = bearerToken;
+        }
       }
     }
-    const session = await this.verifySession(sessionToken);
     if (!session) {
       throw ForbiddenError("Invalid session cookie");
     }
@@ -12207,7 +12211,8 @@ var appRouter = router({
         emailVerificationRequired: false,
         user,
         effectiveRole,
-        redirectUrl
+        redirectUrl,
+        sessionToken
       };
     }),
     verifyMfaOtp: publicProcedure.input(
@@ -12254,7 +12259,8 @@ var appRouter = router({
         success: true,
         user,
         effectiveRole,
-        redirectUrl
+        redirectUrl,
+        sessionToken
       };
     }),
     resendMfaOtp: publicProcedure.input(z2.object({ mfaPendingToken: z2.string() })).mutation(async ({ input }) => {
@@ -12468,7 +12474,8 @@ var appRouter = router({
         success: true,
         accountType: "customer",
         status: "active",
-        user
+        user,
+        sessionToken
       };
     }),
     forgotPassword: publicProcedure.input(z2.object({ email: z2.string().trim().email() })).mutation(async ({ input }) => {
