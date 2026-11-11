@@ -29,31 +29,43 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const STORAGE_KEY = "volamp_cart_items_v1";
+const STORAGE_KEY = "volamp_cart_items_v2";
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
     if (typeof window !== "undefined") {
       try {
+        // Clean up legacy storage key that had dummy 100-quantity sample item
+        const legacy = localStorage.getItem("volamp_cart_items_v1");
+        if (legacy) {
+          try {
+            const parsedLegacy = JSON.parse(legacy);
+            if (Array.isArray(parsedLegacy)) {
+              const cleaned = parsedLegacy.filter((i: any) => i && i.id !== "sample-cable-1");
+              if (cleaned.length > 0) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
+              }
+            }
+          } catch {
+            // ignore JSON parse error on legacy key
+          }
+          localStorage.removeItem("volamp_cart_items_v1");
+        }
+
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) return JSON.parse(saved);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            // Filter out any stale dummy sample items
+            return parsed.filter((i: any) => i && i.id !== "sample-cable-1");
+          }
+        }
       } catch (e) {
         console.error("Failed to parse cart items from localStorage", e);
       }
     }
-    return [
-      {
-        id: "sample-cable-1",
-        name: "Polycab 4C x 185 Sqmm XLPE Armoured Cable",
-        category: "Wire Cables",
-        sku: "CAB-ARM-4C185",
-        detail: "1.1kV Grade, Aluminium Conductor, IS 7098",
-        price: 1850,
-        unit: "per meter",
-        quantity: 100,
-        image: "/products/cables.jpg",
-      },
-    ];
+    // Initially empty (zero items until customer adds something)
+    return [];
   });
 
   const [isCartOpen, setIsCartOpen] = useState(false);

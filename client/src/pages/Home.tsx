@@ -535,14 +535,13 @@ export default function Home() {
             <button
               onClick={openCart}
               className="relative p-1.5 text-white/90 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
-              title="View Cart"
+              title={`View Cart (${totalCount} items)`}
+              aria-label={`View Cart (${totalCount} items)`}
             >
               <ShoppingCart className="size-4" />
-              {totalCount > 0 && (
-                <span className="absolute -top-1 -right-1 size-4 bg-[#c56718] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                  {totalCount}
-                </span>
-              )}
+              <span className="absolute -top-1 -right-1 size-4 bg-[#c56718] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                {totalCount}
+              </span>
             </button>
 
             <ThemeToggle />
