@@ -83,7 +83,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     const result = getResult();
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
-    expect(result.sentHtml).toContain("Industrial Cable &amp; Electrical Distributor in Ahmedabad");
+    expect(result.sentHtml).toContain("Industrial Cables in Ahmedabad");
     expect(result.sentHtml).toContain('href="/category/wire-cables"');
     expect(result.sentHtml).toContain('href="/product/CAB-000001"');
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/"');

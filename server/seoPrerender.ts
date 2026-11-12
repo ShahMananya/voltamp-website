@@ -15,12 +15,12 @@ const STATIC_ROUTES: Record<
   { title: string; description: string; h1: string; intro: string }
 > = {
   "": {
-    title: "Industrial Cable & Electrical Distributor | Volamp",
+    title: "Industrial Cables in Ahmedabad | Polycab, KEI & Finolex Distributor - Volamp",
     description:
-      "Authorized wholesale distributor of Polycab, Finolex, KEI cables and Schneider, L&T switchgear in Ahmedabad, Gujarat. 3,385+ SKUs with test certificates.",
-    h1: "Industrial Cable & Electrical Distributor in Ahmedabad",
+      "Leading industrial cable & electrical distributor in Ahmedabad, Gujarat. Authorized master stockist of Polycab, KEI, Finolex power cables & Schneider switchgear with MTC certificates. Fast dispatch.",
+    h1: "Industrial Cables in Ahmedabad | Authorized Polycab, KEI & Finolex Distributor",
     intro:
-      "Volamp Elektrikals Private Limited is Gujarat's premier B2B master distributor and authorized wholesale stockist of industrial cables, HT/LT power cables, solar PV cables, switchgear, and earthing infrastructure. Backed by a 60+ year family legacy established in 1964 and modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across 28 Indian states.",
+      "Volamp Elektrikals Private Limited is Gujarat's premier B2B master distributor and authorized wholesale stockist of industrial cables, HT/LT power cables, solar PV cables, switchgear, and earthing infrastructure in Ahmedabad. Backed by a 60+ year family legacy established in 1964 and modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across 28 Indian states.",
   },
   "about-volamp": {
     title: "About Volamp Elektrikals | 60+ Years Electrical Legacy",
