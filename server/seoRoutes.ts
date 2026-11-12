@@ -279,8 +279,7 @@ export function generateLlmsFullTxt(): string {
       }
     } catch {}
   }
-  return '# VOLAMP ELEKTRIKALS PRIVATE LIMITED
-Official AI Knowledge Manifest';
+  return "# VOLAMP ELEKTRIKALS PRIVATE LIMITED\nOfficial AI Knowledge Manifest";
 }
 
 export function registerSeoRoutes(app: Express) {
