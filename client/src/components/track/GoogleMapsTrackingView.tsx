@@ -48,12 +48,11 @@ export default function GoogleMapsTrackingView({
   const getMapUrl = () => {
     switch (mode) {
       case "truck":
-        return `https://maps.google.com/maps?q=${encodedCurrent}&t=m&z=13&output=embed`;
+        return `https://www.openstreetmap.org/export/embed.html?bbox=72.95,21.68,73.05,21.75&layer=mapnik&marker=21.7144,73.0031`;
       case "satellite":
-        return `https://maps.google.com/maps?saddr=${encodedOrigin}&daddr=${encodedDest}&t=k&z=8&output=embed`;
       case "route":
       default:
-        return `https://maps.google.com/maps?saddr=${encodedOrigin}&daddr=${encodedDest}&t=m&z=8&output=embed`;
+        return `https://www.openstreetmap.org/export/embed.html?bbox=72.5,19.0,73.5,23.1&layer=mapnik`;
     }
   };
 
@@ -77,11 +76,10 @@ export default function GoogleMapsTrackingView({
               setIsLoading(true);
               setMode("route");
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              mode === "route"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${mode === "route"
                 ? "bg-[#1d73b7] text-white shadow-sm"
                 : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-            }`}
+              }`}
           >
             <Navigation className="size-3.5" />
             <span>Highway Route</span>
@@ -93,11 +91,10 @@ export default function GoogleMapsTrackingView({
               setIsLoading(true);
               setMode("truck");
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              mode === "truck"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${mode === "truck"
                 ? "bg-amber-500 text-slate-950 shadow-sm"
                 : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-            }`}
+              }`}
           >
             <Truck className="size-3.5" />
             <span>Live Truck GPS</span>
@@ -109,11 +106,10 @@ export default function GoogleMapsTrackingView({
               setIsLoading(true);
               setMode("satellite");
             }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-              mode === "satellite"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${mode === "satellite"
                 ? "bg-emerald-600 text-white shadow-sm"
                 : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-            }`}
+              }`}
           >
             <Satellite className="size-3.5" />
             <span>Satellite</span>

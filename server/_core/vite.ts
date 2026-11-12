@@ -73,8 +73,15 @@ export function serveStatic(app: Express) {
     );
   }
 
+  // Intercept homepage GET / before static asset handler so Googlebot and crawlers receive
+  // pre-rendered semantic HTML with H1, category links, product listings, and JSON-LD schema
+  app.get("/", (req, res, next) => {
+    seoPrerenderMiddleware(req, res, next);
+  });
+
   app.use(
     express.static(distPath, {
+      index: false, // Prevent serving unrendered index.html for root and directory paths
       maxAge: "1y",
       immutable: true,
       setHeaders: (res, filePath) => {

@@ -1,6 +1,6 @@
 // server/_core/app.ts
-import fs5 from "fs";
-import path5 from "path";
+import fs6 from "fs";
+import path6 from "path";
 import express from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 
@@ -5041,6 +5041,8 @@ function registerProductRestRoutes(app2) {
 }
 
 // server/seoRoutes.ts
+import fs4 from "fs";
+import path4 from "path";
 var BASE_URL2 = "https://www.volampelektrikals.com";
 var STATIC_PAGES = [
   { path: "", priority: "1.0", changefreq: "daily" },
@@ -5085,39 +5087,33 @@ var CATEGORY_SLUGS = [
   "solar"
 ];
 function generateSitemapXml() {
-  const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+  const lastModDate = "2026-11-12";
   const staticUrls = STATIC_PAGES.map(
     (page) => `  <url>
     <loc>${BASE_URL2}/${page.path}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
+    <lastmod>${lastModDate}</lastmod>
   </url>`
   ).join("\n");
   const categoryUrls = CATEGORY_SLUGS.map(
     (slug) => `  <url>
     <loc>${BASE_URL2}/category/${slug}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
+    <lastmod>${lastModDate}</lastmod>
   </url>`
   ).join("\n");
   const blogUrls = BLOG_SLUGS.map(
     (slug) => `  <url>
     <loc>${BASE_URL2}/blog/${slug}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
+    <lastmod>${lastModDate}</lastmod>
   </url>`
   ).join("\n");
   const products2 = loadProductsFromDisk();
   const productUrls = products2.filter((prod) => prod.productId && prod.name).map((prod) => {
-    const imgLink = prod.imageUrl && prod.imageUrl.startsWith("http") ? prod.imageUrl : prod.imageUrl ? `${BASE_URL2}${prod.imageUrl}` : "";
+    const rawImg = prod.imageUrl || "";
+    const isValidImage = rawImg.startsWith("http") && !rawImg.includes("drive.google.com");
+    const imgLink = isValidImage ? rawImg : !rawImg.includes("drive.google.com") && rawImg ? `${BASE_URL2}${rawImg}` : "";
     return `  <url>
     <loc>${BASE_URL2}/product/${encodeURIComponent(prod.productId)}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>${imgLink ? `
+    <lastmod>${lastModDate}</lastmod>${imgLink ? `
     <image:image>
       <image:loc>${imgLink}</image:loc>
       <image:title>${prod.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</image:title>
@@ -5138,81 +5134,73 @@ function generateRobotsTxt() {
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
-# Google Shopping & Merchant Center Crawlers (Required for Product Quality & Policy Checks)
+# Google Shopping & Merchant Center Crawlers
 User-agent: Googlebot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Googlebot-Image
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
 
 User-agent: Storebot-Google
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
 
 # AI Search & Retrieval Crawlers (Explicit allow with portal protection)
 User-agent: GPTBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: ClaudeBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Claude-SearchBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: PerplexityBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Google-Extended
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Amazonbot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Meta-ExternalAgent
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Bytespider
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 Sitemap: ${BASE_URL2}/sitemap.xml
 `.trim();
@@ -5243,11 +5231,11 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 
 ## Product Categories & Standards
 - [Wires & Cables](https://www.volampelektrikals.com/category/wire-cables): LT/HT XLPE armoured power cables, control cables, and flexible copper wires (IS 7098 Part 1/2, IS 1554, IS 694).
-- [Switchgear & Power Distribution](https://www.volampelektrikals.com/category/switchgear): Air circuit breakers (ACB), MCCBs, MCBs, DBs, and contactors from Schneider Electric and L&T / Lauritz Knudsen.
-- [Earthing & Lightning Protection](https://www.volampelektrikals.com/category/earthing-lightning): Copper-bonded rods (UL/CPRI certified), pure copper plates, chemical earthing compounds (BFC), and GI strips.
-- [Solar & Renewable Cables](https://www.volampelektrikals.com/category/solar-renewable): 1500V DC solar PV cables (EN 50618 / IEC 62930), MC4 connectors, and solar array junction boxes.
-- [Substation & Cable Lugs](https://www.volampelektrikals.com/category/substation-transmission): Dowells heavy-duty tinned copper crimping lugs and terminal ends.
-- [Cable Glands & Management](https://www.volampelektrikals.com/category/conduits-cable-management): Brass single and double compression cable glands and termination kits.
+- [Switchgear & Power Distribution](https://www.volampelektrikals.com/category/switch-gears): Air circuit breakers (ACB), MCCBs, MCBs, DBs, and contactors from Schneider Electric and L&T / Lauritz Knudsen.
+- [Earthing & Lightning Protection](https://www.volampelektrikals.com/category/earthing-material): Copper-bonded rods (UL/CPRI certified), pure copper plates, chemical earthing compounds (BFC), and GI strips.
+- [Solar & Renewable Cables](https://www.volampelektrikals.com/category/solar): 1500V DC solar PV cables (EN 50618 / IEC 62930), MC4 connectors, and solar array junction boxes.
+- [Cable Lugs & Terminals](https://www.volampelektrikals.com/category/lugs): Dowells heavy-duty tinned copper crimping lugs and terminal ends.
+- [Cable Glands & Conduits](https://www.volampelektrikals.com/category/conduit): Brass single and double compression cable glands and termination kits.
 
 ## Authorized Brand Partners
 - [Polycab India](https://www.volampelektrikals.com/products?brand=Polycab): Industrial LT/HT power cables, solar DC cables, and FRLS wires.
@@ -5273,53 +5261,21 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 `.trim();
 }
 function generateLlmsFullTxt() {
-  return `# VOLAMP ELEKTRIKALS PRIVATE LIMITED \u2014 Authoritative AI Knowledge Manifest (llms-full.txt)
-> Comprehensive manifest for AI answer engines (Google AI Overviews, Perplexity, Claude, ChatGPT, Gemini, Microsoft Copilot).
-
-## 1. Corporate Identity, Legal & Credentials
-- Official Registered Entity: VOLAMP ELEKTRIKALS PRIVATE LIMITED
-- Legacy & Heritage: 4-Generation, 60+ Years Family Industrial Electrical Legacy (Roots established 1964 by Soma Bhai Khatubhai Patel)
-- Legal Entity Incorporation Date: April 26, 2021
-- Corporate Identification Number (CIN): U31900GJ2021PTC122730
-- Goods and Services Tax Identification Number (GSTIN): 24AAICV0754B1ZO
-- Government e-Marketplace (GeM) Status: Verified OEM & Authorized Distributor
-- Executive Leadership: Naimil Vipul Patel, Chief Executive Officer (Electrical Engineer, 4th Generation)
-- Corporate Head Office: 1753, Dhobi's Pole, Sir Chinubhai Road, Old City, Khadia, Ahmedabad, Gujarat 380001, India (Gandhi Road Electrical Market Belt)
-- Central Logistics & Distribution Terminal: Aslali Highway Terminal, NH-48 & SP Ring Road Junction, Ahmedabad, Gujarat 382427, India
-- Contact Telephone / WhatsApp: +91 9512365582
-- Official Inquiries: sales@volampelektrikals.com
-- Customer Grievances & Escalations: Grievances@volampelektrikals.com
-- Official Website: https://www.volampelektrikals.com
-- Social & Knowledge Profiles:
-  - LinkedIn: https://www.linkedin.com/company/volampelektrikals/
-  - YouTube: https://www.youtube.com/@cablezone
-  - X (Twitter): https://x.com/volampelektrik
-  - Facebook: https://www.facebook.com/profile.php?id=61587485305483
-  - Instagram: https://www.instagram.com/volampp
-  - Pinterest: https://www.pinterest.com/volampelektrikals/
-
-## 2. Authorized Brand Partnerships & Online Catalog
-Volamp Elektrikals stocks over 3,385+ active electrical SKUs from 7 leading authorized manufacturer brands:
-1. Polycab India Ltd. (Master Distributor \u2014 LT/HT XLPE Armoured Cables, Solar DC Cables, Flexible Multi-strand Wires)
-2. Finolex Cables Ltd. (Authorized Stockist \u2014 Pure Electrolytic Copper Flexible Wires & Industrial Cables)
-3. KEI Industries Ltd. (Industrial Partner \u2014 Heavy Power Cables, Extra High Voltage EHV, Rubber Trailing Cables)
-4. Schneider Electric India (Authorized Distribution \u2014 Acti9 MCBs, EasyPact MCCBs, Contactors, Motor Starters)
-5. Larsen & Toubro / Lauritz Knudsen (Authorized Partner \u2014 dsine MCCBs, Starters, Industrial Distribution Boards)
-6. Dowells (Exclusive Brand Partner for Cable Lugs \u2014 Heavy-Duty Copper Crimping Lugs & Terminal Ends)
-7. Legrand (Certified Distribution \u2014 Industrial Protection Switchgear & Enclosures)
-
-## 3. Product Categories & Technical Standards
-- Wires & Cables: Compliant with IS 7098 (Part 1 for LT up to 1.1kV, Part 2 for HT 3.3kV to 33kV), IS 1554 (PVC power cables), IS 694 (copper multi-strand flexible wires).
-- Solar DC Cables: Compliant with EN 50618 and IEC 62930 (1500V DC UV-resistant cross-linked halogen-free cables).
-- Switchgear: Compliant with IS/IEC 60947 series (ACBs, MCCBs, MCBs, Contactors, Isolators).
-- Earthing & Lightning: CPRI and UL-certified copper-bonded earthing electrodes, pure copper plates, chemical backfill compounds (BFC), and lightning protection conductors.
-- Cable Accessories: Heavy-duty tinned copper lugs (Dowells), single and double compression brass cable glands (HMI, Dowells, Comet), and heat-shrink termination kits up to 33kV.
-
-## 4. Fulfillment Infrastructure & Dispatch Corridors
-- Gujarat Industrial Corridors: Same-day to 24-hour dispatch from Aslali central warehouse across Sanand, Vatva, Naroda, Changodar, Ankleshwar, and Dahej GIDC estates.
-- Pan-India Logistics: 48 to 72 hours express dispatch across 28 states via insured freight carriers.
-- Testing & Quality Assurance: Every shipment is verified with original manufacturer Material Test Certificates (MTC) and routine spark/insulation resistance tests.
-`.trim();
+  const possiblePaths = [
+    path4.resolve(process.cwd(), "dist/public/llms-full.txt"),
+    path4.resolve(process.cwd(), "client/public/llms-full.txt"),
+    path4.resolve(import.meta.dirname, "../../client/public/llms-full.txt"),
+    path4.resolve(import.meta.dirname, "../client/public/llms-full.txt")
+  ];
+  for (const p of possiblePaths) {
+    try {
+      if (fs4.existsSync(p)) {
+        return fs4.readFileSync(p, "utf-8");
+      }
+    } catch {
+    }
+  }
+  return "# VOLAMP ELEKTRIKALS PRIVATE LIMITED\nOfficial AI Knowledge Manifest";
 }
 function registerSeoRoutes(app2) {
   app2.get("/sitemap.xml", (_req, res) => {
@@ -5923,7 +5879,7 @@ function securityHeadersMiddleware(req, res, next) {
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: https: blob:",
     "connect-src 'self' https: wss:",
-    "frame-src 'self' https://accounts.google.com",
+    "frame-src 'self' https://accounts.google.com https://*.google.com https://maps.google.com https://www.google.com https://*.openstreetmap.org https://www.openstreetmap.org",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'"
@@ -11512,15 +11468,15 @@ To generate your official **Order Reference ID**, please share:
 }
 
 // server/services/employeeCmsService.ts
-import fs4 from "fs";
-import path4 from "path";
-var DATA_DIR = path4.resolve(process.cwd(), "server/data");
-var BLOGS_FILE = path4.join(DATA_DIR, "blogs_db.json");
-var NEWSLETTERS_FILE = path4.join(DATA_DIR, "newsletters_db.json");
-var PRICE_LISTS_FILE = path4.join(DATA_DIR, "price_lists_db.json");
+import fs5 from "fs";
+import path5 from "path";
+var DATA_DIR = path5.resolve(process.cwd(), "server/data");
+var BLOGS_FILE = path5.join(DATA_DIR, "blogs_db.json");
+var NEWSLETTERS_FILE = path5.join(DATA_DIR, "newsletters_db.json");
+var PRICE_LISTS_FILE = path5.join(DATA_DIR, "price_lists_db.json");
 function ensureDirectoryExists() {
-  if (!fs4.existsSync(DATA_DIR)) {
-    fs4.mkdirSync(DATA_DIR, { recursive: true });
+  if (!fs5.existsSync(DATA_DIR)) {
+    fs5.mkdirSync(DATA_DIR, { recursive: true });
   }
 }
 var INITIAL_BLOGS = [
@@ -11593,11 +11549,11 @@ var INITIAL_BLOGS = [
 function getBlogs() {
   ensureDirectoryExists();
   try {
-    if (fs4.existsSync(BLOGS_FILE)) {
-      const raw = fs4.readFileSync(BLOGS_FILE, "utf-8");
+    if (fs5.existsSync(BLOGS_FILE)) {
+      const raw = fs5.readFileSync(BLOGS_FILE, "utf-8");
       return JSON.parse(raw);
     }
-    fs4.writeFileSync(BLOGS_FILE, JSON.stringify(INITIAL_BLOGS, null, 2), "utf-8");
+    fs5.writeFileSync(BLOGS_FILE, JSON.stringify(INITIAL_BLOGS, null, 2), "utf-8");
     return INITIAL_BLOGS;
   } catch (err) {
     console.error("[EmployeeCms] Error reading blogs:", err);
@@ -11627,7 +11583,7 @@ function createBlog(input) {
     createdAt: (/* @__PURE__ */ new Date()).toISOString()
   };
   blogs.unshift(newBlog);
-  fs4.writeFileSync(BLOGS_FILE, JSON.stringify(blogs, null, 2), "utf-8");
+  fs5.writeFileSync(BLOGS_FILE, JSON.stringify(blogs, null, 2), "utf-8");
   return newBlog;
 }
 function deleteBlog(id) {
@@ -11635,7 +11591,7 @@ function deleteBlog(id) {
   const blogs = getBlogs();
   const filtered = blogs.filter((b) => b.id !== id);
   if (filtered.length !== blogs.length) {
-    fs4.writeFileSync(BLOGS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
+    fs5.writeFileSync(BLOGS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
     return true;
   }
   return false;
@@ -11654,11 +11610,11 @@ var INITIAL_NEWSLETTERS = [
 function getNewsletters() {
   ensureDirectoryExists();
   try {
-    if (fs4.existsSync(NEWSLETTERS_FILE)) {
-      const raw = fs4.readFileSync(NEWSLETTERS_FILE, "utf-8");
+    if (fs5.existsSync(NEWSLETTERS_FILE)) {
+      const raw = fs5.readFileSync(NEWSLETTERS_FILE, "utf-8");
       return JSON.parse(raw);
     }
-    fs4.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(INITIAL_NEWSLETTERS, null, 2), "utf-8");
+    fs5.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(INITIAL_NEWSLETTERS, null, 2), "utf-8");
     return INITIAL_NEWSLETTERS;
   } catch (err) {
     console.error("[EmployeeCms] Error reading newsletters:", err);
@@ -11678,17 +11634,17 @@ function publishNewsletter(input) {
     recipientCount: input.recipientCount || 240
   };
   newsletters.unshift(newNewsletter);
-  fs4.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(newsletters, null, 2), "utf-8");
+  fs5.writeFileSync(NEWSLETTERS_FILE, JSON.stringify(newsletters, null, 2), "utf-8");
   return newNewsletter;
 }
 function getPushedPriceLists() {
   ensureDirectoryExists();
   try {
-    if (fs4.existsSync(PRICE_LISTS_FILE)) {
-      const raw = fs4.readFileSync(PRICE_LISTS_FILE, "utf-8");
+    if (fs5.existsSync(PRICE_LISTS_FILE)) {
+      const raw = fs5.readFileSync(PRICE_LISTS_FILE, "utf-8");
       return JSON.parse(raw);
     }
-    fs4.writeFileSync(PRICE_LISTS_FILE, JSON.stringify([], null, 2), "utf-8");
+    fs5.writeFileSync(PRICE_LISTS_FILE, JSON.stringify([], null, 2), "utf-8");
     return [];
   } catch (err) {
     console.error("[EmployeeCms] Error reading pushed price lists:", err);
@@ -11721,7 +11677,7 @@ function pushPriceList(input) {
     description: input.description
   };
   lists.unshift(newItem);
-  fs4.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(lists, null, 2), "utf-8");
+  fs5.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(lists, null, 2), "utf-8");
   return newItem;
 }
 function deletePushedPriceList(id) {
@@ -11729,7 +11685,7 @@ function deletePushedPriceList(id) {
   const lists = getPushedPriceLists();
   const filtered = lists.filter((item) => item.id !== id);
   if (filtered.length !== lists.length) {
-    fs4.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
+    fs5.writeFileSync(PRICE_LISTS_FILE, JSON.stringify(filtered, null, 2), "utf-8");
     return true;
   }
   return false;
@@ -13790,15 +13746,15 @@ function createExpressApp() {
   const app2 = express();
   app2.set("trust proxy", 1);
   app2.use(securityHeadersMiddleware);
-  const clientPublicVideos = path5.resolve(process.cwd(), "client/public/videos");
-  if (fs5.existsSync(clientPublicVideos)) {
+  const clientPublicVideos = path6.resolve(process.cwd(), "client/public/videos");
+  if (fs6.existsSync(clientPublicVideos)) {
     app2.use("/videos", express.static(clientPublicVideos, {
       acceptRanges: true,
       maxAge: "30d"
     }));
   }
-  const distPublicVideos = path5.resolve(process.cwd(), "dist/public/videos");
-  if (fs5.existsSync(distPublicVideos)) {
+  const distPublicVideos = path6.resolve(process.cwd(), "dist/public/videos");
+  if (fs6.existsSync(distPublicVideos)) {
     app2.use("/videos", express.static(distPublicVideos, {
       acceptRanges: true,
       maxAge: "30d"
@@ -13831,18 +13787,18 @@ function createExpressApp() {
 }
 
 // server/seoPrerender.ts
-import fs6 from "fs";
-import path6 from "path";
+import fs7 from "fs";
+import path7 from "path";
 import { fileURLToPath as fileURLToPath2 } from "url";
 var __filename2 = fileURLToPath2(import.meta.url);
-var __dirname2 = path6.dirname(__filename2);
+var __dirname2 = path7.dirname(__filename2);
 var BASE_URL3 = "https://www.volampelektrikals.com";
 var STATIC_ROUTES = {
   "": {
-    title: "Industrial Cables in Ahmedabad | Polycab, KEI & Finolex Distributor - Volamp",
-    description: "Leading industrial cable & electrical distributor in Ahmedabad, Gujarat. Authorized master stockist of Polycab, KEI, Finolex power cables & Schneider switchgear with MTC certificates. Fast dispatch.",
-    h1: "Industrial Cables in Ahmedabad | Authorized Polycab, KEI & Finolex Distributor",
-    intro: "Volamp Elektrikals Private Limited is Gujarat's premier B2B master distributor and authorized wholesale stockist of industrial cables, HT/LT power cables, solar PV cables, switchgear, and earthing infrastructure in Ahmedabad. Backed by a 60+ year family legacy established in 1964 and modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across 28 Indian states."
+    title: "Wires and Cables in Ahmedabad | Polycab, KEI & Finolex Distributor - Volamp",
+    description: "Leading wires and industrial cables distributor in Ahmedabad, Gujarat. Authorized master stockist of Polycab, Finolex, KEI house wires, power cables & switchgear with MTC certificates. Fast dispatch.",
+    h1: "Wires and Cables in Ahmedabad | Authorized Polycab, KEI & Finolex Distributor",
+    intro: "Volamp Elektrikals Private Limited is Ahmedabad's premier wholesale distributor and supplier of electrical house wires and industrial cables. Supplies popular electrical house wire and cable brands like Polycab, Finolex, and KEI with a 60+ year family legacy established in 1964. Operating modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across 28 Indian states."
   },
   "about-volamp": {
     title: "About Volamp Elektrikals | 60+ Years Electrical Legacy",
@@ -14098,24 +14054,24 @@ function loadBaseTemplate() {
   if (_indexTemplateCache) return _indexTemplateCache;
   const isDev = process.env.NODE_ENV !== "production";
   const candidates = isDev ? [
-    path6.resolve(process.cwd(), "client/index.html"),
-    path6.join(__dirname2, "../../client/index.html"),
-    path6.join(__dirname2, "../client/index.html"),
-    path6.resolve(process.cwd(), "dist/public/index.html")
+    path7.resolve(process.cwd(), "client/index.html"),
+    path7.join(__dirname2, "../../client/index.html"),
+    path7.join(__dirname2, "../client/index.html"),
+    path7.resolve(process.cwd(), "dist/public/index.html")
   ] : [
-    path6.resolve(process.cwd(), "dist/public/index.html"),
-    path6.resolve(process.cwd(), "client/index.html"),
-    path6.join(__dirname2, "../../dist/public/index.html"),
-    path6.join(__dirname2, "../dist/public/index.html"),
-    path6.join(__dirname2, "../../client/index.html"),
-    path6.join(__dirname2, "../client/index.html"),
+    path7.resolve(process.cwd(), "dist/public/index.html"),
+    path7.resolve(process.cwd(), "client/index.html"),
+    path7.join(__dirname2, "../../dist/public/index.html"),
+    path7.join(__dirname2, "../dist/public/index.html"),
+    path7.join(__dirname2, "../../client/index.html"),
+    path7.join(__dirname2, "../client/index.html"),
     "/var/task/dist/public/index.html",
     "/var/task/client/index.html"
   ];
   for (const c of candidates) {
-    if (fs6.existsSync(c)) {
+    if (fs7.existsSync(c)) {
       try {
-        _indexTemplateCache = fs6.readFileSync(c, "utf8");
+        _indexTemplateCache = fs7.readFileSync(c, "utf8");
         return _indexTemplateCache;
       } catch {
       }
@@ -14232,6 +14188,10 @@ function seoPrerenderMiddleware(req, res, next) {
     return next();
   }
   const cleanPath = rawPath.replace(/^\/+|\/+$/g, "");
+  res.setHeader(
+    "Link",
+    '<https://www.volampelektrikals.com/llms-full.txt>; rel="describedby", <https://www.volampelektrikals.com/llms.txt>; rel="help"'
+  );
   if (cleanPath.startsWith("product/")) {
     const rawId = cleanPath.replace(/^product\//, "").trim();
     const product = getProductByProductId(rawId);
@@ -14512,12 +14472,152 @@ function seoPrerenderMiddleware(req, res, next) {
         </section>
       `;
     }
+    let pageSchemaJson = void 0;
+    if (cleanPath === "") {
+      pageSchemaJson = JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": ["ElectricalSupplyStore", "WholesaleStore", "LocalBusiness"],
+            "@id": "https://www.volampelektrikals.com/#organization",
+            "name": "Volamp Elektrikals Private Limited",
+            "alternateName": [
+              "VOLAMP",
+              "Volamp Elektrikals",
+              "Volamp Wires and Cables Ahmedabad",
+              "Volamp Switchgear & Lugs"
+            ],
+            "url": "https://www.volampelektrikals.com",
+            "logo": "https://www.volampelektrikals.com/volamp-logo.png",
+            "image": "https://www.volampelektrikals.com/team/volamp-khadia-storefront.jpg",
+            "description": "Leading wholesale distributor and supplier of industrial wires, power cables, switchgear, lugs, glands and earthing materials in Ahmedabad, Gujarat. Authorized distributor of Polycab, Finolex, KEI, Schneider Electric, and Dowells.",
+            "telephone": "+919512365582",
+            "email": "sales@volampelektrikals.com",
+            "priceRange": "$$",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia",
+              "addressLocality": "Ahmedabad",
+              "addressRegion": "Gujarat",
+              "postalCode": "380001",
+              "addressCountry": "IN"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 23.0225,
+              "longitude": 72.595
+            },
+            "openingHoursSpecification": [
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                "opens": "09:30",
+                "closes": "19:30"
+              }
+            ],
+            "hasMap": "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw",
+            "areaServed": [
+              { "@type": "City", "name": "Ahmedabad" },
+              { "@type": "State", "name": "Gujarat" },
+              { "@type": "Country", "name": "India" }
+            ],
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.9",
+              "reviewCount": "84",
+              "bestRating": "5",
+              "worstRating": "1"
+            },
+            "brand": [
+              { "@type": "Brand", "name": "Polycab" },
+              { "@type": "Brand", "name": "Finolex" },
+              { "@type": "Brand", "name": "KEI Industries" },
+              { "@type": "Brand", "name": "Schneider Electric" },
+              { "@type": "Brand", "name": "L&T Switchgear" },
+              { "@type": "Brand", "name": "Dowells" }
+            ],
+            "department": [
+              {
+                "@type": "Warehouse",
+                "name": "Volamp Elektrikals - Central Warehouse & Dispatch Hub",
+                "telephone": "+919512365582",
+                "email": "logistics@volampelektrikals.com",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Near NH-48 & SP Ring Road Junction, Aslali",
+                  "addressLocality": "Ahmedabad",
+                  "addressRegion": "Gujarat",
+                  "postalCode": "382427",
+                  "addressCountry": "IN"
+                },
+                "geo": {
+                  "@type": "GeoCoordinates",
+                  "latitude": 22.9064,
+                  "longitude": 72.5878
+                },
+                "openingHours": "Mo-Sa 08:00-20:00",
+                "hasMap": "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7"
+              }
+            ]
+          }
+        ]
+      });
+    } else if (cleanPath === "branch-locations") {
+      pageSchemaJson = JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "LocalBusiness",
+            "name": "Volamp Elektrikals Private Limited - Corporate Office",
+            "telephone": "+919512365582",
+            "email": "sales@volampelektrikals.com",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia",
+              "addressLocality": "Ahmedabad",
+              "addressRegion": "Gujarat",
+              "postalCode": "380001",
+              "addressCountry": "IN"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 23.0225,
+              "longitude": 72.595
+            },
+            "openingHours": "Mo-Sa 09:30-19:30",
+            "hasMap": "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw"
+          },
+          {
+            "@type": "Warehouse",
+            "name": "Volamp Elektrikals - Aslali Central Fulfillment Hub",
+            "telephone": "+919512365582",
+            "email": "logistics@volampelektrikals.com",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Near NH-48 & SP Ring Road Junction, Aslali",
+              "addressLocality": "Ahmedabad",
+              "addressRegion": "Gujarat",
+              "postalCode": "382427",
+              "addressCountry": "IN"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 22.9064,
+              "longitude": 72.5878
+            },
+            "openingHours": "Mo-Sa 08:00-20:00",
+            "hasMap": "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7"
+          }
+        ]
+      });
+    }
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     const html = renderPageHtml({
       title: meta.title,
       description: meta.description,
       canonical,
+      schemaJson: pageSchemaJson,
       bodyHtml: `
         <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
           <header style="margin-bottom:32px;">

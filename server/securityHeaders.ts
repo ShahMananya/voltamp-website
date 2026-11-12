@@ -13,7 +13,7 @@ export function securityHeadersMiddleware(req: Request, res: Response, next: Nex
     "font-src 'self' https://fonts.gstatic.com data:",
     "img-src 'self' data: https: blob:",
     "connect-src 'self' https: wss:",
-    "frame-src 'self' https://accounts.google.com",
+    "frame-src 'self' https://accounts.google.com https://*.google.com https://maps.google.com https://www.google.com https://*.openstreetmap.org https://www.openstreetmap.org",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",

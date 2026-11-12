@@ -2,84 +2,77 @@ User-agent: *
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
-# Google Shopping & Merchant Center Crawlers (Required for Product Quality & Policy Checks)
+# Google Search & Media Crawlers
 User-agent: Googlebot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Googlebot-Image
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
 
 User-agent: Storebot-Google
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
 
-# AI Search & Retrieval Crawlers (Explicit allow with portal protection)
+# AI Search & Retrieval Crawlers (Explicit allow for public catalogue & AEO discovery)
 User-agent: GPTBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: ClaudeBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Claude-SearchBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: PerplexityBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Google-Extended
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Amazonbot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Meta-ExternalAgent
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Bytespider
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 Sitemap: https://www.volampelektrikals.com/sitemap.xml
 
 # AI Engine Knowledge Manifests (AEO & GEO)
 # https://www.volampelektrikals.com/llms.txt
 # https://www.volampelektrikals.com/llms-full.txt
+# https://www.volampelektrikals.com/faq.json

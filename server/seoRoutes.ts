@@ -53,32 +53,26 @@ const CATEGORY_SLUGS = [
 ];
 
 export function generateSitemapXml(): string {
-  const today = new Date().toISOString().split("T")[0];
+  const lastModDate = "2026-11-12";
 
   const staticUrls = STATIC_PAGES.map(
     (page) => `  <url>
     <loc>${BASE_URL}/${page.path}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
+    <lastmod>${lastModDate}</lastmod>
   </url>`
   ).join("\n");
 
   const categoryUrls = CATEGORY_SLUGS.map(
     (slug) => `  <url>
     <loc>${BASE_URL}/category/${slug}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
+    <lastmod>${lastModDate}</lastmod>
   </url>`
   ).join("\n");
 
   const blogUrls = BLOG_SLUGS.map(
     (slug) => `  <url>
     <loc>${BASE_URL}/blog/${slug}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>
+    <lastmod>${lastModDate}</lastmod>
   </url>`
   ).join("\n");
 
@@ -86,26 +80,22 @@ export function generateSitemapXml(): string {
   const productUrls = products
     .filter((prod) => prod.productId && prod.name)
     .map((prod) => {
-      const imgLink =
-        prod.imageUrl && prod.imageUrl.startsWith("http")
-          ? prod.imageUrl
-          : prod.imageUrl
-          ? `${BASE_URL}${prod.imageUrl}`
-          : "";
+      const rawImg = prod.imageUrl || "";
+      // Exclude Google Drive viewer links per Google Image Sitemap Guidelines
+      const isValidImage = rawImg.startsWith("http") && !rawImg.includes("drive.google.com");
+      const imgLink = isValidImage ? rawImg : (!rawImg.includes("drive.google.com") && rawImg ? `${BASE_URL}${rawImg}` : "");
 
       return `  <url>
     <loc>${BASE_URL}/product/${encodeURIComponent(prod.productId)}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.80</priority>${
-      imgLink
-        ? `
+    <lastmod>${lastModDate}</lastmod>${
+        imgLink
+          ? `
     <image:image>
       <image:loc>${imgLink}</image:loc>
       <image:title>${prod.name.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</image:title>
     </image:image>`
-        : ""
-    }
+          : ""
+      }
   </url>`;
     })
     .join("\n");
@@ -125,81 +115,73 @@ export function generateRobotsTxt(): string {
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
-# Google Shopping & Merchant Center Crawlers (Required for Product Quality & Policy Checks)
+# Google Shopping & Merchant Center Crawlers
 User-agent: Googlebot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Googlebot-Image
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
 
 User-agent: Storebot-Google
 Allow: /
+Disallow: /portal
+Disallow: /employee-portal
 
 # AI Search & Retrieval Crawlers (Explicit allow with portal protection)
 User-agent: GPTBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: OAI-SearchBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: ChatGPT-User
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: ClaudeBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Claude-SearchBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: PerplexityBot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Google-Extended
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Amazonbot
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Meta-ExternalAgent
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 User-agent: Bytespider
 Allow: /
 Disallow: /portal
 Disallow: /employee-portal
-Disallow: /api/trpc/
 
 Sitemap: ${BASE_URL}/sitemap.xml
 `.trim();
@@ -235,11 +217,11 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 
 ## Product Categories & Standards
 - [Wires & Cables](https://www.volampelektrikals.com/category/wire-cables): LT/HT XLPE armoured power cables, control cables, and flexible copper wires (IS 7098 Part 1/2, IS 1554, IS 694).
-- [Switchgear & Power Distribution](https://www.volampelektrikals.com/category/switchgear): Air circuit breakers (ACB), MCCBs, MCBs, DBs, and contactors from Schneider Electric and L&T / Lauritz Knudsen.
-- [Earthing & Lightning Protection](https://www.volampelektrikals.com/category/earthing-lightning): Copper-bonded rods (UL/CPRI certified), pure copper plates, chemical earthing compounds (BFC), and GI strips.
-- [Solar & Renewable Cables](https://www.volampelektrikals.com/category/solar-renewable): 1500V DC solar PV cables (EN 50618 / IEC 62930), MC4 connectors, and solar array junction boxes.
-- [Substation & Cable Lugs](https://www.volampelektrikals.com/category/substation-transmission): Dowells heavy-duty tinned copper crimping lugs and terminal ends.
-- [Cable Glands & Management](https://www.volampelektrikals.com/category/conduits-cable-management): Brass single and double compression cable glands and termination kits.
+- [Switchgear & Power Distribution](https://www.volampelektrikals.com/category/switch-gears): Air circuit breakers (ACB), MCCBs, MCBs, DBs, and contactors from Schneider Electric and L&T / Lauritz Knudsen.
+- [Earthing & Lightning Protection](https://www.volampelektrikals.com/category/earthing-material): Copper-bonded rods (UL/CPRI certified), pure copper plates, chemical earthing compounds (BFC), and GI strips.
+- [Solar & Renewable Cables](https://www.volampelektrikals.com/category/solar): 1500V DC solar PV cables (EN 50618 / IEC 62930), MC4 connectors, and solar array junction boxes.
+- [Cable Lugs & Terminals](https://www.volampelektrikals.com/category/lugs): Dowells heavy-duty tinned copper crimping lugs and terminal ends.
+- [Cable Glands & Conduits](https://www.volampelektrikals.com/category/conduit): Brass single and double compression cable glands and termination kits.
 
 ## Authorized Brand Partners
 - [Polycab India](https://www.volampelektrikals.com/products?brand=Polycab): Industrial LT/HT power cables, solar DC cables, and FRLS wires.

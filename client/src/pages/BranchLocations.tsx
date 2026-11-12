@@ -56,7 +56,7 @@ const LOCATIONS: LocationInfo[] = [
     email: "sales@volampelektrikals.com",
     hours: "Mon – Sat: 9:30 AM – 7:30 PM",
     mapEmbedUrl:
-      "https://maps.google.com/maps?q=1753,+VOLAMP+ELEKTRIKALS+PRIVATE+LIMITED,+Dhobi's+Pole+Sir,+Chinubhai+Rd,+Old+City,+Khadia,+Ahmedabad,+Gujarat+380001&t=&z=16&ie=UTF8&iwloc=&output=embed",
+      "https://www.openstreetmap.org/export/embed.html?bbox=72.5773,23.0125,72.5973,23.0325&layer=mapnik&marker=23.0225,72.5873",
     directMapUrl: "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw",
   },
   {
@@ -71,7 +71,7 @@ const LOCATIONS: LocationInfo[] = [
     email: "logistics@volampelektrikals.com",
     hours: "Mon – Sat: 8:00 AM – 8:00 PM (24/7 Logistics Staging)",
     mapEmbedUrl:
-      "https://maps.google.com/maps?q=VOLAMP+ELEKTRIKALS+ASLALI+WAREHOUSE,@22.9064417,72.5877551&t=&z=15&ie=UTF8&iwloc=&output=embed",
+      "https://www.openstreetmap.org/export/embed.html?bbox=72.5778,22.8964,72.5978,22.9164&layer=mapnik&marker=22.9064417,72.5877551",
     directMapUrl: "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7",
   },
 ];

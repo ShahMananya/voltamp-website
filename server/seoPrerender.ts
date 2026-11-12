@@ -15,12 +15,12 @@ const STATIC_ROUTES: Record<
   { title: string; description: string; h1: string; intro: string }
 > = {
   "": {
-    title: "Industrial Cables in Ahmedabad | Polycab, KEI & Finolex Distributor - Volamp",
+    title: "Wires and Cables in Ahmedabad | Polycab, KEI & Finolex Distributor - Volamp",
     description:
-      "Leading industrial cable & electrical distributor in Ahmedabad, Gujarat. Authorized master stockist of Polycab, KEI, Finolex power cables & Schneider switchgear with MTC certificates. Fast dispatch.",
-    h1: "Industrial Cables in Ahmedabad | Authorized Polycab, KEI & Finolex Distributor",
+      "Leading wires and industrial cables distributor in Ahmedabad, Gujarat. Authorized master stockist of Polycab, Finolex, KEI house wires, power cables & switchgear with MTC certificates. Fast dispatch.",
+    h1: "Wires and Cables in Ahmedabad | Authorized Polycab, KEI & Finolex Distributor",
     intro:
-      "Volamp Elektrikals Private Limited is Gujarat's premier B2B master distributor and authorized wholesale stockist of industrial cables, HT/LT power cables, solar PV cables, switchgear, and earthing infrastructure in Ahmedabad. Backed by a 60+ year family legacy established in 1964 and modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across 28 Indian states.",
+      "Volamp Elektrikals Private Limited is Ahmedabad's premier wholesale distributor and supplier of electrical house wires and industrial cables. Supplies popular electrical house wire and cable brands like Polycab, Finolex, and KEI with a 60+ year family legacy established in 1964. Operating modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across 28 Indian states.",
   },
   "about-volamp": {
     title: "About Volamp Elektrikals | 60+ Years Electrical Legacy",
@@ -525,6 +525,12 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
 
   const cleanPath = rawPath.replace(/^\/+|\/+$/g, ""); // "" for home, "products" for /products
 
+  // AEO / GEO Discovery Header: Announce authoritative machine knowledge manifest to AI engines
+  res.setHeader(
+    "Link",
+    '<https://www.volampelektrikals.com/llms-full.txt>; rel="describedby", <https://www.volampelektrikals.com/llms.txt>; rel="help"'
+  );
+
   // =========================================================================
   // 1. DYNAMIC ROUTE: /product/:id
   // =========================================================================
@@ -846,12 +852,154 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       `;
     }
 
+    // Structured LocalBusiness / Organization Schema for Home & Locations
+    let pageSchemaJson: string | undefined = undefined;
+    if (cleanPath === "") {
+      pageSchemaJson = JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": ["ElectricalSupplyStore", "WholesaleStore", "LocalBusiness"],
+            "@id": "https://www.volampelektrikals.com/#organization",
+            "name": "Volamp Elektrikals Private Limited",
+            "alternateName": [
+              "VOLAMP",
+              "Volamp Elektrikals",
+              "Volamp Wires and Cables Ahmedabad",
+              "Volamp Switchgear & Lugs"
+            ],
+            "url": "https://www.volampelektrikals.com",
+            "logo": "https://www.volampelektrikals.com/volamp-logo.png",
+            "image": "https://www.volampelektrikals.com/team/volamp-khadia-storefront.jpg",
+            "description": "Leading wholesale distributor and supplier of industrial wires, power cables, switchgear, lugs, glands and earthing materials in Ahmedabad, Gujarat. Authorized distributor of Polycab, Finolex, KEI, Schneider Electric, and Dowells.",
+            "telephone": "+919512365582",
+            "email": "sales@volampelektrikals.com",
+            "priceRange": "$$",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia",
+              "addressLocality": "Ahmedabad",
+              "addressRegion": "Gujarat",
+              "postalCode": "380001",
+              "addressCountry": "IN"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 23.0225,
+              "longitude": 72.5950
+            },
+            "openingHoursSpecification": [
+              {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                "opens": "09:30",
+                "closes": "19:30"
+              }
+            ],
+            "hasMap": "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw",
+            "areaServed": [
+              { "@type": "City", "name": "Ahmedabad" },
+              { "@type": "State", "name": "Gujarat" },
+              { "@type": "Country", "name": "India" }
+            ],
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.9",
+              "reviewCount": "84",
+              "bestRating": "5",
+              "worstRating": "1"
+            },
+            "brand": [
+              { "@type": "Brand", "name": "Polycab" },
+              { "@type": "Brand", "name": "Finolex" },
+              { "@type": "Brand", "name": "KEI Industries" },
+              { "@type": "Brand", "name": "Schneider Electric" },
+              { "@type": "Brand", "name": "L&T Switchgear" },
+              { "@type": "Brand", "name": "Dowells" }
+            ],
+            "department": [
+              {
+                "@type": "Warehouse",
+                "name": "Volamp Elektrikals - Central Warehouse & Dispatch Hub",
+                "telephone": "+919512365582",
+                "email": "logistics@volampelektrikals.com",
+                "address": {
+                  "@type": "PostalAddress",
+                  "streetAddress": "Near NH-48 & SP Ring Road Junction, Aslali",
+                  "addressLocality": "Ahmedabad",
+                  "addressRegion": "Gujarat",
+                  "postalCode": "382427",
+                  "addressCountry": "IN"
+                },
+                "geo": {
+                  "@type": "GeoCoordinates",
+                  "latitude": 22.9064,
+                  "longitude": 72.5878
+                },
+                "openingHours": "Mo-Sa 08:00-20:00",
+                "hasMap": "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7"
+              }
+            ]
+          }
+        ]
+      });
+    } else if (cleanPath === "branch-locations") {
+      pageSchemaJson = JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "LocalBusiness",
+            "name": "Volamp Elektrikals Private Limited - Corporate Office",
+            "telephone": "+919512365582",
+            "email": "sales@volampelektrikals.com",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia",
+              "addressLocality": "Ahmedabad",
+              "addressRegion": "Gujarat",
+              "postalCode": "380001",
+              "addressCountry": "IN"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 23.0225,
+              "longitude": 72.5950
+            },
+            "openingHours": "Mo-Sa 09:30-19:30",
+            "hasMap": "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw"
+          },
+          {
+            "@type": "Warehouse",
+            "name": "Volamp Elektrikals - Aslali Central Fulfillment Hub",
+            "telephone": "+919512365582",
+            "email": "logistics@volampelektrikals.com",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Near NH-48 & SP Ring Road Junction, Aslali",
+              "addressLocality": "Ahmedabad",
+              "addressRegion": "Gujarat",
+              "postalCode": "382427",
+              "addressCountry": "IN"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 22.9064,
+              "longitude": 72.5878
+            },
+            "openingHours": "Mo-Sa 08:00-20:00",
+            "hasMap": "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7"
+          }
+        ]
+      });
+    }
+
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     const html = renderPageHtml({
       title: meta.title,
       description: meta.description,
       canonical,
+      schemaJson: pageSchemaJson,
       bodyHtml: `
         <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
           <header style="margin-bottom:32px;">
