@@ -731,9 +731,11 @@ export default function CategoryPage() {
             >
               <div className="relative">
                 <ShoppingCart className="size-5 text-[#c56718]" />
-                <span className="absolute -top-2 -right-2.5 size-4 bg-[#c56718] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {totalCount}
-                </span>
+                {totalCount > 0 && (
+                  <span className="absolute -top-2 -right-2.5 size-4 bg-[#c56718] text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-in fade-in duration-200">
+                    {totalCount}
+                  </span>
+                )}
               </div>
               <span className="hidden sm:inline">Cart</span>
             </button>

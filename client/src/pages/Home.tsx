@@ -535,13 +535,15 @@ export default function Home() {
             <button
               onClick={openCart}
               className="relative p-1.5 text-white/90 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
-              title={`View Cart (${totalCount} items)`}
-              aria-label={`View Cart (${totalCount} items)`}
+              title={totalCount > 0 ? `View Cart (${totalCount} ${totalCount === 1 ? "item" : "items"})` : "View Cart"}
+              aria-label={totalCount > 0 ? `View Cart (${totalCount} ${totalCount === 1 ? "item" : "items"})` : "View Cart"}
             >
               <ShoppingCart className="size-4" />
-              <span className="absolute -top-1 -right-1 size-4 bg-[#c56718] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                {totalCount}
-              </span>
+              {totalCount > 0 && (
+                <span className="absolute -top-1 -right-1 size-4 bg-[#c56718] text-white text-[9px] font-bold rounded-full flex items-center justify-center animate-in fade-in duration-200">
+                  {totalCount}
+                </span>
+              )}
             </button>
 
             <ThemeToggle />
@@ -894,9 +896,11 @@ export default function Home() {
                   <span className="flex items-center gap-2">
                     <ShoppingCart className="size-4 text-amber-400" /> Cart
                   </span>
-                  <span className="bg-[#c56718] text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                    {totalCount}
-                  </span>
+                  {totalCount > 0 && (
+                    <span className="bg-[#c56718] text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                      {totalCount}
+                    </span>
+                  )}
                 </button>
               </div>
 

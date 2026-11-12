@@ -999,9 +999,11 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
             >
               <div className="relative">
                 <ShoppingCart className="size-4" />
-                <span className="absolute -top-2 -right-2.5 size-4 bg-[#c56718] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {totalCount}
-                </span>
+                {totalCount > 0 && (
+                  <span className="absolute -top-2 -right-2.5 size-4 bg-[#c56718] text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-in fade-in duration-200">
+                    {totalCount}
+                  </span>
+                )}
               </div>
               <span className="hidden sm:inline font-bold">Cart</span>
             </button>

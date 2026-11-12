@@ -222,7 +222,7 @@ export default function BranchLocations() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold hover:border-amber-400 transition-colors cursor-pointer"
             >
               <ShoppingCart className="size-4 text-[#c56718]" />
-              <span>Cart ({totalCount})</span>
+              <span>Cart{totalCount > 0 ? ` (${totalCount})` : ""}</span>
             </button>
             <button onClick={() => handleOpenRFQ()} className="market-quote">
               Request a quote <ArrowRight className="ml-2 size-4" />
@@ -245,7 +245,7 @@ export default function BranchLocations() {
           <button onClick={() => { setMobileOpen(false); navigate("/careers"); }}>Careers</button>
           <button onClick={() => { setMobileOpen(false); navigate("/collaborate"); }}>Collaborate with Us</button>
           <button onClick={() => { setMobileOpen(false); navigate("/certifications-and-awards"); }}>Certifications & Quality</button>
-          <button onClick={() => { setMobileOpen(false); openCart(); }}>Shopping Cart ({totalCount})</button>
+          <button onClick={() => { setMobileOpen(false); openCart(); }}>Shopping Cart{totalCount > 0 ? ` (${totalCount})` : ""}</button>
         </div>
       )}
 
