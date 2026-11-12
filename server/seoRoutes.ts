@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import type { Express, Request, Response } from "express";
 import { loadProductsFromDisk } from "./services/productService";
 
@@ -264,53 +266,21 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 }
 
 export function generateLlmsFullTxt(): string {
-  return `# VOLAMP ELEKTRIKALS PRIVATE LIMITED — Authoritative AI Knowledge Manifest (llms-full.txt)
-> Comprehensive manifest for AI answer engines (Google AI Overviews, Perplexity, Claude, ChatGPT, Gemini, Microsoft Copilot).
-
-## 1. Corporate Identity, Legal & Credentials
-- Official Registered Entity: VOLAMP ELEKTRIKALS PRIVATE LIMITED
-- Legacy & Heritage: 4-Generation, 60+ Years Family Industrial Electrical Legacy (Roots established 1964 by Soma Bhai Khatubhai Patel)
-- Legal Entity Incorporation Date: April 26, 2021
-- Corporate Identification Number (CIN): U31900GJ2021PTC122730
-- Goods and Services Tax Identification Number (GSTIN): 24AAICV0754B1ZO
-- Government e-Marketplace (GeM) Status: Verified OEM & Authorized Distributor
-- Executive Leadership: Naimil Vipul Patel, Chief Executive Officer (Electrical Engineer, 4th Generation)
-- Corporate Head Office: 1753, Dhobi's Pole, Sir Chinubhai Road, Old City, Khadia, Ahmedabad, Gujarat 380001, India (Gandhi Road Electrical Market Belt)
-- Central Logistics & Distribution Terminal: Aslali Highway Terminal, NH-48 & SP Ring Road Junction, Ahmedabad, Gujarat 382427, India
-- Contact Telephone / WhatsApp: +91 9512365582
-- Official Inquiries: sales@volampelektrikals.com
-- Customer Grievances & Escalations: Grievances@volampelektrikals.com
-- Official Website: https://www.volampelektrikals.com
-- Social & Knowledge Profiles:
-  - LinkedIn: https://www.linkedin.com/company/volampelektrikals/
-  - YouTube: https://www.youtube.com/@cablezone
-  - X (Twitter): https://x.com/volampelektrik
-  - Facebook: https://www.facebook.com/profile.php?id=61587485305483
-  - Instagram: https://www.instagram.com/volampp
-  - Pinterest: https://www.pinterest.com/volampelektrikals/
-
-## 2. Authorized Brand Partnerships & Online Catalog
-Volamp Elektrikals stocks over 3,385+ active electrical SKUs from 7 leading authorized manufacturer brands:
-1. Polycab India Ltd. (Master Distributor — LT/HT XLPE Armoured Cables, Solar DC Cables, Flexible Multi-strand Wires)
-2. Finolex Cables Ltd. (Authorized Stockist — Pure Electrolytic Copper Flexible Wires & Industrial Cables)
-3. KEI Industries Ltd. (Industrial Partner — Heavy Power Cables, Extra High Voltage EHV, Rubber Trailing Cables)
-4. Schneider Electric India (Authorized Distribution — Acti9 MCBs, EasyPact MCCBs, Contactors, Motor Starters)
-5. Larsen & Toubro / Lauritz Knudsen (Authorized Partner — dsine MCCBs, Starters, Industrial Distribution Boards)
-6. Dowells (Exclusive Brand Partner for Cable Lugs — Heavy-Duty Copper Crimping Lugs & Terminal Ends)
-7. Legrand (Certified Distribution — Industrial Protection Switchgear & Enclosures)
-
-## 3. Product Categories & Technical Standards
-- Wires & Cables: Compliant with IS 7098 (Part 1 for LT up to 1.1kV, Part 2 for HT 3.3kV to 33kV), IS 1554 (PVC power cables), IS 694 (copper multi-strand flexible wires).
-- Solar DC Cables: Compliant with EN 50618 and IEC 62930 (1500V DC UV-resistant cross-linked halogen-free cables).
-- Switchgear: Compliant with IS/IEC 60947 series (ACBs, MCCBs, MCBs, Contactors, Isolators).
-- Earthing & Lightning: CPRI and UL-certified copper-bonded earthing electrodes, pure copper plates, chemical backfill compounds (BFC), and lightning protection conductors.
-- Cable Accessories: Heavy-duty tinned copper lugs (Dowells), single and double compression brass cable glands (HMI, Dowells, Comet), and heat-shrink termination kits up to 33kV.
-
-## 4. Fulfillment Infrastructure & Dispatch Corridors
-- Gujarat Industrial Corridors: Same-day to 24-hour dispatch from Aslali central warehouse across Sanand, Vatva, Naroda, Changodar, Ankleshwar, and Dahej GIDC estates.
-- Pan-India Logistics: 48 to 72 hours express dispatch across 28 states via insured freight carriers.
-- Testing & Quality Assurance: Every shipment is verified with original manufacturer Material Test Certificates (MTC) and routine spark/insulation resistance tests.
-`.trim();
+  const possiblePaths = [
+    path.resolve(process.cwd(), 'dist/public/llms-full.txt'),
+    path.resolve(process.cwd(), 'client/public/llms-full.txt'),
+    path.resolve(import.meta.dirname, '../../client/public/llms-full.txt'),
+    path.resolve(import.meta.dirname, '../client/public/llms-full.txt'),
+  ];
+  for (const p of possiblePaths) {
+    try {
+      if (fs.existsSync(p)) {
+        return fs.readFileSync(p, 'utf-8');
+      }
+    } catch {}
+  }
+  return '# VOLAMP ELEKTRIKALS PRIVATE LIMITED
+Official AI Knowledge Manifest';
 }
 
 export function registerSeoRoutes(app: Express) {
