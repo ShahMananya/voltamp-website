@@ -13968,8 +13968,8 @@ var OTHER_VALID_PATHS = /* @__PURE__ */ new Set([
 ]);
 var CATEGORY_DATA = {
   "wire-cables": {
-    name: "Wires & Cables (LT / HT Armoured & Flexible)",
-    desc: "Complete range of IS:7098 and IS:1554 certified LT and HT XLPE armoured power cables, flexible copper building wires (IS:694), control cables, submersible flat cables, and fire-survival cables."
+    name: "Wires & Cables (LT / HT Armoured & Unarmoured Power Cables)",
+    desc: "Complete range of IS:7098 and IS:1554 certified LT and HT XLPE armoured and unarmoured power cables, flexible copper building wires (IS:694), unarmoured control cables (1.5 sqmm to 1000 sqmm), submersible flat cables, and fire-survival cables from Polycab, KEI, and Finolex in Ahmedabad, Gujarat."
   },
   "switch-gears": {
     name: "Switchgear & Power Protection",
@@ -14395,6 +14395,14 @@ function seoPrerenderMiddleware(req, res, next) {
               ${productLinksHtml}
             </ul>
           </section>
+          ${slug === "wire-cables" ? `
+          <section style="background:#f8fafc;padding:24px;border-radius:12px;border:1px solid #e2e8f0;margin-top:36px;font-size:14px;line-height:1.7;color:#475569;">
+            <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin-top:0;">Armoured &amp; Unarmoured Power Cable Suppliers in Ahmedabad</h2>
+            <p>
+              Volamp Elektrikals Private Limited is a leading wholesale distributor and supplier of LT XLPE and PVC insulated copper and aluminium unarmoured power cables (1.5 sqmm to 1000 sqmm) and heavy armoured cables in Ahmedabad, Gujarat. Sourcing directly from premier manufacturers including Polycab, Finolex, and KEI Industries, our unarmoured power and control cables conform to IS:694, IS:1554, and IS:7098 standards with original Manufacturer Test Certificates (MTC) and routine test reports. Express same-day dispatch to Vatva, Sanand, Naroda, and Changodar GIDC industrial zones, and 48\u201372h delivery across India from our Aslali logistics terminal.
+            </p>
+          </section>
+              ` : ""}
         </main>
       `
     });
@@ -14446,7 +14454,7 @@ function seoPrerenderMiddleware(req, res, next) {
           <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
             <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
               <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/wire-cables" style="color:#c56718;font-weight:bold;text-decoration:none;">Wires &amp; Cables</a></h3>
-              <p style="font-size:13px;color:#64748b;margin:0;">LT / HT XLPE armoured, flexible FRLS, submersible, control cables.</p>
+              <p style="font-size:13px;color:#64748b;margin:0;">LT / HT XLPE armoured &amp; unarmoured power cables (1.5 to 1000 sqmm), flexible FRLS building wires, control cables.</p>
             </div>
             <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
               <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/switch-gears" style="color:#c56718;font-weight:bold;text-decoration:none;">Switchgear &amp; Protection</a></h3>
