@@ -5140,6 +5140,19 @@ Disallow: /portal
 Disallow: /employee-portal
 Disallow: /api/trpc/
 
+# Google Shopping & Merchant Center Crawlers (Required for Product Quality & Policy Checks)
+User-agent: Googlebot
+Allow: /
+Disallow: /portal
+Disallow: /employee-portal
+Disallow: /api/trpc/
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Storebot-Google
+Allow: /
+
 # AI Search & Retrieval Crawlers (Explicit allow with portal protection)
 User-agent: GPTBot
 Allow: /
