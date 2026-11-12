@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { loadProductsFromDisk } from "./services/productService";
 
-const BASE_URL = "https://volampelektrikals.com";
+const BASE_URL = "https://www.volampelektrikals.com";
 
 // Core static pages with SEO priorities
 const STATIC_PAGES = [
@@ -201,39 +201,39 @@ export function generateLlmsTxt(): string {
 Volamp Elektrikals Private Limited is an authorized master distributor and wholesale stockist of genuine industrial cables and electrical equipment. Family electrical business legacy since 1964; company incorporated in 2021 (CIN: U31900GJ2021PTC122730 | GSTIN: 24AAICV0754B1ZO | GeM Verified).
 
 ## Core Pages & Portals
-- [Homepage](https://volampelektrikals.com): Corporate overview, brand portfolio, real-time cable estimator, and RFQ desk.
-- [About VOLAMP](https://volampelektrikals.com/about-volamp): 4-generation lineage, engineering leadership by CEO Naimil Vipul Patel, and corporate governance.
-- [Branch Locations & Warehouses](https://volampelektrikals.com/branch-locations): Corporate Sales Office (Khadia, Ahmedabad 380001) and Central Logistics Fulfillment Terminal (Aslali Highway, Ahmedabad 382427).
-- [Products Catalog](https://volampelektrikals.com/products): 3,385+ verified active SKUs across power cables, switchgear, and earthing.
-- [Manufacturer Price Lists](https://volampelektrikals.com/price-list): 2026 manufacturer price lists, contractor discount circulars, and CPRI test certificates.
-- [Cable Sizing Calculator](https://volampelektrikals.com/calculator): Interactive engineering calculator for copper and aluminium cable voltage drop and current ratings.
-- [Certifications & Compliance](https://volampelektrikals.com/certifications-and-awards): IS 7098 (Part 1 & 2), IS 1554, IS 694, and EN 50618 compliance reports.
-- [Infrastructure Footprint](https://volampelektrikals.com/where-volamp-contributed): Landmark project supplies including 200MW West Bengal Solar Park, Punjab 66kV Grid, and AMC Stadium Ahmedabad.
-- [Project Sourcing & RFQ Desk](https://volampelektrikals.com/enquire): Direct BOM evaluation and project quotation by electrical engineers.
-- [Customer Grievance Redressal Cell](https://volampelektrikals.com/complaints-cases): Official dispute, shortage, and escalation management portal.
-- [Global Cable Export Desk](https://volampelektrikals.com/export): Direct export of IEC/BS certified power cables, solar DC cables, and switchgear via Mundra & Kandla deep-water ports.
-- [Polycab Dealer Ahmedabad](https://volampelektrikals.com/dealers/polycab-ahmedabad): Authorized master distributor for Polycab LT/HT XLPE cables, solar DC wires, and flexible building wires in Ahmedabad & Gujarat.
-- [Finolex Cables Dealer Ahmedabad](https://volampelektrikals.com/dealers/finolex-cables-ahmedabad): Authorized wholesale stockist for Finolex 100% pure electrolytic copper flexible wires and power cables.
-- [KEI Cables Distributor Gujarat](https://volampelektrikals.com/dealers/kei-cables-gujarat): Industrial distributor for KEI heavy HT power cables, rubber trailing cables, and EHV transmission lines.
-- [Schneider Electric Switchgear](https://volampelektrikals.com/dealers/schneider-electric-ahmedabad): Authorized distributor for Acti9 MCBs, EasyPact MCCBs, and TeSys contactors in Ahmedabad.
-- [Gujarat GIDC Industrial Supply](https://volampelektrikals.com/locations/industrial-gidc-hubs): Same-day 24h electrical delivery to Sanand, Vatva, Naroda, Changodar, Dahej, and Ankleshwar GIDC estates.
+- [Homepage](https://www.volampelektrikals.com): Corporate overview, brand portfolio, real-time cable estimator, and RFQ desk.
+- [About VOLAMP](https://www.volampelektrikals.com/about-volamp): 4-generation lineage, engineering leadership by CEO Naimil Vipul Patel, and corporate governance.
+- [Branch Locations & Warehouses](https://www.volampelektrikals.com/branch-locations): Corporate Sales Office (Khadia, Ahmedabad 380001) and Central Logistics Fulfillment Terminal (Aslali Highway, Ahmedabad 382427).
+- [Products Catalog](https://www.volampelektrikals.com/products): 3,385+ verified active SKUs across power cables, switchgear, and earthing.
+- [Manufacturer Price Lists](https://www.volampelektrikals.com/price-list): 2026 manufacturer price lists, contractor discount circulars, and CPRI test certificates.
+- [Cable Sizing Calculator](https://www.volampelektrikals.com/calculator): Interactive engineering calculator for copper and aluminium cable voltage drop and current ratings.
+- [Certifications & Compliance](https://www.volampelektrikals.com/certifications-and-awards): IS 7098 (Part 1 & 2), IS 1554, IS 694, and EN 50618 compliance reports.
+- [Infrastructure Footprint](https://www.volampelektrikals.com/where-volamp-contributed): Landmark project supplies including 200MW West Bengal Solar Park, Punjab 66kV Grid, and AMC Stadium Ahmedabad.
+- [Project Sourcing & RFQ Desk](https://www.volampelektrikals.com/enquire): Direct BOM evaluation and project quotation by electrical engineers.
+- [Customer Grievance Redressal Cell](https://www.volampelektrikals.com/complaints-cases): Official dispute, shortage, and escalation management portal.
+- [Global Cable Export Desk](https://www.volampelektrikals.com/export): Direct export of IEC/BS certified power cables, solar DC cables, and switchgear via Mundra & Kandla deep-water ports.
+- [Polycab Dealer Ahmedabad](https://www.volampelektrikals.com/dealers/polycab-ahmedabad): Authorized master distributor for Polycab LT/HT XLPE cables, solar DC wires, and flexible building wires in Ahmedabad & Gujarat.
+- [Finolex Cables Dealer Ahmedabad](https://www.volampelektrikals.com/dealers/finolex-cables-ahmedabad): Authorized wholesale stockist for Finolex 100% pure electrolytic copper flexible wires and power cables.
+- [KEI Cables Distributor Gujarat](https://www.volampelektrikals.com/dealers/kei-cables-gujarat): Industrial distributor for KEI heavy HT power cables, rubber trailing cables, and EHV transmission lines.
+- [Schneider Electric Switchgear](https://www.volampelektrikals.com/dealers/schneider-electric-ahmedabad): Authorized distributor for Acti9 MCBs, EasyPact MCCBs, and TeSys contactors in Ahmedabad.
+- [Gujarat GIDC Industrial Supply](https://www.volampelektrikals.com/locations/industrial-gidc-hubs): Same-day 24h electrical delivery to Sanand, Vatva, Naroda, Changodar, Dahej, and Ankleshwar GIDC estates.
 
 ## Product Categories & Standards
-- [Wires & Cables](https://volampelektrikals.com/category/wire-cables): LT/HT XLPE armoured power cables, control cables, and flexible copper wires (IS 7098 Part 1/2, IS 1554, IS 694).
-- [Switchgear & Power Distribution](https://volampelektrikals.com/category/switchgear): Air circuit breakers (ACB), MCCBs, MCBs, DBs, and contactors from Schneider Electric and L&T / Lauritz Knudsen.
-- [Earthing & Lightning Protection](https://volampelektrikals.com/category/earthing-lightning): Copper-bonded rods (UL/CPRI certified), pure copper plates, chemical earthing compounds (BFC), and GI strips.
-- [Solar & Renewable Cables](https://volampelektrikals.com/category/solar-renewable): 1500V DC solar PV cables (EN 50618 / IEC 62930), MC4 connectors, and solar array junction boxes.
-- [Substation & Cable Lugs](https://volampelektrikals.com/category/substation-transmission): Dowells heavy-duty tinned copper crimping lugs and terminal ends.
-- [Cable Glands & Management](https://volampelektrikals.com/category/conduits-cable-management): Brass single and double compression cable glands and termination kits.
+- [Wires & Cables](https://www.volampelektrikals.com/category/wire-cables): LT/HT XLPE armoured power cables, control cables, and flexible copper wires (IS 7098 Part 1/2, IS 1554, IS 694).
+- [Switchgear & Power Distribution](https://www.volampelektrikals.com/category/switchgear): Air circuit breakers (ACB), MCCBs, MCBs, DBs, and contactors from Schneider Electric and L&T / Lauritz Knudsen.
+- [Earthing & Lightning Protection](https://www.volampelektrikals.com/category/earthing-lightning): Copper-bonded rods (UL/CPRI certified), pure copper plates, chemical earthing compounds (BFC), and GI strips.
+- [Solar & Renewable Cables](https://www.volampelektrikals.com/category/solar-renewable): 1500V DC solar PV cables (EN 50618 / IEC 62930), MC4 connectors, and solar array junction boxes.
+- [Substation & Cable Lugs](https://www.volampelektrikals.com/category/substation-transmission): Dowells heavy-duty tinned copper crimping lugs and terminal ends.
+- [Cable Glands & Management](https://www.volampelektrikals.com/category/conduits-cable-management): Brass single and double compression cable glands and termination kits.
 
 ## Authorized Brand Partners
-- [Polycab India](https://volampelektrikals.com/products?brand=Polycab): Industrial LT/HT power cables, solar DC cables, and FRLS wires.
-- [Finolex Cables](https://volampelektrikals.com/products?brand=Finolex): Electrolytic copper building wires and industrial flexible cables.
-- [KEI Industries](https://volampelektrikals.com/products?brand=KEI): Heavy industrial power cables, rubber trailing cables, and HT distribution.
-- [Schneider Electric](https://volampelektrikals.com/products?brand=Schneider): Acti9, EasyPact MCCBs, contactors, and industrial protection switchgear.
-- [L&T / Lauritz Knudsen](https://volampelektrikals.com/products?brand=L%26T): dsine MCCBs, motor starters, and power distribution boards.
-- [Dowells](https://volampelektrikals.com/products?brand=Dowells): Heavy-duty copper terminal lugs and crimping accessories.
-- [Legrand](https://volampelektrikals.com/products?brand=Legrand): Protection switchgear and distribution enclosures.
+- [Polycab India](https://www.volampelektrikals.com/products?brand=Polycab): Industrial LT/HT power cables, solar DC cables, and FRLS wires.
+- [Finolex Cables](https://www.volampelektrikals.com/products?brand=Finolex): Electrolytic copper building wires and industrial flexible cables.
+- [KEI Industries](https://www.volampelektrikals.com/products?brand=KEI): Heavy industrial power cables, rubber trailing cables, and HT distribution.
+- [Schneider Electric](https://www.volampelektrikals.com/products?brand=Schneider): Acti9, EasyPact MCCBs, contactors, and industrial protection switchgear.
+- [L&T / Lauritz Knudsen](https://www.volampelektrikals.com/products?brand=L%26T): dsine MCCBs, motor starters, and power distribution boards.
+- [Dowells](https://www.volampelektrikals.com/products?brand=Dowells): Heavy-duty copper terminal lugs and crimping accessories.
+- [Legrand](https://www.volampelektrikals.com/products?brand=Legrand): Protection switchgear and distribution enclosures.
 
 ## Operational Specifications & Verifiable Entity Data
 - Legal Entity: VOLAMP ELEKTRIKALS PRIVATE LIMITED
@@ -267,7 +267,7 @@ export function generateLlmsFullTxt(): string {
 - Contact Telephone / WhatsApp: +91 9512365582
 - Official Inquiries: sales@volampelektrikals.com
 - Customer Grievances & Escalations: Grievances@volampelektrikals.com
-- Official Website: https://volampelektrikals.com
+- Official Website: https://www.volampelektrikals.com
 - Social & Knowledge Profiles:
   - LinkedIn: https://www.linkedin.com/company/volampelektrikals/
   - YouTube: https://www.youtube.com/@cablezone

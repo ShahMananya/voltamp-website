@@ -73,7 +73,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toContain("<h1");
     expect(result.sentHtml).toContain("CAB-000001");
     expect(result.sentHtml).toContain("schema.org");
-    expect(result.sentHtml).toContain("https://volampelektrikals.com/product/CAB-000001");
+    expect(result.sentHtml).toContain("https://www.volampelektrikals.com/product/CAB-000001");
     expect(result.sentHtml).not.toContain('content="noindex, nofollow"');
   });
 
@@ -86,7 +86,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toContain("Industrial Cable &amp; Electrical Distributor in Ahmedabad");
     expect(result.sentHtml).toContain('href="/category/wire-cables"');
     expect(result.sentHtml).toContain('href="/product/CAB-000001"');
-    expect(result.sentHtml).toContain('rel="canonical" href="https://volampelektrikals.com/"');
+    expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/"');
   });
 
   it("prerenders category page with 200 and H1", () => {
@@ -96,7 +96,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
     expect(result.sentHtml).toContain("Wires &amp; Cables");
-    expect(result.sentHtml).toContain('rel="canonical" href="https://volampelektrikals.com/category/wire-cables"');
+    expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/category/wire-cables"');
   });
 
   it("prerenders regional dealer hub page (/dealers/polycab-ahmedabad) with 200, H1, and canonical", () => {
@@ -106,7 +106,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
     expect(result.sentHtml).toContain("Authorized Polycab Cable Dealer &amp; Distributor in Ahmedabad, Gujarat");
-    expect(result.sentHtml).toContain('rel="canonical" href="https://volampelektrikals.com/dealers/polycab-ahmedabad"');
+    expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/dealers/polycab-ahmedabad"');
   });
 
   it("prerenders global export hub page (/export) with 200, H1, and canonical", () => {
@@ -116,7 +116,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
     expect(result.sentHtml).toContain("Global Cable Export &amp; International Electrical Supply Desk");
-    expect(result.sentHtml).toContain('rel="canonical" href="https://volampelektrikals.com/export"');
+    expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/export"');
   });
 
   it("prerenders engineering blog post with 200, H1, and canonical", () => {
@@ -126,7 +126,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
     expect(result.sentHtml).toContain("Copper vs Aluminium Armoured Cable Sizing Guide");
-    expect(result.sentHtml).toContain('rel="canonical" href="https://volampelektrikals.com/blog/copper-vs-aluminium-armoured-cable-sizing-guide"');
+    expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/blog/copper-vs-aluminium-armoured-cable-sizing-guide"');
   });
 
   it("passes through static asset requests without intercepting", () => {

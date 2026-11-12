@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { loadProductsFromDisk } from "./services/productService";
 
-const BASE_URL = "https://volampelektrikals.com";
+const BASE_URL = "https://www.volampelektrikals.com";
 
 function escapeXml(str: string): string {
   return (str || "")

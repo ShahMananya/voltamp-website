@@ -7,7 +7,7 @@ import { loadProductsFromDisk, getProductByProductId } from "./services/productS
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const BASE_URL = "https://volampelektrikals.com";
+const BASE_URL = "https://www.volampelektrikals.com";
 
 // Known static routes
 const STATIC_ROUTES: Record<
@@ -504,7 +504,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
     return next();
   }
 
-  const rawPath = req.path || "/";
+  const rawPath = (req.originalUrl ? req.originalUrl.split("?")[0] : req.path) || "/";
 
   // Skip static assets, TRPC, and API routes
   if (
