@@ -23,6 +23,8 @@ const STATIC_PAGES = [
   { path: "blog", priority: "0.8", changefreq: "daily" },
   { path: "export", priority: "0.9", changefreq: "weekly" },
   { path: "dealers/polycab-ahmedabad", priority: "0.95", changefreq: "daily" },
+  { path: "dealers/armoured-cables-ahmedabad", priority: "0.95", changefreq: "daily" },
+  { path: "dealers/unarmoured-cables-ahmedabad", priority: "0.95", changefreq: "daily" },
   { path: "dealers/finolex-cables-ahmedabad", priority: "0.95", changefreq: "daily" },
   { path: "dealers/kei-cables-gujarat", priority: "0.95", changefreq: "daily" },
   { path: "dealers/schneider-electric-ahmedabad", priority: "0.90", changefreq: "daily" },
@@ -174,6 +176,8 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 - [Customer Grievance Redressal Cell](https://www.volampelektrikals.com/complaints-cases): Official dispute, shortage, and escalation management portal.
 - [Global Cable Export Desk](https://www.volampelektrikals.com/export): Direct export of IEC/BS certified power cables, solar DC cables, and switchgear via Mundra & Kandla deep-water ports.
 - [Polycab Dealer Ahmedabad](https://www.volampelektrikals.com/dealers/polycab-ahmedabad): Authorized master distributor for Polycab LT/HT XLPE cables, solar DC wires, and flexible building wires in Ahmedabad & Gujarat.
+- [Armoured Cable Stockist Ahmedabad](https://www.volampelektrikals.com/dealers/armoured-cables-ahmedabad): Authorized wholesale distributor of 1.1kV LT to 33kV HT XLPE steel strip & wire armoured power cables (IS 7098) with MTC.
+- [Unarmoured Cable Supplier Ahmedabad](https://www.volampelektrikals.com/dealers/unarmoured-cables-ahmedabad): Wholesale distributor of 1.1kV LT unarmoured copper & aluminium cables (1.5 to 1000 sq mm) conforming to IS 694 and IS 1554.
 - [Finolex Cables Dealer Ahmedabad](https://www.volampelektrikals.com/dealers/finolex-cables-ahmedabad): Authorized wholesale stockist for Finolex 100% pure electrolytic copper flexible wires and power cables.
 - [KEI Cables Distributor Gujarat](https://www.volampelektrikals.com/dealers/kei-cables-gujarat): Industrial distributor for KEI heavy HT power cables, rubber trailing cables, and EHV transmission lines.
 - [Schneider Electric Switchgear](https://www.volampelektrikals.com/dealers/schneider-electric-ahmedabad): Authorized distributor for Acti9 MCBs, EasyPact MCCBs, and TeSys contactors in Ahmedabad.

@@ -174,6 +174,22 @@ const STATIC_ROUTES: Record<
     intro:
       "Volamp Elektrikals Private Limited is an authorized master distributor and wholesale stockist for Polycab India Ltd. in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, we maintain extensive ready inventory of Polycab 1.1kV LT XLPE aluminium and copper armoured cables (IS 7098 Part 1), 11kV to 33kV HT XLPE power cables (IS 7098 Part 2), 1500V DC solar PV cables (EN 50618), Green Wire FRLS building wires, and multi-core flexible control cables. Every reel and coil is guaranteed 100% original, backed by original manufacturer Material Test Certificates (MTC) and CPRI type-test reports.",
   },
+  "dealers/armoured-cables-ahmedabad": {
+    title: "Armoured Cable Distributor & Stockist in Ahmedabad | Volamp",
+    description:
+      "Authorized distributor & wholesale stockist of LT & HT armoured power cables in Ahmedabad, Gujarat. Polycab & KEI steel strip / wire armoured cables with MTC.",
+    h1: "Armoured Cable Distributor & Wholesale Stockist in Ahmedabad, Gujarat",
+    intro:
+      "Volamp Elektrikals Private Limited is an authorized master distributor and wholesale stockist of LT and HT armoured cables in Ahmedabad, Gujarat. Sourced directly from Polycab and KEI, our inventory covers 1.1kV to 33kV galvanized steel strip and round wire armoured power cables (2.5 sq mm to 630 sq mm in 3.5C and 4C) conforming to IS 7098 (Part 1 & 2) with guaranteed routine spark and conductor resistance test certificates.",
+  },
+  "dealers/unarmoured-cables-ahmedabad": {
+    title: "Unarmoured Cable Supplier & Stockist Ahmedabad | Volamp",
+    description:
+      "Authorized distributor & wholesale stockist of unarmoured copper and aluminium power cables in Ahmedabad. IS 694 & IS 1554 certified Polycab, Finolex & KEI with MTC.",
+    h1: "Unarmoured Cable Supplier & Wholesale Stockist in Ahmedabad",
+    intro:
+      "Volamp Elektrikals Private Limited is an authorized distributor and wholesale stockist of unarmoured power cables and flexible building wires in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, Volamp supplies certified 1.1kV LT unarmoured copper and aluminium cables (1.5 sq mm to 1000 sq mm) conforming to IS 694 and IS 1554 (Part 1) from Polycab, Finolex, and KEI with original factory test certificates.",
+  },
   "dealers/finolex-cables-ahmedabad": {
     title: "Finolex Cables Dealer & Wholesale Stockist Ahmedabad | Volamp",
     description:
@@ -1159,6 +1175,24 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
               { "@type": "State", "name": "Gujarat" },
               { "@type": "Country", "name": "India" }
             ],
+            "sameAs": [
+              "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw",
+              "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7",
+              "https://www.linkedin.com/company/volamp-elektrikals"
+            ],
+            "knowsAbout": [
+              "Armoured Cables",
+              "Unarmoured Cables",
+              "LT XLPE Power Cables",
+              "HT XLPE Power Cables",
+              "IS 7098",
+              "IS 1554",
+              "IS 694",
+              "Polycab India",
+              "Finolex Cables",
+              "KEI Industries",
+              "Schneider Electric"
+            ],
             "aggregateRating": {
               "@type": "AggregateRating",
               "ratingValue": "4.9",
@@ -1245,6 +1279,57 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             },
             "openingHours": "Mo-Sa 08:00-20:00",
             "hasMap": "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7"
+          }
+        ]
+      });
+    } else if (cleanPath.startsWith("dealers/")) {
+      pageSchemaJson = JSON.stringify({
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": canonical,
+            "url": canonical,
+            "name": meta.title,
+            "description": meta.description,
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": BASE_URL
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Dealers & Hubs",
+                  "item": `${BASE_URL}/dealers`
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": meta.h1,
+                  "item": canonical
+                }
+              ]
+            },
+            "provider": {
+              "@type": ["ElectricalSupplyStore", "WholesaleStore", "LocalBusiness"],
+              "@id": "https://www.volampelektrikals.com/#organization",
+              "name": "Volamp Elektrikals Private Limited",
+              "telephone": "+919512365582",
+              "email": "sales@volampelektrikals.com",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia",
+                "addressLocality": "Ahmedabad",
+                "addressRegion": "Gujarat",
+                "postalCode": "380001",
+                "addressCountry": "IN"
+              }
+            }
           }
         ]
       });

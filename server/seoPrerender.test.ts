@@ -113,6 +113,28 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/dealers/polycab-ahmedabad"');
   });
 
+  it("prerenders armoured cable hub page (/dealers/armoured-cables-ahmedabad) with 200, H1, schema, and canonical", () => {
+    const { req, res, next, getResult } = mockHttp("/dealers/armoured-cables-ahmedabad");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain("<h1");
+    expect(result.sentHtml).toContain("Armoured Cable Distributor &amp; Wholesale Stockist in Ahmedabad, Gujarat");
+    expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/dealers/armoured-cables-ahmedabad"');
+    expect(result.sentHtml).toContain('"@type":"WebPage"');
+  });
+
+  it("prerenders unarmoured cable hub page (/dealers/unarmoured-cables-ahmedabad) with 200, H1, schema, and canonical", () => {
+    const { req, res, next, getResult } = mockHttp("/dealers/unarmoured-cables-ahmedabad");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain("<h1");
+    expect(result.sentHtml).toContain("Unarmoured Cable Supplier &amp; Wholesale Stockist in Ahmedabad");
+    expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/dealers/unarmoured-cables-ahmedabad"');
+    expect(result.sentHtml).toContain('"@type":"WebPage"');
+  });
+
   it("prerenders global export hub page (/export) with 200, H1, and canonical", () => {
     const { req, res, next, getResult } = mockHttp("/export");
     seoPrerenderMiddleware(req, res, next);
