@@ -169,7 +169,7 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 - [Manufacturer Price Lists](https://www.volampelektrikals.com/price-list): 2026 manufacturer price lists, contractor discount circulars, and CPRI test certificates.
 - [Cable Sizing Calculator](https://www.volampelektrikals.com/calculator): Interactive engineering calculator for copper and aluminium cable voltage drop and current ratings.
 - [Certifications & Compliance](https://www.volampelektrikals.com/certifications-and-awards): IS 7098 (Part 1 & 2), IS 1554, IS 694, and EN 50618 compliance reports.
-- [Infrastructure Footprint](https://www.volampelektrikals.com/where-volamp-contributed): Landmark project supplies including 200MW West Bengal Solar Park, Punjab 66kV Grid, and AMC Stadium Ahmedabad.
+- [Infrastructure Footprint](https://www.volampelektrikals.com/where-volamp-contributed): Regional and national electrical supply footprint across industrial manufacturing plants, commercial substations, and renewable corridors.
 - [Project Sourcing & RFQ Desk](https://www.volampelektrikals.com/enquire): Direct BOM evaluation and project quotation by electrical engineers.
 - [Customer Grievance Redressal Cell](https://www.volampelektrikals.com/complaints-cases): Official dispute, shortage, and escalation management portal.
 - [Global Cable Export Desk](https://www.volampelektrikals.com/export): Direct export of IEC/BS certified power cables, solar DC cables, and switchgear via Mundra & Kandla deep-water ports.
