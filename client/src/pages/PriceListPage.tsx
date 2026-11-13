@@ -845,18 +845,18 @@ Central Depot:       Ahmedabad - Aslali Express Bypass, Gujarat, India
                 </span>
               </h1>
               <p className="text-sm sm:text-base text-stone-300 leading-relaxed max-w-2xl">
-                Browse and download master price books, effective discount circulars, and technical specification brochures across all <strong>8 authorized brands</strong>. All lists backed by Volamp’s wholesale B2B contractor terms.
+                Browse and download price books, effective discount circulars, and technical specification brochures across all <strong>8 manufacturer brands</strong>. All lists backed by Volamp’s wholesale B2B contractor terms.
               </p>
               
               {/* Quick Summary Highlights */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
                   <div className="text-xl sm:text-2xl font-black text-amber-400 font-mono">8 Brands</div>
-                  <div className="text-stone-300 text-[11px] mt-0.5">Authorized Master Portfolio</div>
+                  <div className="text-stone-300 text-[11px] mt-0.5">Manufacturer Brand Portfolio</div>
                 </div>
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
                   <div className="text-xl sm:text-2xl font-black text-emerald-400 font-mono">{catalogs.length} Lists</div>
-                  <div className="text-stone-300 text-[11px] mt-0.5">Master Catalogs & Circulars</div>
+                  <div className="text-stone-300 text-[11px] mt-0.5">Product Catalogs & Circulars</div>
                 </div>
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xs">
                   <div className="text-xl sm:text-2xl font-black text-orange-400 font-mono">40% OFF</div>

@@ -5,31 +5,31 @@ import { loadProductsFromDisk } from "./services/productService";
 
 const BASE_URL = "https://www.volampelektrikals.com";
 
-// Core static pages with SEO priorities
+// Core static canonical pages for XML Sitemap
 const STATIC_PAGES = [
-  { path: "", priority: "1.0", changefreq: "daily" },
-  { path: "about-volamp", priority: "0.9", changefreq: "weekly" },
-  { path: "where-volamp-contributed", priority: "0.9", changefreq: "weekly" },
-  { path: "business-segments", priority: "0.9", changefreq: "weekly" },
-  { path: "branch-locations", priority: "0.9", changefreq: "weekly" },
-  { path: "products", priority: "0.9", changefreq: "daily" },
-  { path: "price-list", priority: "0.9", changefreq: "weekly" },
-  { path: "certifications-and-awards", priority: "0.8", changefreq: "monthly" },
-  { path: "calculator", priority: "0.8", changefreq: "monthly" },
-  { path: "collaborate", priority: "0.8", changefreq: "monthly" },
-  { path: "careers", priority: "0.7", changefreq: "weekly" },
-  { path: "enquire", priority: "0.8", changefreq: "monthly" },
-  { path: "in-the-news", priority: "0.7", changefreq: "monthly" },
-  { path: "blog", priority: "0.8", changefreq: "daily" },
-  { path: "export", priority: "0.9", changefreq: "weekly" },
-  { path: "dealers/polycab-ahmedabad", priority: "0.95", changefreq: "daily" },
-  { path: "dealers/finolex-cables-ahmedabad", priority: "0.95", changefreq: "daily" },
-  { path: "dealers/kei-cables-gujarat", priority: "0.95", changefreq: "daily" },
-  { path: "dealers/schneider-electric-ahmedabad", priority: "0.90", changefreq: "daily" },
-  { path: "locations/industrial-gidc-hubs", priority: "0.95", changefreq: "daily" },
-  { path: "shipping-policy", priority: "0.5", changefreq: "monthly" },
-  { path: "terms-and-conditions", priority: "0.5", changefreq: "monthly" },
-  { path: "privacy-policy", priority: "0.5", changefreq: "monthly" },
+  { path: "" },
+  { path: "about-volamp" },
+  { path: "where-volamp-contributed" },
+  { path: "business-segments" },
+  { path: "branch-locations" },
+  { path: "products" },
+  { path: "price-list" },
+  { path: "certifications-and-awards" },
+  { path: "calculator" },
+  { path: "collaborate" },
+  { path: "careers" },
+  { path: "enquire" },
+  { path: "in-the-news" },
+  { path: "blog" },
+  { path: "export" },
+  { path: "dealers/polycab-ahmedabad" },
+  { path: "dealers/finolex-cables-ahmedabad" },
+  { path: "dealers/kei-cables-gujarat" },
+  { path: "dealers/schneider-electric-ahmedabad" },
+  { path: "locations/industrial-gidc-hubs" },
+  { path: "shipping-policy" },
+  { path: "terms-and-conditions" },
+  { path: "privacy-policy" },
 ];
 
 const BLOG_SLUGS = [
@@ -157,9 +157,9 @@ ${disallows}`
  */
 export function generateLlmsTxt(): string {
   return `# VOLAMP ELEKTRIKALS PRIVATE LIMITED
-> B2B industrial electrical distribution platform in Ahmedabad, Gujarat, India, supplying certified power cables, switchgear, and earthing infrastructure across 28 states.
+> B2B industrial electrical distribution platform in Ahmedabad, Gujarat, India, supplying certified power cables, switchgear, and earthing infrastructure nationwide across India.
 
-Volamp Elektrikals Private Limited is an authorized master distributor and wholesale stockist of genuine industrial cables and electrical equipment. Family electrical business legacy since 1964; company incorporated in 2021 (CIN: U31900GJ2021PTC122730 | GSTIN: 24AAICV0754B1ZO | GeM Verified).
+Volamp Elektrikals Private Limited is a wholesale stockist and distributor of genuine industrial cables and electrical equipment. Family electrical business legacy since 1964; company incorporated in 2021 (CIN: U31900GJ2021PTC122730 | GSTIN: 24AAICV0754B1ZO | GeM Verified Reseller & Wholesale Distributor).
 
 ## Core Pages & Portals
 - [Homepage](https://www.volampelektrikals.com): Corporate overview, brand portfolio, real-time cable estimator, and RFQ desk.
@@ -187,7 +187,7 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 - [Cable Lugs & Terminals](https://www.volampelektrikals.com/category/lugs): Dowells heavy-duty tinned copper crimping lugs and terminal ends.
 - [Cable Glands & Conduits](https://www.volampelektrikals.com/category/conduit): Brass single and double compression cable glands and termination kits.
 
-## Authorized Brand Partners
+## Brand Portfolio & Core Lines
 - [Polycab India](https://www.volampelektrikals.com/products?brand=Polycab): Industrial LT/HT power cables, solar DC cables, and FRLS wires.
 - [Finolex Cables](https://www.volampelektrikals.com/products?brand=Finolex): Electrolytic copper building wires and industrial flexible cables.
 - [KEI Industries](https://www.volampelektrikals.com/products?brand=KEI): Heavy industrial power cables, rubber trailing cables, and HT distribution.
@@ -201,11 +201,11 @@ Volamp Elektrikals Private Limited is an authorized master distributor and whole
 - Incorporation Date: 2021-04-26 (Family business legacy in electrical supply since 1964)
 - Corporate Identification Number (CIN): U31900GJ2021PTC122730
 - GSTIN: 24AAICV0754B1ZO
-- GeM Registration: Government e-Marketplace Verified OEM & Distributor
+- GeM Registration: Government e-Marketplace Verified Reseller & Wholesale Distributor
 - Corporate Head Office: 1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia, Ahmedabad, Gujarat 380001
 - Central Logistics Stockyard: Aslali Highway Terminal, Ahmedabad, Gujarat 382427
-- Dispatch Timelines: Same-day to 24-hour dispatch across Gujarat GIDC zones; 48 to 72-hour express dispatch pan-India across 28 states.
-- Quality Verification: Original manufacturer Material Test Certificates (MTC) and routine factory test reports supplied with every consignment.
+- Dispatch Timelines: Same-day to 24-hour dispatch across Gujarat GIDC zones; express dispatch nationwide across India.
+- Quality Verification: Original manufacturer Material Test Certificates (MTC) and routine factory test reports supplied upon request with order consignments.
 - Official Communications: Phone/WhatsApp: +91 9512365582 | Inquiries: sales@volampelektrikals.com | Grievances: Grievances@volampelektrikals.com
 - Social Profiles: LinkedIn: https://www.linkedin.com/company/volampelektrikals/ | YouTube: https://www.youtube.com/@cablezone | X: https://x.com/volampelektrik | Instagram: https://www.instagram.com/volampp | Facebook: https://www.facebook.com/profile.php?id=61587485305483 | Pinterest: https://www.pinterest.com/volampelektrikals/
 `.trim();
