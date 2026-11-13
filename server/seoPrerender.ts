@@ -1178,7 +1178,12 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             "sameAs": [
               "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw",
               "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7",
-              "https://www.linkedin.com/company/volamp-elektrikals"
+              "https://www.linkedin.com/company/volampelektrikals/",
+              "https://www.youtube.com/@cablezone",
+              "https://x.com/volampelektrik",
+              "https://www.instagram.com/volampp",
+              "https://www.facebook.com/profile.php?id=61587485305483",
+              "https://www.pinterest.com/volampelektrikals/"
             ],
             "knowsAbout": [
               "Armoured Cables",
