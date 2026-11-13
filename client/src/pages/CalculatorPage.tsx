@@ -28,6 +28,7 @@ import {
   PlugZap,
   Wrench,
   SunMedium,
+  Printer,
 } from "lucide-react";
 import UniversalHeader from "@/components/layout/UniversalHeader";
 import UniversalFooter from "@/components/layout/UniversalFooter";
@@ -81,6 +82,40 @@ const SIZING_REFERENCE_TABLE = [
   { kw: 1140, hp: 1529, amps: 1865.9, copper: "4 Runs x 400 sq.mm", alu: "6 Runs x 400 sq.mm", maxDist: "80m", breaker: "2500A (or 11kV Substation)" },
 ];
 
+export interface LugGlandMapping {
+  cableSize: string;
+  conductorSqmm: number;
+  cores: string;
+  cableOdMm: string;
+  dowellsLugCode: string;
+  studSize: string;
+  doubleCompGlandCode: string;
+  glandThread: string;
+}
+
+export const LUG_GLAND_COMPATIBILITY_DATA: LugGlandMapping[] = [
+  { cableSize: "3.5C x 25 sqmm", conductorSqmm: 25, cores: "3.5C", cableOdMm: "22 - 25 mm", dowellsLugCode: "CUS-25", studSize: "M8 / M10", doubleCompGlandCode: "01L", glandThread: "3/4\" ET" },
+  { cableSize: "3.5C x 35 sqmm", conductorSqmm: 35, cores: "3.5C", cableOdMm: "25 - 28 mm", dowellsLugCode: "CUS-35", studSize: "M8 / M10", doubleCompGlandCode: "02", glandThread: "3/4\" ET" },
+  { cableSize: "3.5C x 50 sqmm", conductorSqmm: 50, cores: "3.5C", cableOdMm: "29 - 33 mm", dowellsLugCode: "CUS-50", studSize: "M10 / M12", doubleCompGlandCode: "03", glandThread: "1\" ET" },
+  { cableSize: "3.5C x 70 sqmm", conductorSqmm: 70, cores: "3.5C", cableOdMm: "33 - 37 mm", dowellsLugCode: "CUS-70", studSize: "M10 / M12", doubleCompGlandCode: "04", glandThread: "1\" ET" },
+  { cableSize: "3.5C x 95 sqmm", conductorSqmm: 95, cores: "3.5C", cableOdMm: "37 - 42 mm", dowellsLugCode: "CUS-95", studSize: "M12", doubleCompGlandCode: "05", glandThread: "1-1/4\" ET" },
+  { cableSize: "3.5C x 120 sqmm", conductorSqmm: 120, cores: "3.5C", cableOdMm: "41 - 46 mm", dowellsLugCode: "CUS-120", studSize: "M12 / M14", doubleCompGlandCode: "06", glandThread: "1-1/2\" ET" },
+  { cableSize: "3.5C x 150 sqmm", conductorSqmm: 150, cores: "3.5C", cableOdMm: "45 - 51 mm", dowellsLugCode: "CUS-150", studSize: "M12 / M14", doubleCompGlandCode: "07", glandThread: "1-1/2\" ET" },
+  { cableSize: "3.5C x 185 sqmm", conductorSqmm: 185, cores: "3.5C", cableOdMm: "50 - 56 mm", dowellsLugCode: "CUS-185", studSize: "M14 / M16", doubleCompGlandCode: "08 / 09", glandThread: "2\" ET" },
+  { cableSize: "3.5C x 240 sqmm", conductorSqmm: 240, cores: "3.5C", cableOdMm: "56 - 63 mm", dowellsLugCode: "CUS-240", studSize: "M16", doubleCompGlandCode: "010", glandThread: "2\" ET" },
+  { cableSize: "3.5C x 300 sqmm", conductorSqmm: 300, cores: "3.5C", cableOdMm: "62 - 70 mm", dowellsLugCode: "CUS-300", studSize: "M16 / M20", doubleCompGlandCode: "011", glandThread: "2-1/2\" ET" },
+  { cableSize: "3.5C x 400 sqmm", conductorSqmm: 400, cores: "3.5C", cableOdMm: "70 - 78 mm", dowellsLugCode: "CUS-400", studSize: "M20", doubleCompGlandCode: "012", glandThread: "3\" ET" },
+  { cableSize: "4C x 16 sqmm", conductorSqmm: 16, cores: "4C", cableOdMm: "20 - 23 mm", dowellsLugCode: "CUS-16", studSize: "M8", doubleCompGlandCode: "01", glandThread: "3/4\" ET" },
+  { cableSize: "4C x 25 sqmm", conductorSqmm: 25, cores: "4C", cableOdMm: "24 - 27 mm", dowellsLugCode: "CUS-25", studSize: "M8 / M10", doubleCompGlandCode: "02", glandThread: "3/4\" ET" },
+  { cableSize: "4C x 50 sqmm", conductorSqmm: 50, cores: "4C", cableOdMm: "31 - 35 mm", dowellsLugCode: "CUS-50", studSize: "M10 / M12", doubleCompGlandCode: "04", glandThread: "1\" ET" },
+  { cableSize: "4C x 95 sqmm", conductorSqmm: 95, cores: "4C", cableOdMm: "40 - 45 mm", dowellsLugCode: "CUS-95", studSize: "M12", doubleCompGlandCode: "06", glandThread: "1-1/2\" ET" },
+  { cableSize: "1C x 185 sqmm", conductorSqmm: 185, cores: "1C", cableOdMm: "28 - 32 mm", dowellsLugCode: "CUS-185", studSize: "M14 / M16", doubleCompGlandCode: "03 (Aluminium)", glandThread: "1\" ET" },
+  { cableSize: "1C x 240 sqmm", conductorSqmm: 240, cores: "1C", cableOdMm: "31 - 35 mm", dowellsLugCode: "CUS-240", studSize: "M16", doubleCompGlandCode: "04 (Aluminium)", glandThread: "1\" ET" },
+  { cableSize: "1C x 300 sqmm", conductorSqmm: 300, cores: "1C", cableOdMm: "34 - 38 mm", dowellsLugCode: "CUS-300", studSize: "M16 / M20", doubleCompGlandCode: "05 (Aluminium)", glandThread: "1-1/4\" ET" },
+  { cableSize: "1C x 400 sqmm", conductorSqmm: 400, cores: "1C", cableOdMm: "38 - 43 mm", dowellsLugCode: "CUS-400", studSize: "M20", doubleCompGlandCode: "06 (Aluminium)", glandThread: "1-1/2\" ET" },
+  { cableSize: "1C x 630 sqmm", conductorSqmm: 630, cores: "1C", cableOdMm: "46 - 52 mm", dowellsLugCode: "CUS-630", studSize: "M20", doubleCompGlandCode: "08 (Aluminium)", glandThread: "2\" ET" },
+];
+
 export default function CalculatorPage() {
   const { addItem } = useCart();
 
@@ -92,8 +127,21 @@ export default function CalculatorPage() {
 
   const isCable = selectedCategoryId === "cables";
 
-  // Mode selection: 'cost' or 'sizing' or 'chart'
-  const [activeTab, setActiveTab] = useState<"cost" | "sizing" | "chart">("cost");
+  // Mode selection: 'cost' or 'sizing' or 'chart' or 'accessories'
+  const [activeTab, setActiveTab] = useState<"cost" | "sizing" | "chart" | "accessories">("cost");
+  const [accessorySearch, setAccessorySearch] = useState<string>("");
+
+  const filteredLugGlandRows = useMemo(() => {
+    if (!accessorySearch.trim()) return LUG_GLAND_COMPATIBILITY_DATA;
+    const q = accessorySearch.toLowerCase();
+    return LUG_GLAND_COMPATIBILITY_DATA.filter(
+      (r) =>
+        r.cableSize.toLowerCase().includes(q) ||
+        r.dowellsLugCode.toLowerCase().includes(q) ||
+        r.doubleCompGlandCode.toLowerCase().includes(q) ||
+        r.studSize.toLowerCase().includes(q)
+    );
+  }, [accessorySearch]);
 
   // Cost Estimator state - Cables
   const [selectedCableId, setSelectedCableId] = useState<string>("lt-armored");
@@ -777,6 +825,22 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                 Cables Only
               </span>
             )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("accessories")}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === "accessories"
+                ? "bg-[#1d73b7] text-white shadow-md shadow-blue-500/20"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+            }`}
+          >
+            <Wrench className="size-4" />
+            <span>4. Lug &amp; Gland Selector</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold">
+              Step 89
+            </span>
           </button>
         </div>
 
@@ -1706,14 +1770,27 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                     </p>
                   </div>
 
-                  <div className="w-full sm:w-64">
-                    <Input
-                      type="text"
-                      placeholder="Search kW, HP or cable size..."
-                      value={chartSearch}
-                      onChange={(e) => setChartSearch(e.target.value)}
-                      className="h-10 text-xs rounded-xl"
-                    />
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.print()}
+                      className="h-10 text-xs font-bold gap-1.5 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300"
+                      title="Print or save as PDF"
+                    >
+                      <Printer className="size-3.5" />
+                      <span>Print Chart</span>
+                    </Button>
+                    <div className="w-full sm:w-64">
+                      <Input
+                        type="text"
+                        placeholder="Search kW, HP or cable size..."
+                        value={chartSearch}
+                        onChange={(e) => setChartSearch(e.target.value)}
+                        className="h-10 text-xs rounded-xl"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -1811,6 +1888,81 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* TAB 4: LUG & CABLE GLAND COMPATIBILITY SELECTOR (Step 89 Compliance)       */}
+        {/* ========================================================================= */}
+        {activeTab === "accessories" && (
+          <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 animate-in fade-in duration-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800/80 pb-6">
+              <div>
+                <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
+                  Lug &amp; Double Compression Cable Gland Selection Matrix
+                </h3>
+                <p className="text-xs text-slate-500 mt-1">
+                  Manufacturer compatibility standard (IS/IEC 62444, BS 6121 &amp; IS 8309) matching armoured power cables to Dowells lugs and brass glands.
+                </p>
+              </div>
+              <div className="w-full sm:w-72">
+                <Input
+                  type="text"
+                  placeholder="Filter by cable size (e.g. 185, 3.5C, 240)..."
+                  value={accessorySearch}
+                  onChange={(e) => setAccessorySearch(e.target.value)}
+                  className="h-10 text-xs bg-slate-50 dark:bg-[#0c1522]"
+                />
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-[#0c1522] text-slate-700 dark:text-slate-300 font-bold">
+                    <th className="p-3">Cable Configuration</th>
+                    <th className="p-3">Approx Cable OD Range</th>
+                    <th className="p-3">Matching Dowells Lug Code</th>
+                    <th className="p-3">Stud Hole Size</th>
+                    <th className="p-3">Weatherproof Gland Code</th>
+                    <th className="p-3">Nipple Thread</th>
+                    <th className="p-3 text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
+                  {filteredLugGlandRows.map((row, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                      <td className="p-3 font-bold text-slate-900 dark:text-white">
+                        {row.cableSize}
+                      </td>
+                      <td className="p-3 text-slate-600 dark:text-slate-400 font-mono">
+                        {row.cableOdMm}
+                      </td>
+                      <td className="p-3 font-mono font-bold text-[#1d73b7] dark:text-sky-400">
+                        {row.dowellsLugCode}
+                      </td>
+                      <td className="p-3 text-slate-600 dark:text-slate-400">
+                        {row.studSize}
+                      </td>
+                      <td className="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                        {row.doubleCompGlandCode}
+                      </td>
+                      <td className="p-3 text-slate-600 dark:text-slate-400 font-mono">
+                        {row.glandThread}
+                      </td>
+                      <td className="p-3 text-right">
+                        <a
+                          href={`/enquire?product=${encodeURIComponent(`Glands & Lugs for ${row.cableSize}`)}`}
+                          className="inline-flex items-center px-3 py-1.5 rounded-lg bg-[#c56718] hover:bg-[#a8520f] text-white text-[11px] font-bold transition-colors"
+                        >
+                          RFQ
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

@@ -442,6 +442,136 @@ function buildDirectFactualDescription(
   return `The ${brand} ${fullDisplayName} is a genuine industrial electrical product supplied with verified manufacturer specifications, routine test compliance, and express wholesale dispatch from Volamp Elektrikals Ahmedabad.`;
 }
 
+function renderCategoryBuyerGuide(slug: string): string {
+  if (slug === "wire-cables") {
+    return `
+      <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+        <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin-bottom:16px;">Power Cable Subtype Engineering Comparison</h2>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid #e2e8f0;">
+            <thead>
+              <tr style="background:#f8fafc;border-bottom:2px solid #cbd5e1;">
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Cable Type</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Standard</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Conductor Temp</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Primary Application</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:600;">LT XLPE Armoured</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">IS 7098 (Part 1)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">90°C continuous / 250°C short circuit</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Direct underground burial, trenches, heavy factory feeders</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:600;">LT PVC Power Cable</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">IS 1554 (Part 1)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">70°C continuous / 160°C short circuit</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Indoor raceways, commercial risers, non-critical sub-feeders</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:600;">Flexible FRLS Wire</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">70°C / Class 5 flexible copper</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Concealed building conduits, panel internal wiring</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin:28px 0 12px 0;">How to Choose: Engineering Sizing Checklist</h3>
+        <ol style="margin:0 0 24px 0;padding-left:24px;font-size:14px;line-height:1.75;color:#334155;">
+          <li><strong>Calculate Operating Current:</strong> Determine full load current using actual operating voltage (415V 3P or 230V 1P) and motor power factor.</li>
+          <li><strong>Apply Grouping &amp; Thermal Derating:</strong> Derate continuous ampacity based on soil thermal resistivity (1.5 K·m/W) or ambient air tray layout per IS 7098.</li>
+          <li><strong>Verify Voltage Drop Regulation:</strong> Confirm voltage drop stays within Central Electricity Authority (CEA) limits (3% for branch runs, 5% max overall).</li>
+          <li><strong>Verify Short-Circuit Withstand:</strong> Calculate adiabatic thermal rating (k²S² ≥ I²t) to prevent insulation thermal melting during upstream breaker clearing times.</li>
+        </ol>
+
+        <div style="background:#f8fafc;padding:16px 20px;border-radius:10px;border:1px solid #e2e8f0;display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+          <span style="font-size:13px;font-weight:700;color:#0f172a;">Engineering Resources:</span>
+          <a href="/calculator" style="color:#c56718;font-size:13px;font-weight:700;text-decoration:none;">Interactive Cable Sizing Calculator &rarr;</a>
+          <a href="/blog/copper-vs-aluminium-armoured-cable-sizing-guide" style="color:#c56718;font-size:13px;font-weight:700;text-decoration:none;">Copper vs Aluminium Guide &rarr;</a>
+          <a href="/enquire" style="color:#c56718;font-size:13px;font-weight:700;text-decoration:none;">Request Drum Cutting / RFQ &rarr;</a>
+        </div>
+      </section>
+    `;
+  }
+  if (slug === "switch-gears") {
+    return `
+      <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+        <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin-bottom:16px;">Switchgear Subtype Comparison: MCB vs MCCB vs ACB</h2>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid #e2e8f0;">
+            <thead>
+              <tr style="background:#f8fafc;border-bottom:2px solid #cbd5e1;">
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Device Type</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Rated Current (In)</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Breaking Capacity (Icu)</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Trip Characteristics</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:600;">MCB (Miniature Breaker)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">0.5A to 63A</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Up to 10 kA</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Fixed thermal/magnetic (B, C, D curves)</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:600;">MCCB (Moulded Case Breaker)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">16A to 1,600A</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">18 kA to 70 kA</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Adjustable thermal-magnetic / microprocessor trip unit</td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;font-weight:600;">ACB (Air Circuit Breaker)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">630A to 6,300A</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Up to 100 kA</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Advanced digital protection (L-S-I-G) with bus communication</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin:28px 0 12px 0;">How to Choose: Switchgear Selection Checklist</h3>
+        <ol style="margin:0 0 24px 0;padding-left:24px;font-size:14px;line-height:1.75;color:#334155;">
+          <li><strong>Prospective Fault Level:</strong> Confirm substation transformer kVA and impedance to ensure breaker Icu exceeds prospective short-circuit kA.</li>
+          <li><strong>Load Inrush Curve:</strong> Select C-curve for standard motors and D-curve for transformers or high-surge inductive loads.</li>
+          <li><strong>Service Breaking Ratio (Ics vs Icu):</strong> In continuous industrial facilities, specify breakers where Ics = 100% Icu per IS/IEC 60947-2.</li>
+          <li><strong>Enclosure &amp; Mounting:</strong> Confirm DIN-rail vs fixed vs drawout execution matching panel space.</li>
+        </ol>
+
+        <div style="background:#f8fafc;padding:16px 20px;border-radius:10px;border:1px solid #e2e8f0;display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+          <span style="font-size:13px;font-weight:700;color:#0f172a;">Engineering Resources:</span>
+          <a href="/blog/mcb-vs-mccb-vs-acb-guide" style="color:#c56718;font-size:13px;font-weight:700;text-decoration:none;">MCB vs MCCB vs ACB Guide &rarr;</a>
+          <a href="/blog/breaker-breaking-capacity-icu-vs-ics" style="color:#c56718;font-size:13px;font-weight:700;text-decoration:none;">Breaking Capacity Explained &rarr;</a>
+          <a href="/enquire" style="color:#c56718;font-size:13px;font-weight:700;text-decoration:none;">Switchgear Quotations &rarr;</a>
+        </div>
+      </section>
+    `;
+  }
+  if (slug === "glands" || slug === "lugs") {
+    return `
+      <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+        <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin-bottom:16px;">Cable Accessories Engineering Checklist</h2>
+        <ol style="margin:0 0 24px 0;padding-left:24px;font-size:14px;line-height:1.75;color:#334155;">
+          <li><strong>Measure True Cable OD:</strong> Match overall sheath diameter and under-armour diameter to gland range.</li>
+          <li><strong>Verify Gland Compression Style:</strong> Use double compression brass glands for hazardous industrial zones requiring IP66 ingress protection and mechanical armour grip.</li>
+          <li><strong>Select Correct Lug Barrel:</strong> Long barrel lugs for heavy vibration industrial motors; standard barrel for panel distribution boards.</li>
+          <li><strong>Prevent Galvanic Corrosion:</strong> Use heavy electro-tinned copper lugs with contact grease when terminating aluminium cables to copper busbars.</li>
+        </ol>
+        <div style="background:#f8fafc;padding:16px 20px;border-radius:10px;border:1px solid #e2e8f0;display:flex;gap:16px;flex-wrap:wrap;align-items:center;">
+          <span style="font-size:13px;font-weight:700;color:#0f172a;">Engineering Resources:</span>
+          <a href="/blog/cable-gland-and-lug-size-selection-chart" style="color:#c56718;font-size:13px;font-weight:700;text-decoration:none;">Lug &amp; Gland Compatibility Chart &rarr;</a>
+          <a href="/calculator" style="color:#c56718;font-size:13px;font-weight:700;text-decoration:none;">Cable Sizing Tool &rarr;</a>
+        </div>
+      </section>
+    `;
+  }
+  return "";
+}
+
 function renderCategorySpecRows(catSlug: string, p: any, specs: Record<string, any>, standardsText: string | null): string {
   const rows: Array<{ label: string; value: string }> = [];
 
@@ -1321,6 +1451,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
               ${productLinksHtml}
             </ul>
           </section>
+          ${renderCategoryBuyerGuide(slug)}
           ${
             slug === "wire-cables"
               ? `
@@ -1546,7 +1677,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             "url": "https://www.volampelektrikals.com",
             "logo": "https://www.volampelektrikals.com/volamp-logo.png",
             "image": "https://www.volampelektrikals.com/team/volamp-khadia-storefront.jpg",
-            "description": "Leading wholesale distributor and supplier of industrial wires, power cables, switchgear, lugs, glands and earthing materials in Ahmedabad, Gujarat. Authorized distributor of Polycab, Finolex, KEI, Schneider Electric, and Dowells.",
+            "description": "Leading wholesale distributor and supplier of industrial wires, power cables, switchgear, lugs, glands and earthing materials in Ahmedabad, Gujarat. Wholesale distributor and stockist of Polycab, Finolex, KEI, Schneider Electric, and Dowells.",
             "telephone": "+919512365582",
             "email": "sales@volampelektrikals.com",
             "priceRange": "$$",

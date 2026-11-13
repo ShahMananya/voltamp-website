@@ -87,7 +87,7 @@ export default function WhereVolampContributed() {
             <div className="max-w-2xl space-y-3">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-[#c25e0a] dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
                 <Sparkles className="size-3.5" />
-                <span>Nation-Building Infrastructure · 28 States & UTs</span>
+                <span>Industrial &amp; EPC Supply Footprint · Gujarat &amp; Western India</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white tracking-tight leading-tight">
@@ -95,15 +95,23 @@ export default function WhereVolampContributed() {
               </h1>
 
               <p className="text-sm sm:text-base text-[#5d4a4b] dark:text-slate-300 font-['Plus_Jakarta_Sans',sans-serif] leading-relaxed">
-                Four generations of heavy electrical transmission, flame-retardant low-smoke cabling, hazardous-area certified cable glands, and copper earthing networks powering iconic infrastructure across India. Explore our verified real-world installations below.
+                Wholesale supply partner to industrial contractors and EPC infrastructure projects. Supplying heavy electrical power transmission, flame-retardant low-smoke cabling, certified cable glands, and copper earthing networks across Gujarat and surrounding industrial corridors.
               </p>
+
+              {/* Step 99: Quotable Engineering Project Summary */}
+              <div className="p-4 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-amber-200/70 dark:border-amber-900/40 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed shadow-xs">
+                <strong className="text-[#4d1217] dark:text-amber-400 font-bold block mb-1">
+                  Procurement &amp; Supply Scope:
+                </strong>
+                Volamp Elektrikals supplies high-specification electrical infrastructure materials—including IS 7098 XLPE armoured power cables, IS 694 flexible building wires, weather-resistant DC solar cables, and flame-retardant accessories—to industrial contractors, EPC engineering firms, and utility projects across Gujarat and Western India.
+              </div>
 
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <a
                   href="#projects-directory"
                   className="inline-flex items-center gap-2 bg-[#c56718] hover:bg-[#b45309] text-white px-5 py-2.5 rounded-lg text-xs sm:text-sm font-bold shadow-sm transition-all"
                 >
-                  <span>Explore 46+ Landmark Sites</span>
+                  <span>Explore Documented Supplies</span>
                   <ArrowRight className="size-4" />
                 </a>
 
@@ -133,29 +141,29 @@ export default function WhereVolampContributed() {
                   46+
                 </span>
                 <strong className="text-xs font-bold text-[#4d1217] dark:text-white block mt-0.5">
-                  Landmark Projects
+                  Project Supplies
                 </strong>
-                <small className="text-[11px] text-slate-500">Airports, Refineries, Temples</small>
+                <small className="text-[11px] text-slate-500">Documented Consignments</small>
               </div>
 
               <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
                 <span className="block text-2xl sm:text-3xl font-bold text-[#c56718] dark:text-amber-400 font-['Plus_Jakarta_Sans',sans-serif]">
-                  28
+                  Gujarat
                 </span>
                 <strong className="text-xs font-bold text-[#4d1217] dark:text-white block mt-0.5">
-                  States & UTs
+                  &amp; Western Hubs
                 </strong>
-                <small className="text-[11px] text-slate-500">Pan-India Footprint</small>
+                <small className="text-[11px] text-slate-500">Ahmedabad Centric</small>
               </div>
 
-              <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">
+              <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs col-span-2">
                 <span className="block text-2xl sm:text-3xl font-bold text-[#c56718] dark:text-amber-400 font-['Plus_Jakarta_Sans',sans-serif]">
-                  300+ km
+                  IS 7098 / IS 694
                 </span>
                 <strong className="text-xs font-bold text-[#4d1217] dark:text-white block mt-0.5">
-                  Solar & HT Feeds
+                  Tested Electrical Standards
                 </strong>
-                <small className="text-[11px] text-slate-500">Grid Interties & Parks</small>
+                <small className="text-[11px] text-slate-500">Supplied with Manufacturer MTC</small>
               </div>
 
               <div className="p-4 rounded-xl bg-white dark:bg-slate-800 border border-[#ebd7c7] dark:border-slate-700 shadow-xs">

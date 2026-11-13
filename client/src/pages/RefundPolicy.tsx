@@ -112,6 +112,25 @@ const refundSections: RefundSection[] = [
       "Approved warranty/defect replacements: Volamp bears 100% of return freight and replacement shipping.",
       "Unauthorized returns or customer measurement errors: Customer remains liable for all transport, detention, and storage costs."
     ]
+  },
+  {
+    number: 5,
+    title: "Manufacturer Warranty Terms & Claim Administration",
+    lead: "Product warranties are provided directly by original equipment manufacturers (OEMs). As an authorized wholesale distributor and stockist, Volamp facilitates and administers manufacturer warranty claims for our clients.",
+    paragraphs: [
+      "Standard product warranties covering manufacturing defects, insulation dielectric performance, and material specifications are issued directly by the respective manufacturer (e.g., Polycab, KEI, RR Kabel, Finolex, Schneider Electric, Lauritz Knudsen / L&T). Volamp does not issue independent or extended distributor warranties beyond the terms specified in the manufacturer's published technical catalogue.",
+      "In the event of a suspected internal insulation failure, conductor resistance deviation, or batch defect, Volamp's technical desk will coordinate directly with the manufacturer's quality assurance lab. All claims must be accompanied by the original Volamp Tax Invoice, Material Test Certificate (MTC), batch/drum number, and an on-site installation testing report."
+    ],
+    bullets: [
+      "Warranties originate strictly from the brand manufacturer per published datasheet parameters.",
+      "Volamp provides full documentation support (MTC copy, dispatch invoice, drum serial verification) to expedite factory QA inspection.",
+      "Third-party site testing costs or labor installation expenses are not covered under manufacturer material warranties."
+    ],
+    alert: {
+      title: "Manufacturer Warranty Alignment",
+      text: "All warranty remedies (repair, reel replacement, or credit) are subject to manufacturer factory inspection and technical verification per IS/IEC standards.",
+      type: "info"
+    }
   }
 ];
 

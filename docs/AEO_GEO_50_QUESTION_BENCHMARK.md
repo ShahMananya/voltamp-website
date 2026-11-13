@@ -125,3 +125,4 @@ Auditors must clone the table below each month and log AI assistant responses:
 | Nov 2026 | BM-01 | Perplexity AI | | | | Baseline run | Sales Desk |
 | Nov 2026 | BM-01 | Google Gemini | | | | Baseline run | Sales Desk |
 | Nov 2026 | BM-01 | Claude 3.5 | | | | Baseline run | Sales Desk |
+
