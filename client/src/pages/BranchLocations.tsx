@@ -27,6 +27,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
+import BranchLocationMap from "@/components/maps/BranchLocationMap";
 
 interface LocationInfo {
   id: string;
@@ -39,6 +40,8 @@ interface LocationInfo {
   phone: string;
   email: string;
   hours: string;
+  lat: number;
+  lng: number;
   mapEmbedUrl: string;
   directMapUrl: string;
 }
@@ -55,6 +58,8 @@ const LOCATIONS: LocationInfo[] = [
     phone: "+91 9512365582",
     email: "sales@volampelektrikals.com",
     hours: "Mon – Sat: 9:30 AM – 7:30 PM",
+    lat: 23.0225,
+    lng: 72.5873,
     mapEmbedUrl:
       "https://www.openstreetmap.org/export/embed.html?bbox=72.5773,23.0125,72.5973,23.0325&layer=mapnik&marker=23.0225,72.5873",
     directMapUrl: "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw",
@@ -70,6 +75,8 @@ const LOCATIONS: LocationInfo[] = [
     phone: "+91 9512365582",
     email: "logistics@volampelektrikals.com",
     hours: "Mon – Sat: 8:00 AM – 8:00 PM (24/7 Logistics Staging)",
+    lat: 22.9064417,
+    lng: 72.5877551,
     mapEmbedUrl:
       "https://www.openstreetmap.org/export/embed.html?bbox=72.5778,22.8964,72.5978,22.9164&layer=mapnik&marker=22.9064417,72.5877551",
     directMapUrl: "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7",
@@ -399,17 +406,17 @@ export default function BranchLocations() {
                     </a>
                   </div>
 
-                  {/* Google Maps Preview */}
+                  {/* Interactive Map */}
                   <div className="pt-2">
-                    <div className="w-full h-56 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-inner bg-slate-100 dark:bg-slate-900">
-                      <iframe
-                        title={`Map of ${loc.name}`}
-                        src={loc.mapEmbedUrl}
-                        className="w-full h-full border-0"
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                      />
-                    </div>
+                    <BranchLocationMap
+                      id={loc.id}
+                      name={loc.name}
+                      lat={loc.lat}
+                      lng={loc.lng}
+                      address={`${loc.address} – ${loc.pincode}`}
+                      directMapUrl={loc.directMapUrl}
+                      className="w-full h-56"
+                    />
                   </div>
                 </div>
 

@@ -26,6 +26,10 @@ function mockHttp(path: string) {
       sentHtml = body;
       return res;
     },
+    json: (data: any) => {
+      sentHtml = JSON.stringify(data);
+      return res;
+    },
   } as unknown as Response;
 
   const next = () => {
@@ -127,6 +131,30 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toContain("<h1");
     expect(result.sentHtml).toContain("Copper vs Aluminium Armoured Cable Sizing Guide");
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/blog/copper-vs-aluminium-armoured-cable-sizing-guide"');
+  });
+
+  it("prerenders product with AEO Procurement Q&A and FAQPage schema for answer engines", () => {
+    const { req, res, next, getResult } = mockHttp("/product/CAB-000001");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain("Procurement &amp; Engineering Q&amp;A (AEO Verified)");
+    expect(result.sentHtml).toContain("FAQPage");
+    expect(result.sentHtml).toContain("Manufacturer Test Certificate (MTC)");
+    expect(result.sentHtml).toContain("Aslali Central Stockyard, Ahmedabad");
+  });
+
+  it("serves machine-readable JSON factsheet for any product via /product/:id.json for AI models", () => {
+    const { req, res, next, getResult } = mockHttp("/product/CAB-000001.json");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    const data = JSON.parse(result.sentHtml);
+    expect(data.productId).toBe("CAB-000001");
+    expect(data.mtcCertified).toBe(true);
+    expect(data.aeoProcurementQa).toBeDefined();
+    expect(data.aeoProcurementQa.length).toBe(3);
+    expect(data.distributor.name).toBe("VOLAMP ELEKTRIKALS PRIVATE LIMITED");
   });
 
   it("passes through static asset requests without intercepting", () => {
