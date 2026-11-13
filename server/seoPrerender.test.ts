@@ -78,6 +78,9 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toContain("CAB-000001");
     expect(result.sentHtml).toContain("schema.org");
     expect(result.sentHtml).toContain("https://www.volampelektrikals.com/product/CAB-000001");
+    expect(result.sentHtml).toContain('href="/category/wire-cables"');
+    expect(result.sentHtml).toContain('content="product"');
+    expect(result.sentHtml).not.toContain('"mpn"');
     expect(result.sentHtml).not.toContain('content="noindex, nofollow"');
   });
 
@@ -109,30 +112,8 @@ describe("SEO Prerendering & Real 404 Status", () => {
     const result = getResult();
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
-    expect(result.sentHtml).toContain("Authorized Polycab Cable Dealer &amp; Distributor in Ahmedabad, Gujarat");
+    expect(result.sentHtml).toContain("Polycab Wires &amp; Cables Wholesale Stockist in Ahmedabad");
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/dealers/polycab-ahmedabad"');
-  });
-
-  it("prerenders armoured cable hub page (/dealers/armoured-cables-ahmedabad) with 200, H1, schema, and canonical", () => {
-    const { req, res, next, getResult } = mockHttp("/dealers/armoured-cables-ahmedabad");
-    seoPrerenderMiddleware(req, res, next);
-    const result = getResult();
-    expect(result.statusCode).toBe(200);
-    expect(result.sentHtml).toContain("<h1");
-    expect(result.sentHtml).toContain("Armoured Cable Distributor &amp; Wholesale Stockist in Ahmedabad, Gujarat");
-    expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/dealers/armoured-cables-ahmedabad"');
-    expect(result.sentHtml).toContain('"@type":"WebPage"');
-  });
-
-  it("prerenders unarmoured cable hub page (/dealers/unarmoured-cables-ahmedabad) with 200, H1, schema, and canonical", () => {
-    const { req, res, next, getResult } = mockHttp("/dealers/unarmoured-cables-ahmedabad");
-    seoPrerenderMiddleware(req, res, next);
-    const result = getResult();
-    expect(result.statusCode).toBe(200);
-    expect(result.sentHtml).toContain("<h1");
-    expect(result.sentHtml).toContain("Unarmoured Cable Supplier &amp; Wholesale Stockist in Ahmedabad");
-    expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/dealers/unarmoured-cables-ahmedabad"');
-    expect(result.sentHtml).toContain('"@type":"WebPage"');
   });
 
   it("prerenders global export hub page (/export) with 200, H1, and canonical", () => {
@@ -155,15 +136,18 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/blog/copper-vs-aluminium-armoured-cable-sizing-guide"');
   });
 
-  it("prerenders product with AEO Procurement Q&A and FAQPage schema for answer engines", () => {
+  it("prerenders product with verified specifications and clean Product schema without FAQPage", () => {
     const { req, res, next, getResult } = mockHttp("/product/CAB-000001");
     seoPrerenderMiddleware(req, res, next);
     const result = getResult();
     expect(result.statusCode).toBe(200);
-    expect(result.sentHtml).toContain("Procurement &amp; Engineering Q&amp;A (AEO Verified)");
-    expect(result.sentHtml).toContain("FAQPage");
-    expect(result.sentHtml).toContain("Manufacturer Test Certificate (MTC)");
-    expect(result.sentHtml).toContain("Aslali Central Stockyard, Ahmedabad");
+    expect(result.sentHtml).toContain("Product Specifications");
+    expect(result.sentHtml).toContain("IS 694");
+    expect(result.sentHtml).not.toContain("IS:7098");
+    expect(result.sentHtml).not.toContain("FAQPage");
+    expect(result.sentHtml).toContain('"sku":"CAB-000001"');
+    expect(result.sentHtml).toContain('"unitText":"Per Meter"');
+    expect(result.sentHtml).toContain("Aslali Logistics Hub, Ahmedabad");
   });
 
   it("serves machine-readable JSON factsheet for any product via /product/:id.json for AI models", () => {
@@ -173,10 +157,11 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.statusCode).toBe(200);
     const data = JSON.parse(result.sentHtml);
     expect(data.productId).toBe("CAB-000001");
-    expect(data.mtcCertified).toBe(true);
-    expect(data.aeoProcurementQa).toBeDefined();
-    expect(data.aeoProcurementQa.length).toBe(3);
+    expect(data.sku).toBe("CAB-000001");
+    expect(data.brand).toBe("Polycab");
+    expect(data.standardsCompliance).toBe("IS 694");
     expect(data.distributor.name).toBe("VOLAMP ELEKTRIKALS PRIVATE LIMITED");
+    expect(data.distributor.gstin).toBe("24AAICV0754B1ZO");
   });
 
   it("passes through static asset requests without intercepting", () => {

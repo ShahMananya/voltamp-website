@@ -167,52 +167,36 @@ const STATIC_ROUTES: Record<
       "Volamp Elektrikals Private Limited is an international electrical procurement and export partner headquartered in Ahmedabad, Gujarat, India. Leveraging deep logistics proximity to India's premier western deep-water container ports (Mundra and Kandla, <350 km from our central Aslali stockyard), we supply certified HT/LT power cables, solar photovoltaic cables, switchgear, and earthing infrastructure to international EPC contractors, utility developers, and industrial projects across the Middle East, Africa, and Southeast Asia. All export drums comply with ISPM-15 phytosanitary heat-treatment standards, accompanied by SGS/Bureau Veritas pre-shipment inspection certificates and Letters of Credit (LC) facilitation.",
   },
   "dealers/polycab-ahmedabad": {
-    title: "Polycab Dealer & Distributor Ahmedabad Gujarat | Volamp",
+    title: "Polycab Wires & Cables Wholesale Stockist Ahmedabad | Volamp",
     description:
-      "Authorized Polycab cables & wires distributor in Ahmedabad. LT/HT XLPE armoured power cables, solar DC cables, flexible wires with CPRI test reports.",
-    h1: "Authorized Polycab Cable Dealer & Distributor in Ahmedabad, Gujarat",
+      "Wholesale stockist & supplier of Polycab cables and wires in Ahmedabad, Gujarat. Ready stock of LT/HT XLPE power cables, flexible wires & solar cables.",
+    h1: "Polycab Wires & Cables Wholesale Stockist in Ahmedabad",
     intro:
-      "Volamp Elektrikals Private Limited is an authorized master distributor and wholesale stockist for Polycab India Ltd. in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, we maintain extensive ready inventory of Polycab 1.1kV LT XLPE aluminium and copper armoured cables (IS 7098 Part 1), 11kV to 33kV HT XLPE power cables (IS 7098 Part 2), 1500V DC solar PV cables (EN 50618), Green Wire FRLS building wires, and multi-core flexible control cables. Every reel and coil is guaranteed 100% original, backed by original manufacturer Material Test Certificates (MTC) and CPRI type-test reports.",
-  },
-  "dealers/armoured-cables-ahmedabad": {
-    title: "Armoured Cable Distributor & Stockist in Ahmedabad | Volamp",
-    description:
-      "Authorized distributor & wholesale stockist of LT & HT armoured power cables in Ahmedabad, Gujarat. Polycab & KEI steel strip / wire armoured cables with MTC.",
-    h1: "Armoured Cable Distributor & Wholesale Stockist in Ahmedabad, Gujarat",
-    intro:
-      "Volamp Elektrikals Private Limited is an authorized master distributor and wholesale stockist of LT and HT armoured cables in Ahmedabad, Gujarat. Sourced directly from Polycab and KEI, our inventory covers 1.1kV to 33kV galvanized steel strip and round wire armoured power cables (2.5 sq mm to 630 sq mm in 3.5C and 4C) conforming to IS 7098 (Part 1 & 2) with guaranteed routine spark and conductor resistance test certificates.",
-  },
-  "dealers/unarmoured-cables-ahmedabad": {
-    title: "Unarmoured Cable Supplier & Stockist Ahmedabad | Volamp",
-    description:
-      "Authorized distributor & wholesale stockist of unarmoured copper and aluminium power cables in Ahmedabad. IS 694 & IS 1554 certified Polycab, Finolex & KEI with MTC.",
-    h1: "Unarmoured Cable Supplier & Wholesale Stockist in Ahmedabad",
-    intro:
-      "Volamp Elektrikals Private Limited is an authorized distributor and wholesale stockist of unarmoured power cables and flexible building wires in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, Volamp supplies certified 1.1kV LT unarmoured copper and aluminium cables (1.5 sq mm to 1000 sq mm) conforming to IS 694 and IS 1554 (Part 1) from Polycab, Finolex, and KEI with original factory test certificates.",
+      "Volamp Elektrikals Private Limited is a wholesale stockist and supplier of Polycab India Ltd. wires and cables in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, we maintain ready inventory of Polycab 1.1kV LT XLPE aluminium and copper armoured cables (IS 7098 Part 1), 11kV to 33kV HT XLPE power cables (IS 7098 Part 2), 1500V DC solar PV cables (EN 50618), Green Wire building wires, and multi-core flexible control cables.",
   },
   "dealers/finolex-cables-ahmedabad": {
-    title: "Finolex Cables Dealer & Wholesale Stockist Ahmedabad | Volamp",
+    title: "Finolex Wires & Cables Wholesale Stockist Ahmedabad | Volamp",
     description:
-      "Authorized Finolex cables distributor in Ahmedabad, Gujarat. Flame retardant industrial flexible wires, 3-core flat submersible cables, and power cables.",
-    h1: "Finolex Cables Dealer & Wholesale Stockist in Ahmedabad, Gujarat",
+      "Wholesale stockist & supplier of Finolex wires and cables in Ahmedabad, Gujarat. Flame retardant industrial flexible wires, 3-core flat submersible cables.",
+    h1: "Finolex Wires & Cables Wholesale Stockist in Ahmedabad",
     intro:
-      "Volamp Elektrikals Private Limited is a trusted authorized wholesale dealer and stockist for Finolex Cables Ltd. in Ahmedabad and across Gujarat. Renowned for 99.97% pure electrolytic grade copper conductors and proprietary in-house PVC compounding, Finolex wires deliver unmatched electrical conductivity, energy efficiency, and thermal longevity. We supply commercial contractors and industrial builders with Finolex Flame Guard FRLS wires, 3-core flat submersible cables, and multi-conductor industrial flexible cables.",
+      "Volamp Elektrikals Private Limited is a wholesale stockist and supplier of Finolex Cables Ltd. products in Ahmedabad and across Gujarat. We supply commercial contractors and industrial builders with Finolex Flame Guard FRLS wires, 3-core flat submersible cables, and multi-conductor industrial flexible cables from our Ahmedabad facilities.",
   },
   "dealers/kei-cables-gujarat": {
-    title: "KEI Cables Distributor & Industrial Stockist Gujarat | Volamp",
+    title: "KEI Cables Wholesale Stockist & Industrial Supplier Gujarat | Volamp",
     description:
-      "Authorized KEI Industries distributor in Ahmedabad & Gujarat. Heavy-duty HT/EHV power cables, rubber trailing cables, instrumentation cables, and solar wires.",
-    h1: "KEI Cables Industrial Distributor & Stockist in Gujarat",
+      "Wholesale supplier of KEI Industries power cables in Ahmedabad & Gujarat. Heavy-duty HT power cables, rubber trailing cables, and control cables.",
+    h1: "KEI Cables Wholesale Industrial Stockist in Gujarat",
     intro:
-      "Volamp Elektrikals Private Limited is a specialized industrial distributor and project stockist for KEI Industries Ltd. in Ahmedabad and throughout Gujarat. Catering to heavy engineering, steel plants, chemical manufacturing, infrastructure EPCs, and utility distribution, we supply KEI's engineered cable solutions including Extra High Voltage (EHV) cables up to 220kV, rubber EPR/CSP trailing cables for mining and cranes, and fire-survival FS cables.",
+      "Volamp Elektrikals Private Limited is an industrial stockist and project supplier for KEI Industries Ltd. cables in Ahmedabad and throughout Gujarat. We supply KEI power and control cable lines including Extra High Voltage (EHV) cables, rubber EPR/CSP trailing cables, and industrial HT cables.",
   },
   "dealers/schneider-electric-ahmedabad": {
-    title: "Schneider Electric Switchgear Distributor Ahmedabad | Volamp",
+    title: "Schneider Electric Switchgear Wholesale Supplier Ahmedabad | Volamp",
     description:
-      "Authorized Schneider Electric distributor in Ahmedabad. Acti9 MCBs, EasyPact CVS/EZC MCCBs, TeSys contactors, and industrial power distribution boards.",
-    h1: "Schneider Electric Switchgear Distributor in Ahmedabad, Gujarat",
+      "Wholesale supplier of Schneider Electric low-voltage switchgear in Ahmedabad. Acti9 MCBs, EasyPact CVS/EZC MCCBs, and TeSys contactors.",
+    h1: "Schneider Electric Switchgear Wholesale Supplier in Ahmedabad",
     intro:
-      "Volamp Elektrikals Private Limited is an authorized B2B distributor of Schneider Electric low-voltage switchgear and industrial automation components in Ahmedabad, Gujarat. We supply project contractors, OEM panel builders, and facility maintenance teams with authentic Schneider protection switchgear including Acti9 miniature circuit breakers (MCBs), EasyPact CVS and EZC molded case circuit breakers (MCCBs), TeSys D and TeSys F contactors, and motor protection circuit breakers (MPCBs).",
+      "Volamp Elektrikals Private Limited is a B2B wholesale distributor and supplier of Schneider Electric low-voltage switchgear in Ahmedabad, Gujarat. We supply project contractors, panel builders, and maintenance teams with Schneider protection switchgear including Acti9 MCBs, EasyPact MCCBs, and TeSys contactors.",
   },
   "locations/industrial-gidc-hubs": {
     title: "Industrial Electrical Supply across Gujarat GIDC Hubs | Volamp",
@@ -348,6 +332,66 @@ function escapeXml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
+function getCanonicalCategorySlug(category?: string): string {
+  const norm = (category || "").toLowerCase();
+  if (norm.includes("wire") || norm.includes("cable")) return "wire-cables";
+  if (norm.includes("switch")) return "switch-gears";
+  if (norm.includes("solar")) return "solar";
+  if (norm.includes("lug")) return "lugs";
+  if (norm.includes("gland")) return "glands";
+  if (norm.includes("conduit") || norm.includes("pipe")) return "conduit";
+  if (norm.includes("earth")) return "earthing-material";
+  if (norm.includes("device") || norm.includes("wiring")) return "wiring-device";
+  return "wire-cables";
+}
+
+function extractVerifiedStandards(product: { description?: string; specifications?: string }): string | null {
+  const text = `${product.description || ""} ${product.specifications || ""}`;
+  const found: string[] = [];
+
+  if (/IS[\s:]*7098\s*\(?Part\s*2\)?/i.test(text)) {
+    found.push("IS 7098 (Part 2)");
+  } else if (/IS[\s:]*7098\s*\(?Part\s*1\)?/i.test(text) || (/IS[\s:]*7098/i.test(text) && /XLPE/i.test(text))) {
+    found.push("IS 7098 (Part 1)");
+  } else if (/IS[\s:]*7098/i.test(text)) {
+    found.push("IS 7098");
+  }
+
+  if (/IS[\s:]*1554/i.test(text)) {
+    found.push("IS 1554 (Part 1)");
+  }
+
+  if (/IS[\s:]*694/i.test(text)) {
+    found.push("IS 694");
+  }
+
+  if (/EN[\s:]*50618/i.test(text) || /IEC[\s:]*62930/i.test(text)) {
+    found.push("EN 50618 / IEC 62930");
+  }
+
+  if (/IEC[\s:]*60947/i.test(text)) {
+    found.push("IEC 60947-2");
+  }
+
+  if (/IS[\s:]*8337/i.test(text) || /DIN[\s:]*46235/i.test(text)) {
+    found.push("IS 8337 / DIN 46235");
+  }
+
+  if (/BS[\s:]*6121/i.test(text) || /EN[\s:]*50262/i.test(text)) {
+    found.push("BS 6121 / EN 50262");
+  }
+
+  if (/IS[\s:]*3043/i.test(text)) {
+    found.push("IS 3043");
+  }
+
+  if (/IS[\s:]*9537/i.test(text)) {
+    found.push("IS 9537");
+  }
+
+  return found.length > 0 ? found.join(", ") : null;
+}
+
 let _indexTemplateCache: string | null = null;
 
 function loadBaseTemplate(): string {
@@ -411,6 +455,7 @@ function renderPageHtml({
   bodyHtml,
   schemaJson,
   ogImage,
+  ogType,
 }: {
   title: string;
   description: string;
@@ -419,6 +464,7 @@ function renderPageHtml({
   bodyHtml: string;
   schemaJson?: string;
   ogImage?: string;
+  ogType?: string;
 }): string {
   let template = loadBaseTemplate();
 
@@ -473,6 +519,12 @@ function renderPageHtml({
   }
 
   // 5. OpenGraph & Twitter tags update
+  if (ogType) {
+    template = template.replace(
+      /<meta\s+property="og:type"\s+content=".*?"\s*\/?>/i,
+      `<meta property="og:type" content="${escapeXml(ogType)}" />`
+    );
+  }
   template = template.replace(
     /<meta\s+property="og:title"\s+content=".*?"\s*\/?>/i,
     `<meta property="og:title" content="${escapedTitle}" />`
@@ -641,7 +693,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       : fullName;
 
     // Unique page title including verified product ID (resolves duplicate title groups)
-    const uniquePageTitle = `${fullDisplayName} (${product.productId}) | Volamp Elektrikals`;
+    const uniquePageTitle = `${fullDisplayName} (${product.productId}) | Volamp Elektrikals Ahmedabad`;
 
     // Filter out Google Drive HTML viewer links for valid image representation
     const rawImg = product.imageUrl || "";
@@ -659,22 +711,10 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       : "Price on Request / RFQ";
     const productUrl = `${BASE_URL}/product/${encodeURIComponent(product.productId)}`;
 
-    // Standards determination based on category
-    const catLower = (product.category || "").toLowerCase();
-    let standardsText = "IS / IEC Conforming Standard";
-    if (catLower.includes("cable") || catLower.includes("wire")) {
-      standardsText = "IS:7098 (Part 1/2) for XLPE Power Cables, IS:1554 for PVC Power Cables, IS:694 for Flexible Building Wires";
-    } else if (catLower.includes("switch")) {
-      standardsText = "IS/IEC 60947-2 (Air & Molded Case Circuit Breakers), IS/IEC 60898-1 (MCBs)";
-    } else if (catLower.includes("solar")) {
-      standardsText = "EN 50618 & IEC 62930 (1500V DC UV-Resistant Halogen-Free Solar PV Cables)";
-    } else if (catLower.includes("lug")) {
-      standardsText = "IS:8337, DIN 46235 for Heavy-Duty Tinned Electrolytic Copper & Aluminium Terminals";
-    } else if (catLower.includes("gland")) {
-      standardsText = "BS 6121 & EN 50262 Mechanical Cable Glands";
-    } else if (catLower.includes("earth")) {
-      standardsText = "IS:3043 & IEEE 80 Compliance, CPRI Tested Chemical Earthing Electrodes";
-    }
+    // Verified standards and canonical category slug
+    const standardsText = extractVerifiedStandards(product);
+    const canonicalCatSlug = getCanonicalCategorySlug(product.category);
+    const isInStock = Boolean(product.availability && /in stock|available/i.test(product.availability));
 
     // Dedicated Machine-Readable JSON Feed for AI Search Engines & Bots (/product/:id.json)
     if (isJsonFeed) {
@@ -684,18 +724,19 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
         "@type": "Product",
         entity: "Volamp Electrical Product Factsheet",
         productId: product.productId,
-        sku: product.sku || product.productId,
+        sku: product.productId,
         name: fullDisplayName,
         brand: product.brand || "Polycab",
         category: product.category || "Wires & Cables",
         subcategory: product.subcategory || "Industrial Cable",
-        size: product.size || "Standard",
+        size: product.size || undefined,
+        material: product.material || undefined,
+        voltageRating: parsedSpecs.voltageRating || undefined,
+        unit: product.unit || undefined,
+        moq: product.moq || undefined,
         priceInr: rawPrice > 0 ? rawPrice : "Price on Request / RFQ",
-        availability: "In Stock - Aslali Central Hub, Ahmedabad",
-        standardsCompliance: standardsText,
-        mtcCertified: true,
-        qualityAssurance: "Original Manufacturer Test Certificate (MTC) supplied with batch traceability",
-        dispatchCorridor: "Same-Day to 24h Gujarat GIDC; 48-72h Pan-India Express",
+        availability: isInStock ? "In Stock - Aslali Central Hub, Ahmedabad" : "Available on Order",
+        standardsCompliance: standardsText || undefined,
         distributor: {
           name: "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
           cin: "U31900GJ2021PTC122730",
@@ -707,47 +748,36 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
           rfqEmail: "sales@volampelektrikals.com"
         },
         canonicalUrl: productUrl,
-        rfqUrl: `${BASE_URL}/enquire?product=${encodeURIComponent(fullDisplayName)}`,
-        aeoProcurementQa: [
-          {
-            question: `What specifications and compliance standards does ${fullDisplayName} adhere to?`,
-            answer: `${fullDisplayName} is manufactured by ${product.brand || "Polycab"} conforming to ${standardsText}. Supplied by Volamp Elektrikals with full factory batch traceability and routine test compliance.`
-          },
-          {
-            question: `Does Volamp supply original Manufacturer Test Certificates (MTC) with ${fullDisplayName}?`,
-            answer: `Yes. Every consignment of ${fullDisplayName} includes original manufacturer Material Test Certificates (MTC) and factory routine test reports.`
-          },
-          {
-            question: `What are the dispatch timelines from Ahmedabad for ${fullDisplayName}?`,
-            answer: `Ready stock available for same-day to 24h dispatch across Gujarat GIDC zones (Sanand, Vatva, Naroda, Changodar), and 48 to 72h pan-India delivery from the Aslali logistics terminal.`
-          }
-        ]
+        rfqUrl: `${BASE_URL}/enquire?product=${encodeURIComponent(fullDisplayName)}`
       });
     }
 
-    // Product Schema Entity
+    // Product Schema Entity (Clean, standards-compliant, unit-specified, zero invented fields)
     const productEntity: Record<string, any> = {
+      "@context": "https://schema.org",
       "@type": "Product",
       "@id": `${productUrl}#product`,
       "name": fullDisplayName,
       "image": validImgUrl,
-      "description": product.description || `${fullDisplayName} genuine industrial electrical supply from Volamp Elektrikals Ahmedabad.`,
-      "sku": product.sku || product.productId,
-      "mpn": product.productId,
+      "description": product.description || `${fullDisplayName} industrial electrical supply from Volamp Elektrikals Ahmedabad.`,
+      "sku": product.productId,
       "brand": {
         "@type": "Brand",
         "name": product.brand || "Polycab",
       },
-      "additionalProperty": [
-        { "@type": "PropertyValue", "name": "Conductor / Size", "value": product.size || "Standard Specification" },
-        { "@type": "PropertyValue", "name": "Category", "value": product.category || "Wires & Cables" },
-        { "@type": "PropertyValue", "name": "Subcategory", "value": product.subcategory || "Industrial Cable" },
-        { "@type": "PropertyValue", "name": "Compliance Standard", "value": standardsText },
-        { "@type": "PropertyValue", "name": "Test Certificate", "value": "Original Manufacturer Test Certificate (MTC) Included" },
-        { "@type": "PropertyValue", "name": "Dispatch Hub", "value": "Aslali Central Warehouse, Ahmedabad (382427)" },
-        { "@type": "PropertyValue", "name": "Lead Time", "value": "Same-day to 24h Gujarat GIDC; 48-72h Pan-India Express" }
-      ]
     };
+
+    const additionalProps: Array<{ "@type": "PropertyValue"; name: string; value: string }> = [];
+    if (product.size) additionalProps.push({ "@type": "PropertyValue", name: "Size", value: product.size });
+    if (product.material) additionalProps.push({ "@type": "PropertyValue", name: "Conductor Material", value: product.material });
+    if (parsedSpecs.voltageRating) additionalProps.push({ "@type": "PropertyValue", name: "Voltage Rating", value: parsedSpecs.voltageRating });
+    if (standardsText) additionalProps.push({ "@type": "PropertyValue", name: "Compliance Standard", value: standardsText });
+    if (product.unit) additionalProps.push({ "@type": "PropertyValue", name: "Unit", value: product.unit });
+    if (product.moq) additionalProps.push({ "@type": "PropertyValue", name: "MOQ", value: product.moq });
+
+    if (additionalProps.length > 0) {
+      productEntity.additionalProperty = additionalProps;
+    }
 
     // Omit offers schema if there is no public price (P1 guardrail: no invented prices)
     if (hasPrice) {
@@ -756,7 +786,13 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
         "url": productUrl,
         "priceCurrency": "INR",
         "price": rawPrice.toFixed(2),
-        "availability": "https://schema.org/InStock",
+        "priceSpecification": {
+          "@type": "UnitPriceSpecification",
+          "price": rawPrice.toFixed(2),
+          "priceCurrency": "INR",
+          "unitText": product.unit || "Per Meter"
+        },
+        "availability": isInStock ? "https://schema.org/InStock" : "https://schema.org/PreOrder",
         "itemCondition": "https://schema.org/NewCondition",
         "priceValidUntil": "2027-12-31",
         "seller": {
@@ -764,169 +800,80 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
           "name": "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
           "url": BASE_URL,
           "telephone": "+919512365582"
-        },
-        "hasMerchantReturnPolicy": {
-          "@type": "MerchantReturnPolicy",
-          "applicableCountry": "IN",
-          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-          "merchantReturnDays": 30,
-          "returnMethod": "https://schema.org/ReturnByMail",
-          "returnFees": "https://schema.org/FreeReturn"
-        },
-        "shippingDetails": {
-          "@type": "OfferShippingDetails",
-          "shippingRate": {
-            "@type": "MonetaryAmount",
-            "value": "0",
-            "currency": "INR"
-          },
-          "shippingDestination": {
-            "@type": "DefinedRegion",
-            "addressCountry": "IN"
-          },
-          "deliveryTime": {
-            "@type": "ShippingDeliveryTime",
-            "handlingTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 0,
-              "maxValue": 1,
-              "unitCode": "DAY"
-            },
-            "transitTime": {
-              "@type": "QuantitativeValue",
-              "minValue": 1,
-              "maxValue": 3,
-              "unitCode": "DAY"
-            }
-          }
         }
       };
     }
 
-    // Comprehensive Schema: Product + FAQPage for Answer Engines
-    const productSchema: any = {
-      "@context": "https://schema.org",
-      "@graph": [
-        productEntity,
-        {
-          "@type": "FAQPage",
-          "@id": `${productUrl}#faq`,
-          "mainEntity": [
-            {
-              "@type": "Question",
-              "name": `What specifications and compliance standards does ${fullName} adhere to?`,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": `${fullName} is manufactured by ${product.brand || "Polycab"} conforming to ${standardsText}. Distributed by Volamp Elektrikals with complete factory routine test certificates.`
-              }
-            },
-            {
-              "@type": "Question",
-              "name": `Does Volamp provide original Manufacturer Test Certificates (MTC) with ${fullName}?`,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": `Yes. Every consignment of ${fullName} supplied by Volamp Elektrikals includes original manufacturer Material Test Certificates (MTC) and routine test reports.`
-              }
-            },
-            {
-              "@type": "Question",
-              "name": `What is the delivery timeline to Ahmedabad and across India for ${fullName}?`,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": `Ready stock available for same-day to 24h dispatch across Ahmedabad and Gujarat GIDC industrial zones (Sanand, Vatva, Naroda, Changodar), and 48 to 72h pan-India delivery from the Aslali logistics terminal.`
-              }
-            }
-          ]
-        }
-      ]
-    };
-
-    const schema = JSON.stringify(productSchema);
+    const schema = JSON.stringify(productEntity);
 
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     const html = renderPageHtml({
       title: uniquePageTitle,
-      description: `Buy ${fullDisplayName} (${product.productId}). Genuine ${product.brand || "Polycab"} industrial electrical supply with original MTC test certificate. Fast dispatch from Ahmedabad across India.`,
+      description: `Buy ${fullDisplayName} (${product.productId}). Genuine ${product.brand || "Polycab"} industrial electrical supply with verified specifications. Wholesale dispatch from Ahmedabad across India.`,
       canonical: productUrl,
       schemaJson: schema,
       ogImage: validImgUrl,
+      ogType: "product",
       bodyHtml: `
         <article style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
           <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
             <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
             <a href="/products" style="color:#64748b;text-decoration:none;">Products</a> &gt;
-            <a href="/category/${encodeURIComponent((product.category || "wire-cables").toLowerCase().replace(/\s+/g, "-"))}" style="color:#64748b;text-decoration:none;">${escapeXml(product.category || "Electrical")}</a> &gt;
+            <a href="/category/${canonicalCatSlug}" style="color:#64748b;text-decoration:none;">${escapeXml(product.category || "Wires & Cables")}</a> &gt;
             <span style="color:#0f172a;font-weight:600;">${escapeXml(fullDisplayName)}</span>
           </nav>
           <header style="border-bottom:1px solid #e2e8f0;padding-bottom:24px;margin-bottom:28px;">
             <div style="display:inline-block;padding:4px 10px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;border-radius:6px;margin-bottom:12px;">
-              ${escapeXml(product.brand || "Polycab")} • Genuine Certified Supply
+              ${escapeXml(product.brand || "Polycab")} • Wholesale Stock
             </div>
             <h1 style="font-size:28px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 12px 0;">${escapeXml(fullDisplayName)} (${escapeXml(product.productId)})</h1>
             <p style="font-size:14px;color:#64748b;margin:0;">
               Product ID: <strong style="font-family:monospace;color:#0f172a;">${escapeXml(product.productId)}</strong> |
               SKU: <strong style="font-family:monospace;color:#0f172a;">${escapeXml(product.sku || product.productId)}</strong> |
-              Category: <a href="/category/${encodeURIComponent((product.category || "wire-cables").toLowerCase().replace(/\s+/g, "-"))}" style="color:#c56718;font-weight:600;text-decoration:none;">${escapeXml(product.category || "Wires & Cables")}</a>
+              Category: <a href="/category/${canonicalCatSlug}" style="color:#c56718;font-weight:600;text-decoration:none;">${escapeXml(product.category || "Wires & Cables")}</a>
             </p>
           </header>
           <section style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:32px;margin-bottom:36px;">
             <div>
               <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px;">
                 <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 6px 0;">B2B Wholesale Price (excl. GST)</p>
-                <div style="font-size:32px;font-weight:900;color:#0f172a;">${priceFormatted}</div>
-                <p style="font-size:12px;color:#16a34a;font-weight:700;margin:8px 0 0 0;">✓ In Stock — Same-day to 24h Gujarat GIDC; 48 to 72h Pan-India Dispatch</p>
+                <div style="font-size:32px;font-weight:900;color:#0f172a;">
+                  ${priceFormatted} ${product.unit ? `<span style="font-size:14px;color:#64748b;font-weight:600;">/ ${escapeXml(product.unit)}</span>` : ""}
+                </div>
+                <p style="font-size:12px;color:${isInStock ? "#16a34a" : "#d97706"};font-weight:700;margin:8px 0 0 0;">
+                  ${isInStock ? "✓ In Stock" : "Available on Order"} — Aslali Warehouse, Ahmedabad
+                </p>
               </div>
               <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                <a href="/enquire" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;display:inline-block;">Request Project Quotation</a>
+                <a href="/enquire?product=${encodeURIComponent(fullDisplayName)}" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;display:inline-block;">Request Quotation</a>
                 <a href="/calculator" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;display:inline-block;">Calculate Voltage Drop</a>
               </div>
             </div>
             <div>
-              <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin:0 0 16px 0;">Technical Specifications &amp; Compliance</h2>
+              <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin:0 0 16px 0;">Product Specifications</h2>
               <table style="width:100%;border-collapse:collapse;font-size:13px;">
                 <tbody>
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Manufacturer / Brand</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(product.brand || "Polycab")}</td></tr>
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Conductor / Size</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(product.size || "Standard Specification")}</td></tr>
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Standards Compliance</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(standardsText)}</td></tr>
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Quality Verification</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">Manufacturer Test Certificate (MTC) Included</td></tr>
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Dispatch Location</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">Aslali Central Stockyard, Ahmedabad (382427)</td></tr>
+                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Brand</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(product.brand || "Polycab")}</td></tr>
+                  ${product.size ? `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Size</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(product.size)}</td></tr>` : ""}
+                  ${product.material ? `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Conductor Material</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(product.material)}</td></tr>` : ""}
+                  ${parsedSpecs.voltageRating ? `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Voltage Rating</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(parsedSpecs.voltageRating)}</td></tr>` : ""}
+                  ${standardsText ? `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Compliance Standard</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(standardsText)}</td></tr>` : ""}
+                  ${product.moq ? `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Minimum Order Quantity</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(product.moq)}</td></tr>` : ""}
+                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Dispatch Warehouse</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">Aslali Logistics Hub, Ahmedabad (382427)</td></tr>
                 </tbody>
               </table>
             </div>
           </section>
 
-          <!-- ⚡ AEO Procurement Q&A Section: Answer Engine Extraction Block -->
-          <section style="background:#ffffff;padding:24px;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:28px;">
-            <h3 style="font-size:17px;font-weight:700;color:#0f172a;margin-top:0;margin-bottom:16px;">⚡ Procurement &amp; Engineering Q&amp;A (AEO Verified)</h3>
-            <div style="margin-bottom:16px;">
-              <h4 style="font-size:14px;font-weight:700;color:#1e293b;margin:0 0 6px 0;">Q: What specifications and compliance standards does ${escapeXml(fullName)} adhere to?</h4>
-              <p style="font-size:13px;line-height:1.6;color:#475569;margin:0;">
-                ${escapeXml(fullName)} is manufactured by <strong>${escapeXml(product.brand || "Polycab")}</strong> adhering strictly to <strong>${escapeXml(standardsText)}</strong>. It is engineered with verified conductor cross-sections, high-grade insulation, and certified current carrying capacity for heavy continuous duty. Supplied with full batch traceability.
-              </p>
-            </div>
-            <div style="margin-bottom:16px;">
-              <h4 style="font-size:14px;font-weight:700;color:#1e293b;margin:0 0 6px 0;">Q: Does Volamp provide original Manufacturer Test Certificates (MTC) with this product?</h4>
-              <p style="font-size:13px;line-height:1.6;color:#475569;margin:0;">
-                Yes. Volamp Elektrikals Private Limited delivers original manufacturer Material Test Certificates (MTC) and factory routine test reports with every consignment of ${escapeXml(fullName)}, validating spark testing, insulation resistance, and conductor resistance.
-              </p>
-            </div>
-            <div>
-              <h4 style="font-size:14px;font-weight:700;color:#1e293b;margin:0 0 6px 0;">Q: What is the dispatch lead time for ${escapeXml(fullName)} to Ahmedabad, Gujarat, and across India?</h4>
-              <p style="font-size:13px;line-height:1.6;color:#475569;margin:0;">
-                Consignments are staged from Volamp's central logistics stockyard on Aslali Highway, Ahmedabad (382427). We offer same-day to 24-hour delivery across Ahmedabad and Gujarat GIDC industrial hubs (Sanand, Vatva, Naroda, Changodar, Dahej), and 48 to 72-hour insured project freight pan-India across 28 states.
-              </p>
-            </div>
-          </section>
-
-          <!-- 🏢 GEO Corporate Entity & Sourcing Assurance -->
+          <!-- Corporate Entity & Sourcing Assurance -->
           <section style="background:#f8fafc;padding:24px;border-radius:12px;border:1px solid #e2e8f0;font-size:13px;line-height:1.7;color:#475569;">
-            <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin-top:0;">About Volamp Elektrikals &amp; Authorized Sourcing Assurance</h3>
+            <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin-top:0;">Supplied by Volamp Elektrikals Private Limited</h3>
             <p style="margin:0 0 10px 0;">
-              ${escapeXml(fullName)} is distributed directly by <strong>VOLAMP ELEKTRIKALS PRIVATE LIMITED</strong> (CIN: U31900GJ2021PTC122730 | GSTIN: 24AAICV0754B1ZO | GeM Verified). Family electrical business legacy dating back to 1964 in Ahmedabad's historical electrical market.
+              ${escapeXml(fullDisplayName)} is supplied by <strong>VOLAMP ELEKTRIKALS PRIVATE LIMITED</strong> (CIN: U31900GJ2021PTC122730 | GSTIN: 24AAICV0754B1ZO | GeM Verified). Family electrical business legacy dating to 1964 in Ahmedabad.
             </p>
             <p style="margin:0;">
-              Operating corporate sales offices at <strong>1753 Khadia, Old City, Ahmedabad 380001</strong> and central warehouse at <strong>Aslali Highway Terminal 382427</strong>. For official tender quotations, OEM rate contracts, or test documentation, contact our engineering desk at <a href="tel:+919512365582" style="color:#c56718;font-weight:bold;text-decoration:none;">+91 9512365582</a> or email <a href="mailto:sales@volampelektrikals.com" style="color:#c56718;font-weight:bold;text-decoration:none;">sales@volampelektrikals.com</a>.
+              Corporate office: <strong>1753 Khadia, Old City, Ahmedabad 380001</strong> | Central logistics terminal: <strong>Aslali Highway Terminal 382427</strong>. For project quotations or B2B commercial contracts, contact our sales desk at <a href="tel:+919512365582" style="color:#c56718;font-weight:bold;text-decoration:none;">+91 9512365582</a> or email <a href="mailto:sales@volampelektrikals.com" style="color:#c56718;font-weight:bold;text-decoration:none;">sales@volampelektrikals.com</a>.
             </p>
           </section>
         </article>

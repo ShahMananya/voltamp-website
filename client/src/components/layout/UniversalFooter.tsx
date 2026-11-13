@@ -94,16 +94,10 @@ export default function UniversalFooter({
           </span>
           <div className="flex flex-col space-y-2">
             <Link href="/dealers/polycab-ahmedabad" className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline">
-              Polycab Dealer Ahmedabad
-            </Link>
-            <Link href="/dealers/armoured-cables-ahmedabad" className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline">
-              Armoured Cables Ahmedabad
-            </Link>
-            <Link href="/dealers/unarmoured-cables-ahmedabad" className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline">
-              Unarmoured Cables Ahmedabad
+              Polycab Stockist Ahmedabad
             </Link>
             <Link href="/dealers/finolex-cables-ahmedabad" className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline">
-              Finolex Distributor Ahmedabad
+              Finolex Wires Stockist
             </Link>
             <Link href="/dealers/kei-cables-gujarat" className="text-left text-[#5d4a4b] dark:text-[#cfc2c3] hover:text-[#c25e0a] dark:hover:text-[#ef7d19] hover:underline">
               KEI Cable Dealer Gujarat
