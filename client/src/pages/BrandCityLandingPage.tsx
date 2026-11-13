@@ -65,13 +65,13 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     subtitle:
       "Gujarat's trusted wholesale stockist of genuine Polycab industrial power cables, flexible building wires, and 1500V solar DC cables with guaranteed Manufacturer Test Certificates (MTC).",
     heroHighlights: [
-      "Master Stockist with 2,800+ Polycab SKUs in Ready Inventory",
+      "Master Stockist with 1,045+ Polycab SKUs in Ready Catalog",
       "Official 2026 Price Circulars with Maximum Contractor Discount",
       "Same-Day Dispatch to Vatva, Sanand, Naroda, & Changodar GIDC",
       "Full Routine Spark & Conductor Resistance MTC with Every Drum",
     ],
     authorizedStatus: "Authorized Master Stockist & Project Distributor",
-    stockCount: "2,850+ SKUs Ready",
+    stockCount: "1,045+ SKUs in Catalog",
     dispatchTime: "Same-Day / Within 24h",
     overview:
       "Volamp Elektrikals Private Limited is the leading Polycab cable distributor in Ahmedabad, Gujarat. Operating from our central logistics facility at Aslali Highway Terminal, we supply complete turnkey drum orders to EPC contractors, solar power developers, manufacturing facilities, and electrical panel builders across Gujarat and all 28 Indian states.",
@@ -141,7 +141,7 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
       "Wholesale Bulk Pack Rates for Electrical Contractors & Panel Builders",
     ],
     authorizedStatus: "Certified Wholesale Stockist & Regional Supply Partner",
-    stockCount: "1,200+ Finolex Items",
+    stockCount: "950+ Finolex Items",
     dispatchTime: "Same-Day Dispatch",
     overview:
       "Finolex Cables is India's most trusted name in pure electrolytic copper conductors. Volamp Elektrikals maintains exhaustive warehouse inventory of Finolex Flame Guard (FRLS) wires, multi-core flexible industrial cords, 3-core flat submersible cables, and communication wiring in Ahmedabad, ensuring rapid delivery to projects across Gujarat.",
@@ -206,7 +206,7 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
       "Complete Engineering Project Sourcing with Transporter LR Tracking",
     ],
     authorizedStatus: "Industrial Project Partner & Stockist",
-    stockCount: "1,500+ KEI SKUs",
+    stockCount: "950+ KEI SKUs",
     dispatchTime: "Same-Day to 24h (GIDC) / 48-72h (Pan-India)",
     overview:
       "KEI Industries is celebrated for high-reliability heavy power distribution and extra-high voltage transmission. Volamp Elektrikals partners with electrical utilities, EPC contractors, and chemical/refinery infrastructure projects across Dahej, Ankleshwar, Hazira, and Sanand to deliver certified KEI cables on project schedule.",
@@ -221,7 +221,7 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
         name: "KEI 33kV (E) 3C x 400 sqmm Aluminium XLPE Armoured Cable",
         sku: "KEI-HT-33KV-400",
         spec: "Cross-linked Polyethylene, Semi-conducting Screen, Round Wire Armour, Heavy Duty",
-        application: "Grid Substation Interconnections & 200MW Solar Park Lines",
+        application: "Grid Substation Interconnections & Utility Solar Farm Corridors",
       },
       {
         name: "KEI Flexible Rubber Trailing Cable (3C x 35 sqmm)",

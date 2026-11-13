@@ -87,7 +87,7 @@ export function generateSitemapXml(): string {
 
       return `  <url>
     <loc>${BASE_URL}/product/${encodeURIComponent(prod.productId)}</loc>
-    <lastmod>${lastModDate}</lastmod>${
+    <lastmod>${prod.lastUpdated ? prod.lastUpdated.split("T")[0] : lastModDate}</lastmod>${
         imgLink
           ? `
     <image:image>
@@ -111,80 +111,44 @@ ${productUrls}
 }
 
 export function generateRobotsTxt(): string {
-  return `User-agent: *
-Allow: /
-Disallow: /portal
+  const disallows = `Disallow: /portal
 Disallow: /employee-portal
+Disallow: /employee-registration
+Disallow: /employee/
+Disallow: /ceo-authorize
+Disallow: /ceo-authorization
+Disallow: /ceo/
+Disallow: /ceo-approval
+Disallow: /cart
+Disallow: /checkout
+Disallow: /pay-invoice`;
 
-# Google Shopping & Merchant Center Crawlers
-User-agent: Googlebot
+  const groups = [
+    "*",
+    "Googlebot",
+    "Googlebot-Image",
+    "Storebot-Google",
+    "GPTBot",
+    "OAI-SearchBot",
+    "ChatGPT-User",
+    "ClaudeBot",
+    "Claude-SearchBot",
+    "PerplexityBot",
+    "Google-Extended",
+    "Amazonbot",
+    "Meta-ExternalAgent",
+    "Bytespider",
+  ];
+
+  const body = groups
+    .map(
+      (agent) => `User-agent: ${agent}
 Allow: /
-Disallow: /portal
-Disallow: /employee-portal
+${disallows}`
+    )
+    .join("\n\n");
 
-User-agent: Googlebot-Image
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-User-agent: Storebot-Google
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-# AI Search & Retrieval Crawlers (Explicit allow with portal protection)
-User-agent: GPTBot
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-User-agent: OAI-SearchBot
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-User-agent: ChatGPT-User
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-User-agent: ClaudeBot
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-User-agent: Claude-SearchBot
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-User-agent: PerplexityBot
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-User-agent: Google-Extended
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-User-agent: Amazonbot
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-User-agent: Meta-ExternalAgent
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-User-agent: Bytespider
-Allow: /
-Disallow: /portal
-Disallow: /employee-portal
-
-Sitemap: ${BASE_URL}/sitemap.xml
-`.trim();
+  return `${body}\n\nSitemap: ${BASE_URL}/sitemap.xml\n`.trim();
 }
 
 /**

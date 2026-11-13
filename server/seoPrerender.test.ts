@@ -164,5 +164,32 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.nextCalled).toBe(true);
     expect(result.sentHtml).toBe("");
   });
+
+  it("serves private portal routes (/portal, /employee-portal, /ceo-authorize) with noindex and X-Robots-Tag header", () => {
+    const { req, res, next, getResult } = mockHttp("/portal");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain('content="noindex, nofollow"');
+    expect(result.headers["x-robots-tag"]).toBe("noindex, nofollow");
+  });
+
+  it("omits offers schema for RFQ products with no public price (prevents invented prices)", () => {
+    // CAB-000135 has numericPrice: 0 (RFQ)
+    const { req, res, next, getResult } = mockHttp("/product/CAB-000135");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).not.toContain('"price":"100.00"');
+    expect(result.sentHtml).toContain("Price on Request / RFQ");
+  });
+
+  it("ensures product schema image excludes Google Drive viewer links and uses fallback asset", () => {
+    const { req, res, next, getResult } = mockHttp("/product/CAB-000001");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).not.toContain('drive.google.com');
+  });
 });
 

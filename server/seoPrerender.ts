@@ -135,7 +135,7 @@ const STATIC_ROUTES: Record<
       "Volamp Elektrikals operates dedicated logistics operations to guarantee safe, on-schedule delivery of heavy industrial cable drums and switchgear consignments. Consignments are packed to export and CPWD transport standards with complete transit insurance coverage across 28 Indian states.",
   },
   "terms-and-conditions": {
-    title: "Terms and Conditions of Supply | Volamp",
+    title: "Terms and Conditions of Commercial Supply | Volamp Elektrikals",
     description:
       "Terms of wholesale supply, quotation validity, inspection protocols, and payment policies for Volamp Elektrikals Private Limited.",
     h1: "Terms and Conditions of Commercial Supply",
@@ -394,6 +394,7 @@ function renderPageHtml({
   noIndex = false,
   bodyHtml,
   schemaJson,
+  ogImage,
 }: {
   title: string;
   description: string;
@@ -401,6 +402,7 @@ function renderPageHtml({
   noIndex?: boolean;
   bodyHtml: string;
   schemaJson?: string;
+  ogImage?: string;
 }): string {
   let template = loadBaseTemplate();
 
@@ -475,6 +477,19 @@ function renderPageHtml({
     /<meta\s+name="twitter:description"\s+content=".*?"\s*\/?>/i,
     `<meta name="twitter:description" content="${escapedDesc}" />`
   );
+
+  // If a verified direct image URL is provided (e.g. non-Google Drive CDN asset), replace OG image
+  if (ogImage) {
+    const escapedImg = escapeXml(ogImage);
+    template = template.replace(
+      /<meta\s+property="og:image"\s+content=".*?"\s*\/?>/i,
+      `<meta property="og:image" content="${escapedImg}" />`
+    );
+    template = template.replace(
+      /<meta\s+name="twitter:image"\s+content=".*?"\s*\/?>/i,
+      `<meta name="twitter:image" content="${escapedImg}" />`
+    );
+  }
 
   // 6. Inject Schema JSON-LD if provided
   if (schemaJson) {
@@ -571,9 +586,53 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
     }
 
     // PRODUCT FOUND -> Server-side rendered with semantic H1, Specs, Links, and Schema (Launch Blocker 1)
+    let parsedSpecs: Record<string, any> = {};
+    try {
+      if (typeof product.specifications === "string") {
+        parsedSpecs = JSON.parse(product.specifications || "{}");
+      } else if (product.specifications) {
+        parsedSpecs = product.specifications as Record<string, any>;
+      }
+    } catch (e) {
+      parsedSpecs = {};
+    }
+
     const brandPrefix = product.brand && !product.name.toLowerCase().includes(product.brand.toLowerCase()) ? `${product.brand} ` : "";
     const sizeSuffix = product.size && !product.name.toLowerCase().includes(product.size.toLowerCase()) ? ` (${product.size})` : "";
-    const fullName = `${brandPrefix}${product.name}${sizeSuffix}`.trim();
+    let fullName = `${brandPrefix}${product.name}${sizeSuffix}`.trim();
+
+    // Collect verified distinguishing attributes (Color, Poles, Current, Sensitivity, Voltage)
+    const distinguishingAttrs: string[] = [];
+    if (parsedSpecs.color && !fullName.toLowerCase().includes(parsedSpecs.color.toLowerCase())) {
+      distinguishingAttrs.push(parsedSpecs.color.toUpperCase());
+    }
+    if (parsedSpecs.currentRatingA && !fullName.toLowerCase().includes(parsedSpecs.currentRatingA.toLowerCase())) {
+      const cleanAmp = parsedSpecs.currentRatingA.replace(/^ew\s+/i, "").trim();
+      if (cleanAmp) distinguishingAttrs.push(cleanAmp);
+    }
+    if (parsedSpecs.sensitivityMa && !fullName.toLowerCase().includes(parsedSpecs.sensitivityMa.toLowerCase())) {
+      distinguishingAttrs.push(parsedSpecs.sensitivityMa);
+    }
+    if (parsedSpecs.polesPhase && !fullName.toLowerCase().includes(parsedSpecs.polesPhase.toLowerCase())) {
+      distinguishingAttrs.push(parsedSpecs.polesPhase);
+    }
+    if (parsedSpecs.voltageRating && !fullName.toLowerCase().includes(parsedSpecs.voltageRating.toLowerCase())) {
+      distinguishingAttrs.push(parsedSpecs.voltageRating);
+    }
+
+    const fullDisplayName = distinguishingAttrs.length > 0
+      ? `${fullName} - ${distinguishingAttrs.join(", ")}`
+      : fullName;
+
+    // Unique page title including verified product ID (resolves duplicate title groups)
+    const uniquePageTitle = `${fullDisplayName} (${product.productId}) | Volamp Elektrikals`;
+
+    // Filter out Google Drive HTML viewer links for valid image representation
+    const rawImg = product.imageUrl || "";
+    const isDriveImg = rawImg.includes("drive.google.com");
+    const validImgUrl = (rawImg && !isDriveImg)
+      ? (rawImg.startsWith("http") ? rawImg : `${BASE_URL}${rawImg}`)
+      : `${BASE_URL}/volamp-og-image.jpg`;
 
     const rawPrice =
       product.numericPrice ||
@@ -610,7 +669,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
         entity: "Volamp Electrical Product Factsheet",
         productId: product.productId,
         sku: product.sku || product.productId,
-        name: fullName,
+        name: fullDisplayName,
         brand: product.brand || "Polycab",
         category: product.category || "Wires & Cables",
         subcategory: product.subcategory || "Industrial Cable",
@@ -632,100 +691,107 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
           rfqEmail: "sales@volampelektrikals.com"
         },
         canonicalUrl: productUrl,
-        rfqUrl: `${BASE_URL}/enquire?product=${encodeURIComponent(fullName)}`,
+        rfqUrl: `${BASE_URL}/enquire?product=${encodeURIComponent(fullDisplayName)}`,
         aeoProcurementQa: [
           {
-            question: `What specifications and compliance standards does ${fullName} adhere to?`,
-            answer: `${fullName} is manufactured by ${product.brand || "Polycab"} conforming to ${standardsText}. Supplied by Volamp Elektrikals with full factory batch traceability and routine test compliance.`
+            question: `What specifications and compliance standards does ${fullDisplayName} adhere to?`,
+            answer: `${fullDisplayName} is manufactured by ${product.brand || "Polycab"} conforming to ${standardsText}. Supplied by Volamp Elektrikals with full factory batch traceability and routine test compliance.`
           },
           {
-            question: `Does Volamp supply original Manufacturer Test Certificates (MTC) with ${fullName}?`,
-            answer: `Yes. Every consignment of ${fullName} includes original manufacturer Material Test Certificates (MTC) and factory routine test reports.`
+            question: `Does Volamp supply original Manufacturer Test Certificates (MTC) with ${fullDisplayName}?`,
+            answer: `Yes. Every consignment of ${fullDisplayName} includes original manufacturer Material Test Certificates (MTC) and factory routine test reports.`
           },
           {
-            question: `What are the dispatch timelines from Ahmedabad for ${fullName}?`,
+            question: `What are the dispatch timelines from Ahmedabad for ${fullDisplayName}?`,
             answer: `Ready stock available for same-day to 24h dispatch across Gujarat GIDC zones (Sanand, Vatva, Naroda, Changodar), and 48 to 72h pan-India delivery from the Aslali logistics terminal.`
           }
         ]
       });
     }
 
+    // Product Schema Entity
+    const productEntity: Record<string, any> = {
+      "@type": "Product",
+      "@id": `${productUrl}#product`,
+      "name": fullDisplayName,
+      "image": validImgUrl,
+      "description": product.description || `${fullDisplayName} genuine industrial electrical supply from Volamp Elektrikals Ahmedabad.`,
+      "sku": product.sku || product.productId,
+      "mpn": product.productId,
+      "brand": {
+        "@type": "Brand",
+        "name": product.brand || "Polycab",
+      },
+      "additionalProperty": [
+        { "@type": "PropertyValue", "name": "Conductor / Size", "value": product.size || "Standard Specification" },
+        { "@type": "PropertyValue", "name": "Category", "value": product.category || "Wires & Cables" },
+        { "@type": "PropertyValue", "name": "Subcategory", "value": product.subcategory || "Industrial Cable" },
+        { "@type": "PropertyValue", "name": "Compliance Standard", "value": standardsText },
+        { "@type": "PropertyValue", "name": "Test Certificate", "value": "Original Manufacturer Test Certificate (MTC) Included" },
+        { "@type": "PropertyValue", "name": "Dispatch Hub", "value": "Aslali Central Warehouse, Ahmedabad (382427)" },
+        { "@type": "PropertyValue", "name": "Lead Time", "value": "Same-day to 24h Gujarat GIDC; 48-72h Pan-India Express" }
+      ]
+    };
+
+    // Omit offers schema if there is no public price (P1 guardrail: no invented prices)
+    if (hasPrice) {
+      productEntity.offers = {
+        "@type": "Offer",
+        "url": productUrl,
+        "priceCurrency": "INR",
+        "price": rawPrice.toFixed(2),
+        "availability": "https://schema.org/InStock",
+        "itemCondition": "https://schema.org/NewCondition",
+        "priceValidUntil": "2027-12-31",
+        "seller": {
+          "@type": "Organization",
+          "name": "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
+          "url": BASE_URL,
+          "telephone": "+919512365582"
+        },
+        "hasMerchantReturnPolicy": {
+          "@type": "MerchantReturnPolicy",
+          "applicableCountry": "IN",
+          "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+          "merchantReturnDays": 30,
+          "returnMethod": "https://schema.org/ReturnByMail",
+          "returnFees": "https://schema.org/FreeReturn"
+        },
+        "shippingDetails": {
+          "@type": "OfferShippingDetails",
+          "shippingRate": {
+            "@type": "MonetaryAmount",
+            "value": "0",
+            "currency": "INR"
+          },
+          "shippingDestination": {
+            "@type": "DefinedRegion",
+            "addressCountry": "IN"
+          },
+          "deliveryTime": {
+            "@type": "ShippingDeliveryTime",
+            "handlingTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 0,
+              "maxValue": 1,
+              "unitCode": "DAY"
+            },
+            "transitTime": {
+              "@type": "QuantitativeValue",
+              "minValue": 1,
+              "maxValue": 3,
+              "unitCode": "DAY"
+            }
+          }
+        }
+      };
+    }
+
     // Comprehensive Schema: Product + FAQPage for Answer Engines
     const productSchema: any = {
       "@context": "https://schema.org",
       "@graph": [
-        {
-          "@type": "Product",
-          "@id": `${productUrl}#product`,
-          "name": fullName,
-          "image": product.imageUrl ? (product.imageUrl.startsWith("http") ? product.imageUrl : `${BASE_URL}${product.imageUrl}`) : `${BASE_URL}/products/default.jpg`,
-          "description": product.description || `${fullName} genuine industrial electrical supply from Volamp Elektrikals Ahmedabad.`,
-          "sku": product.sku || product.productId,
-          "mpn": product.productId,
-          "brand": {
-            "@type": "Brand",
-            "name": product.brand || "Polycab",
-          },
-          "additionalProperty": [
-            { "@type": "PropertyValue", "name": "Conductor / Size", "value": product.size || "Standard Specification" },
-            { "@type": "PropertyValue", "name": "Category", "value": product.category || "Wires & Cables" },
-            { "@type": "PropertyValue", "name": "Subcategory", "value": product.subcategory || "Industrial Cable" },
-            { "@type": "PropertyValue", "name": "Compliance Standard", "value": standardsText },
-            { "@type": "PropertyValue", "name": "Test Certificate", "value": "Original Manufacturer Test Certificate (MTC) Included" },
-            { "@type": "PropertyValue", "name": "Dispatch Hub", "value": "Aslali Central Warehouse, Ahmedabad (382427)" },
-            { "@type": "PropertyValue", "name": "Lead Time", "value": "Same-day to 24h Gujarat GIDC; 48-72h Pan-India Express" }
-          ],
-          "offers": {
-            "@type": "Offer",
-            "url": productUrl,
-            "priceCurrency": "INR",
-            "price": rawPrice > 0 ? rawPrice.toFixed(2) : "100.00",
-            "availability": "https://schema.org/InStock",
-            "itemCondition": "https://schema.org/NewCondition",
-            "priceValidUntil": "2027-12-31",
-            "seller": {
-              "@type": "Organization",
-              "name": "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
-              "url": BASE_URL,
-              "telephone": "+919512365582"
-            },
-            "hasMerchantReturnPolicy": {
-              "@type": "MerchantReturnPolicy",
-              "applicableCountry": "IN",
-              "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
-              "merchantReturnDays": 30,
-              "returnMethod": "https://schema.org/ReturnByMail",
-              "returnFees": "https://schema.org/FreeReturn"
-            },
-            "shippingDetails": {
-              "@type": "OfferShippingDetails",
-              "shippingRate": {
-                "@type": "MonetaryAmount",
-                "value": "0",
-                "currency": "INR"
-              },
-              "shippingDestination": {
-                "@type": "DefinedRegion",
-                "addressCountry": "IN"
-              },
-              "deliveryTime": {
-                "@type": "ShippingDeliveryTime",
-                "handlingTime": {
-                  "@type": "QuantitativeValue",
-                  "minValue": 0,
-                  "maxValue": 1,
-                  "unitCode": "DAY"
-                },
-                "transitTime": {
-                  "@type": "QuantitativeValue",
-                  "minValue": 1,
-                  "maxValue": 3,
-                  "unitCode": "DAY"
-                }
-              }
-            }
-          }
-        },
+        productEntity,
         {
           "@type": "FAQPage",
           "@id": `${productUrl}#faq`,
@@ -764,23 +830,24 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     const html = renderPageHtml({
-      title: `${fullName} | Volamp Elektrikals Ahmedabad`,
-      description: `Buy ${fullName} (SKU: ${product.sku || product.productId}). Genuine ${product.brand || "Polycab"} industrial electrical supply with original MTC test certificate. Fast dispatch from Ahmedabad across India.`,
+      title: uniquePageTitle,
+      description: `Buy ${fullDisplayName} (${product.productId}). Genuine ${product.brand || "Polycab"} industrial electrical supply with original MTC test certificate. Fast dispatch from Ahmedabad across India.`,
       canonical: productUrl,
       schemaJson: schema,
+      ogImage: validImgUrl,
       bodyHtml: `
         <article style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
           <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
             <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
             <a href="/products" style="color:#64748b;text-decoration:none;">Products</a> &gt;
             <a href="/category/${encodeURIComponent((product.category || "wire-cables").toLowerCase().replace(/\s+/g, "-"))}" style="color:#64748b;text-decoration:none;">${escapeXml(product.category || "Electrical")}</a> &gt;
-            <span style="color:#0f172a;font-weight:600;">${escapeXml(fullName)}</span>
+            <span style="color:#0f172a;font-weight:600;">${escapeXml(fullDisplayName)}</span>
           </nav>
           <header style="border-bottom:1px solid #e2e8f0;padding-bottom:24px;margin-bottom:28px;">
             <div style="display:inline-block;padding:4px 10px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;border-radius:6px;margin-bottom:12px;">
               ${escapeXml(product.brand || "Polycab")} • Genuine Certified Supply
             </div>
-            <h1 style="font-size:28px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 12px 0;">${escapeXml(fullName)}</h1>
+            <h1 style="font-size:28px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 12px 0;">${escapeXml(fullDisplayName)} (${escapeXml(product.productId)})</h1>
             <p style="font-size:14px;color:#64748b;margin:0;">
               Product ID: <strong style="font-family:monospace;color:#0f172a;">${escapeXml(product.productId)}</strong> |
               SKU: <strong style="font-family:monospace;color:#0f172a;">${escapeXml(product.sku || product.productId)}</strong> |
@@ -1221,6 +1288,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
   ) {
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("X-Robots-Tag", "noindex, nofollow");
     let pageTitle = `${cleanPath.toUpperCase()} | Volamp Elektrikals`;
     let pageDesc = "Secure B2B electrical customer portal and ordering platform for Volamp Elektrikals.";
     if (
@@ -1245,6 +1313,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       title: pageTitle,
       description: pageDesc,
       canonical: `${BASE_URL}/${cleanPath}`,
+      noIndex: true,
       bodyHtml: `
         <div style="font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:60px auto;padding:24px;text-align:center;">
           <h1 style="font-size:28px;font-weight:800;color:#0f172a;">${escapeXml(pageTitle)}</h1>
