@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import type { Express, Request, Response } from "express";
 import { loadProductsFromDisk } from "./services/productService";
+import { BLOG_POSTS_DATA } from "../shared/blogData";
 
 const BASE_URL = "https://www.volampelektrikals.com";
 
@@ -32,13 +33,7 @@ const STATIC_PAGES = [
   { path: "privacy-policy" },
 ];
 
-const BLOG_SLUGS = [
-  "copper-vs-aluminium-armoured-cable-sizing-guide",
-  "solar-dc-cable-specifications-iec-62930",
-  "lme-copper-aluminium-market-analysis-q4-2026",
-  "is-7098-vs-is-1554-cable-difference-guide",
-  "cable-gland-and-lug-size-selection-chart",
-];
+const BLOG_SLUGS = BLOG_POSTS_DATA.map((post) => post.slug);
 
 // 8 Verified Active Master Categories
 const CATEGORY_SLUGS = [
@@ -85,9 +80,14 @@ export function generateSitemapXml(): string {
       const isValidImage = rawImg.startsWith("http") && !rawImg.includes("drive.google.com");
       const imgLink = isValidImage ? rawImg : (!rawImg.includes("drive.google.com") && rawImg ? `${BASE_URL}${rawImg}` : "");
 
+      const rawLast = prod.lastUpdated as any;
+      const prodLastMod = typeof rawLast === "string"
+        ? rawLast.split("T")[0]
+        : (rawLast instanceof Date ? rawLast.toISOString().split("T")[0] : lastModDate);
+
       return `  <url>
     <loc>${BASE_URL}/product/${encodeURIComponent(prod.productId)}</loc>
-    <lastmod>${prod.lastUpdated ? prod.lastUpdated.split("T")[0] : lastModDate}</lastmod>${
+    <lastmod>${prodLastMod}</lastmod>${
         imgLink
           ? `
     <image:image>

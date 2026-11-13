@@ -92,7 +92,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toContain("<h1");
     expect(result.sentHtml).toContain("Wires and Cables in Ahmedabad");
     expect(result.sentHtml).toContain('href="/category/wire-cables"');
-    expect(result.sentHtml).toContain('href="/product/CAB-000001"');
+    expect(result.sentHtml).toContain('href="/product/CAB-000736"');
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/"');
   });
 
@@ -197,6 +197,49 @@ describe("SEO Prerendering & Real 404 Status", () => {
     const result = getResult();
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).not.toContain('drive.google.com');
+  });
+
+  it("prerenders product with category-specific spec rows, B2B order card, and question bank", () => {
+    const { req, res, next, getResult } = mockHttp("/product/CAB-000001");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain("Product Specifications");
+    expect(result.sentHtml).toContain("B2B Wholesale Ordering &amp; Delivery");
+    expect(result.sentHtml).toContain("Frequently Asked Technical Questions");
+    expect(result.sentHtml).toContain("Related Products in this Category");
+  });
+
+  it("prerenders blog hub (/blog) listing all 15 authoritative engineering guides", () => {
+    const { req, res, next, getResult } = mockHttp("/blog");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain("15 Authoritative Electrical Buyer Guides &amp; Specifications");
+    expect(result.sentHtml).toContain('href="/blog/how-to-read-a-cable-description"');
+    expect(result.sentHtml).toContain('href="/blog/what-to-include-in-a-cable-rfq"');
+  });
+
+  it("prerenders individual blog guide with TechArticle schema, markdown tables, and next steps CTA", () => {
+    const { req, res, next, getResult } = mockHttp("/blog/how-to-read-a-cable-description");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain("<h1");
+    expect(result.sentHtml).toContain("How to Read an Industrial Cable Description");
+    expect(result.sentHtml).toContain('"@type":"TechArticle"');
+    expect(result.sentHtml).toContain("Need Specific Cable Sizing or B2B Quotations?");
+    expect(result.sentHtml).toContain('href="/calculator"');
+  });
+
+  it("prerenders calculator page with IS 7098 formulas and engineering disclaimer", () => {
+    const { req, res, next, getResult } = mockHttp("/calculator");
+    seoPrerenderMiddleware(req, res, next);
+    const result = getResult();
+    expect(result.statusCode).toBe(200);
+    expect(result.sentHtml).toContain("Engineering Calculation Formulas &amp; Standards");
+    expect(result.sentHtml).toContain("Vd = √3 × I × L");
+    expect(result.sentHtml).toContain("Engineering Disclaimer");
   });
 });
 

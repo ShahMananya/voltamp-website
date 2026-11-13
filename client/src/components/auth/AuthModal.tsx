@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
+import { COOKIE_NAME } from "@shared/const";
 import {
   ArrowLeft,
   ArrowRight,

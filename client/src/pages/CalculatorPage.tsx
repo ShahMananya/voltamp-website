@@ -1813,6 +1813,78 @@ ${isCable ? `*Weight:* ~${totalWeightKg} kg\n` : ""}Please confirm availability 
             )}
           </div>
         )}
+
+        {/* ========================================================================= */}
+        {/* ENGINEERING FORMULAS, STANDARDS & ASSUMPTIONS (AEO/GEO Phase 5 Compliance) */}
+        {/* ========================================================================= */}
+        <section className="mt-12 pt-8 border-t border-slate-200/80 dark:border-slate-800/80 space-y-6">
+          <div className="text-center max-w-3xl mx-auto space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+              <span>Governing Standards: IS 7098 · IS 1554 · IS 8130 · CEA 2010</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+              Engineering Sizing Formulas, Calculation Assumptions &amp; Compliance Limits
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+              Transparent, standards-verified calculation principles used by Volamp's interactive engineering tool.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {/* 3-Phase Formula */}
+            <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 space-y-2.5 shadow-sm">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#1d73b7] dark:text-sky-400">
+                Formula: 3-Phase Voltage Drop
+              </span>
+              <div className="p-3 bg-slate-50 dark:bg-[#0c1522] rounded-xl font-mono text-xs font-bold text-slate-900 dark:text-slate-100 border border-slate-200/60 dark:border-slate-800/60">
+                Vd = √3 × I × L × (R cos φ + X sin φ) / 1000
+              </div>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Where <strong>I</strong> = Full load current (A), <strong>L</strong> = Run distance (m), <strong>R</strong> = AC conductor resistance (Ω/km at 90°C for XLPE), <strong>X</strong> = Reactance (Ω/km), and <strong>cos φ</strong> = Operating power factor.
+              </p>
+            </div>
+
+            {/* 1-Phase Formula */}
+            <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 space-y-2.5 shadow-sm">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#1d73b7] dark:text-sky-400">
+                Formula: 1-Phase Voltage Drop
+              </span>
+              <div className="p-3 bg-slate-50 dark:bg-[#0c1522] rounded-xl font-mono text-xs font-bold text-slate-900 dark:text-slate-100 border border-slate-200/60 dark:border-slate-800/60">
+                Vd = 2 × I × L × (R cos φ + X sin φ) / 1000
+              </div>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Accounting for both forward phase and neutral return path resistance. Maximum allowable drop per Central Electricity Authority (CEA) is <strong>3% for branch circuits</strong> and <strong>5% for main feeders</strong>.
+              </p>
+            </div>
+
+            {/* Design Standards & Limits */}
+            <div className="bg-white dark:bg-[#0e1726] border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 space-y-2.5 shadow-sm md:col-span-2 lg:col-span-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                Standard Baselines
+              </span>
+              <ul className="text-[11px] text-slate-600 dark:text-slate-400 space-y-1.5 leading-relaxed">
+                <li>• <strong>IS 7098 (Pt 1):</strong> XLPE insulated cables rated up to 1100V. Max operating conductor temp: 90°C.</li>
+                <li>• <strong>IS 1554 (Pt 1):</strong> PVC insulated cables rated up to 1100V. Max operating conductor temp: 70°C.</li>
+                <li>• <strong>IS 8130:</strong> Plain electrolytic copper and EC-grade aluminium conductor specifications.</li>
+                <li>• <strong>Ambient Baselines:</strong> Standard 40°C in air, 30°C in ground (1.5 K·m/W thermal resistivity).</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Mandatory Engineering Disclaimer Box */}
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-5 text-xs text-amber-900 dark:text-amber-200/90 leading-relaxed space-y-1.5">
+            <div className="flex items-center gap-2 font-bold text-amber-800 dark:text-amber-300">
+              <span className="text-sm">⚠️</span>
+              <span>Engineering Disclaimer &amp; Verification Requirement</span>
+            </div>
+            <p>
+              Calculations and conductor recommendations generated by this calculator are preliminary engineering estimates. Final cable selection, short-circuit thermal withstand ratings (k²S² ≥ I²t), installation grouping derating factors, and soil thermal resistivity must be verified by a licensed electrical design engineer before procurement and installation.
+            </p>
+            <p className="text-[11px] text-amber-700 dark:text-amber-400/80 pt-1">
+              For project BOM cross-checks and genuine manufacturer Material Test Certificates (MTC), contact Volamp Elektrikals technical sales desk at <a href="tel:+919512365582" className="underline font-bold">+91 9512365582</a> or <a href="mailto:sales@volampelektrikals.com" className="underline font-bold">sales@volampelektrikals.com</a>.
+            </p>
+          </div>
+        </section>
       </main>
 
       <UniversalFooter />

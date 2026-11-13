@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { loadProductsFromDisk, getProductByProductId } from "./services/productService";
+import { BLOG_POSTS_DATA, type BlogPost } from "../shared/blogData";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,10 +18,10 @@ const STATIC_ROUTES: Record<
   "": {
     title: "Wires and Cables in Ahmedabad | Polycab, KEI & Finolex Distributor - Volamp",
     description:
-      "Leading wires and industrial cables distributor in Ahmedabad, Gujarat. Authorized master stockist of Polycab, Finolex, KEI house wires, power cables & switchgear with MTC certificates. Fast dispatch.",
-    h1: "Wires and Cables in Ahmedabad | Authorized Polycab, KEI & Finolex Distributor",
+      "Leading wires and industrial cables distributor in Ahmedabad, Gujarat. Wholesale distributor of Polycab, Finolex, KEI house wires, power cables & switchgear with MTC certificates. Fast dispatch.",
+    h1: "Wires and Cables in Ahmedabad | Polycab, KEI & Finolex Distributor",
     intro:
-      "Volamp Elektrikals Private Limited is Ahmedabad's premier wholesale distributor and supplier of electrical house wires and industrial cables. Supplies popular electrical house wire and cable brands like Polycab, Finolex, and KEI with a 60+ year family legacy established in 1964. Operating modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across 28 Indian states.",
+      "Volamp Elektrikals Private Limited is Ahmedabad's premier wholesale distributor and supplier of electrical house wires and industrial cables. Supplies popular electrical house wire and cable brands like Polycab, Finolex, and KEI with a 60+ year family legacy established in 1964. Operating modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across Gujarat and Western India.",
   },
   "about-volamp": {
     title: "About Volamp Elektrikals | 60+ Years Electrical Legacy",
@@ -31,12 +32,12 @@ const STATIC_ROUTES: Record<
       "With roots dating back to 1964 established by Soma Bhai Khatubhai Patel in Ahmedabad's historical electrical market, Volamp Elektrikals has evolved over four generations into a trusted national distributor for mega infrastructure projects. Under the engineering leadership of CEO Naimil Vipul Patel, we combine deep technical specification expertise with state-of-the-art warehousing at Aslali Highway to deliver same-day dispatch and guaranteed test compliance.",
   },
   "where-volamp-contributed": {
-    title: "Landmark Projects & Footprint | Volamp Elektrikals",
+    title: "Projects & Footprint | Volamp Elektrikals",
     description:
-      "Explore major infrastructure projects powered by Volamp Elektrikals: 200MW West Bengal Solar Park, Punjab 66kV Grid, and AMC Stadium Ahmedabad.",
-    h1: "Landmark Infrastructure Projects & National Footprint",
+      "Explore electrical infrastructure and industrial projects supplied by Volamp Elektrikals across Gujarat and India.",
+    h1: "Electrical Infrastructure Projects & Supply Footprint",
     intro:
-      "From high-voltage utility substations to utility-scale renewable solar parks and municipal infrastructure, Volamp Elektrikals has supplied mission-critical electrical materials to over 140 landmark projects across India. Our project footprint includes the 200MW West Bengal Solar Park, 66kV transmission substations in Punjab, Ahmedabad Municipal Corporation sports complexes, and key GIDC industrial corridors.",
+      "Volamp Elektrikals Private Limited supplies mission-critical electrical materials, HT/LT power cables, and switchgear to EPC contractors, renewable solar developers, and manufacturing plants across Gujarat and Western India. With our central logistics facility in Aslali, Ahmedabad, we provide verified test compliance, routine inspection reports, and timely material dispatch for electrical infrastructure.",
   },
   "business-segments": {
     title: "Industries & Business Segments Served | Volamp",
@@ -300,28 +301,365 @@ const CATEGORY_DATA: Record<string, { name: string; desc: string }> = {
   },
 };
 
-const BLOG_POSTS: Record<string, { title: string; desc: string }> = {
-  "copper-vs-aluminium-armoured-cable-sizing-guide": {
-    title: "Copper vs Aluminium Armoured Cable Sizing Guide | Volamp",
-    desc: "Technical comparison of copper vs aluminium conductors: ampacity, voltage drop, derating, and cost trade-offs under IS 7098 standards.",
-  },
-  "solar-dc-cable-specifications-iec-62930": {
-    title: "Solar DC Cable Specifications: EN 50618 & IEC 62930 | Volamp",
-    desc: "Engineering guide to 1500V solar PV cables: cross-linked insulation, halogen-free flame retardancy, and UV weather resistance criteria.",
-  },
-  "lme-copper-aluminium-market-analysis-q4-2026": {
-    title: "LME Copper & Aluminium Market Analysis Q4 2026 | Volamp",
-    desc: "In-depth market report on London Metal Exchange commodity trends, domestic Indian cable price circulars, and purchasing strategies.",
-  },
-  "is-7098-vs-is-1554-cable-difference-guide": {
-    title: "IS 7098 vs IS 1554: XLPE vs PVC Cable Differences | Volamp",
-    desc: "Comprehensive engineering breakdown between IS 7098 XLPE insulated cables and IS 1554 PVC cables: temperature limits and short-circuit ratings.",
-  },
-  "cable-gland-and-lug-size-selection-chart": {
-    title: "Cable Gland & Lug Size Selection Chart | Volamp",
-    desc: "Quick reference engineering chart matching armoured cable sizes to Dowells copper lugs and brass double compression cable glands.",
-  },
-};
+function formatInlineMarkdown(str: string): string {
+  return (str || "")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/`(.+?)`/g, '<code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:13px;color:#c56718;">$1</code>');
+}
+
+function renderMarkdownToHtml(markdown: string): string {
+  const lines = markdown.split("\n");
+  const htmlLines: string[] = [];
+  let inTable = false;
+  let tableHeaderDone = false;
+  let inList = false;
+  let listType: "ul" | "ol" | null = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    const trimmed = rawLine.trim();
+
+    // Table row detection
+    if (trimmed.startsWith("|") && trimmed.endsWith("|")) {
+      if (/^\|(\s*[-:]+[-|\s:]*)\|$/.test(trimmed)) {
+        tableHeaderDone = true;
+        continue;
+      }
+      if (!inTable) {
+        if (inList) {
+          htmlLines.push(listType === "ul" ? "</ul>" : "</ol>");
+          inList = false;
+          listType = null;
+        }
+        inTable = true;
+        tableHeaderDone = false;
+        htmlLines.push('<div style="overflow-x:auto;margin:24px 0;"><table style="width:100%;border-collapse:collapse;font-size:14px;border:1px solid #e2e8f0;">');
+      }
+      const cells = trimmed
+        .slice(1, -1)
+        .split("|")
+        .map((c) => c.trim());
+      if (!tableHeaderDone) {
+        htmlLines.push('<thead><tr style="background:#f8fafc;border-bottom:2px solid #cbd5e1;">' +
+          cells.map((c) => `<th style="padding:10px 14px;text-align:left;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">${formatInlineMarkdown(c)}</th>`).join("") +
+          '</tr></thead><tbody>');
+      } else {
+        htmlLines.push('<tr style="border-bottom:1px solid #f1f5f9;">' +
+          cells.map((c) => `<td style="padding:10px 14px;color:#334155;border:1px solid #e2e8f0;">${formatInlineMarkdown(c)}</td>`).join("") +
+          '</tr>');
+      }
+      continue;
+    } else if (inTable) {
+      htmlLines.push('</tbody></table></div>');
+      inTable = false;
+      tableHeaderDone = false;
+    }
+
+    // List items
+    if (/^[-*]\s+/.test(trimmed)) {
+      if (!inList || listType !== "ul") {
+        if (inList) htmlLines.push(listType === "ul" ? "</ul>" : "</ol>");
+        inList = true;
+        listType = "ul";
+        htmlLines.push('<ul style="margin:16px 0;padding-left:24px;line-height:1.8;color:#334155;">');
+      }
+      const itemContent = trimmed.replace(/^[-*]\s+/, "");
+      htmlLines.push(`<li>${formatInlineMarkdown(itemContent)}</li>`);
+      continue;
+    } else if (/^\d+\.\s+/.test(trimmed)) {
+      if (!inList || listType !== "ol") {
+        if (inList) htmlLines.push(listType === "ul" ? "</ul>" : "</ol>");
+        inList = true;
+        listType = "ol";
+        htmlLines.push('<ol style="margin:16px 0;padding-left:24px;line-height:1.8;color:#334155;">');
+      }
+      const itemContent = trimmed.replace(/^\d+\.\s+/, "");
+      htmlLines.push(`<li>${formatInlineMarkdown(itemContent)}</li>`);
+      continue;
+    } else if (inList) {
+      htmlLines.push(listType === "ul" ? "</ul>" : "</ol>");
+      inList = false;
+      listType = null;
+    }
+
+    // Headers
+    if (trimmed.startsWith("### ")) {
+      htmlLines.push(`<h3 style="font-size:18px;font-weight:700;color:#0f172a;margin:28px 0 12px 0;">${formatInlineMarkdown(trimmed.slice(4))}</h3>`);
+    } else if (trimmed.startsWith("## ")) {
+      htmlLines.push(`<h2 style="font-size:22px;font-weight:700;color:#0f172a;margin:36px 0 16px 0;border-bottom:1px solid #e2e8f0;padding-bottom:8px;">${formatInlineMarkdown(trimmed.slice(3))}</h2>`);
+    } else if (trimmed.startsWith("# ")) {
+      htmlLines.push(`<h1 style="font-size:28px;font-weight:800;color:#0f172a;margin:20px 0 16px 0;">${formatInlineMarkdown(trimmed.slice(2))}</h1>`);
+    } else if (trimmed === "---") {
+      htmlLines.push('<hr style="border:none;border-top:1px solid #e2e8f0;margin:32px 0;" />');
+    } else if (trimmed === "") {
+      // blank line
+    } else {
+      htmlLines.push(`<p style="font-size:15px;line-height:1.75;color:#334155;margin:14px 0;">${formatInlineMarkdown(trimmed)}</p>`);
+    }
+  }
+
+  if (inTable) htmlLines.push('</tbody></table></div>');
+  if (inList) htmlLines.push(listType === "ul" ? "</ul>" : "</ol>");
+
+  return htmlLines.join("\n");
+}
+
+function buildDirectFactualDescription(
+  product: any,
+  fullDisplayName: string,
+  specs: Record<string, any>,
+  standardsText: string | null,
+  catSlug: string
+): string {
+  const brand = product.brand || "Polycab";
+  if (catSlug === "wire-cables") {
+    const size = product.size ? `${product.size} ` : "";
+    const cores = specs.cores ? `${specs.cores} ` : "";
+    const conductor = product.material ? `${product.material} ` : "";
+    const armour = specs.typeOfArmour ? `${specs.typeOfArmour.toLowerCase()} ` : "";
+    const volt = specs.voltageRating ? `rated for ${specs.voltageRating} ` : "";
+    const std = standardsText ? `conforming to ${standardsText}` : "conforming to applicable Indian standards";
+    return `The ${brand} ${size}${cores}${conductor}${armour}cable is an industrial power and wiring solution ${volt}${std}. Sourced directly for industrial, commercial, and utility installations with verified material test certificates (MTC) and dispatch from our Aslali logistics terminal.`;
+  }
+  if (catSlug === "switch-gears") {
+    const rating = specs.currentRatingA ? `${specs.currentRatingA.replace(/^ew\s+/i, "").trim()} ` : "";
+    const poles = specs.polesPhase ? `${specs.polesPhase} ` : "";
+    const breaking = specs.breakingCapacityKa ? `with ${specs.breakingCapacityKa} kA breaking capacity ` : "";
+    const std = standardsText ? `tested to ${standardsText}` : "tested to IS/IEC 60947 standards";
+    return `The ${brand} ${fullDisplayName} is an industrial switchgear unit rated at ${rating}${poles}${breaking}${std}. Engineered for dependable circuit isolation, overcurrent protection, and panel integration across commercial and industrial infrastructure.`;
+  }
+  if (catSlug === "glands") {
+    const type = specs.compressionType ? `${specs.compressionType} ` : "";
+    const od = specs.suitableCableOdMm ? `accommodating cable ODs of ${specs.suitableCableOdMm} mm ` : "";
+    return `The ${brand} ${fullDisplayName} is a heavy-duty ${type}cable gland ${od}designed for secure mechanical termination and IP-grade ingress protection in industrial junction boxes and switchgear.`;
+  }
+  if (catSlug === "lugs") {
+    const size = specs.sizeRange || product.size ? `for ${specs.sizeRange || product.size} conductors ` : "";
+    const mat = product.material || specs.material ? `manufactured from ${product.material || specs.material} ` : "";
+    return `The ${brand} ${fullDisplayName} is a heavy-duty terminal lug ${size}${mat}providing low-resistance, corrosion-resistant crimp terminations for industrial switchboards, transformers, and distribution panels.`;
+  }
+  return `The ${brand} ${fullDisplayName} is a genuine industrial electrical product supplied with verified manufacturer specifications, routine test compliance, and express wholesale dispatch from Volamp Elektrikals Ahmedabad.`;
+}
+
+function renderCategorySpecRows(catSlug: string, p: any, specs: Record<string, any>, standardsText: string | null): string {
+  const rows: Array<{ label: string; value: string }> = [];
+
+  rows.push({ label: "Brand", value: p.brand || "Polycab" });
+  if (p.size) rows.push({ label: "Size / Dimensions", value: p.size });
+
+  if (catSlug === "wire-cables") {
+    if (specs.cores) rows.push({ label: "Cores", value: specs.cores });
+    if (p.material) rows.push({ label: "Conductor Material", value: p.material });
+    if (specs.typeOfArmour) rows.push({ label: "Armour Type", value: specs.typeOfArmour });
+    if (specs.insulationType) rows.push({ label: "Insulation Material", value: specs.insulationType });
+    if (specs.innerSheathMaterial) rows.push({ label: "Inner Sheath", value: specs.innerSheathMaterial });
+    if (specs.outerSheathMaterial) rows.push({ label: "Outer Sheath", value: specs.outerSheathMaterial });
+    if (specs.voltageRating) rows.push({ label: "Voltage Rating", value: specs.voltageRating });
+    if (specs.currentRatingAmp) rows.push({ label: "Current Rating", value: `${specs.currentRatingAmp} A` });
+    if (specs.conductorClass) rows.push({ label: "Conductor Class", value: specs.conductorClass });
+    if (specs.color) rows.push({ label: "Core Color", value: specs.color });
+    if (standardsText) rows.push({ label: "Compliance Standard", value: standardsText });
+  } else if (catSlug === "switch-gears") {
+    if (specs.polesPhase) rows.push({ label: "Poles / Configuration", value: specs.polesPhase });
+    if (specs.currentRatingA) rows.push({ label: "Current Rating (In)", value: specs.currentRatingA.replace(/^ew\s+/i, "").trim() });
+    if (specs.breakingCapacityKa) rows.push({ label: "Breaking Capacity (Icu)", value: `${specs.breakingCapacityKa} kA` });
+    if (specs.voltageRatingV) rows.push({ label: "Rated Operational Voltage (Ue)", value: specs.voltageRatingV });
+    if (specs.tripCurve) rows.push({ label: "Tripping Curve", value: specs.tripCurve });
+    if (specs.sensitivityMa) rows.push({ label: "Sensitivity / Residual Current", value: specs.sensitivityMa });
+    if (specs.executionMounting) rows.push({ label: "Mounting Style", value: specs.executionMounting });
+    if (specs.frameSize) rows.push({ label: "Frame Size", value: specs.frameSize });
+    if (standardsText) rows.push({ label: "Standard", value: standardsText });
+  } else if (catSlug === "glands") {
+    if (specs.compressionType) rows.push({ label: "Gland Type", value: specs.compressionType });
+    if (specs.sizeCode) rows.push({ label: "Size Code", value: specs.sizeCode });
+    if (specs.sizeInch) rows.push({ label: "Thread Size (Inch)", value: specs.sizeInch });
+    if (specs.suitableCableOdMm) rows.push({ label: "Suitable Cable OD Range", value: `${specs.suitableCableOdMm} mm` });
+    if (specs.nippleThread) rows.push({ label: "Nipple Thread", value: specs.nippleThread });
+    if (specs.packingPerBoxPcs) rows.push({ label: "Packaging Per Box", value: `${specs.packingPerBoxPcs} pcs` });
+    if (standardsText) rows.push({ label: "Standard", value: standardsText });
+  } else if (catSlug === "lugs") {
+    if (specs.material || p.material) rows.push({ label: "Material & Plating", value: specs.material || p.material });
+    if (specs.lugType) rows.push({ label: "Lug Design Type", value: specs.lugType });
+    if (specs.barrelStyle) rows.push({ label: "Barrel Style", value: specs.barrelStyle });
+    if (specs.sizeRange) rows.push({ label: "Conductor Size Range", value: specs.sizeRange });
+    if (standardsText) rows.push({ label: "Standard", value: standardsText });
+  } else if (catSlug === "solar") {
+    if (specs.watt) rows.push({ label: "Rated Wattage", value: specs.watt });
+    if (specs.efficiency) rows.push({ label: "Module / Cable Efficiency", value: specs.efficiency });
+    if (specs.current60CAmp) rows.push({ label: "Max Current at 60°C", value: `${specs.current60CAmp} A` });
+    if (specs.current40CAmp) rows.push({ label: "Max Current at 40°C", value: `${specs.current40CAmp} A` });
+    if (p.material) rows.push({ label: "Conductor Material", value: p.material });
+    if (standardsText) rows.push({ label: "Standard Conformance", value: standardsText });
+  } else if (catSlug === "conduit") {
+    if (specs.mechanicalStress) rows.push({ label: "Mechanical Duty", value: specs.mechanicalStress });
+    if (specs.color) rows.push({ label: "Color", value: specs.color });
+    if (specs.standardPack) rows.push({ label: "Standard Bundle Pack", value: specs.standardPack });
+    if (standardsText) rows.push({ label: "Standard", value: standardsText });
+  } else if (catSlug === "earthing-material") {
+    if (p.material) rows.push({ label: "Material Composition", value: p.material });
+    if (specs.primaryApplication) rows.push({ label: "Primary Application", value: specs.primaryApplication });
+    if (standardsText) rows.push({ label: "Standard", value: standardsText });
+  } else if (catSlug === "wiring-device") {
+    if (specs.voltageRating) rows.push({ label: "Voltage Rating", value: specs.voltageRating });
+    if (specs.currentRating) rows.push({ label: "Current Rating", value: specs.currentRating });
+    if (specs.application) rows.push({ label: "Application Type", value: specs.application });
+  } else {
+    if (p.material) rows.push({ label: "Material", value: p.material });
+    if (specs.voltageRating) rows.push({ label: "Voltage Rating", value: specs.voltageRating });
+    if (standardsText) rows.push({ label: "Standard", value: standardsText });
+  }
+
+  if (p.moq) rows.push({ label: "Minimum Order Quantity", value: p.moq });
+  rows.push({ label: "Dispatch Warehouse", value: "Aslali Logistics Hub, Ahmedabad (382427)" });
+
+  return rows
+    .map(
+      (r) =>
+        `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">${escapeXml(r.label)}</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(r.value)}</td></tr>`
+    )
+    .join("");
+}
+
+function renderProductQuestionBank(p: any, specs: Record<string, any>, catSlug: string, standardsText: string | null): string {
+  const qas: Array<{ q: string; a: string }> = [];
+
+  if (catSlug === "wire-cables") {
+    if (standardsText) {
+      qas.push({
+        q: `Which standard does ${p.brand || "this"} ${p.name} comply with?`,
+        a: `This cable is manufactured and certified in compliance with ${standardsText}. Consignments include original Manufacturer Test Certificates (MTC) verifying conductor resistance, insulation tensile strength, and spark test compliance.`,
+      });
+    }
+    if (specs.voltageRating) {
+      qas.push({
+        q: `What is the voltage grade for this cable?`,
+        a: `This cable is rated for operational service at ${specs.voltageRating}, suitable for industrial distribution boards, motor feeders, and utility grid connections.`,
+      });
+    }
+    if (p.material && specs.typeOfArmour) {
+      qas.push({
+        q: `What conductor material and armouring are specified?`,
+        a: `It features high-conductivity ${p.material} conductor with ${specs.typeOfArmour} mechanical protection, designed for continuous installation in trays, ducts, or direct underground burial.`,
+      });
+    }
+    if (specs.currentRatingAmp) {
+      qas.push({
+        q: `What is the continuous current rating?`,
+        a: `The rated continuous current capacity is ${specs.currentRatingAmp} A under standard installation conditions. Actual operating ampacity depends on ambient temperature, burial depth, and grouping derating factors.`,
+      });
+    }
+  } else if (catSlug === "switch-gears") {
+    if (specs.breakingCapacityKa && specs.currentRatingA) {
+      qas.push({
+        q: `What is the breaking capacity and operational current of this switchgear?`,
+        a: `This switchgear is rated at ${specs.currentRatingA.replace(/^ew\s+/i, "").trim()} with a short-circuit breaking capacity of ${specs.breakingCapacityKa} kA (Icu per IS/IEC 60947-2), providing high-fault thermal protection.`,
+      });
+    }
+    if (specs.polesPhase) {
+      qas.push({
+        q: `How many poles does this unit feature?`,
+        a: `This unit is configured with ${specs.polesPhase} isolation, suitable for 3-phase commercial and industrial distribution boards.`,
+      });
+    }
+  } else if (catSlug === "glands") {
+    if (specs.suitableCableOdMm) {
+      qas.push({
+        q: `What cable outer diameter (OD) does this gland accommodate?`,
+        a: `This gland accommodates cable outer diameters from ${specs.suitableCableOdMm} mm, providing secure IP-grade ingress protection and mechanical strain relief.`,
+      });
+    }
+  } else if (catSlug === "lugs") {
+    if (specs.sizeRange || p.size) {
+      qas.push({
+        q: `What cable cross-section does this lug fit?`,
+        a: `This lug is engineered for ${specs.sizeRange || p.size} conductors, manufactured from high-conductivity electrolytic copper with heavy tin plating to prevent galvanic corrosion.`,
+      });
+    }
+  } else if (catSlug === "solar") {
+    if (standardsText) {
+      qas.push({
+        q: `Which solar PV standards does this product meet?`,
+        a: `It meets ${standardsText} (e.g. EN 50618 / IEC 62930) for 1500V DC solar installations with halogen-free flame retardancy and UV ozone resistance.`,
+      });
+    }
+  }
+
+  qas.push({
+    q: `How can contractors and industrial buyers request a quotation or purchase?`,
+    a: `Submit an RFQ online via our quotation desk, call +91 9512365582, or email sales@volampelektrikals.com with your BOM. Volamp Elektrikals dispatches wholesale orders directly from our central Aslali terminal in Ahmedabad with complete tax invoice and MTC documentation.`,
+  });
+
+  const qasHtml = qas
+    .map(
+      (item) => `
+      <div style="margin-bottom:20px;padding:16px 20px;background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;">
+        <h3 style="font-size:15px;font-weight:700;color:#0f172a;margin:0 0 8px 0;">${escapeXml(item.q)}</h3>
+        <p style="font-size:13.5px;line-height:1.65;color:#475569;margin:0;">${escapeXml(item.a)}</p>
+      </div>
+    `
+    )
+    .join("");
+
+  return `
+    <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+      <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin-bottom:16px;">Frequently Asked Technical Questions</h2>
+      ${qasHtml}
+    </section>
+  `;
+}
+
+function renderHowToOrderBlock(productName: string, moq: string | null | undefined): string {
+  return `
+    <section style="margin-top:32px;background:#fff8f1;border:1px solid #fed7aa;border-radius:12px;padding:24px;">
+      <h2 style="font-size:18px;font-weight:700;color:#9a3412;margin:0 0 12px 0;">B2B Wholesale Ordering &amp; Delivery</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;font-size:13px;line-height:1.6;color:#431407;">
+        <div>
+          <strong>1. RFQ &amp; Quotations:</strong>
+          <p style="margin:4px 0 0 0;">Upload or send your Bill of Materials (BOM) to <a href="mailto:sales@volampelektrikals.com" style="color:#c56718;font-weight:bold;text-decoration:none;">sales@volampelektrikals.com</a> for project pricing and manufacturer test certificate (MTC) confirmation.</p>
+        </div>
+        <div>
+          <strong>2. Instant WhatsApp / Phone Desk:</strong>
+          <p style="margin:4px 0 0 0;">Call or message our sales team at <a href="tel:+919512365582" style="color:#c56718;font-weight:bold;text-decoration:none;">+91 9512365582</a> for instant stock status and cut-length drum availability.</p>
+        </div>
+        <div>
+          <strong>3. Packing &amp; Dispatch:</strong>
+          <p style="margin:4px 0 0 0;">Standard MOQ: <strong>${escapeXml(moq || "Standard Wholesale Packing")}</strong>. Same-day dispatch to Ahmedabad GIDC hubs (Vatva, Naroda, Sanand, Changodar) and express freight across Gujarat and India.</p>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderRelatedProducts(allProducts: any[], currentProduct: any): string {
+  const currentCat = (currentProduct.category || "").toLowerCase();
+  const related = allProducts
+    .filter((p) => p.productId !== currentProduct.productId && (p.category || "").toLowerCase() === currentCat)
+    .slice(0, 3);
+
+  if (related.length === 0) return "";
+
+  const itemsHtml = related
+    .map(
+      (p) => `
+      <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
+        <h4 style="font-size:14px;margin:0 0 6px 0;font-weight:700;"><a href="/product/${encodeURIComponent(p.productId)}" style="color:#0f172a;text-decoration:none;">${escapeXml(p.name)}</a></h4>
+        <p style="font-size:12px;color:#64748b;margin:0 0 8px 0;">Brand: ${escapeXml(p.brand || "Polycab")} • ${escapeXml(p.size || "")}</p>
+        <a href="/product/${encodeURIComponent(p.productId)}" style="color:#c56718;font-size:12px;font-weight:700;text-decoration:none;">View Specifications &rarr;</a>
+      </div>
+    `
+    )
+    .join("");
+
+  return `
+    <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+      <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin-bottom:16px;">Related Products in this Category</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;">
+        ${itemsHtml}
+      </div>
+    </section>
+  `;
+}
 
 function escapeXml(str: string): string {
   return (str || "")
@@ -345,7 +683,7 @@ function getCanonicalCategorySlug(category?: string): string {
   return "wire-cables";
 }
 
-function extractVerifiedStandards(product: { description?: string; specifications?: string }): string | null {
+function extractVerifiedStandards(product: { description?: string | null; specifications?: string | null }): string | null {
   const text = `${product.description || ""} ${product.specifications || ""}`;
   const found: string[] = [];
 
@@ -806,6 +1144,13 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
 
     const schema = JSON.stringify(productEntity);
 
+    const allProducts = loadProductsFromDisk();
+    const directFactualDescription = buildDirectFactualDescription(product, fullDisplayName, parsedSpecs, standardsText, canonicalCatSlug);
+    const specRowsHtml = renderCategorySpecRows(canonicalCatSlug, product, parsedSpecs, standardsText);
+    const qasHtml = renderProductQuestionBank(product, parsedSpecs, canonicalCatSlug, standardsText);
+    const howToOrderHtml = renderHowToOrderBlock(fullDisplayName, product.moq);
+    const relatedHtml = renderRelatedProducts(allProducts, product);
+
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     const html = renderPageHtml({
@@ -828,10 +1173,13 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
               ${escapeXml(product.brand || "Polycab")} • Wholesale Stock
             </div>
             <h1 style="font-size:28px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 12px 0;">${escapeXml(fullDisplayName)} (${escapeXml(product.productId)})</h1>
-            <p style="font-size:14px;color:#64748b;margin:0;">
+            <p style="font-size:14px;color:#64748b;margin:0 0 16px 0;">
               Product ID: <strong style="font-family:monospace;color:#0f172a;">${escapeXml(product.productId)}</strong> |
               SKU: <strong style="font-family:monospace;color:#0f172a;">${escapeXml(product.sku || product.productId)}</strong> |
               Category: <a href="/category/${canonicalCatSlug}" style="color:#c56718;font-weight:600;text-decoration:none;">${escapeXml(product.category || "Wires & Cables")}</a>
+            </p>
+            <p style="font-size:15px;line-height:1.7;color:#334155;margin:0;max-width:920px;">
+              ${escapeXml(directFactualDescription)}
             </p>
           </header>
           <section style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:32px;margin-bottom:36px;">
@@ -854,20 +1202,23 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
               <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin:0 0 16px 0;">Product Specifications</h2>
               <table style="width:100%;border-collapse:collapse;font-size:13px;">
                 <tbody>
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Brand</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(product.brand || "Polycab")}</td></tr>
-                  ${product.size ? `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Size</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(product.size)}</td></tr>` : ""}
-                  ${product.material ? `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Conductor Material</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(product.material)}</td></tr>` : ""}
-                  ${parsedSpecs.voltageRating ? `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Voltage Rating</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(parsedSpecs.voltageRating)}</td></tr>` : ""}
-                  ${standardsText ? `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Compliance Standard</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(standardsText)}</td></tr>` : ""}
-                  ${product.moq ? `<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Minimum Order Quantity</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">${escapeXml(product.moq)}</td></tr>` : ""}
-                  <tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:10px 0;color:#64748b;">Dispatch Warehouse</td><td style="padding:10px 0;font-weight:600;color:#0f172a;text-align:right;">Aslali Logistics Hub, Ahmedabad (382427)</td></tr>
+                  ${specRowsHtml}
                 </tbody>
               </table>
             </div>
           </section>
 
+          <!-- B2B Ordering & Delivery Card (Step 35) -->
+          ${howToOrderHtml}
+
+          <!-- Product Technical Question Bank (Steps 36-37) -->
+          ${qasHtml}
+
+          <!-- Related Category Products (Step 34) -->
+          ${relatedHtml}
+
           <!-- Corporate Entity & Sourcing Assurance -->
-          <section style="background:#f8fafc;padding:24px;border-radius:12px;border:1px solid #e2e8f0;font-size:13px;line-height:1.7;color:#475569;">
+          <section style="background:#f8fafc;padding:24px;border-radius:12px;border:1px solid #e2e8f0;margin-top:36px;font-size:13px;line-height:1.7;color:#475569;">
             <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin-top:0;">Supplied by Volamp Elektrikals Private Limited</h3>
             <p style="margin:0 0 10px 0;">
               ${escapeXml(fullDisplayName)} is supplied by <strong>VOLAMP ELEKTRIKALS PRIVATE LIMITED</strong> (CIN: U31900GJ2021PTC122730 | GSTIN: 24AAICV0754B1ZO | GeM Verified). Family electrical business legacy dating to 1964 in Ahmedabad.
@@ -993,7 +1344,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
   // =========================================================================
   if (cleanPath.startsWith("blog/")) {
     const slug = cleanPath.replace(/^blog\//, "").trim().toLowerCase();
-    const blog = BLOG_POSTS[slug];
+    const blog = BLOG_POSTS_DATA.find((p) => p.slug === slug);
 
     if (!blog) {
       res.status(404);
@@ -1010,19 +1361,67 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
 
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
+    const blogArticleHtml = renderMarkdownToHtml(blog.content);
+
+    const articleSchema = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": blog.title,
+      "description": blog.metaDescription || blog.excerpt,
+      "author": {
+        "@type": "Person",
+        "name": blog.author,
+        "jobTitle": blog.authorRole,
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
+        "url": BASE_URL,
+      },
+      "datePublished": blog.date,
+      "dateModified": blog.date,
+      "mainEntityOfPage": `${BASE_URL}/blog/${slug}`,
+    });
+
     const html = renderPageHtml({
-      title: blog.title,
-      description: blog.desc,
+      title: `${blog.title} | Volamp`,
+      description: blog.metaDescription || blog.excerpt,
       canonical: `${BASE_URL}/blog/${slug}`,
+      schemaJson: articleSchema,
       bodyHtml: `
-        <article style="font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:40px auto;padding:24px;color:#1e293b;">
+        <article style="font-family:system-ui,-apple-system,sans-serif;max-width:920px;margin:40px auto;padding:24px;color:#1e293b;">
           <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
             <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
             <a href="/blog" style="color:#64748b;text-decoration:none;">Blog</a> &gt;
             <span style="color:#0f172a;font-weight:600;">${escapeXml(blog.title)}</span>
           </nav>
-          <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 16px 0;">${escapeXml(blog.title)}</h1>
-          <p style="font-size:16px;line-height:1.7;color:#475569;">${escapeXml(blog.desc)}</p>
+          <header style="border-bottom:1px solid #e2e8f0;padding-bottom:24px;margin-bottom:32px;">
+            <div style="display:inline-block;padding:4px 10px;background:#f1f5f9;color:#334155;font-size:12px;font-weight:700;border-radius:6px;margin-bottom:12px;">
+              ${escapeXml(blog.category)} • ${escapeXml(blog.readTime)}
+            </div>
+            <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.25;margin:0 0 16px 0;">${escapeXml(blog.title)}</h1>
+            <p style="font-size:16px;line-height:1.7;color:#475569;margin:0 0 16px 0;">${escapeXml(blog.excerpt)}</p>
+            <div style="font-size:13px;color:#64748b;">
+              By <strong style="color:#0f172a;">${escapeXml(blog.author)}</strong> (${escapeXml(blog.authorRole)}) • Published ${escapeXml(blog.date)}
+            </div>
+          </header>
+
+          <div class="article-content" style="font-size:15px;line-height:1.75;color:#334155;">
+            ${blogArticleHtml}
+          </div>
+
+          <!-- Step 85: Next Steps Block (RFQ, Calculator, Contact) -->
+          <section style="margin-top:48px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:28px;">
+            <h3 style="font-size:18px;font-weight:700;color:#0f172a;margin-top:0;">Need Specific Cable Sizing or B2B Quotations?</h3>
+            <p style="font-size:14px;line-height:1.6;color:#475569;margin-bottom:20px;">
+              Volamp Elektrikals supplies genuine certified cables and switchgear conforming to IS 7098, IS 1554, and IEC standards from our central Aslali warehouse in Ahmedabad.
+            </p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <a href="/calculator" style="background:#c56718;color:#ffffff;padding:12px 24px;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Calculate Voltage Drop</a>
+              <a href="/enquire" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Request Project RFQ</a>
+              <a href="tel:+919512365582" style="border:1px solid #cbd5e1;color:#334155;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:14px;">Call +91 9512365582</a>
+            </div>
+          </section>
         </article>
       `,
     });
@@ -1064,10 +1463,66 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
         <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
           <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:16px;">Fast Moving B2B Electrical Products</h2>
           <ul style="list-style:none;padding:0;margin:0;font-size:14px;">
-            <li style="padding:8px 0;"><a href="/product/CAB-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">1.1kV XLPE Aluminium Armoured Cable (3.5C x 185 sqmm)</a> — SKU: CAB-000001</li>
+            <li style="padding:8px 0;"><a href="/product/CAB-000736" style="color:#0f172a;font-weight:600;text-decoration:none;">1.1kV XLPE Aluminium Armoured Cable (3.5C x 185 sqmm)</a> — SKU: CAB-000736</li>
             <li style="padding:8px 0;"><a href="/product/SOL-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">Solar DC Cable 1C x 4 sqmm (H1Z2Z2-K / EN 50618)</a> — SKU: SOL-000001</li>
             <li style="padding:8px 0;"><a href="/product/SWG-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">10kA C-Curve Miniature Circuit Breaker (MCB) 4-Pole 63A</a> — SKU: SWG-000001</li>
           </ul>
+        </section>
+      `;
+    } else if (cleanPath === "calculator") {
+      homeExtraHtml = `
+        <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:16px;">Engineering Calculation Formulas &amp; Standards (IS 7098 &amp; CEA)</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;font-size:14px;line-height:1.7;color:#334155;">
+            <div style="background:#f8fafc;padding:20px;border-radius:10px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin-top:0;">3-Phase AC Voltage Drop Formula</h3>
+              <p style="font-family:monospace;background:#ffffff;padding:8px 12px;border-radius:6px;border:1px solid #cbd5e1;font-weight:bold;color:#0f172a;">
+                Vd = √3 × I × L × (R cos φ + X sin φ) / 1000
+              </p>
+              <p style="font-size:12px;color:#64748b;margin-bottom:0;">Where: I = Full Load Current (A), L = Length of run in meters, R = AC resistance (Ω/km at 90°C), X = Reactance (Ω/km), cos φ = Power factor (default 0.85).</p>
+            </div>
+            <div style="background:#f8fafc;padding:20px;border-radius:10px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;font-weight:700;color:#0f172a;margin-top:0;">1-Phase AC Voltage Drop Formula</h3>
+              <p style="font-family:monospace;background:#ffffff;padding:8px 12px;border-radius:6px;border:1px solid #cbd5e1;font-weight:bold;color:#0f172a;">
+                Vd = 2 × I × L × (R cos φ + X sin φ) / 1000
+              </p>
+              <p style="font-size:12px;color:#64748b;margin-bottom:0;">Per Central Electricity Authority (CEA) guidelines, maximum allowable voltage drop is 3% for branch circuits and 5% from transformer to remote sub-panels.</p>
+            </div>
+          </div>
+          <div style="margin-top:20px;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:20px;">
+            <h4 style="font-size:15px;font-weight:700;color:#991b1b;margin-top:0;">Engineering Disclaimer</h4>
+            <p style="font-size:13px;line-height:1.65;color:#7f1d1d;margin-bottom:0;">
+              Calculations provided by this tool are indicative preliminary engineering estimates based on IS 7098 (Part 1 &amp; 2) and IS 1554 reference data (standard 40°C air / 30°C ground ambient). Final conductor cross-sections, short-circuit ratings, grouping derating, and soil thermal resistivity factors must be verified by a licensed electrical design engineer for critical industrial installations.
+            </p>
+          </div>
+        </section>
+      `;
+    } else if (cleanPath === "blog") {
+      const articlesHtml = BLOG_POSTS_DATA.map(
+        (b) => `
+        <article style="background:#ffffff;padding:24px;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+            <span style="font-size:12px;font-weight:700;background:#f1f5f9;color:#334155;padding:4px 10px;border-radius:6px;">${escapeXml(b.category)}</span>
+            <span style="font-size:12px;color:#64748b;">${escapeXml(b.readTime)} • ${escapeXml(b.date)}</span>
+          </div>
+          <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin:0 0 10px 0;">
+            <a href="/blog/${b.slug}" style="color:#0f172a;text-decoration:none;">${escapeXml(b.title)}</a>
+          </h2>
+          <p style="font-size:14px;line-height:1.65;color:#475569;margin:0 0 16px 0;">
+            ${escapeXml(b.excerpt)}
+          </p>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:#64748b;">By <strong>${escapeXml(b.author)}</strong> (${escapeXml(b.authorRole)})</span>
+            <a href="/blog/${b.slug}" style="color:#c56718;font-weight:700;font-size:13px;text-decoration:none;">Read Technical Guide &rarr;</a>
+          </div>
+        </article>
+      `
+      ).join("");
+
+      homeExtraHtml = `
+        <section style="margin-top:36px;">
+          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:20px;">15 Authoritative Electrical Buyer Guides &amp; Specifications</h2>
+          ${articlesHtml}
         </section>
       `;
     }
