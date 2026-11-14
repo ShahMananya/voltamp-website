@@ -49,8 +49,8 @@ interface LocationInfo {
 const LOCATIONS: LocationInfo[] = [
   {
     id: "khadia",
-    name: "Corporate Main Office (Khadia)",
-    type: "Corporate & Sales",
+    name: "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
+    type: "Corporate Sales Desk",
     badgeColor: "bg-[#4d1217] text-white",
     purpose: "Commercial desk, accounts, billing, contractor rate contracts & brand sourcing",
     address: "1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia, Ahmedabad, Gujarat",
@@ -66,11 +66,11 @@ const LOCATIONS: LocationInfo[] = [
   },
   {
     id: "aslali",
-    name: "Central Fulfillment Center (Aslali)",
-    type: "Warehouse & Depot",
+    name: "VOLAMP Central Fulfillment Center / Warehouse Depot",
+    type: "Central Warehouse & Logistics Depot",
     badgeColor: "bg-[#c56718] text-white",
     purpose: "Mother stockyard, drum cutting, coiling machines & pan-India freight terminal",
-    address: "VOLAMP ASLALI WAREHOUSE, Near NH-48 & SP Ring Road Junction, Aslali, Ahmedabad, Gujarat",
+    address: "Near NH-48 & SP Ring Road Junction, Aslali, Ahmedabad, Gujarat",
     pincode: "382427",
     phone: "+91 9512365582",
     email: "logistics@volampelektrikals.com",

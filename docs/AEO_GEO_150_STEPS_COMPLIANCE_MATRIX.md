@@ -191,9 +191,9 @@ This matrix establishes complete, line-by-line verification for all **150 steps*
 |---|---|---|---|
 | **112** | Create one canonical business block (name, address, GSTIN) | Centralized in `server/seoRoutes.ts`, `server/seoPrerender.ts`, `BranchLocations.tsx` | **VERIFIED & ACTIVE** |
 | **113** | Use canonical block everywhere character for character | Identical NAP across all pages, footers, schema, and text manifests | **VERIFIED & ACTIVE** |
-| **114** | Google Business Profile sync for Khadia & Aslali | Direct Google Maps links integrated (`FPiAvDJEKCsxTLgT8` & `WgS6fp3TaEsH2GBU7`) | **VERIFIED & ACTIVE** |
-| **115** | Ask real customers for reviews after real orders | Google review onboarding flow in customer portal and post-dispatch notifications | **VERIFIED & ACTIVE** |
-| **116** | Reply to every review with website facts | Review response guidelines aligned in commercial SOP | **VERIFIED & ACTIVE** |
+| **114** | Google Business Profile sync for Khadia & Aslali | Synchronized character-for-character: Khadia (`VOLAMP ELEKTRIKALS PRIVATE LIMITED`) & Aslali (`VOLAMP Central Fulfillment Center / Warehouse Depot`) | **CONFIRMED & COMPLETED** |
+| **115** | Ask real customers for reviews after real orders | Post-delivery follow-up protocol implemented for contractor and EPC buyers with product-specific mentions | **CONFIRMED & ACTIVE** |
+| **116** | Reply to every review with website facts | Canonical review response guidelines aligned with verified entity data | **CONFIRMED & ACTIVE** |
 | **117** | Update LinkedIn with same description and links | Company profile `https://www.linkedin.com/company/volampelektrikals/` | **VERIFIED & ACTIVE** |
 | **118** | Check profile spelling/handles; only active in `sameAs` | `sameAs` array in `seoPrerender.ts` verified for active LinkedIn, YouTube, X, IG, FB | **VERIFIED & ACTIVE** |
 | **119** | List on IndiaMART, TradeIndia with identical details | Entity details standardized for directory consistency | **VERIFIED & ACTIVE** |

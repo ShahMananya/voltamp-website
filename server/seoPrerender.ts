@@ -1749,7 +1749,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             "department": [
               {
                 "@type": "Warehouse",
-                "name": "Volamp Elektrikals - Central Warehouse & Dispatch Hub",
+                "name": "VOLAMP Central Fulfillment Center / Warehouse Depot",
                 "telephone": "+919512365582",
                 "email": "logistics@volampelektrikals.com",
                 "address": {
@@ -1778,7 +1778,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
         "@graph": [
           {
             "@type": "LocalBusiness",
-            "name": "Volamp Elektrikals Private Limited - Corporate Office",
+            "name": "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
             "telephone": "+919512365582",
             "email": "sales@volampelektrikals.com",
             "address": {
@@ -1799,7 +1799,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
           },
           {
             "@type": "Warehouse",
-            "name": "Volamp Elektrikals - Aslali Central Fulfillment Hub",
+            "name": "VOLAMP Central Fulfillment Center / Warehouse Depot",
             "telephone": "+919512365582",
             "email": "logistics@volampelektrikals.com",
             "address": {
