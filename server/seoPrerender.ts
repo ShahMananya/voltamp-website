@@ -17,10 +17,10 @@ const STATIC_ROUTES: Record<
   { title: string; description: string; h1: string; intro: string }
 > = {
   "": {
-    title: "Wires and Cables in Ahmedabad | Polycab, KEI & Finolex Distributor - Volamp",
+    title: "VOLAMP ELEKTRIKALS | Wires and Cables in Ahmedabad",
     description:
-      "Leading wires and industrial cables distributor in Ahmedabad, Gujarat. Wholesale distributor of Polycab, Finolex, KEI house wires, power cables & switchgear with MTC certificates. Fast dispatch.",
-    h1: "Wires and Cables in Ahmedabad | Polycab, KEI & Finolex Distributor",
+      "Official portal of VOLAMP ELEKTRIKALS, Ahmedabad. Wholesale distributor of Polycab, KEI, Finolex cables, wires & switchgear with factory MTC certificates.",
+    h1: "VOLAMP ELEKTRIKALS | Wires and Cables in Ahmedabad",
     intro:
       "Volamp Elektrikals Private Limited is Ahmedabad's premier wholesale distributor and supplier of electrical house wires and industrial cables. Supplies popular electrical house wire and cable brands like Polycab, Finolex, and KEI with a 60+ year family legacy established in 1964. Operating modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across Gujarat and Western India.",
   },
@@ -1662,10 +1662,13 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
           {
             "@type": ["ElectricalSupplyStore", "WholesaleStore", "LocalBusiness"],
             "@id": "https://www.volampelektrikals.com/#organization",
-            "name": "Volamp Elektrikals Private Limited",
+            "name": "VOLAMP ELEKTRIKALS",
+            "legalName": "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
             "alternateName": [
               "VOLAMP",
               "Volamp Elektrikals",
+              "Volamp Elektrikals Pvt Ltd",
+              "VOLAMP ELEKTRIKALS PVT LTD",
               "Volamp Wires and Cables Ahmedabad",
               "Volamp Switchgear & Lugs"
             ],
@@ -1704,6 +1707,9 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
               { "@type": "Country", "name": "India" }
             ],
             "sameAs": [
+              "https://www.indiamart.com/volamp-elektrikals/profile.html",
+              "https://www.zaubacorp.com/VOLAMP-ELEKTRIKALS-PRIVATE-LIMITED-U31900GJ2021PTC122730",
+              "https://tracxn.com/d/legal-entities/india/volamp-elektrikals-private-limited/__zVrCPOD2dqIHgX77DHZQ2M16ODn3Y2mDXxPTyci6fp4",
               "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw",
               "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7",
               "https://www.linkedin.com/company/volampelektrikals/",

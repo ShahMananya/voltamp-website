@@ -227,9 +227,9 @@ export default function Home() {
 
   return <div className="volamp-marketplace">
     <SeoHead
-      title="Industrial Cable & Electrical Distributor"
-      description="Authorized distributor of Polycab, Finolex, KEI & Schneider cables and switchgear in Ahmedabad. 48-72h dispatch across India. Request wholesale quote."
-      keywords="electrical supplier Ahmedabad, cable distributor Gujarat, Polycab distributor Ahmedabad, Finolex cables, KEI cables, switchgear, Volamp Elektrikals"
+      title="VOLAMP ELEKTRIKALS | Wires and Cables in Ahmedabad"
+      description="Official portal of VOLAMP ELEKTRIKALS, Ahmedabad. Wholesale distributor of Polycab, KEI, Finolex cables, wires & switchgear with factory MTC certificates."
+      keywords="Volamp Elektrikals, Volamp Ahmedabad, electrical supplier Ahmedabad, cable distributor Gujarat, Polycab distributor Ahmedabad, Finolex cables, KEI cables, switchgear"
       canonicalPath="/"
       ogType="website"
     />
@@ -994,7 +994,7 @@ export default function Home() {
       <div className="relative z-20 market-container w-full flex flex-col items-center justify-end text-center pt-16 sm:pt-24 lg:pt-32 pb-4 sm:pb-6 px-4 mt-auto">
         {/* Screen-reader accessible H1 for SEO compliance */}
         <h1 className="sr-only">
-          Industrial Cable & Electrical Distributor in Ahmedabad
+          VOLAMP ELEKTRIKALS | Wholesale Electrical Cables, Wires & Switchgear Distributor Ahmedabad
         </h1>
 
         {/* Bottom controls row */}

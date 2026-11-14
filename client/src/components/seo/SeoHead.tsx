@@ -38,27 +38,34 @@ export default function SeoHead({
   useEffect(() => {
     // 1. Page Title Optimization (Target: "Primary phrase | VOLAMP" at 50–60 chars without internal IDs)
     let cleanTitle = (title || "").trim();
-    cleanTitle = cleanTitle.replace(/\s*\|\s*VOLAMP ELEKTRIKALS/gi, "");
-    cleanTitle = cleanTitle.replace(/\s*\|\s*Volamp Elektrikals/gi, "");
-    cleanTitle = cleanTitle.replace(/\s*\|\s*Volamp/gi, "");
-    cleanTitle = cleanTitle.replace(/\s*\|\s*VOLAMP/g, "");
 
-    // If title has multiple pipe segments, keep primary segment
-    const pipeParts = cleanTitle.split("|");
-    if (pipeParts.length > 1) {
-      cleanTitle = pipeParts[0].trim();
-    }
+    // If title explicitly starts with the brand entity (e.g. Home Page "VOLAMP ELEKTRIKALS | ...")
+    if (cleanTitle.toUpperCase().startsWith("VOLAMP ELEKTRIKALS")) {
+      const formattedTitle = cleanTitle.length <= 60 ? cleanTitle : cleanTitle.substring(0, 60).trim();
+      document.title = formattedTitle;
+    } else {
+      cleanTitle = cleanTitle.replace(/\s*\|\s*VOLAMP ELEKTRIKALS/gi, "");
+      cleanTitle = cleanTitle.replace(/\s*\|\s*Volamp Elektrikals/gi, "");
+      cleanTitle = cleanTitle.replace(/\s*\|\s*Volamp/gi, "");
+      cleanTitle = cleanTitle.replace(/\s*\|\s*VOLAMP/g, "");
 
-    // Limit primary phrase length so total title with suffix is 50–60 chars
-    const maxPrimaryLen = 60 - BRAND_SUFFIX.length;
-    if (cleanTitle.length > maxPrimaryLen) {
-      const truncated = cleanTitle.substring(0, maxPrimaryLen);
-      const lastSpace = truncated.lastIndexOf(" ");
-      cleanTitle = (lastSpace > 30 ? truncated.substring(0, lastSpace) : truncated).trim();
+      // If title has multiple pipe segments, keep primary segment
+      const pipeParts = cleanTitle.split("|");
+      if (pipeParts.length > 1) {
+        cleanTitle = pipeParts[0].trim();
+      }
+
+      // Limit primary phrase length so total title with suffix is 50–60 chars
+      const maxPrimaryLen = 60 - BRAND_SUFFIX.length;
+      if (cleanTitle.length > maxPrimaryLen) {
+        const truncated = cleanTitle.substring(0, maxPrimaryLen);
+        const lastSpace = truncated.lastIndexOf(" ");
+        cleanTitle = (lastSpace > 30 ? truncated.substring(0, lastSpace) : truncated).trim();
+      }
+      cleanTitle = cleanTitle.replace(/[,;:\s-]+$/, "");
+      const formattedTitle = `${cleanTitle}${BRAND_SUFFIX}`;
+      document.title = formattedTitle;
     }
-    cleanTitle = cleanTitle.replace(/[,;:\s-]+$/, "");
-    const formattedTitle = `${cleanTitle}${BRAND_SUFFIX}`;
-    document.title = formattedTitle;
 
     // Helper to set or create meta tag
     const setMetaTag = (attrName: string, attrVal: string, contentVal: string) => {
