@@ -142,3 +142,4 @@ export function getAiTelemetrySummary() {
     uptimeSeconds: Math.floor((Date.now() - new Date(telemetryState.startedAt).getTime()) / 1000),
   };
 }
+

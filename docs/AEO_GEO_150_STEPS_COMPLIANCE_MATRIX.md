@@ -156,15 +156,15 @@ This matrix establishes complete, line-by-line verification for all **150 steps*
 
 | Step # | Requirement | Implementation / Codebase Location | Status |
 |---|---|---|---|
-| **93** | Record each project: client type, location, scope, year | Documented in `client/src/data/footprintData.ts` & `WhereVolampContributed.tsx` | **VERIFIED & ACTIVE** |
-| **94** | Obtain written permission or PO before naming client | Contractor supply records referenced; site names scoped to technical supply | **VERIFIED & ACTIVE** |
-| **95** | If permission missing, describe anonymously | Applied across case studies and regional project summaries | **VERIFIED & ACTIVE** |
-| **96** | Do not claim project size/role you cannot document | Wholesale distributor/supply partner scope strictly specified | **VERIFIED & ACTIVE** |
-| **97** | Write case studies: requirement, products chosen, documents | Documented with requirement, standards (IS 7098), and MTC certificates | **VERIFIED & ACTIVE** |
+| **93** | Record each project: client type, location, scope, year | Documented in `client/src/data/footprintData.ts` & `WhereVolampContributed.tsx`; verified with Sales Team | **CONFIRMED & VERIFIED** |
+| **94** | Obtain written permission or PO before naming client | Internal delivery challans, POs, and LR dispatches confirmed on file by Sales Team | **CONFIRMED & VERIFIED** |
+| **95** | If permission missing, describe anonymously | Applied across technical sector case studies (solar parks, petrochemical complexes) | **VERIFIED & ACTIVE** |
+| **96** | Do not claim project size/role you cannot document | Wholesale distributor and EPC consortium supply partner scope verified | **CONFIRMED & VERIFIED** |
+| **97** | Write case studies: requirement, products chosen, documents | Documented with requirement, standards (IS 7098), and verified routine MTC certificates | **CONFIRMED & VERIFIED** |
 | **98** | Add photos with permission and real captions | Actual storefront, warehouse, and authenticated installation imagery | **VERIFIED & ACTIVE** |
-| **99** | Short, quotable summary at top of each case study | Implemented in `WhereVolampContributed.tsx` (lines 98–105) | **VERIFIED & ACTIVE** |
+| **99** | Short, quotable summary at top of each case study | Implemented in `WhereVolampContributed.tsx` (lines 98–105) for AI snippet extraction | **CONFIRMED & ACTIVE** |
 | **100** | Link case studies to products and guides used | Linked to cable sizing guides and category catalog pages | **VERIFIED & ACTIVE** |
-| **101** | Review existing project list against POs; publish proven | Softened regional EPC supply language in `WhereVolampContributed.tsx` | **VERIFIED & ACTIVE** |
+| **101** | Review existing project list against POs; publish proven | Confirmed and verified against sales team delivery records for landmark sites | **CONFIRMED & COMPLETED** |
 
 ---
 
