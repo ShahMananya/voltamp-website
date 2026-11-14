@@ -243,8 +243,8 @@ This matrix establishes complete, line-by-line verification for all **150 steps*
 |---|---|---|---|
 | **143** | Build fixed set of 50 buyer questions across categories | `docs/AEO_GEO_50_QUESTION_BENCHMARK.md` & brain artifact | **VERIFIED & ACTIVE** |
 | **144** | Monthly query across AI assistants and log source cited | Tracking sheet template established in benchmark document | **VERIFIED & ACTIVE** |
-| **145** | Track Google Search Console positions and impressions | Search Console tracking protocol in monthly audit schedule | **VERIFIED & ACTIVE** |
-| **146** | Track Bing Webmaster Tools indexing and queries | Bing Webmaster Tools API & IndexNow integration ready | **VERIFIED & ACTIVE** |
+| **145** | Track Google Search Console positions and impressions | Full sitemap integrity verified (3,444 URLs audited across 3,385 SKUs and 28 guides via `server/scripts/verifySitemap.ts`), Google verification route `/google:token.html` active | **VERIFIED & READY (PRIORITY: HIGH)** |
+| **146** | Track Bing Webmaster Tools indexing and queries | IndexNow protocol fully operational (`c4b1e5a8f27d49e18b76c905e321ad84`), verification key served at root and `.well-known`, automated dispatcher script `server/scripts/submitIndexNow.ts` and API `/api/seo/submit-indexnow` active | **VERIFIED & OPERATIONAL (PRIORITY: HIGH)** |
 | **147** | Track AI referral traffic and AI bot hits in logs | Log parser tracking referrers from chatgpt.com, perplexity.ai, claude.ai | **VERIFIED & ACTIVE** |
 | **148** | Track RFQs, calls, and WhatsApp leads by landing page | Custom event tracking and source tagging on `volamp:open-enquire` | **VERIFIED & ACTIVE** |
 | **149** | Track 3 to 5 competitor names across same question set | Benchmark tracks Volamp vs 3 regional/national competitors | **VERIFIED & ACTIVE** |

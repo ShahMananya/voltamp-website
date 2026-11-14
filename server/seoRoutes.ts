@@ -1,10 +1,12 @@
 import fs from "fs";
 import path from "path";
+import axios from "axios";
 import type { Express, Request, Response } from "express";
 import { loadProductsFromDisk } from "./services/productService";
 import { BLOG_POSTS_DATA } from "../shared/blogData";
 
 const BASE_URL = "https://www.volampelektrikals.com";
+export const INDEXNOW_KEY = "c4b1e5a8f27d49e18b76c905e321ad84";
 
 // Core static canonical pages for XML Sitemap
 const STATIC_PAGES = [
@@ -261,5 +263,75 @@ export function registerSeoRoutes(app: Express) {
     res.setHeader("Cache-Control", "public, max-age=86400");
     res.send(generateLlmsFullTxt());
   });
+
+  // 4. IndexNow Key Verification Route (Bing / IndexNow / Copilot instant indexing)
+  app.get([`/${INDEXNOW_KEY}.txt`, `/.well-known/indexnow/${INDEXNOW_KEY}.txt`, "/indexnow-key.txt"], (_req: Request, res: Response) => {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=86400");
+    res.send(INDEXNOW_KEY);
+  });
+
+  // 5. IndexNow Submission API Endpoint (Dispatches canonical URLs directly to Bing & IndexNow engines)
+  app.all("/api/seo/submit-indexnow", async (_req: Request, res: Response) => {
+    try {
+      const urls = getIndexNowUrlList();
+      const payload = {
+        host: "www.volampelektrikals.com",
+        key: INDEXNOW_KEY,
+        keyLocation: `${BASE_URL}/${INDEXNOW_KEY}.txt`,
+        urlList: urls,
+      };
+
+      let bingStatus = "not_dispatched";
+      try {
+        const resp = await axios.post("https://api.indexnow.org/indexnow", payload, {
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+          timeout: 10000,
+        });
+        bingStatus = resp.status === 200 || resp.status === 202 ? "success" : `status_${resp.status}`;
+      } catch (err: any) {
+        bingStatus = err.response ? `api_status_${err.response.status}` : err.message;
+      }
+
+      res.json({
+        success: true,
+        message: "IndexNow submission triggered",
+        key: INDEXNOW_KEY,
+        keyLocation: `${BASE_URL}/${INDEXNOW_KEY}.txt`,
+        urlCount: urls.length,
+        bingStatus,
+        sampleUrls: urls.slice(0, 10),
+      });
+    } catch (err: any) {
+      console.error("[SEO] Failed to submit IndexNow:", err);
+      res.status(500).json({ error: "Failed to submit IndexNow", details: err.message });
+    }
+  });
+
+  // 6. Search Console & Bing Verification File Route Handlers
+  app.get("/google:token.html", (req: Request, res: Response) => {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(`google-site-verification: google${req.params.token}.html`);
+  });
+
+  app.get("/BingSiteAuth.xml", (_req: Request, res: Response) => {
+    const bingAuthCode = process.env.BING_SITE_AUTH || "C4B1E5A8F27D49E18B76C905E321AD84";
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.send(`<?xml version="1.0"?>\n<users>\n\t<user>${bingAuthCode}</user>\n</users>`);
+  });
+}
+
+export function getIndexNowUrlList(): string[] {
+  const staticUrls = STATIC_PAGES.map((p) => `${BASE_URL}/${p.path}`);
+  const catUrls = CATEGORY_SLUGS.map((slug) => `${BASE_URL}/category/${slug}`);
+  const blogUrls = BLOG_SLUGS.map((slug) => `${BASE_URL}/blog/${slug}`);
+  const products = loadProductsFromDisk();
+  // Include core SKUs
+  const prodUrls = products
+    .filter((prod) => prod.productId && prod.name)
+    .slice(0, 300)
+    .map((prod) => `${BASE_URL}/product/${encodeURIComponent(prod.productId)}`);
+
+  return Array.from(new Set([...staticUrls, ...catUrls, ...blogUrls, ...prodUrls]));
 }
 
