@@ -1602,6 +1602,44 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             <li style="padding:8px 0;"><a href="/product/SWG-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">10kA C-Curve Miniature Circuit Breaker (MCB) 4-Pole 63A</a> — SKU: SWG-000001</li>
           </ul>
         </section>
+        <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:12px;">Corporate Identity &amp; Physical Distribution Facilities</h2>
+          <p style="font-size:14px;color:#475569;margin-bottom:20px;line-height:1.6;">
+            <strong>VOLAMP ELEKTRIKALS PRIVATE LIMITED</strong> is an authorized B2B wholesale distributor and supplier of industrial cables, building wires, and power distribution switchgear. 4 Generations · 60+ Years Family Legacy (est. 1964).
+          </p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;">
+            <div style="background:#f8fafc;padding:20px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;color:#0f172a;margin:0 0 8px 0;">Khadia Corporate Sales Office</h3>
+              <p style="font-size:13px;color:#475569;margin:0 0 10px 0;">1753, Dhobi's Pole Sir, Chinubhai Rd, Old City, Khadia, Ahmedabad, Gujarat 380001 (Gandhi Road Electrical Trading Market Belt).</p>
+              <p style="font-size:12px;color:#64748b;margin:0 0 8px 0;">Hours: Mon–Sat 09:30 AM – 07:30 PM | Phone: <a href="tel:+919512365582" style="color:#c56718;font-weight:bold;">+91 9512365582</a></p>
+              <a href="https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw" target="_blank" rel="noreferrer" style="display:inline-block;background:#c56718;color:#ffffff;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:bold;text-decoration:none;">View Khadia on Google Maps &rarr;</a>
+            </div>
+            <div style="background:#f8fafc;padding:20px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;color:#0f172a;margin:0 0 8px 0;">Aslali Central Logistics Hub</h3>
+              <p style="font-size:13px;color:#475569;margin:0 0 10px 0;">Near NH-48 &amp; SP Ring Road Junction, Aslali, Ahmedabad, Gujarat 382427. Same-day GIDC dispatch and Pan-India freight logistics.</p>
+              <p style="font-size:12px;color:#64748b;margin:0 0 8px 0;">Hours: Mon–Sat 08:00 AM – 08:00 PM | Dispatch Desk: <a href="tel:+919512365582" style="color:#c56718;font-weight:bold;">+91 9512365582</a></p>
+              <a href="https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7" target="_blank" rel="noreferrer" style="display:inline-block;background:#c56718;color:#ffffff;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:bold;text-decoration:none;">View Aslali on Google Maps &rarr;</a>
+            </div>
+            <div style="background:#f8fafc;padding:20px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;color:#0f172a;margin:0 0 8px 0;">Statutory Governance (MCA &amp; GST)</h3>
+              <p style="font-size:13px;color:#475569;margin:0 0 6px 0;"><strong>CIN:</strong> <code style="font-family:monospace;color:#0f172a;">U31900GJ2021PTC122730</code> (ROC Ahmedabad)</p>
+              <p style="font-size:13px;color:#475569;margin:0 0 6px 0;"><strong>GSTIN:</strong> <code style="font-family:monospace;color:#0f172a;">24AAICV0754B1ZO</code></p>
+              <p style="font-size:13px;color:#475569;margin:0 0 6px 0;"><strong>Directors:</strong> Naimil Vipul Patel (CEO &amp; Director), Vipulbhai Chaturbhai Patel (Director)</p>
+              <p style="font-size:12px;color:#16a34a;font-weight:600;margin:0;">&check; Verified Corporate Supplier</p>
+            </div>
+          </div>
+          <div style="margin-top:16px;padding:14px;background:#f1f5f9;border-radius:8px;font-size:13px;color:#334155;">
+            <strong>Verified Directory Profiles:</strong>
+            <a href="https://www.indiamart.com/volamp-elektrikals/profile.html" style="color:#c56718;margin-left:8px;text-decoration:none;font-weight:600;">IndiaMART Verified</a> &bull;
+            <a href="https://www.zaubacorp.com/VOLAMP-ELEKTRIKALS-PRIVATE-LIMITED-U31900GJ2021PTC122730" style="color:#c56718;margin-left:8px;text-decoration:none;font-weight:600;">ZaubaCorp Profile</a> &bull;
+            <a href="https://tracxn.com/d/legal-entities/india/volamp-elektrikals-private-limited/__zVrCPOD2dqIHgX77DHZQ2M16ODn3Y2mDXxPTyci6fp4" style="color:#c56718;margin-left:8px;text-decoration:none;font-weight:600;">Tracxn Entity</a> &bull;
+            <a href="https://www.linkedin.com/company/volampelektrikals/" style="color:#c56718;margin-left:8px;text-decoration:none;font-weight:600;">LinkedIn Company</a> &bull;
+            <a href="https://gem.gov.in/" style="color:#c56718;margin-left:8px;text-decoration:none;font-weight:600;">Government e-Marketplace (GeM)</a>
+          </div>
+          <p style="font-size:12px;color:#64748b;margin-top:12px;">
+            <strong>Authorized Master Distributor &amp; Channel Stockist:</strong> Polycab India Ltd, Finolex Cables Ltd, KEI Industries Ltd, Schneider Electric, Larsen &amp; Toubro (L&amp;T Electrical &amp; Automation / Lauritz Knudsen), Dowells (Polycab Group), Legrand. Independent corporate distributor distinct from transformer manufacturers and cable tray makers.
+          </p>
+        </section>
       `;
     } else if (cleanPath === "calculator") {
       homeExtraHtml = `

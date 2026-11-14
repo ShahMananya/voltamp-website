@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { ArrowRight, ArrowUpRight, Boxes, Briefcase, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Layers, Linkedin, Lock, LogIn, Maximize2, Menu, MessageCircle, MessageSquare, PackageSearch, Phone, Play, PlugZap, Quote, Search, Shield, ShieldCheck, ShoppingCart, Sparkles, TrendingDown, TrendingUp, Truck, User, UserRound, Volume2, VolumeX, X, Youtube, Zap } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Boxes, Briefcase, Building2, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Layers, Linkedin, Lock, LogIn, Mail, MapPin, Maximize2, Menu, MessageCircle, MessageSquare, PackageSearch, Phone, Play, PlugZap, Quote, Search, Shield, ShieldCheck, ShoppingCart, Sparkles, TrendingDown, TrendingUp, Truck, User, UserRound, Volume2, VolumeX, X, Youtube, Zap } from "lucide-react";
 import SocialMediaLinks from "@/components/layout/SocialMediaLinks";
 import { CATEGORIES, ICON_MAP } from "@/data/categories";
 
@@ -1346,6 +1346,206 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 10b. Official Corporate Entity, Physical Facilities & Trust Directory */}
+      <section className="py-16 sm:py-20 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800" id="corporate-profile">
+        <div className="market-container max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="text-center space-y-3 mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-800 text-[#c56718] dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
+              <ShieldCheck className="size-3.5" />
+              <span>OFFICIAL CORPORATE &amp; STATUTORY IDENTITY</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              VOLAMP ELEKTRIKALS PRIVATE LIMITED
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Ahmedabad&apos;s premier authorized wholesale distributor and stockist of industrial cables, building wires, and power distribution switchgear. 4 Generations · 60+ Years Family Legacy (est. 1964).
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {/* Card 1: Khadia Corporate Sales Office */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-[#fdfbf9] dark:bg-slate-900 p-6 flex flex-col justify-between hover:border-[#c56718] transition-all">
+              <div>
+                <div className="flex items-center gap-2.5 mb-3 text-[#c56718] font-bold text-sm">
+                  <Building2 className="size-4 shrink-0" />
+                  <span>Khadia Corporate Sales Office</span>
+                </div>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white mb-2">
+                  1753, Dhobi&apos;s Pole, Sir Chinubhai Rd
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+                  Old City, Khadia, Ahmedabad, Gujarat 380001 (Historic Gandhi Road Electrical Trading Market Belt).
+                </p>
+                <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Clock className="size-3.5 text-slate-400 shrink-0" />
+                    <span>Mon – Sat: 09:30 AM – 07:30 PM</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Phone className="size-3.5 text-slate-400 shrink-0" />
+                    <a href="tel:+919512365582" className="hover:text-[#c56718] font-semibold">+91 9512365582</a>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mail className="size-3.5 text-slate-400 shrink-0" />
+                    <a href="mailto:sales@volampelektrikals.com" className="hover:text-[#c56718]">sales@volampelektrikals.com</a>
+                  </div>
+                </div>
+              </div>
+              <a
+                href="https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-[#c56718] hover:bg-[#a85412] text-white font-bold text-xs transition-colors shadow-xs"
+              >
+                <MapPin className="size-3.5" />
+                <span>Open in Google Maps (Khadia)</span>
+                <ExternalLink className="size-3 opacity-80" />
+              </a>
+            </div>
+
+            {/* Card 2: Aslali Central Warehouse & Logistics Terminal */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-[#fdfbf9] dark:bg-slate-900 p-6 flex flex-col justify-between hover:border-[#c56718] transition-all">
+              <div>
+                <div className="flex items-center gap-2.5 mb-3 text-[#c56718] font-bold text-sm">
+                  <Truck className="size-4 shrink-0" />
+                  <span>Aslali Central Fulfillment Hub</span>
+                </div>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white mb-2">
+                  NH-48 &amp; SP Ring Road Junction
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
+                  Aslali Logistics Corridor, Ahmedabad, Gujarat 382427. Same-day GIDC dispatch &amp; Pan-India FTL drum shipments.
+                </p>
+                <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 mb-4">
+                  <div className="flex items-center gap-2">
+                    <Clock className="size-3.5 text-slate-400 shrink-0" />
+                    <span>Mon – Sat: 08:00 AM – 08:00 PM</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Phone className="size-3.5 text-slate-400 shrink-0" />
+                    <a href="tel:+919512365582" className="hover:text-[#c56718] font-semibold">+91 9512365582</a>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mail className="size-3.5 text-slate-400 shrink-0" />
+                    <a href="mailto:logistics@volampelektrikals.com" className="hover:text-[#c56718]">logistics@volampelektrikals.com</a>
+                  </div>
+                </div>
+              </div>
+              <a
+                href="https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-[#c56718] hover:bg-[#a85412] text-white font-bold text-xs transition-colors shadow-xs"
+              >
+                <MapPin className="size-3.5" />
+                <span>Open in Google Maps (Aslali)</span>
+                <ExternalLink className="size-3 opacity-80" />
+              </a>
+            </div>
+
+            {/* Card 3: Statutory & Corporate Governance */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-[#fdfbf9] dark:bg-slate-900 p-6 flex flex-col justify-between hover:border-[#c56718] transition-all">
+              <div>
+                <div className="flex items-center gap-2.5 mb-3 text-[#c56718] font-bold text-sm">
+                  <Landmark className="size-4 shrink-0" />
+                  <span>Statutory Registration (MCA &amp; GST)</span>
+                </div>
+                <h3 className="font-bold text-base text-slate-900 dark:text-white mb-2">
+                  ROC Ahmedabad Registered Entity
+                </h3>
+                <div className="space-y-2 text-xs text-slate-600 dark:text-slate-400 mb-4">
+                  <div>
+                    <span className="font-semibold text-slate-900 dark:text-white">Corporate Identity (CIN):</span>
+                    <p className="font-mono text-slate-700 dark:text-slate-300">U31900GJ2021PTC122730</p>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-slate-900 dark:text-white">GSTIN Registration:</span>
+                    <p className="font-mono text-slate-700 dark:text-slate-300">24AAICV0754B1ZO</p>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-slate-900 dark:text-white">Leadership:</span>
+                    <p className="text-slate-700 dark:text-slate-300">Naimil Vipul Patel (CEO &amp; Director), Vipulbhai Chaturbhai Patel (Director)</p>
+                  </div>
+                </div>
+              </div>
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-800 text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold flex items-center gap-1.5">
+                <ShieldCheck className="size-3.5 shrink-0" />
+                <span>Government &amp; Commercial Compliance Verified</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Verified Directory & Trust Authorities Row */}
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-6">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+              <div className="text-center lg:text-left">
+                <span className="text-xs uppercase font-bold text-slate-400 tracking-wider">VERIFIED PROFILES &amp; DIRECTORIES</span>
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                  Cross-referenced on major corporate registers, enterprise portals, and official business directories
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
+                <a
+                  href="https://www.indiamart.com/volamp-elektrikals/profile.html"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#c56718] font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 shadow-2xs"
+                >
+                  <span>IndiaMART Verified Seller</span>
+                  <ExternalLink className="size-3 text-slate-400" />
+                </a>
+                <a
+                  href="https://www.zaubacorp.com/VOLAMP-ELEKTRIKALS-PRIVATE-LIMITED-U31900GJ2021PTC122730"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#c56718] font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 shadow-2xs"
+                >
+                  <span>ZaubaCorp Profile</span>
+                  <ExternalLink className="size-3 text-slate-400" />
+                </a>
+                <a
+                  href="https://tracxn.com/d/legal-entities/india/volamp-elektrikals-private-limited/__zVrCPOD2dqIHgX77DHZQ2M16ODn3Y2mDXxPTyci6fp4"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#c56718] font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 shadow-2xs"
+                >
+                  <span>Tracxn Entity</span>
+                  <ExternalLink className="size-3 text-slate-400" />
+                </a>
+                <a
+                  href="https://www.linkedin.com/company/volampelektrikals/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#c56718] font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 shadow-2xs"
+                >
+                  <span>LinkedIn Official</span>
+                  <ExternalLink className="size-3 text-slate-400" />
+                </a>
+                <a
+                  href="https://gem.gov.in/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-[#c56718] font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 shadow-2xs"
+                >
+                  <span>GeM Portal Registered</span>
+                  <ExternalLink className="size-3 text-slate-400" />
+                </a>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 gap-2">
+              <div>
+                <strong>Authorized Master Distributor:</strong> Polycab India · Finolex Cables · KEI Industries · Schneider Electric · Larsen &amp; Toubro (L&amp;T) · Dowells · Legrand
+              </div>
+              <div className="italic text-slate-400">
+                Independent entity distinct from transformer manufacturers and raceway fabricators.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 11. Frequently Asked Questions (Matches FAQ Schema exactly for Google Search & AEO) */}
       <section className="py-16 sm:py-20 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-800" id="faq">
         <div className="market-container max-w-4xl mx-auto px-4 sm:px-6">
