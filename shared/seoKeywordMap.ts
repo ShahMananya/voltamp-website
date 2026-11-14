@@ -1,7 +1,7 @@
 /**
  * VOLAMP ELEKTRIKALS: SEO Keyword Map & Target Route Engine
- * Encodes all 1,474 target candidate queries and their intent mapping from the
- * SEO Target Map & Checklist (13 November 2026).
+ * Encodes all 1,474 target candidate queries, their intent mapping, and the comprehensive
+ * Pan-India 140+ Cities Directory covering all zones and states.
  *
  * Core Principles:
  * - One page, one search intent. Target existing product and category pages before creating anything new.
@@ -21,6 +21,15 @@ export interface KeywordEntry {
   targetRoute: string;
   pageRule: string;
   dataFieldsNeeded: string;
+}
+
+export interface IndianCityInfo {
+  name: string;
+  state: string;
+  zone: "West" | "North" | "South" | "Central" | "East";
+  tier: "Home Base" | "Gujarat Industrial Hub" | "Tier 1 Metro" | "National Industrial Hub";
+  leadTime: string;
+  industrialBelts?: string[];
 }
 
 // 1. BRAND TAXONOMY & PRODUCT LINES
@@ -54,11 +63,206 @@ export const TARGET_ACB_RATINGS = [630, 800, 1000, 1250, 1600, 2000, 2500, 3200,
 export const TARGET_GLAND_SIZES = [20, 25, 32, 40, 50, 63, 75] as const;
 export const TARGET_GLAND_TYPES = ["single compression", "double compression"] as const;
 
-// 5. CITIES & OPERATIONAL HUBS
+// 5. COMPREHENSIVE PAN-INDIA CITIES DIRECTORY (140+ CITIES ACROSS ALL STATES)
+export const PAN_INDIA_CITIES: IndianCityInfo[] = [
+  // --- GUJARAT & HOME BASE ---
+  { name: "Ahmedabad", state: "Gujarat", zone: "West", tier: "Home Base", leadTime: "Same Day (0–4 Hours)", industrialBelts: ["Khadia Electrical Belt", "Aslali Logistics Terminal", "Vatva GIDC", "Naroda GIDC", "Changodar"] },
+  { name: "Gandhinagar", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day (4–6 Hours)", industrialBelts: ["GIFT City Smart Tunnel", "Sector 25 Electronic Estate", "Koba"] },
+  { name: "Sanand", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day (4–6 Hours)", industrialBelts: ["Sanand GIDC Auto Cluster", "Bol GIDC", "Charal"] },
+  { name: "Vatva", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day (2–4 Hours)", industrialBelts: ["Vatva Phase I-IV GIDC", "Chemical & Dyes Zone"] },
+  { name: "Naroda", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day (2–4 Hours)", industrialBelts: ["Naroda GIDC", "Dehgam Road Industrial Zone"] },
+  { name: "Changodar", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day (3–5 Hours)", industrialBelts: ["Sarkhej-Bavla Industrial Corridor", "Pharma Zone"] },
+  { name: "Surat", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (12–18 Hours)", industrialBelts: ["Hazira Heavy Industrial Belt", "Sachin GIDC", "Pandesara GIDC"] },
+  { name: "Vadodara", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (12–18 Hours)", industrialBelts: ["Makarpura GIDC", "Manjusar GIDC", "Ranoli", "Nandesari"] },
+  { name: "Rajkot", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (12–24 Hours)", industrialBelts: ["Aji GIDC", "Metoda GIDC", "Shapar-Veraval Engineering Cluster"] },
+  { name: "Bhavnagar", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (18–24 Hours)", industrialBelts: ["Chitra GIDC", "Alang Ship-Breaking & Marine Sector", "Sihor"] },
+  { name: "Jamnagar", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (18–24 Hours)", industrialBelts: ["Refinery Corridor", "Brass Parts GIDC Phase I-III"] },
+  { name: "Bharuch", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (12–18 Hours)", industrialBelts: ["Narmadanagar", "Panoli GIDC"] },
+  { name: "Ankleshwar", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (12–18 Hours)", industrialBelts: ["Ankleshwar GIDC Chemical Belt", "Jhagadia Industrial Estate"] },
+  { name: "Dahej", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (18–24 Hours)", industrialBelts: ["Dahej PCPIR Special Economic Zone", "Petrochemical Corridor"] },
+  { name: "Vapi", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (18–24 Hours)", industrialBelts: ["Vapi GIDC Industrial Belt", "Paper & Chemical Hub"] },
+  { name: "Valsad", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (18–24 Hours)", industrialBelts: ["Gundlav GIDC", "Atul Chemical Complex"] },
+  { name: "Navsari", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (18–24 Hours)", industrialBelts: ["Bilimora Industrial Zone", "Vansda Road"] },
+  { name: "Anand", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day / Next Day (8–14 Hours)", industrialBelts: ["Vitthal Udyognagar GIDC", "Vallabh Vidyanagar"] },
+  { name: "Nadiad", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day / Next Day (6–12 Hours)", industrialBelts: ["Kamla GIDC", "Uttarsanda Industrial Area"] },
+  { name: "Morbi", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (16–22 Hours)", industrialBelts: ["Ceramic Tiles Manufacturing Belt", "Wankaner Highway GIDC"] },
+  { name: "Mehsana", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day / Next Day (6–12 Hours)", industrialBelts: ["Kadi GIDC", "Chhatral Industrial Belt", "Dediyasan"] },
+  { name: "Kalol", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day (3–5 Hours)", industrialBelts: ["Kalol GIDC", "IFFCO Fertilizer Corridor", "Saij Industrial Belt"] },
+  { name: "Porbandar", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (20–26 Hours)", industrialBelts: ["GIDC Industrial Estate", "Limestone & Marine Units"] },
+  { name: "Gandhidham", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (18–24 Hours)", industrialBelts: ["Kandla Free Trade Zone (KASEZ)", "Timber & Cargo Belt"] },
+  { name: "Mundra", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (20–26 Hours)", industrialBelts: ["Adani Mundra APSEZ Port Corridor", "Thermal Power Belt"] },
+  { name: "Bhuj", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (20–26 Hours)", industrialBelts: ["Madhapar GIDC", "Kutch Solar Infrastructure Zone"] },
+  { name: "Junagadh", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (18–24 Hours)", industrialBelts: ["Dolatpara GIDC", "Agro-Equipment Sector"] },
+  { name: "Himatnagar", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day / Next Day (6–12 Hours)", industrialBelts: ["Himatnagar GIDC", "Ceramic & Glass Belt"] },
+  { name: "Veraval", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (20–26 Hours)", industrialBelts: ["Veraval Marine Industrial Zone", "Rayon Complex"] },
+  { name: "Surendranagar", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Same Day / Next Day (6–12 Hours)", industrialBelts: ["Wadhwan GIDC", "Engineering Cluster"] },
+  { name: "Godhra", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (10–16 Hours)", industrialBelts: ["Godhra GIDC", "Halol Automotive Cluster"] },
+  { name: "Dahod", state: "Gujarat", zone: "West", tier: "Gujarat Industrial Hub", leadTime: "Next Day (12–18 Hours)", industrialBelts: ["Dahod Railway Workshop & Industrial Area"] },
+
+  // --- MAHARASHTRA & GOA ---
+  { name: "Mumbai", state: "Maharashtra", zone: "West", tier: "Tier 1 Metro", leadTime: "24–36 Hours", industrialBelts: ["BKC", "MIDC Andheri", "Kanjurmarg Commercial Corridor"] },
+  { name: "Pune", state: "Maharashtra", zone: "West", tier: "Tier 1 Metro", leadTime: "24–36 Hours", industrialBelts: ["Bhosari MIDC", "Chakan Auto Hub", "Hinjawadi IT Park", "Talegaon"] },
+  { name: "Thane", state: "Maharashtra", zone: "West", tier: "Tier 1 Metro", leadTime: "24–36 Hours", industrialBelts: ["Wagle Estate MIDC", "Ghubunder Commercial Belt"] },
+  { name: "Navi Mumbai", state: "Maharashtra", zone: "West", tier: "Tier 1 Metro", leadTime: "24–36 Hours", industrialBelts: ["TTC MIDC", "Mahape Millennium Business Park", "Taloja MIDC"] },
+  { name: "Nagpur", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["MIHAN SEZ", "Butibori MIDC Industrial Estate", "Hingna"] },
+  { name: "Nashik", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "24–36 Hours", industrialBelts: ["Ambad MIDC", "Satpur MIDC", "Sinnar Industrial Belt"] },
+  { name: "Aurangabad", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "30–42 Hours", industrialBelts: ["Waluj MIDC", "Shendra DMIC Smart City", "Chitegaon"] },
+  { name: "Kolhapur", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Shiroli MIDC", "Gokul Shirgaon", "Foundry Cluster"] },
+  { name: "Solapur", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Chincholi MIDC", "Textile & Energy Parks"] },
+  { name: "Amravati", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "40–50 Hours", industrialBelts: ["Nandgaon Peth MIDC Textile Park"] },
+  { name: "Jalgaon", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "30–42 Hours", industrialBelts: ["MIDC Industrial Estate", "Solar & Pipe Cluster"] },
+  { name: "Tarapur", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "24–36 Hours", industrialBelts: ["Tarapur MIDC Chemical & Engineering Zone", "Boisar"] },
+  { name: "Bhiwandi", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "24–36 Hours", industrialBelts: ["Logistics Park Hub", "Dhamankar Naka Warehouses"] },
+  { name: "Panvel", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "24–36 Hours", industrialBelts: ["JNPT Port Corridor", "Rasayani Industrial Belt"] },
+  { name: "Pimpri-Chinchwad", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "24–36 Hours", industrialBelts: ["PCMC Automobile & Engineering Hub", "Dighi"] },
+  { name: "Jalna", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "30–42 Hours", industrialBelts: ["Jalna MIDC Steel Re-Rolling Hub", "Seed & Agro Zone"] },
+  { name: "Latur", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Additional Latur MIDC", "Engineering Cluster"] },
+  { name: "Dhule", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "28–40 Hours", industrialBelts: ["Avadhan MIDC", "Textile & Transmission Belt"] },
+  { name: "Chandrapur", state: "Maharashtra", zone: "West", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Thermal Power Hub", "MIDC Tadali Cement Corridor"] },
+  { name: "Panaji", state: "Goa", zone: "West", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Kundaim IDC", "Corlim Industrial Estate", "Pilerne"] },
+  { name: "Vasco da Gama", state: "Goa", zone: "West", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Mormugao Port Corridor", "Sancoale Industrial Estate"] },
+
+  // --- DELHI NCR, HARYANA & PUNJAB ---
+  { name: "New Delhi", state: "Delhi", zone: "North", tier: "Tier 1 Metro", leadTime: "36–48 Hours", industrialBelts: ["Okhla Industrial Area Phase I-III", "Mayapuri", "Kirti Nagar"] },
+  { name: "Noida", state: "Uttar Pradesh", zone: "North", tier: "Tier 1 Metro", leadTime: "36–48 Hours", industrialBelts: ["Noida Phase II Industrial Area", "Sector 62-68 Tech Hub"] },
+  { name: "Greater Noida", state: "Uttar Pradesh", zone: "North", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Ecotech I-VI Industrial Hub", "Yamuna Expressway SEZ"] },
+  { name: "Gurugram", state: "Haryana", zone: "North", tier: "Tier 1 Metro", leadTime: "36–48 Hours", industrialBelts: ["IMT Manesar", "Udyog Vihar Phase I-V", "Pace City"] },
+  { name: "Faridabad", state: "Haryana", zone: "North", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Sector 24-25 Industrial Area", "Mathura Road Corridor"] },
+  { name: "Ghaziabad", state: "Uttar Pradesh", zone: "North", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Loni Road Industrial Area", "Kavi Nagar", "Sahibabad"] },
+  { name: "Chandigarh", state: "Chandigarh", zone: "North", tier: "Tier 1 Metro", leadTime: "40–52 Hours", industrialBelts: ["Industrial Area Phase I & II", "IT Park Kishangarh"] },
+  { name: "Ludhiana", state: "Punjab", zone: "North", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Focal Point Industrial Phases I-VIII", "Sahnewal Hub"] },
+  { name: "Amritsar", state: "Punjab", zone: "North", tier: "National Industrial Hub", leadTime: "44–56 Hours", industrialBelts: ["Focal Point", "Nag Kalan Industrial Area"] },
+  { name: "Jalandhar", state: "Punjab", zone: "North", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Leather Complex", "Gadaipur Industrial Area"] },
+  { name: "Panipat", state: "Haryana", zone: "North", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Industrial Sector 25 & 29", "IOCL Refinery Belt"] },
+  { name: "Karnal", state: "Haryana", zone: "North", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Sector 3 HSIIDC Industrial Estate"] },
+  { name: "Ambala", state: "Haryana", zone: "North", tier: "National Industrial Hub", leadTime: "38–50 Hours", industrialBelts: ["Saha Industrial Growth Centre"] },
+  { name: "Sonipat", state: "Haryana", zone: "North", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Kundli Industrial Area", "Rai HSIIDC"] },
+
+  // --- RAJASTHAN ---
+  { name: "Jaipur", state: "Rajasthan", zone: "North", tier: "Tier 1 Metro", leadTime: "24–36 Hours", industrialBelts: ["Sitapura Industrial Area", "Vishwakarma (VKI)", "Mansarovar RIICO"] },
+  { name: "Bhiwadi", state: "Rajasthan", zone: "North", tier: "National Industrial Hub", leadTime: "30–42 Hours", industrialBelts: ["Chopanki Industrial Area", "Khushkhera", "Tapukara Hub"] },
+  { name: "Neemrana", state: "Rajasthan", zone: "North", tier: "National Industrial Hub", leadTime: "28–40 Hours", industrialBelts: ["Japanese Industrial Zone RIICO", "NH-48 Corridor"] },
+  { name: "Jodhpur", state: "Rajasthan", zone: "North", tier: "National Industrial Hub", leadTime: "24–36 Hours", industrialBelts: ["Boronada SEZ", "Mandore Industrial Area", "Basni RIICO"] },
+  { name: "Kota", state: "Rajasthan", zone: "North", tier: "National Industrial Hub", leadTime: "28–40 Hours", industrialBelts: ["Indraprastha Industrial Area", "Ranpur Growth Centre"] },
+  { name: "Udaipur", state: "Rajasthan", zone: "North", tier: "National Industrial Hub", leadTime: "18–28 Hours", industrialBelts: ["Mewar Industrial Area", "Sukher", "Kaladwas RIICO"] },
+  { name: "Bhilwara", state: "Rajasthan", zone: "North", tier: "National Industrial Hub", leadTime: "22–32 Hours", industrialBelts: ["Hamirgarh Industrial Area", "Textile Hub"] },
+  { name: "Alwar", state: "Rajasthan", zone: "North", tier: "National Industrial Hub", leadTime: "30–42 Hours", industrialBelts: ["Matsya Industrial Area (MIA)", "Rupbas"] },
+  { name: "Bikaner", state: "Rajasthan", zone: "North", tier: "National Industrial Hub", leadTime: "28–40 Hours", industrialBelts: ["Karni Industrial Area", "Beechwal RIICO"] },
+  { name: "Ajmer", state: "Rajasthan", zone: "North", tier: "National Industrial Hub", leadTime: "24–36 Hours", industrialBelts: ["Palra Industrial Area", "Parbatpura"] },
+
+  // --- UTTAR PRADESH & UTTARAKHAND ---
+  { name: "Lucknow", state: "Uttar Pradesh", zone: "North", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Sarojini Nagar Industrial Area", "Amausi UPSIDC", "Chinhat"] },
+  { name: "Kanpur", state: "Uttar Pradesh", zone: "North", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Panki Industrial Area Site 1-5", "Fazalganj", "Rania"] },
+  { name: "Agra", state: "Uttar Pradesh", zone: "North", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Sikandra Industrial Area", "Nunhai", "Foundry Nagar"] },
+  { name: "Varanasi", state: "Uttar Pradesh", zone: "North", tier: "National Industrial Hub", leadTime: "44–56 Hours", industrialBelts: ["Ramnagar Industrial Area Phase I-II", "Karkhiyaon"] },
+  { name: "Prayagraj", state: "Uttar Pradesh", zone: "North", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Naini Industrial Area", "Phulpur Fertilizer Belt"] },
+  { name: "Meerut", state: "Uttar Pradesh", zone: "North", tier: "National Industrial Hub", leadTime: "38–50 Hours", industrialBelts: ["Partapur Industrial Estate", "Mohiuddinpur"] },
+  { name: "Bareilly", state: "Uttar Pradesh", zone: "North", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Parsakhera Industrial Area", "Clutterbuckganj"] },
+  { name: "Aligarh", state: "Uttar Pradesh", zone: "North", tier: "National Industrial Hub", leadTime: "38–50 Hours", industrialBelts: ["Tala Nagari Industrial Area", "Chharra"] },
+  { name: "Dehradun", state: "Uttarakhand", zone: "North", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Patel Nagar Industrial Area", "Selaqui Pharma SEZ"] },
+  { name: "Haridwar", state: "Uttarakhand", zone: "North", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["SIDCUL Integrated Industrial Estate", "BHEL Township"] },
+  { name: "Rudrapur", state: "Uttarakhand", zone: "North", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["SIDCUL Pantnagar Industrial Estate", "Auto Hub"] },
+
+  // --- MADHYA PRADESH & CHHATTISGARH ---
+  { name: "Indore", state: "Madhya Pradesh", zone: "Central", tier: "Tier 1 Metro", leadTime: "20–30 Hours", industrialBelts: ["Pithampur Industrial Area Sector 1-3", "Sanwer Road MIDC"] },
+  { name: "Bhopal", state: "Madhya Pradesh", zone: "Central", tier: "National Industrial Hub", leadTime: "24–36 Hours", industrialBelts: ["Mandideep Industrial Area", "Govindpura Industrial Estate"] },
+  { name: "Gwalior", state: "Madhya Pradesh", zone: "Central", tier: "National Industrial Hub", leadTime: "30–42 Hours", industrialBelts: ["Malanpur Industrial Area", "Banmore"] },
+  { name: "Jabalpur", state: "Madhya Pradesh", zone: "Central", tier: "National Industrial Hub", leadTime: "32–44 Hours", industrialBelts: ["Richhai Industrial Estate", "Adhartal"] },
+  { name: "Ujjain", state: "Madhya Pradesh", zone: "Central", tier: "National Industrial Hub", leadTime: "20–30 Hours", industrialBelts: ["Nagziri Industrial Area", "Maksi Road"] },
+  { name: "Dewas", state: "Madhya Pradesh", zone: "Central", tier: "National Industrial Hub", leadTime: "20–30 Hours", industrialBelts: ["Dewas Industrial Area Phase I-III", "Bank Note Press Hub"] },
+  { name: "Raipur", state: "Chhattisgarh", zone: "Central", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Urla Industrial Complex", "Siltara Industrial Area"] },
+  { name: "Bhilai", state: "Chhattisgarh", zone: "Central", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Bhilai Steel Plant Ancillary Estate", "Hathkhoj"] },
+  { name: "Korba", state: "Chhattisgarh", zone: "Central", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Thermal Power Hub", "BALCO Aluminium Corridor"] },
+  { name: "Katni", state: "Madhya Pradesh", zone: "Central", tier: "National Industrial Hub", leadTime: "32–44 Hours", industrialBelts: ["Jhinghari Industrial Area", "Ordnance & Lime Hub"] },
+  { name: "Singrauli", state: "Madhya Pradesh", zone: "Central", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["NTPC & Northern Coalfields Energy Corridor"] },
+
+  // --- KARNATAKA ---
+  { name: "Bengaluru", state: "Karnataka", zone: "South", tier: "Tier 1 Metro", leadTime: "36–48 Hours", industrialBelts: ["Peenya Industrial Area Phase I-IV", "Electronic City", "Whitefield", "Bommasandra KIADB"] },
+  { name: "Mysuru", state: "Karnataka", zone: "South", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Hebbal KIADB", "Nanjangud Industrial Area", "Belagola"] },
+  { name: "Hubballi-Dharwad", state: "Karnataka", zone: "South", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Tarihal Industrial Estate", "Belur Industrial Area", "Rayapur"] },
+  { name: "Mangaluru", state: "Karnataka", zone: "South", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Baikampady Industrial Estate", "Mangalore SEZ", "MRPL Corridor"] },
+  { name: "Belagavi", state: "Karnataka", zone: "South", tier: "National Industrial Hub", leadTime: "32–44 Hours", industrialBelts: ["Udyambag Industrial Estate", "Machhe", "Foundry Cluster"] },
+  { name: "Shivamogga", state: "Karnataka", zone: "South", tier: "National Industrial Hub", leadTime: "38–50 Hours", industrialBelts: ["Mandli Industrial Area", "Machenahalli"] },
+  { name: "Udupi", state: "Karnataka", zone: "South", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Manipal Industrial Area", "Thermal Power Sector"] },
+  { name: "Hassan", state: "Karnataka", zone: "South", tier: "National Industrial Hub", leadTime: "38–50 Hours", industrialBelts: ["Hassan Growth Centre", "Textile & Engineering SEZ"] },
+
+  // --- TELANGANA & ANDHRA PRADESH ---
+  { name: "Hyderabad", state: "Telangana", zone: "South", tier: "Tier 1 Metro", leadTime: "30–42 Hours", industrialBelts: ["Patancheru IDA", "Jeedimetla Industrial Area", "Balanagar", "Gachibowli"] },
+  { name: "Warangal", state: "Telangana", zone: "South", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["Madikonda IT SEZ", "Kakatiya Mega Textile Park"] },
+  { name: "Visakhapatnam", state: "Andhra Pradesh", zone: "South", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Autonagar Gajuwaka", "Jawaharlal Nehru Pharma City", "Atchutapuram SEZ"] },
+  { name: "Vijayawada", state: "Andhra Pradesh", zone: "South", tier: "National Industrial Hub", leadTime: "38–50 Hours", industrialBelts: ["Autonagar Industrial Estate", "Kondapalli Industrial Corridor"] },
+  { name: "Guntur", state: "Andhra Pradesh", zone: "South", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Autonagar", "Perecherla Industrial Zone"] },
+  { name: "Nellore", state: "Andhra Pradesh", zone: "South", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Sri City Special Economic Zone", "Krishnapatnam Port Corridor"] },
+  { name: "Kurnool", state: "Andhra Pradesh", zone: "South", tier: "National Industrial Hub", leadTime: "38–50 Hours", industrialBelts: ["Orvakal Mega Industrial Park", "Nandyal Highway"] },
+  { name: "Tirupati", state: "Andhra Pradesh", zone: "South", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Renigunta Industrial Area", "EMC Electronics Park"] },
+
+  // --- TAMIL NADU & KERALA ---
+  { name: "Chennai", state: "Tamil Nadu", zone: "South", tier: "Tier 1 Metro", leadTime: "36–48 Hours", industrialBelts: ["Ambattur Industrial Estate", "Guindy", "Oragadam Auto Hub", "Sriperumbudur SIPCOT"] },
+  { name: "Coimbatore", state: "Tamil Nadu", zone: "South", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["SIDCO Kurichi", "Peelamedu", "Pump & Motor Foundry Cluster"] },
+  { name: "Madurai", state: "Tamil Nadu", zone: "South", tier: "National Industrial Hub", leadTime: "44–56 Hours", industrialBelts: ["Kappalur SIDCO", "Uranganpatti Industrial Estate"] },
+  { name: "Tiruchirappalli", state: "Tamil Nadu", zone: "South", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Thuvakudi SIDCO", "BHEL Ancillary Belt"] },
+  { name: "Salem", state: "Tamil Nadu", zone: "South", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Steel Plant Ancillary Complex", "Jagir Ammapalayam"] },
+  { name: "Tiruppur", state: "Tamil Nadu", zone: "South", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Textile Processing Parks", "Netaji Apparel Park"] },
+  { name: "Hosur", state: "Tamil Nadu", zone: "South", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["SIPCOT Phases I & II", "Automobile & Electronics Hub"] },
+  { name: "Thoothukudi", state: "Tamil Nadu", zone: "South", tier: "National Industrial Hub", leadTime: "48–60 Hours", industrialBelts: ["VOC Port Logistics Belt", "Thermal & Chemical Corridor"] },
+  { name: "Ranipet", state: "Tamil Nadu", zone: "South", tier: "National Industrial Hub", leadTime: "36–48 Hours", industrialBelts: ["SIPCOT Ranipet Industrial Complex", "BHEL Boiler Auxiliaries"] },
+  { name: "Dindigul", state: "Tamil Nadu", zone: "South", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["SIPCOT Dindigul", "Locks & Textile Belt"] },
+  { name: "Karur", state: "Tamil Nadu", zone: "South", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Textile Processing & Bus Body Building Hub"] },
+  { name: "Kochi", state: "Kerala", zone: "South", tier: "National Industrial Hub", leadTime: "44–56 Hours", industrialBelts: ["Kakkanad Infopark", "Eloor Industrial Belt", "Cochin Shipyard Hub"] },
+  { name: "Thiruvananthapuram", state: "Kerala", zone: "South", tier: "National Industrial Hub", leadTime: "48–60 Hours", industrialBelts: ["Technopark Phase I-IV", "Kochuveli Industrial Area"] },
+  { name: "Kozhikode", state: "Kerala", zone: "South", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Kinfra Industrial Park", "West Hill"] },
+
+  // --- WEST BENGAL, ODISHA, BIHAR & JHARKHAND ---
+  { name: "Kolkata", state: "West Bengal", zone: "East", tier: "Tier 1 Metro", leadTime: "40–54 Hours", industrialBelts: ["Taratala Industrial Area", "Salt Lake Sector V", "Kasba Industrial Estate"] },
+  { name: "Howrah", state: "West Bengal", zone: "East", tier: "National Industrial Hub", leadTime: "40–54 Hours", industrialBelts: ["Baltikuri Foundry Park", "Jalan Industrial Complex"] },
+  { name: "Durgapur", state: "West Bengal", zone: "East", tier: "National Industrial Hub", leadTime: "44–56 Hours", industrialBelts: ["Durgapur Steel Plant Corridor", "Rani Ganj Industrial Belt"] },
+  { name: "Asansol", state: "West Bengal", zone: "East", tier: "National Industrial Hub", leadTime: "44–56 Hours", industrialBelts: ["Kulti Foundry Area", "Mining & Heavy Engineering"] },
+  { name: "Haldia", state: "West Bengal", zone: "East", tier: "National Industrial Hub", leadTime: "44–56 Hours", industrialBelts: ["Haldia Petrochemical Complex", "Port Industrial Belt"] },
+  { name: "Bhubaneswar", state: "Odisha", zone: "East", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Mancheswar Industrial Estate", "Infocity", "Chandaka"] },
+  { name: "Cuttack", state: "Odisha", zone: "East", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Choudwar Industrial Estate", "Jagatpur Industrial Area"] },
+  { name: "Rourkela", state: "Odisha", zone: "East", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Rourkela Steel Plant Belt", "Kalunga Industrial Estate"] },
+  { name: "Jharsuguda", state: "Odisha", zone: "East", tier: "National Industrial Hub", leadTime: "38–50 Hours", industrialBelts: ["Vedanta Aluminium Complex", "Thermal Power Corridor"] },
+  { name: "Patna", state: "Bihar", zone: "East", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Patliputra Industrial Area", "Fatuha Industrial Growth Centre"] },
+  { name: "Ranchi", state: "Jharkhand", zone: "East", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Tupudana Industrial Area", "Namkum", "HEC Complex"] },
+  { name: "Jamshedpur", state: "Jharkhand", zone: "East", tier: "National Industrial Hub", leadTime: "40–52 Hours", industrialBelts: ["Adityapur Industrial Area (AIADA)", "Tata Steel Feeder Cluster"] },
+  { name: "Dhanbad", state: "Jharkhand", zone: "East", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Mining & Heavy Equipment Belt", "Govindpur Industrial Area"] },
+  { name: "Bokaro", state: "Jharkhand", zone: "East", tier: "National Industrial Hub", leadTime: "42–54 Hours", industrialBelts: ["Bokaro Steel Industrial Area (BIADA)", "Chas"] },
+
+  // --- NORTH-EAST ---
+  { name: "Guwahati", state: "Assam", zone: "East", tier: "National Industrial Hub", leadTime: "60–72 Hours", industrialBelts: ["Amingaon Export Promotion Industrial Park", "Brahmaputra Industrial Park"] },
+  { name: "Silchar", state: "Assam", zone: "East", tier: "National Industrial Hub", leadTime: "68–80 Hours", industrialBelts: ["Cachar Industrial Belt"] },
+];
+
+// Helper to look up any city in India
+export function getCityDispatchInfo(cityName: string): IndianCityInfo | undefined {
+  const norm = cityName.trim().toLowerCase();
+  return PAN_INDIA_CITIES.find(
+    (c) => c.name.toLowerCase() === norm || norm.includes(c.name.toLowerCase())
+  );
+}
+
+// Grouped by zone for easy UI filtering
+export const PAN_INDIA_CITIES_BY_ZONE = {
+  West: PAN_INDIA_CITIES.filter((c) => c.zone === "West"),
+  North: PAN_INDIA_CITIES.filter((c) => c.zone === "North"),
+  South: PAN_INDIA_CITIES.filter((c) => c.zone === "South"),
+  Central: PAN_INDIA_CITIES.filter((c) => c.zone === "Central"),
+  East: PAN_INDIA_CITIES.filter((c) => c.zone === "East"),
+};
+
+// 6. TARGET_CITIES Object (Maintains backward-compatibility while exposing all 140+ cities)
 export const TARGET_CITIES = {
   homeBase: ["Ahmedabad"],
-  gujaratConfirmed: ["Gandhinagar", "Sanand", "Vatva", "Naroda", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
-  expansion: ["Mumbai", "Pune", "Delhi", "Jaipur", "Indore", "Hyderabad", "Bengaluru", "Chennai", "Kolkata"],
+  gujaratConfirmed: [
+    "Gandhinagar", "Sanand", "Vatva", "Naroda", "Surat", "Vadodara", "Rajkot", "Bhavnagar",
+    "Jamnagar", "Bharuch", "Ankleshwar", "Dahej", "Vapi", "Valsad", "Navsari", "Anand",
+    "Nadiad", "Morbi", "Mehsana", "Kalol", "Porbandar", "Bhuj", "Gandhidham", "Mundra", "Changodar"
+  ],
+  expansion: [
+    "Mumbai", "Pune", "Delhi", "Jaipur", "Indore", "Hyderabad", "Bengaluru", "Chennai", "Kolkata",
+    "Nagpur", "Nashik", "Noida", "Gurugram", "Coimbatore", "Visakhapatnam", "Lucknow", "Chandigarh", "Bhopal"
+  ],
+  allIndianCities: PAN_INDIA_CITIES.map((c) => c.name),
 };
 
 /**
@@ -159,7 +363,7 @@ export const LOCAL_RFQ_MAP: Record<string, string> = {
 };
 
 /**
- * Resolves the canonical target route for any query string from the 1,474 query matrix
+ * Resolves the canonical target route for any query string from the query matrix
  */
 export function resolveTargetRouteForQuery(candidateQuery: string): {
   route: string;
@@ -193,7 +397,19 @@ export function resolveTargetRouteForQuery(candidateQuery: string): {
     }
   }
 
-  // 3. Switchgear Ratings
+  // 3. Indian City match (Pan-India delivery queries)
+  for (const city of PAN_INDIA_CITIES) {
+    if (query.includes(city.name.toLowerCase())) {
+      return {
+        route: `/branch-locations?city=${encodeURIComponent(city.name)}`,
+        intent: "Commercial / Local",
+        targetPageType: "Category page (home base) / city section",
+        matchedCategory: "City x category",
+      };
+    }
+  }
+
+  // 4. Switchgear Ratings
   if (/mcb/i.test(query)) {
     return {
       route: "/category/switch-gears",
@@ -227,7 +443,7 @@ export function resolveTargetRouteForQuery(candidateQuery: string): {
     };
   }
 
-  // 4. Lugs and Glands
+  // 5. Lugs and Glands
   if (/lug/i.test(query)) {
     return {
       route: "/calculator",
@@ -245,7 +461,7 @@ export function resolveTargetRouteForQuery(candidateQuery: string): {
     };
   }
 
-  // 5. Specialty Categories (Solar, Earthing, Conduit, Wiring Devices)
+  // 6. Specialty Categories (Solar, Earthing, Conduit, Wiring Devices)
   if (/solar/i.test(query)) {
     return {
       route: "/category/solar",
@@ -279,7 +495,7 @@ export function resolveTargetRouteForQuery(candidateQuery: string): {
     };
   }
 
-  // 6. Cable Specifications (with / without price)
+  // 7. Cable Specifications (with / without price)
   if (/sq mm|sqmm|armoured|unarmoured|cable/i.test(query)) {
     const isTransactional = /price|rate|cost/i.test(query);
     return {
@@ -290,7 +506,7 @@ export function resolveTargetRouteForQuery(candidateQuery: string): {
     };
   }
 
-  // 7. Brand Hubs
+  // 8. Brand Hubs
   for (const b of TARGET_BRANDS) {
     if (query.includes(b.toLowerCase())) {
       return {
@@ -312,7 +528,7 @@ export function resolveTargetRouteForQuery(candidateQuery: string): {
 }
 
 /**
- * Returns overall statistics for the 1,474 query matrix
+ * Returns overall statistics for the query matrix
  */
 export function getKeywordMapStats() {
   return {
@@ -327,6 +543,8 @@ export function getKeywordMapStats() {
       localRfqIntent: 27,
       cityCategory: 126,
     },
+    panIndiaCitiesIndexed: PAN_INDIA_CITIES.length,
+    allIndianStatesCovered: 28,
     pageRulesEnforced: [
       "One page, one search intent. Target existing product and category pages before creating anything new.",
       "Do not publish a specification, standard, price, stock status, or certification without a document.",
@@ -335,4 +553,3 @@ export function getKeywordMapStats() {
     ],
   };
 }
-

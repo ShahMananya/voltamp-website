@@ -25,9 +25,14 @@ import {
   Navigation,
   Factory,
   ShieldCheck,
+  Search,
+  Truck,
+  Send,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import BranchLocationMap from "@/components/maps/BranchLocationMap";
+import { PAN_INDIA_CITIES, type IndianCityInfo } from "@shared/seoKeywordMap";
 
 interface LocationInfo {
   id: string;
@@ -95,6 +100,20 @@ export default function BranchLocations() {
   const { totalCount, openCart } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [citySearch, setCitySearch] = useState("");
+  const [selectedZone, setSelectedZone] = useState<string>("All");
+
+  const filteredCities = PAN_INDIA_CITIES.filter((city) => {
+    const matchesSearch =
+      citySearch.trim() === "" ||
+      city.name.toLowerCase().includes(citySearch.toLowerCase()) ||
+      city.state.toLowerCase().includes(citySearch.toLowerCase()) ||
+      (city.industrialBelts && city.industrialBelts.some((b) => b.toLowerCase().includes(citySearch.toLowerCase())));
+
+    if (selectedZone === "All") return matchesSearch;
+    if (selectedZone === "Gujarat") return matchesSearch && city.state === "Gujarat";
+    return matchesSearch && city.zone === selectedZone;
+  });
 
   const copyToClipboard = (text: string, label: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -120,9 +139,8 @@ export default function BranchLocations() {
     <div className="volamp-marketplace min-h-screen bg-[#faf7f3] dark:bg-[#0c1520] text-[#3d2b2d] dark:text-[#f5f7f9] flex flex-col font-sans transition-colors">
       <SeoHead
         title="Branch Locations & Warehouse Depots | Volamp Ahmedabad & Aslali"
-        description="Visit Volamp Elektrikals: Corporate Sales Office at Khadia (Old City) and Central Logistics Fulfillment Center at Aslali, Ahmedabad, Gujarat. Pan-India dispatch."
-        keywords="Volamp branch Ahmedabad, electrical shop Khadia, cable warehouse Aslali, Polycab distributor Ahmedabad address, electrical wholesale Gujarat, Volamp contact number"
-        canonical="https://volampelektrikals.com/branch-locations"
+        description="Visit Volamp Elektrikals: Corporate Sales Office at Khadia (Old City) and Central Logistics Fulfillment Center at Aslali, Ahmedabad, Gujarat. Pan-India dispatch across 140+ cities."
+        canonical="https://www.volampelektrikals.com/branch-locations"
         jsonLd={{
           "@context": "https://schema.org",
           "@graph": [
@@ -145,7 +163,21 @@ export default function BranchLocations() {
                 "longitude": 72.5950
               },
               "openingHours": "Mo-Sa 09:30-19:30",
-              "hasMap": "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw"
+              "hasMap": "https://maps.app.goo.gl/FPiAvDJEKCsxTLgT8?g_st=iw",
+              "areaServed": [
+                { "@type": "Country", "name": "India" },
+                { "@type": "AdministrativeArea", "name": "Gujarat" },
+                { "@type": "AdministrativeArea", "name": "Maharashtra" },
+                { "@type": "AdministrativeArea", "name": "Rajasthan" },
+                { "@type": "AdministrativeArea", "name": "Madhya Pradesh" },
+                { "@type": "AdministrativeArea", "name": "Delhi NCR" },
+                { "@type": "AdministrativeArea", "name": "Karnataka" },
+                { "@type": "AdministrativeArea", "name": "Tamil Nadu" },
+                { "@type": "AdministrativeArea", "name": "Telangana" },
+                { "@type": "AdministrativeArea", "name": "Andhra Pradesh" },
+                { "@type": "AdministrativeArea", "name": "Uttar Pradesh" },
+                { "@type": "AdministrativeArea", "name": "West Bengal" }
+              ]
             },
             {
               "@type": "Warehouse",
@@ -166,7 +198,10 @@ export default function BranchLocations() {
                 "longitude": 72.5878
               },
               "openingHours": "Mo-Sa 08:00-20:00",
-              "hasMap": "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7"
+              "hasMap": "https://maps.app.goo.gl/WgS6fp3TaEsH2GBU7",
+              "areaServed": [
+                { "@type": "Country", "name": "India" }
+              ]
             }
           ]
         }}
@@ -498,6 +533,152 @@ export default function BranchLocations() {
             </a>
           </div>
         </div>
+
+        {/* 7. Comprehensive Pan-India Delivery Corridors (All Indian Cities) */}
+        <section className="bg-white dark:bg-slate-800/95 rounded-3xl border border-[#ebd7c7] dark:border-slate-700 p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#f0e4d8] dark:border-slate-700/60 pb-6">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#c56718] dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 rounded-md border border-amber-300/40">
+                  PAN-INDIA LOGISTICS DIRECTORY
+                </span>
+                <span className="text-xs text-slate-500 font-mono font-semibold">
+                  140+ Cities Across All States
+                </span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white">
+                Daily Cable &amp; Switchgear Supply Corridors Across India
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed">
+                Operating from our central mother stockyard in Aslali, Ahmedabad and verified OEM production facilities, Volamp Elektrikals supplies LT/HT power cables, flexible wires, and switchgear with original Manufacturer Test Certificates (MTC) to job sites and GIDC estates nationwide.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs font-semibold text-slate-500">Showing:</span>
+              <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-md bg-[#faf4ed] dark:bg-slate-700 text-[#c56718] dark:text-amber-300 border border-amber-200/50">
+                {filteredCities.length} Locations
+              </span>
+            </div>
+          </div>
+
+          {/* Search Bar & Zone Filter Pills */}
+          <div className="space-y-4">
+            <div className="relative">
+              <Search className="size-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={citySearch}
+                onChange={(e) => setCitySearch(e.target.value)}
+                placeholder="Search by city, state, or industrial belt (e.g. Surat, Dahej, Pune, Gurugram, Indore, Coimbatore, Jamshedpur)..."
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-[#fdfbf9] dark:bg-slate-900 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#c56718]"
+              />
+              {citySearch && (
+                <button
+                  type="button"
+                  onClick={() => setCitySearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400 hover:text-slate-600"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            {/* Zone Filter Tabs */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+              {[
+                { id: "All", label: "All India (140+)" },
+                { id: "Gujarat", label: "Gujarat Industrial Hubs (27)" },
+                { id: "West", label: "West Zone (17)" },
+                { id: "North", label: "North Zone (34)" },
+                { id: "Central", label: "Central Zone (9)" },
+                { id: "South", label: "South Zone (35)" },
+                { id: "East", label: "East & North-East (20)" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setSelectedZone(tab.id)}
+                  className={`px-3 py-1.5 rounded-lg font-bold tracking-tight whitespace-nowrap transition-all cursor-pointer ${
+                    selectedZone === tab.id
+                      ? "bg-[#c56718] text-white shadow-xs"
+                      : "bg-[#faf7f3] dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-amber-100/60 dark:hover:bg-slate-750"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* City Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[560px] overflow-y-auto pr-1">
+            {filteredCities.map((city) => (
+              <div
+                key={`${city.name}-${city.state}`}
+                className="p-3.5 rounded-xl border border-slate-200/90 dark:border-slate-700/80 bg-[#fefdfc] dark:bg-slate-850 hover:border-[#c56718] hover:shadow-xs transition-all flex flex-col justify-between gap-2.5"
+              >
+                <div>
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <span className="font-bold text-sm text-[#4d1217] dark:text-white flex items-center gap-1">
+                      <MapPin className="size-3 text-[#c56718] shrink-0" />
+                      {city.name}
+                    </span>
+                    <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                      {city.state}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold mb-1.5">
+                    <Truck className="size-3 shrink-0" />
+                    <span>{city.leadTime}</span>
+                  </div>
+
+                  {city.industrialBelts && city.industrialBelts.length > 0 && (
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 leading-snug line-clamp-2">
+                      {city.industrialBelts.join(" • ")}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between gap-1 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <span className="text-[10px] text-amber-700 dark:text-amber-400 font-mono font-semibold">
+                    ✓ MTC Verified
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenRFQ(`Material Delivery to ${city.name}, ${city.state}`)}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-[#c56718] hover:text-[#9a4309] hover:underline cursor-pointer"
+                  >
+                    <span>Request Supply</span>
+                    <ArrowUpRight className="size-3" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {filteredCities.length === 0 && (
+            <div className="py-12 text-center space-y-2">
+              <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                No cities found matching "{citySearch}".
+              </p>
+              <p className="text-xs text-slate-400">
+                We supply materials to ANY project destination across all 28 Indian States.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setCitySearch("");
+                  setSelectedZone("All");
+                }}
+                className="mt-2 text-xs font-bold text-[#c56718] underline"
+              >
+                Reset Search
+              </button>
+            </div>
+          )}
+        </section>
       </main>
 
       {/* 7. Footer (Universal Footer Matching Home Page Exactly) */}

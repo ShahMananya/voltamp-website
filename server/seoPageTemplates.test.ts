@@ -216,5 +216,21 @@ describe("SEO Keyword Map (1,474 Candidate Query Engine)", () => {
     const res2 = resolveTargetRouteForQuery("32mm double compression cable gland");
     expect(res2.route).toBe("/calculator");
   });
+
+  it("resolves Pan-India city delivery queries across Indian states", () => {
+    const resSurat = resolveTargetRouteForQuery("armoured cable supplier Surat");
+    expect(resSurat.route).toContain("/branch-locations?city=Surat");
+    expect(resSurat.matchedCategory).toBe("City x category");
+
+    const resIndore = resolveTargetRouteForQuery("Polycab cables dealer in Indore");
+    expect(resIndore.route).toContain("/branch-locations?city=Indore");
+
+    const resCoimbatore = resolveTargetRouteForQuery("wires and cables supplier Coimbatore");
+    expect(resCoimbatore.route).toContain("/branch-locations?city=Coimbatore");
+
+    const stats = getKeywordMapStats();
+    expect(stats.panIndiaCitiesIndexed).toBeGreaterThanOrEqual(140);
+    expect(stats.allIndianStatesCovered).toBe(28);
+  });
 });
 
