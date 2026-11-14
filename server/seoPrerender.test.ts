@@ -92,7 +92,17 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toContain("<h1");
     expect(result.sentHtml).toContain("Wires and Cables in Ahmedabad");
     expect(result.sentHtml).toContain('href="/category/wire-cables"');
+    expect(result.sentHtml).toContain('href="/category/lugs"');
+    expect(result.sentHtml).toContain('href="/category/glands"');
+    expect(result.sentHtml).toContain('href="/dealers/polycab-ahmedabad"');
+    expect(result.sentHtml).toContain('href="/dealers/finolex-cables-ahmedabad"');
+    expect(result.sentHtml).toContain('href="/dealers/kei-cables-gujarat"');
+    expect(result.sentHtml).toContain('href="/dealers/schneider-electric-ahmedabad"');
     expect(result.sentHtml).toContain('href="/product/CAB-000736"');
+    expect(result.sentHtml).toContain('href="/product/CAB-001908"');
+    expect(result.sentHtml).toContain('href="/product/CAB-000969"');
+    expect(result.sentHtml).toContain('href="/product/LUG-000001"');
+    expect(result.sentHtml).toContain('href="/product/GLD-000001"');
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/"');
   });
 

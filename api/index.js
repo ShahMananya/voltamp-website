@@ -16584,34 +16584,238 @@ function seoPrerenderMiddleware(req, res, next) {
     let homeExtraHtml = "";
     if (cleanPath === "") {
       homeExtraHtml = `
+        <!-- 1. AUTHORIZED BRAND DISTRIBUTORSHIP & REGIONAL CHANNEL PORTALS -->
         <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
-          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:16px;">Core Electrical Categories</h2>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;">
+          <div style="display:inline-block;padding:4px 12px;background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;border-radius:9999px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+            Authorized Distributorship Portals
+          </div>
+          <h2 style="font-size:24px;font-weight:800;color:#0f172a;margin:0 0 8px 0;">Manufacturer Authorized Brand Hubs &amp; Channel Stockist Desks</h2>
+          <p style="font-size:14px;color:#475569;margin-bottom:20px;line-height:1.6;max-width:900px;">
+            VOLAMP ELEKTRIKALS PRIVATE LIMITED is an authorized channel partner and wholesale master stockist for India's leading electrical infrastructure manufacturers. Verified routine test certificates (MTC), official factory warranty, and same-day dispatch from our Aslali logistics terminal.
+          </p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;">
+            <div style="background:#ffffff;padding:20px;border-radius:10px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              <span style="font-size:11px;font-weight:700;color:#c56718;text-transform:uppercase;letter-spacing:0.5px;">1,045+ SKUs in Catalog</span>
+              <h3 style="font-size:17px;margin:6px 0 8px 0;"><a href="/dealers/polycab-ahmedabad" style="color:#0f172a;font-weight:700;text-decoration:none;">Polycab Wires &amp; Cables Stockist Ahmedabad &rarr;</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0 0 12px 0;line-height:1.5;">Authorized distributor for Polycab LT/HT XLPE armoured power cables (1.5 to 1000 sqmm), flexible copper building wires (IS 694), control cables, and 1500V solar DC cables.</p>
+              <div style="font-size:12px;color:#16a34a;font-weight:600;">&check; Official 2026 Price Circulars &bull; CPRI/MTC Reports</div>
+            </div>
+            <div style="background:#ffffff;padding:20px;border-radius:10px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              <span style="font-size:11px;font-weight:700;color:#c56718;text-transform:uppercase;letter-spacing:0.5px;">950+ SKUs in Catalog</span>
+              <h3 style="font-size:17px;margin:6px 0 8px 0;"><a href="/dealers/finolex-cables-ahmedabad" style="color:#0f172a;font-weight:700;text-decoration:none;">Finolex Cables Channel Partner Ahmedabad &rarr;</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0 0 12px 0;line-height:1.5;">Certified channel partner for 99.97% pure electrolytic copper Flame Guard FRLS wires, 3-core flat submersible cables, and Cat-6 high-speed networking cables.</p>
+              <div style="font-size:12px;color:#16a34a;font-weight:600;">&check; Valid Appointment (2026) &bull; 90m/180m Coils</div>
+            </div>
+            <div style="background:#ffffff;padding:20px;border-radius:10px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              <span style="font-size:11px;font-weight:700;color:#c56718;text-transform:uppercase;letter-spacing:0.5px;">950+ SKUs in Catalog</span>
+              <h3 style="font-size:17px;margin:6px 0 8px 0;"><a href="/dealers/kei-cables-gujarat" style="color:#0f172a;font-weight:700;text-decoration:none;">KEI Industries Star Dealer Gujarat &rarr;</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0 0 12px 0;line-height:1.5;">Authorized star dealer for KEI 11kV &amp; 33kV triple-extruded HT XLPE cables, EPR/silicon rubber trailing cables, and heavy industrial plant feeder cables.</p>
+              <div style="font-size:12px;color:#16a34a;font-weight:600;">&check; Star Dealer Recognition &bull; Custom Cut Drum Lengths</div>
+            </div>
+            <div style="background:#ffffff;padding:20px;border-radius:10px;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+              <span style="font-size:11px;font-weight:700;color:#c56718;text-transform:uppercase;letter-spacing:0.5px;">800+ SKUs in Catalog</span>
+              <h3 style="font-size:17px;margin:6px 0 8px 0;"><a href="/dealers/schneider-electric-ahmedabad" style="color:#0f172a;font-weight:700;text-decoration:none;">Schneider Electric Switchgear Distributor &rarr;</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0 0 12px 0;line-height:1.5;">Authorized wholesale distributor for Schneider Acti9 MCBs (10kA), EasyPact CVS/EZC MCCBs, TeSys contactors, and industrial motor starters.</p>
+              <div style="font-size:12px;color:#16a34a;font-weight:600;">&check; Short-Circuit Ratings 10kA-100kA &bull; Full Warranty</div>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#334155;line-height:1.6;">
+            <strong>Express Corridors &amp; Engineering Tools:</strong>
+            <a href="/locations/industrial-gidc-hubs" style="color:#c56718;font-weight:700;margin-left:8px;text-decoration:none;">Sanand, Vatva, Naroda &amp; Changodar GIDC Supply &rarr;</a> &bull;
+            <a href="/export" style="color:#c56718;font-weight:700;margin-left:8px;text-decoration:none;">Global Export Desk (Mundra &amp; Kandla Ports) &rarr;</a> &bull;
+            <a href="/calculator" style="color:#c56718;font-weight:700;margin-left:8px;text-decoration:none;">Cable Sizing &amp; Voltage Drop Calculator (IS 7098) &rarr;</a>
+          </div>
+        </section>
+
+        <!-- 2. CORE ELECTRICAL CATEGORIES (8 MASTER CATEGORIES) -->
+        <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:16px;">Core Electrical Categories &amp; Systems</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;">
             <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
-              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/wire-cables" style="color:#c56718;font-weight:bold;text-decoration:none;">Wires &amp; Cables</a></h3>
+              <h3 style="font-size:15px;margin:0 0 6px 0;"><a href="/category/wire-cables" style="color:#c56718;font-weight:bold;text-decoration:none;">Wires &amp; Cables</a></h3>
               <p style="font-size:13px;color:#64748b;margin:0;">LT / HT XLPE armoured &amp; unarmoured power cables (1.5 to 1000 sqmm), flexible FRLS building wires, control cables.</p>
             </div>
             <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
-              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/switch-gears" style="color:#c56718;font-weight:bold;text-decoration:none;">Switchgear &amp; Protection</a></h3>
-              <p style="font-size:13px;color:#64748b;margin:0;">Schneider and L&T ACBs, MCCBs, MCBs, contactors, starters.</p>
+              <h3 style="font-size:15px;margin:0 0 6px 0;"><a href="/category/switch-gears" style="color:#c56718;font-weight:bold;text-decoration:none;">Switchgear &amp; Protection</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">Schneider and L&amp;T ACBs, MCCBs, MCBs, RCCBs, contactors, starters up to 100kA breaking capacity.</p>
             </div>
             <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
-              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/solar" style="color:#c56718;font-weight:bold;text-decoration:none;">Solar PV Cables</a></h3>
-              <p style="font-size:13px;color:#64748b;margin:0;">1500V DC UV-resistant cross-linked halogen-free cables per EN 50618.</p>
+              <h3 style="font-size:15px;margin:0 0 6px 0;"><a href="/category/lugs" style="color:#c56718;font-weight:bold;text-decoration:none;">Cable Lugs &amp; Terminals</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">Heavy-duty Dowells electrolytic tinned copper &amp; aluminium crimping lugs, bi-metallic lugs, pin &amp; ring terminals per IS 8337.</p>
             </div>
             <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
-              <h3 style="font-size:16px;margin:0 0 6px 0;"><a href="/category/earthing-material" style="color:#c56718;font-weight:bold;text-decoration:none;">Earthing &amp; Lightning</a></h3>
-              <p style="font-size:13px;color:#64748b;margin:0;">Copper bonded rods, chemical compound, GI flats, UL/CPRI certified.</p>
+              <h3 style="font-size:15px;margin:0 0 6px 0;"><a href="/category/glands" style="color:#c56718;font-weight:bold;text-decoration:none;">Cable Glands &amp; Terminations</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">Comet &amp; HMI brass single compression &amp; double compression weatherproof/flameproof cable glands and earthing tags.</p>
+            </div>
+            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:15px;margin:0 0 6px 0;"><a href="/category/solar" style="color:#c56718;font-weight:bold;text-decoration:none;">Solar PV Cables (1500V DC)</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">1500V DC UV-resistant cross-linked halogen-free cables per EN 50618 &amp; IEC 62930 for solar plants.</p>
+            </div>
+            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:15px;margin:0 0 6px 0;"><a href="/category/earthing-material" style="color:#c56718;font-weight:bold;text-decoration:none;">Earthing &amp; Lightning</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">Copper bonded rods, chemical backfill compound, GI flats, UL/CPRI certified grounding systems.</p>
+            </div>
+            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:15px;margin:0 0 6px 0;"><a href="/category/conduit" style="color:#c56718;font-weight:bold;text-decoration:none;">Conduit Pipes &amp; Trays</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">Heavy-duty rigid PVC electrical conduit pipes, GI flexible conduits, and perforated cable trays.</p>
+            </div>
+            <div style="background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:15px;margin:0 0 6px 0;"><a href="/category/wiring-device" style="color:#c56718;font-weight:bold;text-decoration:none;">Wiring Devices &amp; Plugs</a></h3>
+              <p style="font-size:13px;color:#64748b;margin:0;">Industrial plug sockets, junction boxes, weatherproof isolators, distribution boards.</p>
             </div>
           </div>
         </section>
+
+        <!-- 3. FAST MOVING B2B ELECTRICAL PRODUCTS & PROCUREMENT MATRIX -->
         <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
-          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:16px;">Fast Moving B2B Electrical Products</h2>
-          <ul style="list-style:none;padding:0;margin:0;font-size:14px;">
-            <li style="padding:8px 0;"><a href="/product/CAB-000736" style="color:#0f172a;font-weight:600;text-decoration:none;">1.1kV XLPE Aluminium Armoured Cable (3.5C x 185 sqmm)</a> \u2014 SKU: CAB-000736</li>
-            <li style="padding:8px 0;"><a href="/product/SOL-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">Solar DC Cable 1C x 4 sqmm (H1Z2Z2-K / EN 50618)</a> \u2014 SKU: SOL-000001</li>
-            <li style="padding:8px 0;"><a href="/product/SWG-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">10kA C-Curve Miniature Circuit Breaker (MCB) 4-Pole 63A</a> \u2014 SKU: SWG-000001</li>
-          </ul>
+          <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:8px;">Fast Moving B2B Electrical Products &amp; Procurement Matrix</h2>
+          <p style="font-size:14px;color:#64748b;margin-bottom:20px;line-height:1.6;">
+            High-demand industrial cables, building wires, lugs, glands, and circuit breakers stocked in volume at our Aslali distribution yard for immediate dispatch.
+          </p>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:20px;">
+            <!-- Group 1: Polycab Power & Control Cables -->
+            <div style="background:#ffffff;padding:20px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;color:#c56718;margin:0 0 12px 0;font-weight:700;">Polycab Wires &amp; Cables</h3>
+              <ul style="list-style:none;padding:0;margin:0;font-size:13px;line-height:1.6;">
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/CAB-000736" style="color:#0f172a;font-weight:600;text-decoration:none;">1.1kV XLPE Aluminium Armoured Cable (3.5C x 185 sqmm)</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Polycab &bull; SKU: CAB-000736 &bull; Grade EC Aluminium</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/CAB-000737" style="color:#0f172a;font-weight:600;text-decoration:none;">1.1kV XLPE Aluminium Armoured Cable (3.5C x 240 sqmm)</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Polycab &bull; SKU: CAB-000737 &bull; Strip Armoured</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/CAB-000017" style="color:#0f172a;font-weight:600;text-decoration:none;">185 SQMM X 1 CORE Unarmoured Copper Cable</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Polycab &bull; SKU: CAB-000017 &bull; IS:694 / IS:7098</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/CAB-000018" style="color:#0f172a;font-weight:600;text-decoration:none;">240 SQMM X 1 CORE Unarmoured Copper Cable</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Polycab &bull; SKU: CAB-000018 &bull; Multi-Strand Electrolytic</span>
+                </li>
+                <li style="padding:6px 0;">
+                  <a href="/product/CAB-000009" style="color:#0f172a;font-weight:600;text-decoration:none;">16 SQMM X 1 CORE Unarmoured Copper Cable</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Polycab &bull; SKU: CAB-000009 &bull; Up to 1100V</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Group 2: Finolex Copper Wires & Flexible Cables -->
+            <div style="background:#ffffff;padding:20px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;color:#c56718;margin:0 0 12px 0;font-weight:700;">Finolex Pure Copper Wires</h3>
+              <ul style="list-style:none;padding:0;margin:0;font-size:13px;line-height:1.6;">
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/CAB-001908" style="color:#0f172a;font-weight:600;text-decoration:none;">1.5 SQMM X 1 CORE Unarmoured Copper Cable (Flame Guard)</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Finolex &bull; SKU: CAB-001908 &bull; 99.97% Pure Electrolytic Copper</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/CAB-001909" style="color:#0f172a;font-weight:600;text-decoration:none;">2.5 SQMM X 1 CORE Unarmoured Copper Cable (Flame Guard)</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Finolex &bull; SKU: CAB-001909 &bull; Power Socket &amp; AC Wiring</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/CAB-001910" style="color:#0f172a;font-weight:600;text-decoration:none;">4 SQMM X 1 CORE Unarmoured Copper Cable</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Finolex &bull; SKU: CAB-001910 &bull; IS:694 Certified</span>
+                </li>
+                <li style="padding:6px 0;">
+                  <a href="/product/CAB-001928" style="color:#0f172a;font-weight:600;text-decoration:none;">1.5 SQMM X 10 CORE Unarmoured Copper Cable</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Finolex &bull; SKU: CAB-001928 &bull; Multi-Core Industrial Control</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Group 3: KEI HT & Industrial Power Cables -->
+            <div style="background:#ffffff;padding:20px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;color:#c56718;margin:0 0 12px 0;font-weight:700;">KEI HT &amp; Heavy Power Cables</h3>
+              <ul style="list-style:none;padding:0;margin:0;font-size:13px;line-height:1.6;">
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/CAB-000969" style="color:#0f172a;font-weight:600;text-decoration:none;">185 SQMM X 1 CORE Unarmoured Copper Cable</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: KEI &bull; SKU: CAB-000969 &bull; Heavy Industrial Feeder</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/CAB-000971" style="color:#0f172a;font-weight:600;text-decoration:none;">300 SQMM X 1 CORE Unarmoured Copper Cable</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: KEI &bull; SKU: CAB-000971 &bull; Substation Primary Cable</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/CAB-001032" style="color:#0f172a;font-weight:600;text-decoration:none;">185 SQMM X 3 CORE Unarmoured Copper Cable</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: KEI &bull; SKU: CAB-001032 &bull; 3-Phase Industrial Power</span>
+                </li>
+                <li style="padding:6px 0;">
+                  <a href="/product/CAB-001054" style="color:#0f172a;font-weight:600;text-decoration:none;">300 SQMM X 4 CORE Unarmoured Copper Cable</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: KEI &bull; SKU: CAB-001054 &bull; Heavy Transformer Incomer</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Group 4: Dowells Cable Lugs & Crimping Terminals -->
+            <div style="background:#ffffff;padding:20px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;color:#c56718;margin:0 0 12px 0;font-weight:700;">Dowells Cable Lugs &amp; Terminals</h3>
+              <ul style="list-style:none;padding:0;margin:0;font-size:13px;line-height:1.6;">
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/LUG-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">Ring Type Copper Lugs Standard</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Dowells &bull; SKU: LUG-000001 &bull; Electrolytic Tinned Copper (IS 8337)</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/LUG-000002" style="color:#0f172a;font-weight:600;text-decoration:none;">Pin Type Copper Lugs Standard</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Dowells &bull; SKU: LUG-000002 &bull; High Conductivity Copper</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/LUG-000003" style="color:#0f172a;font-weight:600;text-decoration:none;">Tubular Type Copper Lugs Long Barrel Ring</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Dowells &bull; SKU: LUG-000003 &bull; Heavy-Duty Long Barrel</span>
+                </li>
+                <li style="padding:6px 0;">
+                  <a href="/product/LUG-000011" style="color:#0f172a;font-weight:600;text-decoration:none;">Ring Type BI-METALLIC Lugs Standard</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Dowells &bull; SKU: LUG-000011 &bull; Aluminium-to-Copper Jointing</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Group 5: Comet & HMI Brass Cable Glands -->
+            <div style="background:#ffffff;padding:20px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;color:#c56718;margin:0 0 12px 0;font-weight:700;">Comet &amp; HMI Cable Glands</h3>
+              <ul style="list-style:none;padding:0;margin:0;font-size:13px;line-height:1.6;">
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/GLD-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">Single Compression 10MM GLAND</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Comet &bull; SKU: GLD-000001 &bull; Heavy-Duty Nickel Plated Brass</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/GLD-000002" style="color:#0f172a;font-weight:600;text-decoration:none;">Single Compression 12MM GLAND</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Comet &bull; SKU: GLD-000002 &bull; Weatherproof Rubber Seal</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/GLD-000003" style="color:#0f172a;font-weight:600;text-decoration:none;">Single Compression 16MM GLAND</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Comet &bull; SKU: GLD-000003 &bull; Industrial Cable Termination</span>
+                </li>
+                <li style="padding:6px 0;">
+                  <a href="/product/GLD-000005" style="color:#0f172a;font-weight:600;text-decoration:none;">Single Compression 22MM GLAND</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Comet &bull; SKU: GLD-000005 &bull; Complete with Locknut &amp; Washer</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Group 6: Switchgear & Solar PV Cables -->
+            <div style="background:#ffffff;padding:20px;border-radius:8px;border:1px solid #e2e8f0;">
+              <h3 style="font-size:16px;color:#c56718;margin:0 0 12px 0;font-weight:700;">Switchgear &amp; Solar PV</h3>
+              <ul style="list-style:none;padding:0;margin:0;font-size:13px;line-height:1.6;">
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/SWG-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">10kA C-Curve Miniature Circuit Breaker (MCB) 4-Pole 63A</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Schneider / L&amp;T &bull; SKU: SWG-000001 &bull; IS/IEC 60898-1</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/SWG-000029" style="color:#0f172a;font-weight:600;text-decoration:none;">Miniature Circuit Breakers SP 0.5A</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Schneider Electric &bull; SKU: SWG-000029 &bull; Precision Protection</span>
+                </li>
+                <li style="padding:6px 0;border-bottom:1px solid #f1f5f9;">
+                  <a href="/product/SWG-000030" style="color:#0f172a;font-weight:600;text-decoration:none;">Miniature Circuit Breakers SP 1A</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Brand: Schneider Electric &bull; SKU: SWG-000030 &bull; DIN Rail Mount</span>
+                </li>
+                <li style="padding:6px 0;">
+                  <a href="/product/SOL-000001" style="color:#0f172a;font-weight:600;text-decoration:none;">Solar DC Cable 1C x 4 sqmm (H1Z2Z2-K / EN 50618)</a><br/>
+                  <span style="font-size:12px;color:#64748b;">Category: Solar &bull; SKU: SOL-000001 &bull; 1500V DC Halogen-Free</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </section>
         <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
           <h2 style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:12px;">Corporate Identity &amp; Physical Distribution Facilities</h2>
@@ -16802,8 +17006,45 @@ function seoPrerenderMiddleware(req, res, next) {
               { "@type": "Brand", "name": "KEI Industries" },
               { "@type": "Brand", "name": "Schneider Electric" },
               { "@type": "Brand", "name": "L&T Switchgear" },
-              { "@type": "Brand", "name": "Dowells" }
+              { "@type": "Brand", "name": "Dowells" },
+              { "@type": "Brand", "name": "Comet Glands" }
             ],
+            "hasOfferCatalog": {
+              "@type": "OfferCatalog",
+              "name": "Industrial Electrical Infrastructure Supply Catalog",
+              "itemListElement": [
+                {
+                  "@type": "OfferCatalog",
+                  "name": "Polycab Wires & Cables",
+                  "url": "https://www.volampelektrikals.com/dealers/polycab-ahmedabad"
+                },
+                {
+                  "@type": "OfferCatalog",
+                  "name": "Finolex Cables & Wires",
+                  "url": "https://www.volampelektrikals.com/dealers/finolex-cables-ahmedabad"
+                },
+                {
+                  "@type": "OfferCatalog",
+                  "name": "KEI HT & LT Power Cables",
+                  "url": "https://www.volampelektrikals.com/dealers/kei-cables-gujarat"
+                },
+                {
+                  "@type": "OfferCatalog",
+                  "name": "Schneider Electric Switchgear",
+                  "url": "https://www.volampelektrikals.com/dealers/schneider-electric-ahmedabad"
+                },
+                {
+                  "@type": "OfferCatalog",
+                  "name": "Dowells Cable Lugs & Crimping Terminals",
+                  "url": "https://www.volampelektrikals.com/category/lugs"
+                },
+                {
+                  "@type": "OfferCatalog",
+                  "name": "Comet Brass Cable Glands",
+                  "url": "https://www.volampelektrikals.com/category/glands"
+                }
+              ]
+            },
             "department": [
               {
                 "@type": "Warehouse",

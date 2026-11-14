@@ -1546,6 +1546,270 @@ export default function Home() {
         </div>
       </section>
 
+      {/* AUTHORIZED BRAND DISTRIBUTORSHIP & B2B PROCUREMENT HUB */}
+      <section className="py-16 sm:py-20 bg-slate-100/70 dark:bg-slate-950/70 border-t border-slate-200 dark:border-slate-800" id="authorized-brands-catalog">
+        <div className="market-container">
+          <div className="text-center space-y-3 mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-950/60 border border-orange-200 dark:border-orange-800 text-[#c56718] dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
+              <ShieldCheck className="size-3.5" />
+              <span>OFFICIAL MANUFACTURER DISTRIBUTORSHIP &amp; CATALOG HUBS</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Manufacturer Authorized Brand Portals &amp; Fast-Moving SKUs
+            </h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Direct factory procurement discounts, routine Manufacturer Test Certificates (MTC), and express 24-hour dispatch from our Aslali logistics terminal for commercial and industrial contractors.
+            </p>
+          </div>
+
+          {/* 4 Main Manufacturer Hubs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {/* Polycab Portal Card */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex flex-col justify-between hover:border-[#c56718] hover:shadow-md transition-all group">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#c56718] bg-orange-50 dark:bg-orange-950/40 px-2.5 py-1 rounded-full border border-orange-200 dark:border-orange-900">
+                    1,045+ SKUs
+                  </span>
+                  <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <Check className="size-3" /> In Stock
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-[#c56718] transition-colors">
+                  Polycab India
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                  Authorized wholesale stockist for LT/HT XLPE armoured power cables, flexible copper building wires (IS 694), control cables &amp; 1500V solar PV cables.
+                </p>
+                <div className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 mb-6 border-t border-slate-100 dark:border-slate-800 pt-3">
+                  <div>&bull; 1.5 to 1000 sqmm Armoured Power</div>
+                  <div>&bull; Official 2026 Price Circulars</div>
+                  <div>&bull; Routine Spark &amp; Resistance MTC</div>
+                </div>
+              </div>
+              <Link
+                href="/dealers/polycab-ahmedabad"
+                className="inline-flex items-center justify-between w-full px-4 py-2.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-[#c56718] hover:bg-[#c56718] hover:text-white dark:hover:bg-[#c56718] dark:hover:text-white font-bold text-xs transition-all"
+              >
+                <span>Polycab Ahmedabad Hub</span>
+                <ArrowRight className="size-3.5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+            {/* Finolex Portal Card */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex flex-col justify-between hover:border-[#c56718] hover:shadow-md transition-all group">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#c56718] bg-orange-50 dark:bg-orange-950/40 px-2.5 py-1 rounded-full border border-orange-200 dark:border-orange-900">
+                    950+ SKUs
+                  </span>
+                  <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <Check className="size-3" /> In Stock
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-[#c56718] transition-colors">
+                  Finolex Cables
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                  Certified channel partner for 99.97% pure electrolytic copper Flame Guard FRLS wires, 3-core flat submersible cables &amp; Cat-6 LAN communication cables.
+                </p>
+                <div className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 mb-6 border-t border-slate-100 dark:border-slate-800 pt-3">
+                  <div>&bull; Flame Guard FRLS (90m &amp; 180m Coils)</div>
+                  <div>&bull; Submersible Flat Pump Cables</div>
+                  <div>&bull; Authentic Brand Security Hologram</div>
+                </div>
+              </div>
+              <Link
+                href="/dealers/finolex-cables-ahmedabad"
+                className="inline-flex items-center justify-between w-full px-4 py-2.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-[#c56718] hover:bg-[#c56718] hover:text-white dark:hover:bg-[#c56718] dark:hover:text-white font-bold text-xs transition-all"
+              >
+                <span>Finolex Ahmedabad Hub</span>
+                <ArrowRight className="size-3.5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+            {/* KEI Industries Portal Card */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex flex-col justify-between hover:border-[#c56718] hover:shadow-md transition-all group">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#c56718] bg-orange-50 dark:bg-orange-950/40 px-2.5 py-1 rounded-full border border-orange-200 dark:border-orange-900">
+                    950+ SKUs
+                  </span>
+                  <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <Check className="size-3" /> In Stock
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-[#c56718] transition-colors">
+                  KEI Industries
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                  Authorized star dealer for heavy industrial power cables, 11kV &amp; 33kV triple-extruded HT XLPE cables, EPR rubber trailing cables &amp; substation feeders.
+                </p>
+                <div className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 mb-6 border-t border-slate-100 dark:border-slate-800 pt-3">
+                  <div>&bull; 11kV / 33kV HT XLPE Cables</div>
+                  <div>&bull; EPR / Silicon Rubber Trailing</div>
+                  <div>&bull; Custom Cut Drum Lengths</div>
+                </div>
+              </div>
+              <Link
+                href="/dealers/kei-cables-gujarat"
+                className="inline-flex items-center justify-between w-full px-4 py-2.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-[#c56718] hover:bg-[#c56718] hover:text-white dark:hover:bg-[#c56718] dark:hover:text-white font-bold text-xs transition-all"
+              >
+                <span>KEI Gujarat Star Hub</span>
+                <ArrowRight className="size-3.5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+            {/* Schneider Electric Portal Card */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex flex-col justify-between hover:border-[#c56718] hover:shadow-md transition-all group">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#c56718] bg-orange-50 dark:bg-orange-950/40 px-2.5 py-1 rounded-full border border-orange-200 dark:border-orange-900">
+                    800+ SKUs
+                  </span>
+                  <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1">
+                    <Check className="size-3" /> In Stock
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-[#c56718] transition-colors">
+                  Schneider Electric
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+                  Authorized wholesale distributor for power distribution switchgear: Acti9 MCBs, EasyPact CVS/EZC MCCBs, TeSys contactors &amp; motor starters.
+                </p>
+                <div className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 mb-6 border-t border-slate-100 dark:border-slate-800 pt-3">
+                  <div>&bull; 10kA to 100kA Short-Circuit Ratings</div>
+                  <div>&bull; TeSys D Contactors &amp; Starters</div>
+                  <div>&bull; Official Manufacturer Warranty</div>
+                </div>
+              </div>
+              <Link
+                href="/dealers/schneider-electric-ahmedabad"
+                className="inline-flex items-center justify-between w-full px-4 py-2.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-[#c56718] hover:bg-[#c56718] hover:text-white dark:hover:bg-[#c56718] dark:hover:text-white font-bold text-xs transition-all"
+              >
+                <span>Schneider Switchgear Hub</span>
+                <ArrowRight className="size-3.5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+
+          {/* 2 Accessories Hubs: Dowells Lugs & Comet Glands */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex flex-col sm:flex-row items-center justify-between gap-6 hover:border-[#c56718] transition-all">
+              <div className="space-y-2 text-center sm:text-left">
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c56718] uppercase">
+                  <span>DOWELLS (POLYCAB GROUP)</span>
+                </div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Heavy-Duty Cable Lugs &amp; Crimping Terminals
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md">
+                  High-conductivity tinned electrolytic copper &amp; aluminium crimping lugs, bi-metallic lugs, long barrel tubular ring &amp; pin terminals compliant with IS 8337.
+                </p>
+              </div>
+              <Link
+                href="/category/lugs"
+                className="shrink-0 px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-[#c56718] dark:hover:bg-[#c56718] dark:hover:text-white font-bold text-xs transition-all flex items-center gap-2"
+              >
+                <span>Browse Dowells Lugs</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 flex flex-col sm:flex-row items-center justify-between gap-6 hover:border-[#c56718] transition-all">
+              <div className="space-y-2 text-center sm:text-left">
+                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#c56718] uppercase">
+                  <span>COMET &amp; HMI BRASS TERMINATIONS</span>
+                </div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Single &amp; Double Compression Cable Glands
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md">
+                  Weatherproof and flameproof nickel-plated brass cable glands (10mm to 75mm) complete with neoprene rubber seals, earth tags, locknuts, and PVC shrouds.
+                </p>
+              </div>
+              <Link
+                href="/category/glands"
+                className="shrink-0 px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-[#c56718] dark:hover:bg-[#c56718] dark:hover:text-white font-bold text-xs transition-all flex items-center gap-2"
+              >
+                <span>Browse Cable Glands</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Regional Logistics & Fast-Moving SKUs Quick Index */}
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <span className="text-xs uppercase font-bold text-[#c56718] tracking-wider">POPULAR B2B PROCUREMENT SKUs</span>
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white mt-0.5">
+                  High-Turnover Industrial Power Feeders &amp; Components Available for Immediate Dispatch
+                </h4>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <Link
+                  href="/locations/industrial-gidc-hubs"
+                  className="px-3 py-1.5 rounded-lg bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800 text-[#c56718] font-bold hover:bg-[#c56718] hover:text-white transition-all flex items-center gap-1.5"
+                >
+                  <Truck className="size-3" />
+                  <span>Sanand &amp; Vatva GIDC Corridor</span>
+                </Link>
+                <Link
+                  href="/export"
+                  className="px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 font-bold hover:bg-emerald-700 hover:text-white transition-all flex items-center gap-1.5"
+                >
+                  <Globe2 className="size-3" />
+                  <span>Global Export Cargo Desk</span>
+                </Link>
+                <Link
+                  href="/calculator"
+                  className="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold hover:border-[#c56718] transition-all flex items-center gap-1.5"
+                >
+                  <Calculator className="size-3" />
+                  <span>Cable Sizing Calculator</span>
+                </Link>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pt-4 text-xs">
+              <Link href="/product/CAB-000736" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
+                <div className="font-bold text-slate-800 dark:text-slate-200">Polycab 185 sqmm 3.5C</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">1.1kV XLPE Al Armoured &bull; CAB-000736</div>
+              </Link>
+              <Link href="/product/CAB-000737" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
+                <div className="font-bold text-slate-800 dark:text-slate-200">Polycab 240 sqmm 3.5C</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">1.1kV XLPE Al Armoured &bull; CAB-000737</div>
+              </Link>
+              <Link href="/product/CAB-001908" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
+                <div className="font-bold text-slate-800 dark:text-slate-200">Finolex Flame Guard 1.5 sqmm</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Pure Copper FRLS 90m &bull; CAB-001908</div>
+              </Link>
+              <Link href="/product/CAB-001909" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
+                <div className="font-bold text-slate-800 dark:text-slate-200">Finolex Flame Guard 2.5 sqmm</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Pure Copper FRLS 90m &bull; CAB-001909</div>
+              </Link>
+              <Link href="/product/CAB-000971" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
+                <div className="font-bold text-slate-800 dark:text-slate-200">KEI 300 sqmm 1C Copper</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Heavy Industrial Feeder &bull; CAB-000971</div>
+              </Link>
+              <Link href="/product/LUG-000001" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
+                <div className="font-bold text-slate-800 dark:text-slate-200">Dowells Copper Ring Lugs</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Tinned Electrolytic &bull; LUG-000001</div>
+              </Link>
+              <Link href="/product/GLD-000003" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
+                <div className="font-bold text-slate-800 dark:text-slate-200">Comet 16MM Brass Gland</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">Single Compression &bull; GLD-000003</div>
+              </Link>
+              <Link href="/product/SWG-000001" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
+                <div className="font-bold text-slate-800 dark:text-slate-200">Schneider Acti9 63A MCB</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400">10kA 4-Pole C-Curve &bull; SWG-000001</div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 11. Frequently Asked Questions (Matches FAQ Schema exactly for Google Search & AEO) */}
       <section className="py-16 sm:py-20 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-800" id="faq">
         <div className="market-container max-w-4xl mx-auto px-4 sm:px-6">
