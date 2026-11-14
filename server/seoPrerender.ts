@@ -959,6 +959,14 @@ function renderPageHtml({
     );
   }
 
+  // 3b. Ensure Google Site Verification is always present
+  if (!template.includes('name="google-site-verification"')) {
+    template = template.replace(
+      "</head>",
+      `    <meta name="google-site-verification" content="TJ-bZIxU18xXWIgNhca9Pk7T8cnYjDVZp7KXbkMK9xg" />\n  </head>`
+    );
+  }
+
   // TC-048: Ensure meta keywords tag is removed if present
   template = template.replace(/<meta\s+name="keywords"\s+content=".*?"\s*\/?>\s*/gi, "");
 

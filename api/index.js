@@ -16077,6 +16077,13 @@ function renderPageHtml({
   </head>`
     );
   }
+  if (!template.includes('name="google-site-verification"')) {
+    template = template.replace(
+      "</head>",
+      `    <meta name="google-site-verification" content="TJ-bZIxU18xXWIgNhca9Pk7T8cnYjDVZp7KXbkMK9xg" />
+  </head>`
+    );
+  }
   template = template.replace(/<meta\s+name="keywords"\s+content=".*?"\s*\/?>\s*/gi, "");
   if (noIndex) {
     if (template.includes('name="robots"')) {
