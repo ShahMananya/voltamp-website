@@ -42,6 +42,7 @@ import { QuickOrderModal } from "@/components/quickorder/QuickOrderModal";
 import { EnquireModal } from "@/components/enquire/EnquireModal";
 import UniversalFooter from "@/components/layout/UniversalFooter";
 import SeoHead from "@/components/seo/SeoHead";
+import { generateCategoryPageMeta } from "@shared/seoPageTemplates";
 import { useCart } from "@/contexts/CartContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
@@ -569,12 +570,13 @@ export default function CategoryPage() {
     ];
   }, [categoryTitle, slug]);
 
+  const catMeta = generateCategoryPageMeta(slug || "wire-cables", categoryTitle);
+
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0c1520] text-[#1e293b] dark:text-[#f1f5f9] flex flex-col font-sans transition-colors">
       <SeoHead
-        title={`${categoryTitle} - Buy B2B Wholesale Price`}
-        description={`Explore genuine ${categoryTitle} with contractor discounts at Volamp Elektrikals. Polycab, Finolex, KEI, Schneider Electric, L&T, Dowells, and Legrand industrial cables ready for immediate dispatch across Gujarat and India.`}
-        keywords={`${categoryTitle}, buy ${categoryTitle} online, electrical cables wholesale Ahmedabad, Polycab distributor Gujarat, industrial electrical switchgear supply`}
+        title={catMeta.title}
+        description={catMeta.metaDescription}
         canonicalPath={slug ? `/category/${slug}` : "/products"}
         ogType="website"
         jsonLd={categoryJsonLd}

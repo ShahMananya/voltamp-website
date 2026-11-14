@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { loadProductsFromDisk, getProductByProductId } from "./services/productService";
 import { BLOG_POSTS_DATA, type BlogPost } from "../shared/blogData";
+import { generateProductPageMeta, generateCategoryPageMeta, getCanonicalCategorySlug } from "../shared/seoPageTemplates";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -800,19 +801,6 @@ function escapeXml(str: string): string {
     .replace(/'/g, "&#39;");
 }
 
-function getCanonicalCategorySlug(category?: string): string {
-  const norm = (category || "").toLowerCase();
-  if (norm.includes("wire") || norm.includes("cable")) return "wire-cables";
-  if (norm.includes("switch")) return "switch-gears";
-  if (norm.includes("solar")) return "solar";
-  if (norm.includes("lug")) return "lugs";
-  if (norm.includes("gland")) return "glands";
-  if (norm.includes("conduit") || norm.includes("pipe")) return "conduit";
-  if (norm.includes("earth")) return "earthing-material";
-  if (norm.includes("device") || norm.includes("wiring")) return "wiring-device";
-  return "wire-cables";
-}
-
 function extractVerifiedStandards(product: { description?: string | null; specifications?: string | null }): string | null {
   const text = `${product.description || ""} ${product.specifications || ""}`;
   const found: string[] = [];
@@ -970,6 +958,9 @@ function renderPageHtml({
       `    <link rel="canonical" href="${canonical}" />\n  </head>`
     );
   }
+
+  // TC-048: Ensure meta keywords tag is removed if present
+  template = template.replace(/<meta\s+name="keywords"\s+content=".*?"\s*\/?>\s*/gi, "");
 
   // 4. Update robots tag if noIndex is true
   if (noIndex) {
@@ -1281,11 +1272,13 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
     const howToOrderHtml = renderHowToOrderBlock(fullDisplayName, product.moq);
     const relatedHtml = renderRelatedProducts(allProducts, product);
 
+    const pageMeta = generateProductPageMeta(product, parsedSpecs, standardsText, canonicalCatSlug);
+
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     const html = renderPageHtml({
-      title: uniquePageTitle,
-      description: `Buy ${fullDisplayName} (${product.productId}). Genuine ${product.brand || "Polycab"} industrial electrical supply with verified specifications. Wholesale dispatch from Ahmedabad across India.`,
+      title: pageMeta.title,
+      description: pageMeta.metaDescription,
       canonical: productUrl,
       schemaJson: schema,
       ogImage: validImgUrl,
@@ -1296,13 +1289,13 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             <a href="/" style="color:#64748b;text-decoration:none;">Home</a> &gt;
             <a href="/products" style="color:#64748b;text-decoration:none;">Products</a> &gt;
             <a href="/category/${canonicalCatSlug}" style="color:#64748b;text-decoration:none;">${escapeXml(product.category || "Wires & Cables")}</a> &gt;
-            <span style="color:#0f172a;font-weight:600;">${escapeXml(fullDisplayName)}</span>
+            <span style="color:#0f172a;font-weight:600;">${escapeXml(pageMeta.h1)}</span>
           </nav>
           <header style="border-bottom:1px solid #e2e8f0;padding-bottom:24px;margin-bottom:28px;">
             <div style="display:inline-block;padding:4px 10px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:700;border-radius:6px;margin-bottom:12px;">
               ${escapeXml(product.brand || "Polycab")} • Wholesale Stock
             </div>
-            <h1 style="font-size:28px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 12px 0;">${escapeXml(fullDisplayName)} (${escapeXml(product.productId)})</h1>
+            <h1 style="font-size:28px;font-weight:800;color:#0f172a;line-height:1.3;margin:0 0 12px 0;">${escapeXml(pageMeta.h1)}</h1>
             <p style="font-size:14px;color:#64748b;margin:0 0 16px 0;">
               Product ID: <strong style="font-family:monospace;color:#0f172a;">${escapeXml(product.productId)}</strong> |
               SKU: <strong style="font-family:monospace;color:#0f172a;">${escapeXml(product.sku || product.productId)}</strong> |
@@ -1424,11 +1417,13 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       )
       .join("");
 
+    const catMeta = generateCategoryPageMeta(slug, catInfo.name);
+
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     const html = renderPageHtml({
-      title: `${catInfo.name} | Volamp`,
-      description: `Authorized wholesale distributor of ${catInfo.name} in Ahmedabad, Gujarat. Genuine Polycab, Finolex, KEI, Schneider supplies with MTC test certificates.`,
+      title: catMeta.title,
+      description: catMeta.metaDescription,
       canonical: `${BASE_URL}/category/${slug}`,
       bodyHtml: `
         <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
@@ -1438,7 +1433,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             <span style="color:#0f172a;font-weight:600;">${escapeXml(catInfo.name)}</span>
           </nav>
           <header style="margin-bottom:32px;">
-            <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.2;margin:0 0 16px 0;">${escapeXml(catInfo.name)}</h1>
+            <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.2;margin:0 0 16px 0;">${escapeXml(catMeta.h1)}</h1>
             <p style="font-size:15px;line-height:1.7;color:#475569;max-width:900px;">
               ${escapeXml(catInfo.desc)}
               Volamp Elektrikals Private Limited maintains extensive wholesale inventory across all standard specifications in our Aslali logistics terminal.

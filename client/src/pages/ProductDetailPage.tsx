@@ -52,6 +52,7 @@ import { QuickOrderModal } from "@/components/quickorder/QuickOrderModal";
 import { EnquireModal } from "@/components/enquire/EnquireModal";
 import UniversalFooter from "@/components/layout/UniversalFooter";
 import SeoHead from "@/components/seo/SeoHead";
+import { generateProductPageMeta, getCanonicalCategorySlug } from "@shared/seoPageTemplates";
 import { useCart } from "@/contexts/CartContext";
 import { useCompare } from "@/contexts/CompareContext";
 import { toast } from "sonner";
@@ -913,15 +914,16 @@ export default function ProductDetailPage(props: ProductDetailPageProps = {}) {
   const brandPrefix = product.brand && !product.name.toLowerCase().includes(product.brand.toLowerCase()) ? `${product.brand} ` : "";
   const sizeSuffix = product.size && !product.name.toLowerCase().includes(product.size.toLowerCase()) ? ` (${product.size})` : "";
   const fullName = `${brandPrefix}${product.name}${sizeSuffix}`.trim();
+  const canonicalCatSlug = getCanonicalCategorySlug(product.category);
+  const pageMeta = generateProductPageMeta(product, specs, null, canonicalCatSlug);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] via-slate-50 to-[#f1f5f9] dark:from-[#090f17] dark:via-[#0c1522] dark:to-[#080d14] text-[#1e293b] dark:text-[#f1f5f9] flex flex-col font-sans transition-colors">
       <SeoHead
-        title={`${fullName} Wholesale`}
-        description={`Buy ${fullName} at wholesale distributor rates with MTC test certificates from Volamp Elektrikals. Fast dispatch from Ahmedabad. Request quote.`}
-        keywords={`${product.name}, ${product.brand}, ${product.category}, buy ${product.name} online, electrical supplier Ahmedabad, Volamp wholesale`}
+        title={pageMeta.title}
+        description={pageMeta.metaDescription}
         canonicalPath={`/product/${product.productId}`}
-        ogImage={currentActiveImage.startsWith("http") ? currentActiveImage : `https://volampelektrikals.com${currentActiveImage}`}
+        ogImage={currentActiveImage.startsWith("http") ? currentActiveImage : `https://www.volampelektrikals.com${currentActiveImage}`}
         ogType="product"
         jsonLd={productJsonLd || undefined}
       />

@@ -13,14 +13,15 @@ export interface SeoProps {
   jsonLd?: Record<string, any> | Array<Record<string, any>>;
 }
 
-const BASE_URL = "https://volampelektrikals.com";
-const DEFAULT_IMAGE = "https://volampelektrikals.com/volamp-og-image.jpg";
-const BRAND_SUFFIX = " | Volamp";
+const BASE_URL = "https://www.volampelektrikals.com";
+const DEFAULT_IMAGE = "https://www.volampelektrikals.com/volamp-og-image.jpg";
+const BRAND_SUFFIX = " | VOLAMP";
 
 /**
  * Universal SEO Head Component
  * Manages Title, Meta Tags, Open Graph, Twitter Cards, Canonical Links, and Schema.org JSON-LD dynamically.
- * Automatically ensures 50–60 character titles and 140–155 character meta descriptions.
+ * Automatically ensures 50–60 character titles and 120–155 character meta descriptions.
+ * Complies with Technical Checklist (TC-001 through TC-119).
  */
 export default function SeoHead({
   title,
@@ -35,12 +36,12 @@ export default function SeoHead({
   jsonLd,
 }: SeoProps) {
   useEffect(() => {
-    // 1. Page Title Optimization (Target: "Primary keyword | Volamp" at 50–60 chars)
+    // 1. Page Title Optimization (Target: "Primary phrase | VOLAMP" at 50–60 chars without internal IDs)
     let cleanTitle = (title || "").trim();
-    // Remove repeated or trailing brand suffixes
     cleanTitle = cleanTitle.replace(/\s*\|\s*VOLAMP ELEKTRIKALS/gi, "");
     cleanTitle = cleanTitle.replace(/\s*\|\s*Volamp Elektrikals/gi, "");
     cleanTitle = cleanTitle.replace(/\s*\|\s*Volamp/gi, "");
+    cleanTitle = cleanTitle.replace(/\s*\|\s*VOLAMP/g, "");
 
     // If title has multiple pipe segments, keep primary segment
     const pipeParts = cleanTitle.split("|");
@@ -49,9 +50,13 @@ export default function SeoHead({
     }
 
     // Limit primary phrase length so total title with suffix is 50–60 chars
-    if (cleanTitle.length > 48) {
-      cleanTitle = cleanTitle.substring(0, 48).trim().replace(/[,\s-]+$/, "");
+    const maxPrimaryLen = 60 - BRAND_SUFFIX.length;
+    if (cleanTitle.length > maxPrimaryLen) {
+      const truncated = cleanTitle.substring(0, maxPrimaryLen);
+      const lastSpace = truncated.lastIndexOf(" ");
+      cleanTitle = (lastSpace > 30 ? truncated.substring(0, lastSpace) : truncated).trim();
     }
+    cleanTitle = cleanTitle.replace(/[,;:\s-]+$/, "");
     const formattedTitle = `${cleanTitle}${BRAND_SUFFIX}`;
     document.title = formattedTitle;
 
@@ -66,20 +71,19 @@ export default function SeoHead({
       meta.content = contentVal;
     };
 
-    // 2. Primary Meta Description Optimization (Target: 140–155 chars with CTA)
-    let cleanDesc = (description || "").trim();
-    if (cleanDesc.length > 158) {
-      const truncated = cleanDesc.substring(0, 142);
+    // 2. Primary Meta Description Optimization (Target: 120–155 chars per TC-041)
+    let cleanDesc = (description || "").trim().replace(/\s+/g, " ");
+    if (cleanDesc.length > 155) {
+      const truncated = cleanDesc.substring(0, 151);
       const lastSpace = truncated.lastIndexOf(" ");
-      const root = lastSpace > 100 ? truncated.substring(0, lastSpace) : truncated;
-      cleanDesc = `${root.replace(/[.,;:\s]+$/, "")}. Request quote.`;
-      if (cleanDesc.length > 155) {
-        cleanDesc = cleanDesc.substring(0, 155);
-      }
+      cleanDesc = `${(lastSpace > 110 ? truncated.substring(0, lastSpace) : truncated).replace(/[,;:\s-]+$/, "")}.`;
     }
     setMetaTag("name", "description", cleanDesc);
-    if (keywords) {
-      setMetaTag("name", "keywords", keywords);
+
+    // TC-048: Meta keywords tag removed from DOM
+    const existingKeywords = document.querySelector('meta[name="keywords"]');
+    if (existingKeywords) {
+      existingKeywords.remove();
     }
 
     // Staging protection (always noindex vercel.app domains)
@@ -87,7 +91,7 @@ export default function SeoHead({
     const shouldNoindex = Boolean(noindex || noIndex || isStaging);
     setMetaTag("name", "robots", shouldNoindex ? "noindex, nofollow" : "index, follow");
 
-    // 3. Self-Referencing Canonical Link
+    // 3. Self-Referencing Canonical Link (TC-016, TC-027)
     let fullCanonicalUrl = BASE_URL;
     if (canonical) {
       fullCanonicalUrl = canonical.startsWith("http") ? canonical : `${BASE_URL}${canonical.startsWith("/") ? "" : "/"}${canonical}`;
@@ -107,9 +111,9 @@ export default function SeoHead({
     }
     link.href = fullCanonicalUrl;
 
-    // 4. Open Graph Meta Tags
+    // 4. Open Graph Meta Tags (TC-046, TC-047)
     setMetaTag("property", "og:title", formattedTitle);
-    setMetaTag("property", "og:description", description);
+    setMetaTag("property", "og:description", cleanDesc);
     setMetaTag("property", "og:url", fullCanonicalUrl);
     setMetaTag("property", "og:image", ogImage);
     setMetaTag("property", "og:type", ogType);
@@ -117,7 +121,7 @@ export default function SeoHead({
 
     // 5. Twitter Meta Tags
     setMetaTag("name", "twitter:title", formattedTitle);
-    setMetaTag("name", "twitter:description", description);
+    setMetaTag("name", "twitter:description", cleanDesc);
     setMetaTag("name", "twitter:image", ogImage);
     setMetaTag("name", "twitter:card", "summary_large_image");
 
