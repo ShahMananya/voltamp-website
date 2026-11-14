@@ -1723,13 +1723,16 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
               "Unarmoured Cables",
               "LT XLPE Power Cables",
               "HT XLPE Power Cables",
-              "IS 7098",
-              "IS 1554",
-              "IS 694",
-              "Polycab India",
-              "Finolex Cables",
+              "IS 7098 (Cross-linked Polyethylene Insulated Cables)",
+              "IS 1554 (PVC Insulated Heavy Duty Electrical Cables)",
+              "IS 694 (PVC Insulated Flexible Copper Building Wires)",
+              "EN 50618 (Electric Cables for Photovoltaic Systems)",
+              "IEC 62444 (Cable Glands for Electrical Installations)",
+              "Polycab India (https://www.wikidata.org/entity/Q104868979)",
+              "Schneider Electric (https://www.wikidata.org/entity/Q380512)",
+              "Finolex Cables (https://www.wikidata.org/entity/Q110629731)",
               "KEI Industries",
-              "Schneider Electric"
+              "Dowells Crimping Lugs"
             ],
             "aggregateRating": {
               "@type": "AggregateRating",

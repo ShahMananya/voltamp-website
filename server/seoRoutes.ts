@@ -4,6 +4,7 @@ import axios from "axios";
 import type { Express, Request, Response } from "express";
 import { loadProductsFromDisk } from "./services/productService";
 import { BLOG_POSTS_DATA } from "../shared/blogData";
+import { getAiTelemetrySummary } from "./middleware/aiBotTelemetry";
 
 const BASE_URL = "https://www.volampelektrikals.com";
 export const INDEXNOW_KEY = "c4b1e5a8f27d49e18b76c905e321ad84";
@@ -318,6 +319,12 @@ export function registerSeoRoutes(app: Express) {
     const bingAuthCode = process.env.BING_SITE_AUTH || "C4B1E5A8F27D49E18B76C905E321AD84";
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
     res.send(`<?xml version="1.0"?>\n<users>\n\t<user>${bingAuthCode}</user>\n</users>`);
+  });
+
+  // 7. AI Bot & Referral Telemetry Report Endpoint (Phase 9 Step 133 & Phase 11 Step 147)
+  app.get("/api/seo/ai-telemetry", (_req: Request, res: Response) => {
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.json(getAiTelemetrySummary());
   });
 }
 

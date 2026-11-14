@@ -10,6 +10,7 @@ import { registerProductRestRoutes } from "../productRestRoutes";
 import { registerSeoRoutes } from "../seoRoutes";
 import { registerLiveMetalRoutes } from "../liveMetalRoutes";
 import { securityHeadersMiddleware } from "../securityHeaders";
+import { aiBotTelemetryMiddleware } from "../middleware/aiBotTelemetry";
 import { redirectsMiddleware } from "../redirects";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
@@ -22,6 +23,9 @@ export function createExpressApp() {
 
   // 1. Security Headers (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Staging Noindex)
   app.use(securityHeadersMiddleware);
+
+  // 1.2. AI Crawler & Inbound Answer Engine Telemetry Tracker (AEO/GEO Phase 9 & 11)
+  app.use(aiBotTelemetryMiddleware);
 
   // 1.5. Static Video Assets streaming with Byte-Range support (served before any routing / prerender)
   const clientPublicVideos = path.resolve(process.cwd(), "client/public/videos");
