@@ -159,7 +159,7 @@ export function generateLlmsTxt(): string {
   return `# VOLAMP ELEKTRIKALS PRIVATE LIMITED
 > B2B industrial electrical distribution platform in Ahmedabad, Gujarat, India, supplying certified power cables, switchgear, and earthing infrastructure nationwide across India.
 
-Volamp Elektrikals Private Limited is a wholesale stockist and distributor of genuine industrial cables and electrical equipment. Family electrical business legacy since 1964; company incorporated in 2021 (CIN: U31900GJ2021PTC122730 | GSTIN: 24AAICV0754B1ZO | GeM Verified Reseller & Wholesale Distributor).
+Volamp Elektrikals Private Limited is an authorized distributor, channel partner, and stockist of genuine industrial cables and electrical equipment. Authorized channel partner and distributor for Polycab India, Finolex Cables, KEI Industries, Schneider Electric, L&T (Lauritz Knudsen), and Dowells. Family electrical business legacy since 1964; company incorporated in 2021 (CIN: U31900GJ2021PTC122730 | GSTIN: 24AAICV0754B1ZO | GeM Verified Reseller & Authorized Wholesale Distributor).
 
 ## Core Pages & Portals
 - [Homepage](https://www.volampelektrikals.com): Corporate overview, brand portfolio, real-time cable estimator, and RFQ desk.
@@ -173,10 +173,10 @@ Volamp Elektrikals Private Limited is a wholesale stockist and distributor of ge
 - [Project Sourcing & RFQ Desk](https://www.volampelektrikals.com/enquire): Direct BOM evaluation and project quotation by electrical engineers.
 - [Customer Grievance Redressal Cell](https://www.volampelektrikals.com/complaints-cases): Official dispute, shortage, and escalation management portal.
 - [Global Cable Export Desk](https://www.volampelektrikals.com/export): Direct export of IEC/BS certified power cables, solar DC cables, and switchgear via Mundra & Kandla deep-water ports.
-- [Polycab Stockist Ahmedabad](https://www.volampelektrikals.com/dealers/polycab-ahmedabad): Wholesale stockist for Polycab LT/HT XLPE cables, solar DC wires, and flexible building wires in Ahmedabad & Gujarat.
-- [Finolex Wires Stockist Ahmedabad](https://www.volampelektrikals.com/dealers/finolex-cables-ahmedabad): Wholesale stockist for Finolex pure electrolytic copper flexible wires and power cables.
-- [KEI Cables Supplier Gujarat](https://www.volampelektrikals.com/dealers/kei-cables-gujarat): Industrial supplier of KEI heavy HT power cables, rubber trailing cables, and EHV transmission lines.
-- [Schneider Electric Switchgear](https://www.volampelektrikals.com/dealers/schneider-electric-ahmedabad): Wholesale distributor of Acti9 MCBs, EasyPact MCCBs, and TeSys contactors in Ahmedabad.
+- [Polycab Authorized Distributor Ahmedabad](https://www.volampelektrikals.com/dealers/polycab-ahmedabad): Authorized distributor and master stockist for Polycab LT/HT XLPE cables, solar DC wires, and flexible building wires in Ahmedabad & Gujarat.
+- [Finolex Cables Authorized Channel Partner](https://www.volampelektrikals.com/dealers/finolex-cables-ahmedabad): Officially certified Authorized Channel Partner for Finolex pure electrolytic copper flexible wires and power cables.
+- [KEI Cables Authorized Partner Gujarat](https://www.volampelektrikals.com/dealers/kei-cables-gujarat): Authorized industrial partner and star dealer for KEI heavy HT power cables, rubber trailing cables, and EHV transmission lines.
+- [Schneider Electric Authorized Distributor](https://www.volampelektrikals.com/dealers/schneider-electric-ahmedabad): Authorized distributor of Acti9 MCBs, EasyPact MCCBs, and TeSys contactors in Ahmedabad.
 - [Gujarat GIDC Industrial Supply](https://www.volampelektrikals.com/locations/industrial-gidc-hubs): Same-day 24h electrical delivery to Sanand, Vatva, Naroda, Changodar, Dahej, and Ankleshwar GIDC estates.
 
 ## Product Categories & Standards
@@ -188,12 +188,12 @@ Volamp Elektrikals Private Limited is a wholesale stockist and distributor of ge
 - [Cable Glands & Conduits](https://www.volampelektrikals.com/category/conduit): Brass single and double compression cable glands and termination kits.
 
 ## Brand Portfolio & Core Lines
-- [Polycab India](https://www.volampelektrikals.com/products?brand=Polycab): Industrial LT/HT power cables, solar DC cables, and FRLS wires.
-- [Finolex Cables](https://www.volampelektrikals.com/products?brand=Finolex): Electrolytic copper building wires and industrial flexible cables.
-- [KEI Industries](https://www.volampelektrikals.com/products?brand=KEI): Heavy industrial power cables, rubber trailing cables, and HT distribution.
-- [Schneider Electric](https://www.volampelektrikals.com/products?brand=Schneider): Acti9, EasyPact MCCBs, contactors, and industrial protection switchgear.
-- [L&T / Lauritz Knudsen](https://www.volampelektrikals.com/products?brand=L%26T): dsine MCCBs, motor starters, and power distribution boards.
-- [Dowells](https://www.volampelektrikals.com/products?brand=Dowells): Heavy-duty copper terminal lugs and crimping accessories.
+- [Polycab India](https://www.volampelektrikals.com/products?brand=Polycab): Authorized channel partner for industrial LT/HT power cables, solar DC cables, and FRLS wires.
+- [Finolex Cables](https://www.volampelektrikals.com/products?brand=Finolex): Authorized channel partner for electrolytic copper building wires and industrial flexible cables.
+- [KEI Industries](https://www.volampelektrikals.com/products?brand=KEI): Authorized partner and star dealer for heavy industrial power cables, rubber trailing cables, and HT distribution.
+- [Schneider Electric](https://www.volampelektrikals.com/products?brand=Schneider): Authorized distributor for Acti9, EasyPact MCCBs, contactors, and industrial protection switchgear.
+- [L&T / Lauritz Knudsen](https://www.volampelektrikals.com/products?brand=L%26T): Authorized distribution partner for dsine MCCBs, motor starters, and power distribution boards.
+- [Dowells](https://www.volampelektrikals.com/products?brand=Dowells): Authorized channel partner for heavy-duty copper terminal lugs and crimping accessories.
 - [Legrand](https://www.volampelektrikals.com/products?brand=Legrand): Protection switchgear and distribution enclosures.
 
 ## Operational Specifications & Verifiable Entity Data

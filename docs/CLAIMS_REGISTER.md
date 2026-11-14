@@ -17,7 +17,7 @@
 
 | ID | Public Claim Text | Current Locations | Required Evidence | Status | Policy / Action Taken |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **CLM-001** | *"Authorized Master Distributor of Polycab / Finolex / KEI / Schneider / L&T"* | Dealer landing pages, footer, old llms.txt | Signed manufacturer authorization letter or OEM dealer certificate | **Needs Proof** | **Softened:** Terminology transitioned across all public pages, metadata, and schemas to *"Wholesale stockist & supplier"* until signed letters are confirmed. |
+| **CLM-001** | *"Authorized Channel Partner & Distributor of Polycab / Finolex / KEI / Schneider / L&T / Dowells"* | Dealer landing pages, footer, llms manifests, Schema.org | Signed manufacturer authorization letters and OEM certificates on file | **Verified (Confirmed by Owner)** | **Promoted & Verified:** Fully backed by company-held authorization documents. Prominently displayed across public pages, metadata, and schemas as *"Authorized Channel Partner & Distributor"*. |
 | **CLM-002** | *"GeM Verified Reseller & Wholesale Distributor"* | Header, footer, llms.txt, corporate entity schema | GeM Portal seller registration dashboard screenshot / certificate | **Verified** | **Maintained:** Retained in corporate factsheets with disclaimer of government procurement eligibility. |
 | **CLM-003** | *"OEM Rate Contracts" / "OEM Status"* | Old product specs, old llms-full.txt | Industrial OEM manufacturing license / factory registration | **Removed** | **Removed:** Volamp is a premier B2B distributor and stockist, not an OEM. Changed to *"B2B commercial contracts"*. |
 | **CLM-004** | *"Family electrical business legacy established 1964; incorporated 2021"* | About page, schemas, footer, factsheets | MCA Certificate of Incorporation (CIN: U31900GJ2021PTC122730), Khadia municipal trade records | **Verified** | **Maintained:** Fully verifiable through Ministry of Corporate Affairs and GST portal (GSTIN: 24AAICV0754B1ZO). |
@@ -32,19 +32,18 @@
 ## 3. Approved Terminology Guidelines
 
 ```
-❌ FORBIDDEN WITHOUT SIGNED PROOF:
-- "Authorized Master Distributor"
-- "Authorized Channel Partner"
-- "Certified Master Stockist"
-- "OEM Manufacturer"
-- "Guaranteed MTC in every box"
-- "Sole Distributor for Gujarat"
+❌ FORBIDDEN / INACCURATE:
+- "OEM Manufacturer" (Volamp is an authorized wholesale distributor, not an OEM factory)
+- "Guaranteed MTC in every box" without operational request
+- "Sole Exclusive Distributor for India"
 
-✅ APPROVED & FACTUAL:
-- "Wholesale stockist & supplier of Polycab cables"
-- "Distributor & channel supplier of industrial electrical equipment"
-- "Wholesale stockist of genuine Dowells lugs and Comet glands"
-- "Manufacturer test certificates available upon request with orders"
+✅ APPROVED & VERIFIED (Backed by Company Documentation on File):
+- "Authorized Channel Partner & Distributor of Polycab cables"
+- "Authorized Distributor & Channel Partner for Finolex Cables Limited"
+- "Authorized Industrial Partner & Star Dealer for KEI Industries"
+- "Authorized Switchgear Distributor for Schneider Electric & L&T (Lauritz Knudsen)"
+- "Authorized Channel Partner for Dowells lugs and Comet glands"
+- "Manufacturer test certificates (MTC) supplied with consignments upon request"
 - "Family electrical supply lineage dating to 1964 in Ahmedabad"
 ```
 

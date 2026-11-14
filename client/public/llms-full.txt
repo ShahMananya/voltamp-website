@@ -30,17 +30,17 @@
 - Quality Assurance Standard: All electrical products are backed by original Manufacturer Test Certificates (MTC), routine test inspection reports, and conformity with Bureau of Indian Standards (BIS / ISI).
 - Core Service Capabilities: 3,385+ verified active SKUs, live MCX/LME copper and aluminium index-linked pricing, automated quotation generation, same-day dispatch across Gujarat GIDC industrial estates, and insured transit nationwide across India.
 
-## 2. Brand Portfolio & Wholesale Channel Distribution
-Volamp Elektrikals operates as a wholesale stockist, distributor, and channel supplier for India's foremost electrical equipment manufacturers:
-1. Polycab India Limited: Wholesale Stockist & Supplier for LT/HT XLPE Armoured Power Cables, Control Cables, 1500V DC Solar Photovoltaic Cables, Submersible Flat Cables, and Green Wire Industrial Building Wires.
-2. KEI Industries Limited: Industrial Stockist & Supplier for Heavy Power Cables, Extra High Voltage (EHV 66kV to 220kV) Transmission Lines, EPR/CSP Rubber Trailing Mining Cables, and BS 6387 CWZ Fire Survival Cables.
-3. Finolex Cables Limited: Wholesale Stockist for 100% Pure Electrolytic High-Conductivity Copper Flexible House Wires, FRLSH Industrial Panel Wires, 3-Core Submersible Flat Cables, and Cat-6 Networking Cables.
-4. Schneider Electric India: Channel Supplier for Acti9 Miniature Circuit Breakers (MCB), EasyPact Moulded Case Circuit Breakers (MCCB), MasterPact Air Circuit Breakers (ACB), and TeSys Contactors & Overload Relays.
-5. Larsen & Toubro (L&T / Lauritz Knudsen): Distribution Stockist for dsine MCCBs, Omega ACBs, MO/MNX Heavy-Duty Motor Contactors, Star-Delta Starters, and On-Load Changeover Switches.
-6. Dowells (BICC / Polycab Group): Wholesale Stockist & Supplier for Heavy-Duty Tinned Copper Tubular Crimping Lugs, Aluminium Inline Ferrules, and Bimetallic Friction-Welded Terminal Connectors.
-7. Comet Glands: Wholesale Stockist for Brass Single Compression Weatherproof Cable Glands and Double Compression Flameproof (Ex-d / Ex-e) Cable Glands for Hazardous Gas Zones.
-8. Raychem RPG & 3M India: Distribution Supplier for 1.1kV, 11kV, 22kV, and 33kV Heat-Shrinkable and Cold-Shrinkable Cable Jointing Kits and End Termination Kits.
-9. Legrand India: Commercial Stockist for DX3 Protection Switchgear, DPX3 MCCBs, and Industrial Plug-and-Socket Distribution Enclosures.
+## 2. Brand Portfolio & Authorized Channel Distribution
+Volamp Elektrikals operates as an authorized distributor, channel partner, and master stockist for India's foremost electrical equipment manufacturers, backed by official company-held authorization credentials:
+1. Polycab India Limited: Authorized Distributor & Master Stockist for LT/HT XLPE Armoured Power Cables, Control Cables, 1500V DC Solar Photovoltaic Cables, Submersible Flat Cables, and Green Wire Industrial Building Wires.
+2. KEI Industries Limited: Authorized Industrial Partner & Star Dealer for Heavy Power Cables, Extra High Voltage (EHV 66kV to 220kV) Transmission Lines, EPR/CSP Rubber Trailing Mining Cables, and BS 6387 CWZ Fire Survival Cables (50-Year Continued Association Milestone).
+3. Finolex Cables Limited: Officially Certified Authorized Channel Partner for 100% Pure Electrolytic High-Conductivity Copper Flexible House Wires, FRLSH Industrial Panel Wires, 3-Core Submersible Flat Cables, and Cat-6 Networking Cables (Valid through 2026).
+4. Schneider Electric India: Authorized Switchgear Distributor & Channel Partner for Acti9 Miniature Circuit Breakers (MCB), EasyPact Moulded Case Circuit Breakers (MCCB), MasterPact Air Circuit Breakers (ACB), and TeSys Contactors & Overload Relays.
+5. Larsen & Toubro (L&T / Lauritz Knudsen): Authorized Distribution Partner for dsine MCCBs, Omega ACBs, MO/MNX Heavy-Duty Motor Contactors, Star-Delta Starters, and On-Load Changeover Switches.
+6. Dowells (BICC / Polycab Group): Authorized Channel Partner for Heavy-Duty Tinned Copper Tubular Crimping Lugs, Aluminium Inline Ferrules, and Bimetallic Friction-Welded Terminal Connectors.
+7. Comet Glands: Authorized Stockist & Distributor for Brass Single Compression Weatherproof Cable Glands and Double Compression Flameproof (Ex-d / Ex-e) Cable Glands for Hazardous Gas Zones.
+8. Raychem RPG & 3M India: Authorized Sourcing Partner for 1.1kV, 11kV, 22kV, and 33kV Heat-Shrinkable and Cold-Shrinkable Cable Jointing Kits and End Termination Kits.
+9. Legrand India: Commercial Stockist & Channel Supplier for DX3 Protection Switchgear, DPX3 MCCBs, and Industrial Plug-and-Socket Distribution Enclosures.
 
 ## 3. Polycab India Cable Portfolio — Exhaustive Technical Specifications & Sizing
 Volamp Elektrikals maintains central warehouse stocks for the complete manufacturing portfolio of Polycab India Limited:

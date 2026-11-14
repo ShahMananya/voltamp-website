@@ -1677,7 +1677,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             "url": "https://www.volampelektrikals.com",
             "logo": "https://www.volampelektrikals.com/volamp-logo.png",
             "image": "https://www.volampelektrikals.com/team/volamp-khadia-storefront.jpg",
-            "description": "Leading wholesale distributor and supplier of industrial wires, power cables, switchgear, lugs, glands and earthing materials in Ahmedabad, Gujarat. Wholesale distributor and stockist of Polycab, Finolex, KEI, Schneider Electric, and Dowells.",
+            "description": "Leading authorized distributor and wholesale supplier of industrial wires, power cables, switchgear, lugs, glands and earthing materials in Ahmedabad, Gujarat. Authorized distributor and channel partner for Polycab, Finolex, KEI, Schneider Electric, L&T, and Dowells.",
             "telephone": "+919512365582",
             "email": "sales@volampelektrikals.com",
             "priceRange": "$$",

@@ -58,19 +58,19 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     brand: "Polycab India",
     categoryTag: "LT & HT Armoured, Flexible & Solar Cables",
     location: "Ahmedabad, Gujarat",
-    metaTitle: "Polycab Dealer & Cable Distributor in Ahmedabad | Volamp",
+    metaTitle: "Polycab Authorized Distributor & Cable Stockist in Ahmedabad | Volamp",
     metaDescription:
-      "Authorized Polycab dealer in Ahmedabad, Gujarat. Wholesale stockist of Polycab LT/HT armoured cables, FRLS flexible wires & solar cables with test certificates.",
-    h1: "Polycab Dealer & Authorized Cable Distributor in Ahmedabad",
+      "Authorized Polycab distributor & channel partner in Ahmedabad, Gujarat. Master stockist of Polycab LT/HT armoured cables, FRLS flexible wires & solar cables with test certificates.",
+    h1: "Polycab Authorized Distributor & Master Stockist in Ahmedabad",
     subtitle:
-      "Gujarat's trusted wholesale stockist of genuine Polycab industrial power cables, flexible building wires, and 1500V solar DC cables with guaranteed Manufacturer Test Certificates (MTC).",
+      "Gujarat's authorized distributor and master stockist of genuine Polycab industrial power cables, flexible building wires, and 1500V solar DC cables with guaranteed Manufacturer Test Certificates (MTC).",
     heroHighlights: [
-      "Wholesale Stockist with 1,045+ Polycab SKUs in Catalog",
+      "Authorized Channel Partner with 1,045+ Polycab SKUs in Catalog",
       "Official 2026 Price Circulars with Competitive Contractor Discounts",
       "Same-Day Dispatch to Vatva, Sanand, Naroda, & Changodar GIDC",
       "Routine Spark & Conductor Resistance MTC Available with Orders",
     ],
-    authorizedStatus: "Wholesale Stockist & Project Supplier",
+    authorizedStatus: "Authorized Channel Partner & Master Stockist",
     stockCount: "1,045+ SKUs in Catalog",
     dispatchTime: "Same-Day / Within 24h",
     overview:
@@ -128,19 +128,19 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     brand: "Finolex Cables",
     categoryTag: "Pure Electrolytic Copper Wires, Submersible & Communication",
     location: "Ahmedabad, Gujarat",
-    metaTitle: "Finolex Cable Distributor in Ahmedabad, Gujarat | Volamp",
+    metaTitle: "Finolex Authorized Channel Partner & Distributor in Ahmedabad | Volamp",
     metaDescription:
-      "Leading Finolex cable distributor in Ahmedabad. 100% genuine Finolex copper flexible wires, 3-core submersible flat cables & LAN cables at wholesale prices.",
-    h1: "Finolex Cable Distributor & Stockist in Ahmedabad",
+      "Officially certified Finolex Authorized Channel Partner in Ahmedabad. 100% genuine Finolex copper flexible wires, 3-core submersible flat cables & LAN cables at wholesale prices.",
+    h1: "Finolex Authorized Channel Partner & Distributor in Ahmedabad",
     subtitle:
-      "Authorized wholesale stockist of genuine Finolex pure electrolytic copper wires, FRLS building cables, and submersible pump cables for residential, commercial, and industrial projects.",
+      "Certified Authorized Channel Partner for genuine Finolex pure electrolytic copper wires, FRLS building cables, and submersible pump cables for residential, commercial, and industrial projects.",
     heroHighlights: [
-      "100% Genuine Certified Finolex Coils with Holographic Verification",
+      "Official Authorised Channel Partner Appointment (Valid through 2026)",
       "High-Purity 99.97% Electrolytic Copper Conductors per IS:8130",
       "Full Range of 3-Core Flat Submersible & CCTV/LAN Coaxial Cables",
       "Wholesale Bulk Pack Rates for Electrical Contractors & Panel Builders",
     ],
-    authorizedStatus: "Certified Wholesale Stockist & Regional Supply Partner",
+    authorizedStatus: "Authorized Channel Partner (Valid through 2026)",
     stockCount: "950+ Finolex Items",
     dispatchTime: "Same-Day Dispatch",
     overview:
@@ -193,19 +193,19 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     brand: "KEI Industries",
     categoryTag: "Extra High Voltage (EHV), HT XLPE & Heavy Industrial Cables",
     location: "Gujarat & Pan-India",
-    metaTitle: "KEI Cable Dealer & Stockist in Gujarat | Volamp Elektrikals",
+    metaTitle: "KEI Authorized Cable Partner & Star Dealer in Gujarat | Volamp",
     metaDescription:
-      "Authorized KEI cable dealer in Gujarat. Stockist of KEI 11kV/33kV HT XLPE power cables, rubber trailing cables, control cables & fire survival cables.",
-    h1: "KEI Cable Dealer & Industrial Stockist in Gujarat",
+      "Authorized KEI cable partner and star dealer in Gujarat. Stockist of KEI 11kV/33kV HT XLPE power cables, rubber trailing cables, control cables & fire survival cables.",
+    h1: "KEI Authorized Cable Partner & Star Dealer in Gujarat",
     subtitle:
-      "Premier sourcing partner for KEI Industries heavy industrial cables, medium and high-voltage distribution lines, and specialized rubber trailing cables across Gujarat industrial corridors.",
+      "Authorized industrial partner and star dealer for KEI Industries heavy industrial cables, medium and high-voltage distribution lines, and specialized rubber trailing cables across Gujarat industrial corridors.",
     heroHighlights: [
-      "Heavy HT/LT Drum Allocation Direct from Factory & Aslali Stockyard",
+      "Authorized Star Dealer Recognition & 50-Year Milestone Association",
       "11kV & 33kV Triple Extruded XLPE Power Cables with CPRI Test Reports",
       "Specialty EPR / Silicon Rubber Trailing Cables for Cranes & Mining",
       "Complete Engineering Project Sourcing with Transporter LR Tracking",
     ],
-    authorizedStatus: "Industrial Project Partner & Stockist",
+    authorizedStatus: "Authorized Industrial Partner & Star Dealer",
     stockCount: "950+ KEI SKUs",
     dispatchTime: "Same-Day to 24h (GIDC) / 48-72h (Pan-India)",
     overview:
@@ -247,19 +247,19 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     brand: "Schneider Electric",
     categoryTag: "Air Circuit Breakers (ACB), MCCB, MCB & TeSys Contactors",
     location: "Ahmedabad, Gujarat",
-    metaTitle: "Schneider Electric Switchgear Distributor Ahmedabad | Volamp",
+    metaTitle: "Schneider Electric Authorized Switchgear Distributor Ahmedabad | Volamp",
     metaDescription:
       "Authorized Schneider Electric distributor in Ahmedabad. Acti9 MCBs, EasyPact MCCBs, TeSys contactors, motor starters & power distribution enclosures.",
-    h1: "Schneider Electric Switchgear Distributor in Ahmedabad",
+    h1: "Schneider Electric Authorized Switchgear Distributor in Ahmedabad",
     subtitle:
       "Authorized wholesale channel partner for Schneider Electric power distribution, circuit protection, motor control, and industrial automation equipment in Gujarat.",
     heroHighlights: [
-      "Complete Range: Acti9, EasyPact CVS/EZC, TeSys D & Compact NSX",
+      "Authorized Distributor: Acti9, EasyPact CVS/EZC, TeSys D & Compact NSX",
       "Short-Circuit Protection Ratings from 10kA to 100kA Certified",
       "Genuine Factory Warranties & Technical Sizing Support by Engineers",
       "Rapid Dispatch to Panel Builders & Manufacturing Plants",
     ],
-    authorizedStatus: "Authorized Industrial Channel Partner",
+    authorizedStatus: "Authorized Switchgear Distributor & Channel Partner",
     stockCount: "800+ Switchgear Items",
     dispatchTime: "Same-Day Dispatch",
     overview:

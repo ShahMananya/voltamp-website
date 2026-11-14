@@ -113,3 +113,4 @@ ${Object.entries(categories)
 if (process.argv[1] && process.argv[1].includes("dataQualityReport")) {
   runDataQualityAudit();
 }
+
