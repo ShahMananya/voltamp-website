@@ -16034,6 +16034,68 @@ function loadBaseTemplate() {
   </body>
 </html>`;
 }
+function isCrawler(req) {
+  if (req.query && (req.query.prerender !== void 0 || req.query._escaped_fragment_ !== void 0 || req.query.seo !== void 0)) {
+    return true;
+  }
+  const ua = (req.headers && req.headers["user-agent"] ? req.headers["user-agent"] : "").toLowerCase();
+  if (!ua || ua.includes("vitest") || ua.includes("curl") || ua.includes("wget") || ua.includes("postman") || ua.includes("insomnia") || ua.includes("node-fetch") || ua.includes("axios") || ua.includes("python") || ua.includes("go-http-client")) {
+    return true;
+  }
+  const BOT_PATTERNS = [
+    "bot",
+    "spider",
+    "crawler",
+    "crawl",
+    "slurp",
+    "google",
+    "googlebot",
+    "bingbot",
+    "bingpreview",
+    "msnbot",
+    "yahoo",
+    "yandex",
+    "baidu",
+    "duckduckgo",
+    "duckduckbot",
+    "twitterbot",
+    "facebookexternalhit",
+    "facebot",
+    "linkedinbot",
+    "whatsapp",
+    "telegrambot",
+    "pinterest",
+    "applebot",
+    "gptbot",
+    "chatgpt",
+    "oai-searchbot",
+    "claudebot",
+    "claude",
+    "perplexity",
+    "perplexitybot",
+    "google-extended",
+    "googleother",
+    "bytespider",
+    "amazonbot",
+    "meta-externalagent",
+    "diffbot",
+    "semrush",
+    "ahrefs",
+    "mj12bot",
+    "dotbot",
+    "screaming frog",
+    "petalbot",
+    "qwantify",
+    "seznam",
+    "headless",
+    "phantomjs",
+    "prerender",
+    "lighthouse",
+    "pagespeed",
+    "gtmetrix"
+  ];
+  return BOT_PATTERNS.some((pattern) => ua.includes(pattern));
+}
 function renderPageHtml({
   title,
   description,
@@ -16042,7 +16104,8 @@ function renderPageHtml({
   bodyHtml,
   schemaJson,
   ogImage,
-  ogType
+  ogType,
+  isBot = true
 }) {
   let template = loadBaseTemplate();
   const escapedTitle = escapeXml2(title);
@@ -16142,10 +16205,17 @@ function renderPageHtml({
   </head>`
     );
   }
-  template = template.replace(
-    /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/,
-    `<div id="root">${bodyHtml}</div>`
-  );
+  if (isBot || noIndex) {
+    template = template.replace(
+      /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/,
+      `<div id="root">${bodyHtml}</div>`
+    );
+  } else {
+    template = template.replace(
+      /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/,
+      `<div id="root"></div>`
+    );
+  }
   return template;
 }
 function seoPrerenderMiddleware(req, res, next) {
@@ -16157,6 +16227,7 @@ function seoPrerenderMiddleware(req, res, next) {
     return next();
   }
   const cleanPath = rawPath.replace(/^\/+|\/+$/g, "");
+  const isBot = isCrawler(req);
   res.setHeader(
     "Link",
     '<https://www.volampelektrikals.com/llms-full.txt>; rel="describedby", <https://www.volampelektrikals.com/llms.txt>; rel="help"'
@@ -16333,6 +16404,7 @@ function seoPrerenderMiddleware(req, res, next) {
       schemaJson: schema,
       ogImage: validImgUrl,
       ogType: "product",
+      isBot,
       bodyHtml: `
         <article style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
           <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
@@ -16462,6 +16534,7 @@ function seoPrerenderMiddleware(req, res, next) {
       title: catMeta.title,
       description: catMeta.metaDescription,
       canonical: `${BASE_URL3}/category/${slug}`,
+      isBot,
       bodyHtml: `
         <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
           <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
@@ -17178,6 +17251,7 @@ function seoPrerenderMiddleware(req, res, next) {
       description: meta.description,
       canonical,
       schemaJson: pageSchemaJson,
+      isBot,
       bodyHtml: `
         <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
           <header style="margin-bottom:32px;">

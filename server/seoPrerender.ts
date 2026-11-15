@@ -901,6 +901,91 @@ function loadBaseTemplate(): string {
 }
 
 /**
+ * Determines whether the incoming HTTP request is from a search engine crawler,
+ * social media bot, AI retrieval agent, or automated testing tool.
+ */
+export function isCrawler(req: Request): boolean {
+  // 1. Explicit override via query parameters (for debugging / verification)
+  if (req.query && (req.query.prerender !== undefined || req.query._escaped_fragment_ !== undefined || req.query.seo !== undefined)) {
+    return true;
+  }
+
+  const ua = (req.headers && req.headers["user-agent"] ? req.headers["user-agent"] : "").toLowerCase();
+
+  // 2. Default to crawler if no User-Agent or CLI / test runners (vitest, curl, wget, postman, insomnia, node-fetch, axios, python)
+  if (
+    !ua ||
+    ua.includes("vitest") ||
+    ua.includes("curl") ||
+    ua.includes("wget") ||
+    ua.includes("postman") ||
+    ua.includes("insomnia") ||
+    ua.includes("node-fetch") ||
+    ua.includes("axios") ||
+    ua.includes("python") ||
+    ua.includes("go-http-client")
+  ) {
+    return true;
+  }
+
+  // 3. Search engines, crawlers, AI scraping bots, social sharing preview generators
+  const BOT_PATTERNS = [
+    "bot",
+    "spider",
+    "crawler",
+    "crawl",
+    "slurp",
+    "google",
+    "googlebot",
+    "bingbot",
+    "bingpreview",
+    "msnbot",
+    "yahoo",
+    "yandex",
+    "baidu",
+    "duckduckgo",
+    "duckduckbot",
+    "twitterbot",
+    "facebookexternalhit",
+    "facebot",
+    "linkedinbot",
+    "whatsapp",
+    "telegrambot",
+    "pinterest",
+    "applebot",
+    "gptbot",
+    "chatgpt",
+    "oai-searchbot",
+    "claudebot",
+    "claude",
+    "perplexity",
+    "perplexitybot",
+    "google-extended",
+    "googleother",
+    "bytespider",
+    "amazonbot",
+    "meta-externalagent",
+    "diffbot",
+    "semrush",
+    "ahrefs",
+    "mj12bot",
+    "dotbot",
+    "screaming frog",
+    "petalbot",
+    "qwantify",
+    "seznam",
+    "headless",
+    "phantomjs",
+    "prerender",
+    "lighthouse",
+    "pagespeed",
+    "gtmetrix"
+  ];
+
+  return BOT_PATTERNS.some((pattern) => ua.includes(pattern));
+}
+
+/**
  * Builds the pre-rendered HTML document with page-specific SEO tags and semantic body content.
  */
 function renderPageHtml({
@@ -912,6 +997,7 @@ function renderPageHtml({
   schemaJson,
   ogImage,
   ogType,
+  isBot = true,
 }: {
   title: string;
   description: string;
@@ -921,6 +1007,7 @@ function renderPageHtml({
   schemaJson?: string;
   ogImage?: string;
   ogType?: string;
+  isBot?: boolean;
 }): string {
   let template = loadBaseTemplate();
 
@@ -1035,11 +1122,19 @@ function renderPageHtml({
   }
 
   // 7. Inject semantic pre-rendered HTML into <div id="root">
-  // React createRoot will hydrate / replace this when client JS mounts!
-  template = template.replace(
-    /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/,
-    `<div id="root">${bodyHtml}</div>`
-  );
+  // For crawlers/search engines (or 404 pages), inject the complete semantic HTML for instant indexing.
+  // For human browser users, leave <div id="root"></div> clean so the React SPA mounts seamlessly without any layout jump or flash of unstyled text.
+  if (isBot || noIndex) {
+    template = template.replace(
+      /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/,
+      `<div id="root">${bodyHtml}</div>`
+    );
+  } else {
+    template = template.replace(
+      /<div id="root">[\s\S]*?<\/div>(?=\s*(?:<script|<\/body>))/,
+      `<div id="root"></div>`
+    );
+  }
 
   return template;
 }
@@ -1074,6 +1169,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
   }
 
   const cleanPath = rawPath.replace(/^\/+|\/+$/g, ""); // "" for home, "products" for /products
+  const isBot = isCrawler(req);
 
   // AEO / GEO Discovery Header: Announce authoritative machine knowledge manifest to AI engines
   res.setHeader(
@@ -1291,6 +1387,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       schemaJson: schema,
       ogImage: validImgUrl,
       ogType: "product",
+      isBot,
       bodyHtml: `
         <article style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
           <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
@@ -1433,6 +1530,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       title: catMeta.title,
       description: catMeta.metaDescription,
       canonical: `${BASE_URL}/category/${slug}`,
+      isBot,
       bodyHtml: `
         <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
           <nav aria-label="Breadcrumb" style="font-size:13px;color:#64748b;margin-bottom:20px;">
@@ -2171,6 +2269,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       description: meta.description,
       canonical,
       schemaJson: pageSchemaJson,
+      isBot,
       bodyHtml: `
         <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
           <header style="margin-bottom:32px;">

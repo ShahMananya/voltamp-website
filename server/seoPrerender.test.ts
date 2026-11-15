@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 import { seoPrerenderMiddleware } from "./seoPrerender";
 import type { Request, Response } from "express";
 
-function mockHttp(path: string) {
+function mockHttp(path: string, customHeaders: Record<string, string> = {}) {
   const req = {
     method: "GET",
     path,
+    headers: customHeaders,
+    query: {},
   } as unknown as Request;
 
   let statusCode = 200;
@@ -104,6 +106,35 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(result.sentHtml).toContain('href="/product/LUG-000001"');
     expect(result.sentHtml).toContain('href="/product/GLD-000001"');
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/"');
+  });
+
+  it("serves pre-rendered semantic HTML to crawlers (Googlebot) and clean shell to human browsers", () => {
+    // 1. Crawler request (Googlebot)
+    const { req: reqBot, res: resBot, next: nextBot, getResult: getBotResult } = mockHttp("/", {
+      "user-agent": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    });
+    seoPrerenderMiddleware(reqBot, resBot, nextBot);
+    const botResult = getBotResult();
+    expect(botResult.statusCode).toBe(200);
+    expect(botResult.sentHtml).toContain("<h1");
+    expect(botResult.sentHtml).toContain("Wires and Cables in Ahmedabad");
+    expect(botResult.sentHtml).toContain('href="/dealers/polycab-ahmedabad"');
+    expect(botResult.sentHtml).toContain('<main style="font-family:system-ui');
+
+    // 2. Real human browser request (Chrome on Windows)
+    const { req: reqHuman, res: resHuman, next: nextHuman, getResult: getHumanResult } = mockHttp("/", {
+      "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    });
+    seoPrerenderMiddleware(reqHuman, resHuman, nextHuman);
+    const humanResult = getHumanResult();
+    expect(humanResult.statusCode).toBe(200);
+    // Human gets all meta tags in <head> for social and SEO
+    expect(humanResult.sentHtml).toContain("<title>VOLAMP ELEKTRIKALS | Wires and Cables in Ahmedabad</title>");
+    expect(humanResult.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/"');
+    expect(humanResult.sentHtml).toContain('name="google-site-verification"');
+    // But <div id="root"></div> is clean so human users never see the flash of raw text!
+    expect(humanResult.sentHtml).toContain('<div id="root"></div>');
+    expect(humanResult.sentHtml).not.toContain('<div id="root"><main style="font-family:system-ui');
   });
 
   it("prerenders category page with 200 and H1", () => {
