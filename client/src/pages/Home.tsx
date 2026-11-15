@@ -21,6 +21,7 @@ import CableCalculatorModal from "@/components/calculator/CableCalculatorModal";
 import LiveMetalPricesModal from "@/components/metal/LiveMetalPricesModal";
 import ThemeToggle from "@/components/ThemeToggle";
 import SeoHead from "@/components/seo/SeoHead";
+import { HOME_KNOWLEDGE_GRAPH } from "@shared/homeKnowledgeGraph";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -113,6 +114,89 @@ function ProductIllustration({ product }: { product: Product }) {
   );
 }
 
+const FAST_MOVING_CAROUSEL = [
+  {
+    sku: "CAB-000001",
+    name: "0.5 SQMM 1C Copper Cable",
+    brand: "Polycab",
+    spec: "IS 694 Flexible FRLS Wire Upto 1100V",
+    price: "₹12.93/m",
+    image: "/products/cables.jpg?v=3",
+  },
+  {
+    sku: "CAB-000736",
+    name: "185 sqmm 3.5C Al Armoured",
+    brand: "Polycab",
+    spec: "1.1kV XLPE Substation Power Feeder",
+    price: "Indicative B2B",
+    image: "/products/cable-cross-section.jpg?v=3",
+  },
+  {
+    sku: "CAB-000737",
+    name: "240 sqmm 3.5C Al Armoured",
+    brand: "Polycab",
+    spec: "1.1kV XLPE Heavy Plant Mains Feeder",
+    price: "Indicative B2B",
+    image: "/products/cables.jpg?v=3",
+  },
+  {
+    sku: "CAB-001908",
+    name: "Flame Guard 1.5 sqmm",
+    brand: "Finolex",
+    spec: "99.97% Pure Copper FRLS 90m Coil",
+    price: "In Stock",
+    image: "/products/cables.jpg?v=3",
+  },
+  {
+    sku: "CAB-001909",
+    name: "Flame Guard 2.5 sqmm",
+    brand: "Finolex",
+    spec: "High-Amperage Commercial Power Wire",
+    price: "In Stock",
+    image: "/products/cables.jpg?v=3",
+  },
+  {
+    sku: "CAB-000971",
+    name: "300 sqmm 1C Heavy Feeder",
+    brand: "KEI Industries",
+    spec: "Heavy Industrial Copper Feeder Cable",
+    price: "Cut to Length",
+    image: "/products/cable-reel-drum.jpg?v=3",
+  },
+  {
+    sku: "SOL-000001",
+    name: "Solar DC Cable 1C x 4 sqmm",
+    brand: "Polycab Solar",
+    spec: "1500V UV/Ozone Resistant (EN 50618)",
+    price: "₹76.00/m",
+    image: "/products/solar-panel.jpg?v=3",
+  },
+  {
+    sku: "SWG-000001",
+    name: "Acti9 63A MCB Switchgear",
+    brand: "Schneider",
+    spec: "10kA 4-Pole C-Curve IS/IEC 60898-1",
+    price: "₹185/unit",
+    image: "/products/switchgear.jpg?v=3",
+  },
+  {
+    sku: "LUG-000001",
+    name: "25 sqmm Tinned Ring Lugs",
+    brand: "Dowells",
+    spec: "Tinned Electrolytic Copper IS 8337",
+    price: "Bulk Pack",
+    image: "/products/cable-lugs.jpg?v=3",
+  },
+  {
+    sku: "GLD-000003",
+    name: "16MM Brass Cable Gland",
+    brand: "Comet",
+    spec: "Single Compression Weatherproof Gland",
+    price: "Full Kit",
+    image: "/products/cable-gland.jpg?v=3",
+  },
+];
+
 export default function Home() {
   const { user } = useAuth();
   const { location, country, openLocationPicker, isDetecting } = useUserLocation();
@@ -159,6 +243,13 @@ export default function Home() {
   const whatsappBusinessUrl = import.meta.env.VITE_WHATSAPP_BUSINESS_URL || "";
   const [mobileOpen, setMobileOpen] = useState(false); const [accountOpen, setAccountOpen] = useState(() => previewSurface === "account"); const [calculatorOpen, setCalculatorOpen] = useState(() => previewSurface === "calculator"); const [calculatorCategory, setCalculatorCategory] = useState<string | null>(null); const [calculatorSubcategory, setCalculatorSubcategory] = useState<string | null>(null); const [calculatorDetail, setCalculatorDetail] = useState<string | null>(null); const [selectedDetail, setSelectedDetail] = useState<Product | null>(() => previewSurface === "product" ? products[0] : null); const [compareList, setCompareList] = useState<string[]>([]); const [search, setSearch] = useState(() => new URLSearchParams(window.location.search).get("q") ?? ""); const [quantity, setQuantity] = useState(100); const [selectedProduct, setSelectedProduct] = useState(products[0]); const [discount, setDiscount] = useState(5);
   const [homeCatalog, setHomeCatalog] = useState<any[] | null>(null);
+  const productCarouselRef = useRef<HTMLDivElement>(null);
+  const scrollProductCarousel = (direction: "left" | "right") => {
+    if (productCarouselRef.current) {
+      const scrollAmount = direction === "left" ? -320 : 320;
+      productCarouselRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+    }
+  };
 
   useEffect(() => {
     fetch("/products_db.json")
@@ -273,6 +364,7 @@ export default function Home() {
       keywords="Volamp Elektrikals, Volamp Ahmedabad, electrical supplier Ahmedabad, cable distributor Gujarat, Polycab distributor Ahmedabad, Finolex cables, KEI cables, switchgear"
       canonicalPath="/"
       ogType="website"
+      jsonLd={HOME_KNOWLEDGE_GRAPH}
     />
     {/* Full-Bleed Video Hero & Overlaid Transparent Header (Cleveland Cable Company exact layout) */}
     <div className="relative w-full overflow-hidden bg-slate-950 text-white min-h-[500px] sm:min-h-[560px] lg:min-h-[620px] flex flex-col justify-between">
@@ -1828,39 +1920,79 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pt-4 text-xs">
-              <Link href="/product/CAB-000736" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
-                <div className="font-bold text-slate-800 dark:text-slate-200">Polycab 185 sqmm 3.5C</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">1.1kV XLPE Al Armoured &bull; CAB-000736</div>
-              </Link>
-              <Link href="/product/CAB-000737" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
-                <div className="font-bold text-slate-800 dark:text-slate-200">Polycab 240 sqmm 3.5C</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">1.1kV XLPE Al Armoured &bull; CAB-000737</div>
-              </Link>
-              <Link href="/product/CAB-001908" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
-                <div className="font-bold text-slate-800 dark:text-slate-200">Finolex Flame Guard 1.5 sqmm</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">Pure Copper FRLS 90m &bull; CAB-001908</div>
-              </Link>
-              <Link href="/product/CAB-001909" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
-                <div className="font-bold text-slate-800 dark:text-slate-200">Finolex Flame Guard 2.5 sqmm</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">Pure Copper FRLS 90m &bull; CAB-001909</div>
-              </Link>
-              <Link href="/product/CAB-000971" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
-                <div className="font-bold text-slate-800 dark:text-slate-200">KEI 300 sqmm 1C Copper</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">Heavy Industrial Feeder &bull; CAB-000971</div>
-              </Link>
-              <Link href="/product/LUG-000001" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
-                <div className="font-bold text-slate-800 dark:text-slate-200">Dowells Copper Ring Lugs</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">Tinned Electrolytic &bull; LUG-000001</div>
-              </Link>
-              <Link href="/product/GLD-000003" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
-                <div className="font-bold text-slate-800 dark:text-slate-200">Comet 16MM Brass Gland</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">Single Compression &bull; GLD-000003</div>
-              </Link>
-              <Link href="/product/SWG-000001" className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-orange-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 hover:border-[#c56718] transition-all">
-                <div className="font-bold text-slate-800 dark:text-slate-200">Schneider Acti9 63A MCB</div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400">10kA 4-Pole C-Curve &bull; SWG-000001</div>
-              </Link>
+            {/* Interactive Fast-Moving Product Carousel */}
+            <div className="pt-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="size-3.5 text-[#c56718]" />
+                  <span>Featured Product Carousel (Immediate Warehouse Dispatch)</span>
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => scrollProductCarousel("left")}
+                    className="size-8 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-[#c56718] hover:text-[#c56718] flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
+                    aria-label="Previous products"
+                  >
+                    <ChevronLeft className="size-4" />
+                  </button>
+                  <button
+                    onClick={() => scrollProductCarousel("right")}
+                    className="size-8 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:border-[#c56718] hover:text-[#c56718] flex items-center justify-center transition-colors shadow-2xs cursor-pointer"
+                    aria-label="Next products"
+                  >
+                    <ChevronRight className="size-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div
+                ref={productCarouselRef}
+                className="flex items-stretch gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-3 text-xs"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+                {FAST_MOVING_CAROUSEL.map((item) => (
+                  <div
+                    key={item.sku}
+                    className="w-64 sm:w-72 shrink-0 snap-start rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-850 p-4 flex flex-col justify-between hover:border-[#c56718] hover:shadow-md transition-all group"
+                  >
+                    <div>
+                      <div className="h-32 rounded-xl overflow-hidden bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 mb-3 relative flex items-center justify-center p-1">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="size-full object-cover rounded-lg group-hover:scale-105 transition-transform duration-200"
+                          loading="lazy"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = "/products/cables.jpg?v=3";
+                          }}
+                        />
+                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-xs text-[10px] font-bold text-amber-300 uppercase tracking-wider">
+                          {item.brand}
+                        </span>
+                        <span className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-emerald-600/90 text-[10px] font-bold text-white shadow-xs">
+                          {item.price}
+                        </span>
+                      </div>
+                      <h5 className="font-bold text-slate-900 dark:text-white text-sm mb-1 line-clamp-1 group-hover:text-[#c56718] transition-colors">
+                        {item.name}
+                      </h5>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mb-2">
+                        {item.sku}
+                      </p>
+                      <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed mb-4">
+                        {item.spec}
+                      </p>
+                    </div>
+                    <Link
+                      href={`/product/${item.sku}`}
+                      className="inline-flex items-center justify-between w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-[#c56718] hover:text-white hover:border-[#c56718] dark:hover:bg-[#c56718] dark:hover:text-white font-bold text-xs transition-all"
+                    >
+                      <span>View Specifications</span>
+                      <ArrowRight className="size-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
