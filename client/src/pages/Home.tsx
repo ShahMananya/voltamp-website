@@ -27,15 +27,26 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ArrowRight, ArrowUpRight, Boxes, Briefcase, Building2, Cable, Calculator, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock, Database, ExternalLink, Facebook, FileText, Factory, Globe2, Handshake, Headphones, Instagram, Landmark, Layers, Linkedin, Lock, LogIn, Mail, MapPin, Maximize2, Menu, MessageCircle, MessageSquare, PackageSearch, Phone, Play, PlugZap, Quote, Search, Shield, ShieldCheck, ShoppingCart, Sparkles, TrendingDown, TrendingUp, Truck, User, UserRound, Volume2, VolumeX, X, Youtube, Zap } from "lucide-react";
 import SocialMediaLinks from "@/components/layout/SocialMediaLinks";
-import { CATEGORIES, ICON_MAP } from "@/data/categories";
+import { CATEGORIES, ICON_MAP, getProductImage } from "@/data/categories";
 
-type Product = { name: string; sku: string; category: string; detail: string; accent: "orange" | "brown" | "yellow"; icon: typeof Cable; price: number; unit: string; use: string };
+type Product = {
+  name: string;
+  sku: string;
+  category: string;
+  detail: string;
+  accent: "orange" | "brown" | "yellow";
+  icon: typeof Cable;
+  price: number;
+  unit: string;
+  use: string;
+  image?: string;
+};
 const products: Product[] = [
-  { name: "1.1kV XLPE Aluminium Armoured Cable", sku: "CAB-000001", category: "Wires & Cables", detail: "Heavy-duty cross-linked underground power feeder cable for industrial and plant distribution.", accent: "brown", icon: Cable, price: 118, unit: "per metre", use: "Industrial plants, substations and LT distribution" },
-  { name: "Screened Instrumentation Cable (Pair/Triad)", sku: "CAB-000002", category: "Wires & Cables", detail: "Individually and overall shielded signal cabling for control rooms and DCS automation.", accent: "orange", icon: Factory, price: 142, unit: "per metre", use: "Process instrumentation and factory automation" },
-  { name: "Solar DC Cable 1C x 4 sqmm (H1Z2Z2-K)", sku: "SOL-000001", category: "Solar", detail: "UV, ozone and weather-resistant crosslinked halogen-free photovoltaic cable.", accent: "yellow", icon: Zap, price: 76, unit: "per metre", use: "Rooftop and ground-mount utility solar plants" },
-  { name: "Flexible FRLS Single Core Building Wire", sku: "CAB-000003", category: "Wires & Cables", detail: "Flame retardant low smoke 100% electrolytic copper conductor wire.", accent: "orange", icon: PlugZap, price: 42, unit: "per metre", use: "Commercial buildings, panels and residential wiring" },
-  { name: "10kA C-Curve Miniature Circuit Breaker (MCB)", sku: "SWG-000001", category: "Switchgear", detail: "IS/IEC 60898-1 certified final distribution protection device with bi-connect terminals.", accent: "brown", icon: PlugZap, price: 185, unit: "per piece", use: "Distribution boards and motor control centers" },
+  { name: "1.1kV XLPE Aluminium Armoured Cable", sku: "CAB-000001", category: "Wires & Cables", detail: "Heavy-duty cross-linked underground power feeder cable for industrial and plant distribution.", accent: "brown", icon: Cable, price: 118, unit: "per metre", use: "Industrial plants, substations and LT distribution", image: "/products/cables.jpg?v=3" },
+  { name: "Screened Instrumentation Cable (Pair/Triad)", sku: "CAB-000002", category: "Wires & Cables", detail: "Individually and overall shielded signal cabling for control rooms and DCS automation.", accent: "orange", icon: Factory, price: 142, unit: "per metre", use: "Process instrumentation and factory automation", image: "/products/cable-cross-section.jpg?v=3" },
+  { name: "Solar DC Cable 1C x 4 sqmm (H1Z2Z2-K)", sku: "SOL-000001", category: "Solar", detail: "UV, ozone and weather-resistant crosslinked halogen-free photovoltaic cable.", accent: "yellow", icon: Zap, price: 76, unit: "per metre", use: "Rooftop and ground-mount utility solar plants", image: "/products/solar-panel.jpg?v=3" },
+  { name: "Flexible FRLS Single Core Building Wire", sku: "CAB-000003", category: "Wires & Cables", detail: "Flame retardant low smoke 100% electrolytic copper conductor wire.", accent: "orange", icon: PlugZap, price: 42, unit: "per metre", use: "Commercial buildings, panels and residential wiring", image: "/products/cables.jpg?v=3" },
+  { name: "10kA C-Curve Miniature Circuit Breaker (MCB)", sku: "SWG-000001", category: "Switchgear", detail: "IS/IEC 60898-1 certified final distribution protection device with bi-connect terminals.", accent: "brown", icon: PlugZap, price: 185, unit: "per piece", use: "Distribution boards and motor control centers", image: "/products/switchgear.jpg?v=3" },
 ];
 const categoryNavigation = CATEGORIES.map((category) => {
   const Icon = ICON_MAP[category.iconName] || Cable;
@@ -72,7 +83,35 @@ const calculatorTree = CATEGORIES.map((category) => ({
 }));
 
 function BrandMark() { return <div className="brand-mark bg-white px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-[#ebd7c7] shadow-xs flex items-center justify-center transition-transform hover:scale-[1.02]" aria-label="VOLAMP home"><img src="/volamp-logo.png?v=3" alt="VOLAMP Powering Growth" className="h-8 sm:h-9 w-auto object-contain" /><span className="sr-only">VOLAMP Powering Growth</span></div>; }
-function ProductIllustration({ product }: { product: Product }) { const Icon = product.icon; return <div className={`product-art art-${product.accent}`}><div className="wire-orbit" /><Icon className="relative z-10 size-12 stroke-[1.25]" /><span className="product-art-code">{product.category.slice(0, 3).toUpperCase()}</span></div>; }
+function ProductIllustration({ product }: { product: Product }) {
+  const imgSrc = product.image || getProductImage(product, product.category);
+  const Icon = product.icon || Cable;
+  if (imgSrc) {
+    return (
+      <div className="relative w-full h-44 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center mb-3 group">
+        <img
+          src={imgSrc}
+          alt={product.name}
+          className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = "/products/cables.jpg?v=3";
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+        <span className="absolute bottom-2.5 left-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur-xs text-[10px] font-bold text-amber-300 uppercase tracking-wider font-mono">
+          {product.category}
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div className={`product-art art-${product.accent}`}>
+      <div className="wire-orbit" />
+      <Icon className="relative z-10 size-12 stroke-[1.25]" />
+      <span className="product-art-code">{product.category.slice(0, 3).toUpperCase()}</span>
+    </div>
+  );
+}
 
 export default function Home() {
   const { user } = useAuth();
@@ -146,6 +185,7 @@ export default function Home() {
         use: p.description || p.category,
         accent: "orange" as const,
         icon: Cable,
+        image: getProductImage(p, p.category),
       }));
     }
     if (homeCatalog && homeCatalog.length > 0 && search.trim().length >= 2) {
@@ -166,6 +206,7 @@ export default function Home() {
           use: p.description || p.category,
           accent: "orange" as const,
           icon: Cable,
+          image: getProductImage(p, p.category),
         }));
       }
     }
@@ -258,7 +299,7 @@ export default function Home() {
 
       {/* 2. Top utility row (overlaid on top of video, 100% transparent) */}
       {/* 2. Top utility row (overlaid on top of video, 100% transparent, responsive) */}
-      <div className="relative z-20 border-b border-white/10 bg-transparent">
+      <div className="relative z-50 border-b border-white/10 bg-transparent">
         <div className="market-container py-1.5 md:py-2 text-xs flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">
           {/* Top row on Mobile / Left on Desktop: Location picker & Quick Mobile Action */}
           <div className="flex items-center justify-between w-full md:w-auto shrink-0">
@@ -293,7 +334,7 @@ export default function Home() {
           </div>
 
           {/* Search Bar: 100% width on mobile (< md), centered flex-1 on tablet & desktop (md+) */}
-          <div className="w-full md:flex-1 md:max-w-md lg:max-w-lg md:mx-2 relative">
+          <div className="w-full md:flex-1 md:max-w-md lg:max-w-lg md:mx-2 relative z-50">
             <div className="flex items-center gap-2 bg-black/25 hover:bg-black/35 focus-within:bg-black/50 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/20 text-white transition-all shadow-xs">
               <Search className="size-3.5 text-amber-400 shrink-0" />
               <input
@@ -321,24 +362,39 @@ export default function Home() {
 
             {/* Autocomplete dropdown */}
             {search && (
-              <div className="search-results absolute top-full left-0 right-0 text-left rounded-xl shadow-2xl overflow-hidden mt-1.5 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
-                {searchResults.length ? searchResults.map((product) => (
-                  <button
-                    key={product.name + product.sku}
-                    onClick={() => {
-                      navigate(`/product/${product.sku}`);
-                      setSearch("");
-                    }}
-                    className="cursor-pointer w-full text-left p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-2 transition-colors border-b border-slate-100 dark:border-slate-800 last:border-0"
-                  >
-                    <ProductIllustration product={product} />
-                    <span className="flex-1 min-w-0">
-                      <strong className="block truncate text-xs">{product.name}</strong>
-                      <small className="block truncate text-[10px] text-slate-400">{product.sku} · {product.category} · indicative from ₹{product.price}/m</small>
-                    </span>
-                    <ArrowRight className="ml-auto size-3.5 text-slate-400 shrink-0" />
-                  </button>
-                )) : <p className="p-3 text-xs text-slate-500">No exact SKU found. Try searching by size or brand, or ask our quote desk.</p>}
+              <div className="search-results absolute top-full left-0 right-0 text-left rounded-xl shadow-2xl overflow-hidden mt-1.5 z-[100] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white divide-y divide-slate-100 dark:divide-slate-800">
+                {searchResults.length ? searchResults.map((product) => {
+                  const prodImg = product.image || getProductImage(product, product.category);
+                  return (
+                    <button
+                      key={product.name + product.sku}
+                      onClick={() => {
+                        navigate(`/product/${product.sku}`);
+                        setSearch("");
+                      }}
+                      className="cursor-pointer w-full text-left p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800/80 flex items-center gap-3 transition-colors group"
+                    >
+                      <div className="size-11 sm:size-12 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shrink-0 flex items-center justify-center p-0.5 shadow-2xs">
+                        <img
+                          src={prodImg}
+                          alt={product.name}
+                          className="size-full object-cover rounded-md group-hover:scale-105 transition-transform duration-200"
+                          loading="lazy"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = "/products/cables.jpg?v=3";
+                          }}
+                        />
+                      </div>
+                      <span className="flex-1 min-w-0">
+                        <strong className="block truncate text-xs font-semibold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">{product.name}</strong>
+                        <small className="block truncate text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">{product.sku} · {product.category} · indicative from ₹{product.price}/m</small>
+                      </span>
+                      <ArrowRight className="ml-auto size-3.5 text-slate-400 group-hover:text-amber-500 group-hover:translate-x-0.5 transition-all shrink-0" />
+                    </button>
+                  );
+                }) : (
+                  <p className="p-3 text-xs text-slate-500">No exact SKU found. Try searching by size or brand, or ask our quote desk.</p>
+                )}
               </div>
             )}
           </div>
