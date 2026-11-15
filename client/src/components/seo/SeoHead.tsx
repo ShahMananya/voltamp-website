@@ -38,10 +38,11 @@ export default function SeoHead({
   useEffect(() => {
     // 1. Page Title Optimization (Target: "Primary phrase | VOLAMP" at 50–60 chars without internal IDs)
     let cleanTitle = (title || "").trim();
+    let formattedTitle = "";
 
     // If title explicitly starts with the brand entity (e.g. Home Page "VOLAMP ELEKTRIKALS | ...")
     if (cleanTitle.toUpperCase().startsWith("VOLAMP ELEKTRIKALS")) {
-      const formattedTitle = cleanTitle.length <= 60 ? cleanTitle : cleanTitle.substring(0, 60).trim();
+      formattedTitle = cleanTitle.length <= 60 ? cleanTitle : cleanTitle.substring(0, 60).trim();
       document.title = formattedTitle;
     } else {
       cleanTitle = cleanTitle.replace(/\s*\|\s*VOLAMP ELEKTRIKALS/gi, "");
@@ -63,7 +64,7 @@ export default function SeoHead({
         cleanTitle = (lastSpace > 30 ? truncated.substring(0, lastSpace) : truncated).trim();
       }
       cleanTitle = cleanTitle.replace(/[,;:\s-]+$/, "");
-      const formattedTitle = `${cleanTitle}${BRAND_SUFFIX}`;
+      formattedTitle = `${cleanTitle}${BRAND_SUFFIX}`;
       document.title = formattedTitle;
     }
 
