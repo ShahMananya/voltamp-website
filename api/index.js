@@ -15042,30 +15042,59 @@ function generateProductPageMeta(product, specs = {}, standardsText = null, cano
     const armour = normalizeArmour(specs, rawName);
     const conductor = normalizeConductor(product.material, rawName);
     const voltage = specs.voltageRating || (rawName.includes("1.1KV") ? "1.1kV" : null);
-    const titleParts = [brand];
-    if (size2) titleParts.push(size2);
-    if (cores) titleParts.push(`${cores} core`);
-    if (armour) titleParts.push(armour);
-    if (conductor) titleParts.push(conductor);
-    titleParts.push("cable");
-    if (voltage) titleParts.push(voltage);
-    const title2 = formatTargetTitle(titleParts.join(" "));
-    const descParts = [brand];
-    if (size2) descParts.push(size2);
-    if (cores) descParts.push(`${cores} core`);
-    if (conductor) descParts.push(conductor);
-    descParts.push("cable.");
-    if (standard) {
-      descParts.push(`Standard: ${standard}.`);
+    const isBuildingWire = Boolean(
+      /wire|frls|house|building wire/i.test(rawName) || cores === "1" && size2 && /(0\.5|0\.75|1(\.0)?|1\.5|2\.5|4(\.0)?|6(\.0)?)\s*sq/i.test(size2)
+    );
+    let title2 = "";
+    if (isBuildingWire) {
+      const parts = [brand];
+      if (size2) parts.push(size2);
+      if (conductor) parts.push(conductor);
+      parts.push("Wire & Cable Ahmedabad");
+      title2 = formatTargetTitle(parts.join(" "));
+    } else {
+      const titleParts = [brand];
+      if (size2) titleParts.push(size2);
+      if (cores) titleParts.push(`${cores} core`);
+      if (armour) titleParts.push(armour);
+      if (conductor) titleParts.push(conductor);
+      titleParts.push("cable");
+      if (voltage) titleParts.push(voltage);
+      title2 = formatTargetTitle(titleParts.join(" "));
     }
-    const metaDescription2 = formatTargetDescription(descParts.join(" "));
-    const h1Parts = [brand];
-    if (size2) h1Parts.push(size2);
-    if (cores) h1Parts.push(`${cores} Core`);
-    if (armour) h1Parts.push(armour === "armoured" ? "Armoured" : "Unarmoured");
-    if (conductor) h1Parts.push(conductor);
-    h1Parts.push("Cable");
-    const h12 = h1Parts.join(" ");
+    let metaDescription2 = "";
+    if (isBuildingWire) {
+      const descCore2 = `Buy ${brand} ${size2 || ""} ${conductor || "copper"} wire & cable in Ahmedabad. B2B wholesale rates & B2C 90m retail coils.${standard ? ` Standard: ${standard}.` : ""}`;
+      metaDescription2 = formatTargetDescription(descCore2);
+    } else {
+      const descParts = [brand];
+      if (size2) descParts.push(size2);
+      if (cores) descParts.push(`${cores} core`);
+      if (conductor) descParts.push(conductor);
+      descParts.push("cable.");
+      if (standard) {
+        descParts.push(`Standard: ${standard}.`);
+      }
+      metaDescription2 = formatTargetDescription(descParts.join(" "));
+    }
+    let h12 = "";
+    if (isBuildingWire) {
+      const h1Parts = [brand];
+      if (size2) h1Parts.push(size2);
+      if (cores) h1Parts.push(`${cores} Core`);
+      if (armour) h1Parts.push(armour === "armoured" ? "Armoured" : "Unarmoured");
+      if (conductor) h1Parts.push(conductor);
+      h1Parts.push("Wire & Cable in Ahmedabad");
+      h12 = h1Parts.join(" ");
+    } else {
+      const h1Parts = [brand];
+      if (size2) h1Parts.push(size2);
+      if (cores) h1Parts.push(`${cores} Core`);
+      if (armour) h1Parts.push(armour === "armoured" ? "Armoured" : "Unarmoured");
+      if (conductor) h1Parts.push(conductor);
+      h1Parts.push("Cable");
+      h12 = h1Parts.join(" ");
+    }
     return {
       title: title2,
       metaDescription: metaDescription2,
@@ -16476,19 +16505,19 @@ function renderProductQuestionBank(p, specs, catSlug, standardsText) {
 function renderHowToOrderBlock(productName, moq) {
   return `
     <section style="margin-top:32px;background:#fff8f1;border:1px solid #fed7aa;border-radius:12px;padding:24px;">
-      <h2 style="font-size:18px;font-weight:700;color:#9a3412;margin:0 0 12px 0;">B2B Wholesale Ordering &amp; Delivery</h2>
+      <h2 style="font-size:18px;font-weight:700;color:#9a3412;margin:0 0 12px 0;">B2B Wholesale Ordering &amp; Delivery (Retail Small Orders Accepted)</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;font-size:13px;line-height:1.6;color:#431407;">
         <div>
-          <strong>1. RFQ &amp; Quotations:</strong>
-          <p style="margin:4px 0 0 0;">Upload or send your Bill of Materials (BOM) to <a href="mailto:sales@volampelektrikals.com" style="color:#c56718;font-weight:bold;text-decoration:none;">sales@volampelektrikals.com</a> for project pricing and manufacturer test certificate (MTC) confirmation.</p>
+          <strong>1. B2C Retail Counter (Khadia Gandhi Road):</strong>
+          <p style="margin:4px 0 0 0;">Buy single 90m coils, cut lengths, or small quantities directly over the counter at 1753 Khadia, Gandhi Road, Ahmedabad. Zero minimum order barrier for retail buyers and homeowners.</p>
         </div>
         <div>
-          <strong>2. Instant WhatsApp / Phone Desk:</strong>
-          <p style="margin:4px 0 0 0;">Call or message our sales team at <a href="tel:+919512365582" style="color:#c56718;font-weight:bold;text-decoration:none;">+91 9512365582</a> for instant stock status and cut-length drum availability.</p>
+          <strong>2. B2B Wholesale &amp; Drum Dispatch:</strong>
+          <p style="margin:4px 0 0 0;">Upload or send your Bill of Materials (BOM) to <a href="mailto:sales@volampelektrikals.com" style="color:#c56718;font-weight:bold;text-decoration:none;">sales@volampelektrikals.com</a> for project pricing, manufacturer test certificates (MTC), and credit terms.</p>
         </div>
         <div>
-          <strong>3. Packing &amp; Dispatch:</strong>
-          <p style="margin:4px 0 0 0;">Standard MOQ: <strong>${escapeXml2(moq || "Standard Wholesale Packing")}</strong>. Same-day dispatch to Ahmedabad GIDC hubs (Vatva, Naroda, Sanand, Changodar) and express freight across Gujarat and India.</p>
+          <strong>3. Instant WhatsApp / Phone Desk:</strong>
+          <p style="margin:4px 0 0 0;">Call or message our sales desk at <a href="tel:+919512365582" style="color:#c56718;font-weight:bold;text-decoration:none;">+91 9512365582</a> for instant stock status, retail rates, and same-day delivery across Ahmedabad and Gujarat.</p>
         </div>
       </div>
     </section>

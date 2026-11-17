@@ -186,36 +186,66 @@ export function generateProductPageMeta(
     const conductor = normalizeConductor(product.material, rawName);
     const voltage = specs.voltageRating || (rawName.includes("1.1KV") ? "1.1kV" : null);
 
-    // Build Title
-    const titleParts = [brand];
-    if (size) titleParts.push(size);
-    if (cores) titleParts.push(`${cores} core`);
-    if (armour) titleParts.push(armour);
-    if (conductor) titleParts.push(conductor);
-    titleParts.push("cable");
-    if (voltage) titleParts.push(voltage);
+    const isBuildingWire = Boolean(
+      /wire|frls|house|building wire/i.test(rawName) ||
+      (cores === "1" && size && /(0\.5|0\.75|1(\.0)?|1\.5|2\.5|4(\.0)?|6(\.0)?)\s*sq/i.test(size))
+    );
 
-    const title = formatTargetTitle(titleParts.join(" "));
+    // Build Title (50-60 chars)
+    let title = "";
+    if (isBuildingWire) {
+      const parts = [brand];
+      if (size) parts.push(size);
+      if (conductor) parts.push(conductor);
+      parts.push("Wire & Cable Ahmedabad");
+      title = formatTargetTitle(parts.join(" "));
+    } else {
+      const titleParts = [brand];
+      if (size) titleParts.push(size);
+      if (cores) titleParts.push(`${cores} core`);
+      if (armour) titleParts.push(armour);
+      if (conductor) titleParts.push(conductor);
+      titleParts.push("cable");
+      if (voltage) titleParts.push(voltage);
+      title = formatTargetTitle(titleParts.join(" "));
+    }
 
     // Build Meta Description (120–155 chars)
-    const descParts: string[] = [brand];
-    if (size) descParts.push(size);
-    if (cores) descParts.push(`${cores} core`);
-    if (conductor) descParts.push(conductor);
-    descParts.push("cable.");
-    if (standard) {
-      descParts.push(`Standard: ${standard}.`);
+    let metaDescription = "";
+    if (isBuildingWire) {
+      const descCore = `Buy ${brand} ${size || ""} ${conductor || "copper"} wire & cable in Ahmedabad. B2B wholesale rates & B2C 90m retail coils.${standard ? ` Standard: ${standard}.` : ""}`;
+      metaDescription = formatTargetDescription(descCore);
+    } else {
+      const descParts: string[] = [brand];
+      if (size) descParts.push(size);
+      if (cores) descParts.push(`${cores} core`);
+      if (conductor) descParts.push(conductor);
+      descParts.push("cable.");
+      if (standard) {
+        descParts.push(`Standard: ${standard}.`);
+      }
+      metaDescription = formatTargetDescription(descParts.join(" "));
     }
-    const metaDescription = formatTargetDescription(descParts.join(" "));
 
     // Build H1
-    const h1Parts = [brand];
-    if (size) h1Parts.push(size);
-    if (cores) h1Parts.push(`${cores} Core`);
-    if (armour) h1Parts.push(armour === "armoured" ? "Armoured" : "Unarmoured");
-    if (conductor) h1Parts.push(conductor);
-    h1Parts.push("Cable");
-    const h1 = h1Parts.join(" ");
+    let h1 = "";
+    if (isBuildingWire) {
+      const h1Parts = [brand];
+      if (size) h1Parts.push(size);
+      if (cores) h1Parts.push(`${cores} Core`);
+      if (armour) h1Parts.push(armour === "armoured" ? "Armoured" : "Unarmoured");
+      if (conductor) h1Parts.push(conductor);
+      h1Parts.push("Wire & Cable in Ahmedabad");
+      h1 = h1Parts.join(" ");
+    } else {
+      const h1Parts = [brand];
+      if (size) h1Parts.push(size);
+      if (cores) h1Parts.push(`${cores} Core`);
+      if (armour) h1Parts.push(armour === "armoured" ? "Armoured" : "Unarmoured");
+      if (conductor) h1Parts.push(conductor);
+      h1Parts.push("Cable");
+      h1 = h1Parts.join(" ");
+    }
 
     return {
       title,
