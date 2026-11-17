@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { loadProductsFromDisk } from "./services/productService";
+import { resolveDirectImageUrl } from "../shared/seoPageTemplates";
 
 const BASE_URL = "https://www.volampelektrikals.com";
 
@@ -25,12 +26,7 @@ export function generateGoogleMerchantXml(): string {
         100;
       const priceFormatted = `${rawPrice.toFixed(2)} INR`;
       const productLink = `${BASE_URL}/product/${encodeURIComponent(prod.productId)}`;
-      const imageLink =
-        prod.imageUrl && prod.imageUrl.startsWith("http")
-          ? prod.imageUrl
-          : prod.imageUrl
-          ? `${BASE_URL}${prod.imageUrl}`
-          : `${BASE_URL}/products/default.jpg`;
+      const imageLink = resolveDirectImageUrl(prod.imageUrl, prod.category, BASE_URL);
       const brand = prod.brand || "Polycab";
       const category = prod.category || "Wires & Cables";
 

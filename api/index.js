@@ -4895,8 +4895,406 @@ function addNewProduct(input) {
   return newProd;
 }
 
-// server/googleMerchantFeed.ts
+// shared/seoPageTemplates.ts
+var BRAND_SUFFIX = " | VOLAMP";
 var BASE_URL = "https://www.volampelektrikals.com";
+function extractDriveThumbnail(url) {
+  if (!url || typeof url !== "string") return null;
+  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+  }
+  return null;
+}
+function resolveDirectImageUrl(imgUrl, catSlug, baseUrl = BASE_URL) {
+  if (imgUrl && typeof imgUrl === "string") {
+    const driveThumbnail = extractDriveThumbnail(imgUrl);
+    if (driveThumbnail) return driveThumbnail;
+    if (!imgUrl.includes("drive.google.com")) {
+      return imgUrl.startsWith("http") ? imgUrl : `${baseUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
+    }
+  }
+  const fallbackMap = {
+    "wire-cables": "/products/cables.jpg?v=3",
+    "switch-gears": "/products/switchgear.jpg?v=3",
+    "switchgear": "/products/switchgear.jpg?v=3",
+    "solar": "/products/solar-panel.jpg?v=3",
+    "lugs": "/products/cable-lugs.jpg?v=3",
+    "glands": "/products/cable-gland.jpg?v=3",
+    "conduit": "/products/pvc-pipe.jpg?v=3",
+    "earthing-material": "/products/earthing-rods.png?v=3",
+    "earthing": "/products/earthing-rods.png?v=3",
+    "wiring-device": "/products/wiring-devices.jpg?v=3"
+  };
+  const catFallback = fallbackMap[catSlug || "wire-cables"] || "/products/cables.jpg?v=3";
+  return `${baseUrl}${catFallback}`;
+}
+function getCanonicalCategorySlug(category) {
+  const c = (category || "").toLowerCase();
+  if (c.includes("switch") || c.includes("gear") || c.includes("mcb") || c.includes("mccb") || c.includes("acb")) return "switch-gears";
+  if (c.includes("solar")) return "solar";
+  if (c.includes("earth")) return "earthing";
+  if (c.includes("lug")) return "lugs";
+  if (c.includes("gland")) return "glands";
+  if (c.includes("conduit") || c.includes("pipe")) return "conduit";
+  if (c.includes("device") || c.includes("plug") || c.includes("socket")) return "wiring-devices";
+  return "wire-cables";
+}
+function normalizeSize(rawSize, rawName) {
+  const combined = `${rawSize || ""} ${rawName || ""}`;
+  const sqmmMatch = combined.match(/(\d+(?:\.\d+)?)\s*(?:sq\s*mm|sqmm|sq\.mm)/i);
+  if (sqmmMatch) {
+    return `${sqmmMatch[1]} sq mm`;
+  }
+  const mmMatch = combined.match(/(\d+(?:\.\d+)?)\s*mm\b/i);
+  if (mmMatch) {
+    return `${mmMatch[1]}mm`;
+  }
+  if (rawSize && rawSize.trim()) {
+    const s = rawSize.trim();
+    return s.toLowerCase().includes("sq") ? s : `${s} sq mm`;
+  }
+  return null;
+}
+function normalizeCores(specs, rawName) {
+  const combined = `${specs.cores || ""} ${rawName || ""}`;
+  const coreMatch = combined.match(/(\d+(?:\.5)?)\s*(?:core|c)\b/i);
+  if (coreMatch) {
+    return coreMatch[1];
+  }
+  return null;
+}
+function normalizeArmour(specs, rawName) {
+  const combined = `${specs.typeOfArmour || ""} ${rawName || ""}`.toLowerCase();
+  if (combined.includes("unarmoured") || combined.includes("un-armoured") || combined.includes("non-armoured")) {
+    return "unarmoured";
+  }
+  if (combined.includes("armoured") || combined.includes("armored")) {
+    return "armoured";
+  }
+  return null;
+}
+function normalizeConductor(rawMat, rawName) {
+  const combined = `${rawMat || ""} ${rawName || ""}`.toLowerCase();
+  if (combined.includes("copper") || combined.includes("cu\b") || combined.includes(" cu ")) {
+    return "Copper";
+  }
+  if (combined.includes("aluminium") || combined.includes("aluminum") || combined.includes(" al ") || combined.includes("al\b")) {
+    return "Aluminium";
+  }
+  return null;
+}
+function formatTargetTitle(basePhrase, maxLength = 60) {
+  const targetMax = maxLength - BRAND_SUFFIX.length;
+  let clean = basePhrase.trim().replace(/\s+/g, " ");
+  if (clean.length > targetMax) {
+    const truncated = clean.substring(0, targetMax);
+    const lastSpace = truncated.lastIndexOf(" ");
+    clean = (lastSpace > 30 ? truncated.substring(0, lastSpace) : truncated).trim();
+  }
+  clean = clean.replace(/[,;:\s-]+$/, "");
+  return `${clean}${BRAND_SUFFIX}`;
+}
+function formatTargetDescription(coreDesc, callToAction = "Request a quote from VOLAMP, Ahmedabad.") {
+  let combined = `${coreDesc.trim()} ${callToAction.trim()}`.replace(/\s+/g, " ").trim();
+  if (combined.length < 120) {
+    combined = `${combined.replace(/\.*$/, "")}. Genuine stock with MTC test certificate.`;
+  }
+  if (combined.length > 155) {
+    const truncated = combined.substring(0, 151);
+    const lastSpace = truncated.lastIndexOf(" ");
+    combined = `${(lastSpace > 110 ? truncated.substring(0, lastSpace) : truncated).replace(/[,;:\s-]+$/, "")}.`;
+  }
+  return combined;
+}
+function generateProductPageMeta(product, specs = {}, standardsText = null, canonicalCatSlug = "wire-cables") {
+  const brand = (product.brand || "Polycab").trim();
+  const rawName = product.name || "";
+  const standard = standardsText || specs.standard || specs.testedStandard || null;
+  if (canonicalCatSlug === "wire-cables") {
+    const size2 = normalizeSize(product.size, rawName);
+    const cores = normalizeCores(specs, rawName);
+    const armour = normalizeArmour(specs, rawName);
+    const conductor = normalizeConductor(product.material, rawName);
+    const voltage = specs.voltageRating || (rawName.includes("1.1KV") ? "1.1kV" : null);
+    const isBuildingOrFlexibleWire = Boolean(
+      /wire|frls|house|building wire|flexible/i.test(rawName) || product.subcategory && /flexible|wire/i.test(product.subcategory) || size2 && /(0\.5|0\.75|1(\.0)?|1\.5|2\.5|4(\.0)?|6(\.0)?|10|16)\s*sq/i.test(size2)
+    );
+    let title2 = "";
+    if (isBuildingOrFlexibleWire) {
+      if (cores && cores !== "1") {
+        const parts = [brand, size2, `${cores} Core`, "Wire & Cable Ahmedabad"];
+        title2 = formatTargetTitle(parts.join(" "));
+      } else {
+        const parts = [brand];
+        if (size2) parts.push(size2);
+        if (conductor) parts.push(conductor);
+        parts.push("Wire & Cable Ahmedabad");
+        title2 = formatTargetTitle(parts.join(" "));
+      }
+    } else {
+      const titleParts = [brand];
+      if (size2) titleParts.push(size2);
+      if (cores) titleParts.push(`${cores} core`);
+      if (armour) titleParts.push(armour);
+      if (conductor) titleParts.push(conductor);
+      titleParts.push("cable");
+      if (voltage) titleParts.push(voltage);
+      title2 = formatTargetTitle(titleParts.join(" "));
+    }
+    let metaDescription2 = "";
+    if (isBuildingOrFlexibleWire) {
+      const sqmmNoSpace = (size2 || "").replace(/\s+/g, "");
+      const coreText = cores && cores !== "1" ? `${cores} core ` : "";
+      const descCore2 = `Buy ${brand} ${size2 || ""} (${sqmmNoSpace}) ${coreText}${conductor || "copper"} wire & cable in Ahmedabad. B2B wholesale rates & B2C 90m retail coils.${standard ? ` Standard: ${standard}.` : ""}`;
+      metaDescription2 = formatTargetDescription(descCore2);
+    } else {
+      const descParts = [brand];
+      if (size2) descParts.push(size2);
+      if (cores) descParts.push(`${cores} core`);
+      if (conductor) descParts.push(conductor);
+      descParts.push("cable.");
+      if (standard) {
+        descParts.push(`Standard: ${standard}.`);
+      }
+      metaDescription2 = formatTargetDescription(descParts.join(" "));
+    }
+    let h12 = "";
+    if (isBuildingOrFlexibleWire) {
+      const h1Parts = [brand];
+      if (size2) h1Parts.push(size2);
+      if (cores) h1Parts.push(`${cores} Core`);
+      if (armour) h1Parts.push(armour === "armoured" ? "Armoured" : "Unarmoured");
+      if (conductor) h1Parts.push(conductor);
+      h1Parts.push("Wire & Cable in Ahmedabad");
+      h12 = h1Parts.join(" ");
+    } else {
+      const h1Parts = [brand];
+      if (size2) h1Parts.push(size2);
+      if (cores) h1Parts.push(`${cores} Core`);
+      if (armour) h1Parts.push(armour === "armoured" ? "Armoured" : "Unarmoured");
+      if (conductor) h1Parts.push(conductor);
+      h1Parts.push("Cable");
+      h12 = h1Parts.join(" ");
+    }
+    return {
+      title: title2,
+      metaDescription: metaDescription2,
+      h1: h12,
+      canonicalCatSlug,
+      categoryRule: "Wires and cables template: brand, size, cores, conductor, armouring, voltage grade, standard",
+      brand,
+      verifiedFields: {
+        size: size2 || void 0,
+        cores: cores || void 0,
+        armour: armour || void 0,
+        conductor: conductor || void 0,
+        voltage: voltage || void 0,
+        standard: standard || void 0
+      }
+    };
+  }
+  if (canonicalCatSlug === "switch-gears") {
+    const rawRating = specs.currentRatingA || product.size || "";
+    const ratingMatch = `${rawRating} ${rawName}`.match(/(\d+)\s*(?:a|amp)\b/i);
+    const rating = ratingMatch ? ratingMatch[1] : null;
+    const rawPoles = specs.polesPhase || "";
+    let poles = null;
+    if (/4\s*p|4\s*pole/i.test(`${rawPoles} ${rawName}`)) poles = "4 Pole";
+    else if (/3\s*p|3\s*pole|triple\s*pole/i.test(`${rawPoles} ${rawName}`)) poles = "3 Pole";
+    else if (/2\s*p|2\s*pole|double\s*pole/i.test(`${rawPoles} ${rawName}`)) poles = "2 Pole";
+    else if (/1\s*p|1\s*pole|single\s*pole/i.test(`${rawPoles} ${rawName}`)) poles = "Single Pole";
+    let type = "Switchgear";
+    if (/mccb/i.test(rawName)) type = "MCCB";
+    else if (/acb/i.test(rawName)) type = "ACB";
+    else if (/mcb/i.test(rawName)) type = "MCB";
+    else if (/contactor/i.test(rawName)) type = "Contactor";
+    else if (/distribution board|db\b/i.test(rawName)) type = "Distribution Board";
+    const series = specs.series || null;
+    const ka = specs.breakingCapacityKa || null;
+    const titleParts = [brand];
+    if (rating) titleParts.push(`${rating}A`);
+    if (poles) titleParts.push(poles);
+    titleParts.push(type);
+    if (series) titleParts.push(series);
+    const title2 = formatTargetTitle(titleParts.join(" "));
+    const descParts = [brand];
+    if (rating) descParts.push(`${rating}A`);
+    if (poles) descParts.push(poles);
+    descParts.push(`${type}.`);
+    if (ka) descParts.push(`Breaking capacity ${ka} kA.`);
+    if (standard) descParts.push(`Tested to ${standard}.`);
+    const metaDescription2 = formatTargetDescription(descParts.join(" "));
+    const h1Parts = [brand];
+    if (rating) h1Parts.push(`${rating}A`);
+    if (poles) h1Parts.push(poles);
+    h1Parts.push(type);
+    const h12 = h1Parts.join(" ");
+    return {
+      title: title2,
+      metaDescription: metaDescription2,
+      h1: h12,
+      canonicalCatSlug,
+      categoryRule: "Switchgear template: brand, rating, poles, type, series, breaking capacity",
+      brand,
+      verifiedFields: {
+        rating: rating || void 0,
+        poles: poles || void 0,
+        type,
+        series: series || void 0,
+        breakingCapacityKa: ka || void 0,
+        standard: standard || void 0
+      }
+    };
+  }
+  if (canonicalCatSlug === "lugs") {
+    const size2 = normalizeSize(product.size, rawName);
+    const material = normalizeConductor(product.material, rawName) || "Copper";
+    const titleParts = [brand];
+    if (size2) titleParts.push(size2);
+    titleParts.push(`${material} cable lug`);
+    const title2 = formatTargetTitle(titleParts.join(" "));
+    const descCore2 = `${material} cable lug for ${size2 || "specified"} cable. Precision heavy-duty crimping terminal.`;
+    const metaDescription2 = formatTargetDescription(descCore2);
+    const h12 = `${size2 || ""} ${material} Cable Lug`.trim();
+    return {
+      title: title2,
+      metaDescription: metaDescription2,
+      h1: h12,
+      canonicalCatSlug,
+      categoryRule: "Lugs template: brand, size, material, plating, hole size",
+      brand,
+      verifiedFields: {
+        size: size2 || void 0,
+        material
+      }
+    };
+  }
+  if (canonicalCatSlug === "glands") {
+    const size2 = normalizeSize(product.size, rawName);
+    const isDouble = /double\s*compression/i.test(`${specs.compressionType || ""} ${rawName}`);
+    const type = isDouble ? "Double Compression" : "Single Compression";
+    const material = /brass/i.test(`${product.material || ""} ${rawName}`) ? "Brass" : product.material || "Brass";
+    const title2 = formatTargetTitle(`${size2 || ""} ${type} cable gland (${material})`);
+    const descCore2 = `${type} cable gland, ${size2 || ""} thread. Ingress-protected industrial mechanical termination.`;
+    const metaDescription2 = formatTargetDescription(descCore2);
+    const h12 = `${size2 || ""} ${type} Cable Gland`.trim();
+    return {
+      title: title2,
+      metaDescription: metaDescription2,
+      h1: h12,
+      canonicalCatSlug,
+      categoryRule: "Glands template: size, type, material, thread size",
+      brand,
+      verifiedFields: {
+        size: size2 || void 0,
+        type,
+        material
+      }
+    };
+  }
+  if (canonicalCatSlug === "solar") {
+    const size2 = normalizeSize(product.size, rawName);
+    const voltage = specs.voltageRating || "1500V DC";
+    const solarStd = standard || "EN 50618 / IEC 62930";
+    const titleParts = [brand];
+    if (size2) titleParts.push(size2);
+    titleParts.push("solar DC cable");
+    if (voltage) titleParts.push(voltage);
+    const title2 = formatTargetTitle(titleParts.join(" "));
+    const descCore2 = `${size2 || "Solar"} DC cable, ${voltage}. Standard: ${solarStd}. UV and cross-linked zero halogen.`;
+    const metaDescription2 = formatTargetDescription(descCore2);
+    const h12 = `${brand} ${size2 || ""} Solar DC Cable`.trim();
+    return {
+      title: title2,
+      metaDescription: metaDescription2,
+      h1: h12,
+      canonicalCatSlug,
+      categoryRule: "Solar template: brand, size, voltage, standard",
+      brand,
+      verifiedFields: {
+        size: size2 || void 0,
+        voltage,
+        standard: solarStd
+      }
+    };
+  }
+  if (canonicalCatSlug === "earthing") {
+    const size2 = product.size || "";
+    let productType = product.name || "Earthing Material";
+    if (/copper bonded|rod/i.test(rawName)) productType = "Copper Bonded Earthing Rod";
+    else if (/chemical|compound/i.test(rawName)) productType = "Chemical Earthing Compound";
+    else if (/strip/i.test(rawName)) productType = "GI Earth Strip";
+    else if (/plate/i.test(rawName)) productType = "Copper Earth Plate";
+    const title2 = formatTargetTitle(`${productType} ${size2}`.trim());
+    const descCore2 = `${productType} for industrial and commercial earthing systems. Sourced to documented standards.`;
+    const metaDescription2 = formatTargetDescription(descCore2);
+    const h12 = `${productType} ${size2}`.trim();
+    return {
+      title: title2,
+      metaDescription: metaDescription2,
+      h1: h12,
+      canonicalCatSlug,
+      categoryRule: "Earthing template: product type, size, material, standard",
+      brand,
+      verifiedFields: {
+        productType,
+        size: size2 || void 0
+      }
+    };
+  }
+  const size = product.size || "";
+  const title = formatTargetTitle(`${brand} ${rawName} ${size}`.trim());
+  const descCore = `${brand} ${rawName} supplied with verified technical specifications. B2B wholesale pricing.`;
+  const metaDescription = formatTargetDescription(descCore);
+  const h1 = `${brand} ${rawName}`.trim();
+  return {
+    title,
+    metaDescription,
+    h1,
+    canonicalCatSlug,
+    categoryRule: "General electrical template: brand, product, size, verified specifications",
+    brand,
+    verifiedFields: {
+      size: size || void 0
+    }
+  };
+}
+function generateCategoryPageMeta(catSlug, catTitle, location = "Ahmedabad") {
+  const loc = (location || "Ahmedabad").trim();
+  const titles = {
+    "wire-cables": `Wires and Cables Supplier in ${loc} | VOLAMP`,
+    "switch-gears": `Best Switchgear Provider in ${loc} | MCB, MCCB, ACB | VOLAMP`,
+    "solar": `Solar DC Cables & BOS Provider in ${loc} | VOLAMP`,
+    "earthing": `Best Earthing Material & Chemical Rods in ${loc} | VOLAMP`,
+    "lugs": `Best Cable Lugs Provider in ${loc} (B2B & B2C) | VOLAMP`,
+    "glands": `Best Cable Glands Provider in ${loc} (B2B & B2C) | VOLAMP`,
+    "conduit": `Best Conduit Pipes & Cable Raceway in ${loc} | VOLAMP`,
+    "wiring-devices": `Wiring Devices & Plugs Provider in ${loc} | VOLAMP`
+  };
+  const descriptions = {
+    "wire-cables": `${loc}'s premier wire & cable supplier, dealer & distributor. Polycab, Finolex, KEI copper wires & aluminium cables for B2B wholesale & B2C orders.`,
+    "switch-gears": `${loc}'s best switchgear provider & distributor. Schneider Electric, L&T MCBs, MCCBs, ACBs, contactors for B2B industrial projects and B2C small orders.`,
+    "solar": `${loc}'s best solar cable & BOS provider. 1500V DC UV-resistant tinned copper solar cables for rooftop solar panels & utility plants. B2B & B2C orders.`,
+    "earthing": `${loc}'s best earthing provider. Copper bonded rods, chemical compounds & GI flats for B2B industrial substations & B2C residential earthing small orders.`,
+    "lugs": `${loc}'s best cable lugs provider, wholesaler & distributor. Dowells copper & aluminium crimping terminal lugs for B2B project bulk & B2C small orders.`,
+    "glands": `${loc}'s best cable gland provider & distributor. Brass single & double compression weatherproof & flameproof glands for B2B & B2C small orders.`,
+    "conduit": `${loc}'s best conduit pipe & fitting provider. Heavy-duty PVC conduits, GI flexible pipes & raceways for B2B wholesale projects & B2C small orders.`,
+    "wiring-devices": `${loc}'s best wiring devices & industrial plug provider. Weatherproof isolators, distribution boxes & modular accessories for B2B & B2C small orders.`
+  };
+  const title = titles[catSlug] || `${catTitle} Supplier in ${loc} | VOLAMP`;
+  const metaDescription = descriptions[catSlug] || `Wholesale supplier of genuine ${catTitle} in ${loc}, Gujarat. Verified manufacturer specifications and fast dispatch from Volamp.`;
+  const h1 = titles[catSlug]?.split("|")[0]?.trim() || `${catTitle} in ${loc}`;
+  return {
+    title,
+    metaDescription,
+    h1,
+    intro: metaDescription
+  };
+}
+
+// server/googleMerchantFeed.ts
+var BASE_URL2 = "https://www.volampelektrikals.com";
 function escapeXml(str) {
   return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
 }
@@ -4906,8 +5304,8 @@ function generateGoogleMerchantXml() {
   const itemsXml = validProducts.map((prod) => {
     const rawPrice = prod.numericPrice || (typeof prod.price === "string" ? parseFloat(prod.price.replace(/[^0-9.]/g, "")) : 0) || 100;
     const priceFormatted = `${rawPrice.toFixed(2)} INR`;
-    const productLink = `${BASE_URL}/product/${encodeURIComponent(prod.productId)}`;
-    const imageLink = prod.imageUrl && prod.imageUrl.startsWith("http") ? prod.imageUrl : prod.imageUrl ? `${BASE_URL}${prod.imageUrl}` : `${BASE_URL}/products/default.jpg`;
+    const productLink = `${BASE_URL2}/product/${encodeURIComponent(prod.productId)}`;
+    const imageLink = resolveDirectImageUrl(prod.imageUrl, prod.category, BASE_URL2);
     const brand = prod.brand || "Polycab";
     const category = prod.category || "Wires & Cables";
     return `    <item>
@@ -4937,7 +5335,7 @@ function generateGoogleMerchantXml() {
 <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
   <channel>
     <title>VOLAMP ELEKTRIKALS PVT. LTD. - Official Google Merchant Product Feed</title>
-    <link>${BASE_URL}/</link>
+    <link>${BASE_URL2}/</link>
     <description>Official verified product catalog for Google Merchant Center and Google Shopping. Genuine industrial power cables, switchgear, and earthing supplies from Ahmedabad, Gujarat.</description>
 ${itemsXml}
   </channel>
@@ -4963,10 +5361,10 @@ function registerGoogleMerchantRoutes(app2) {
     res.json({
       status: "active",
       storeName: "VOLAMP ELEKTRIKALS PVT. LTD.",
-      domain: BASE_URL,
+      domain: BASE_URL2,
       feedUrls: {
-        apiFeed: `${BASE_URL}/api/google-merchant-feed.xml`,
-        rootFeed: `${BASE_URL}/google-merchant-feed.xml`
+        apiFeed: `${BASE_URL2}/api/google-merchant-feed.xml`,
+        rootFeed: `${BASE_URL2}/google-merchant-feed.xml`
       },
       itemCount: products2.length,
       merchantCenterUrl: "https://merchants.google.com/"
@@ -6508,7 +6906,7 @@ function getAiTelemetrySummary() {
 }
 
 // server/seoRoutes.ts
-var BASE_URL2 = "https://www.volampelektrikals.com";
+var BASE_URL3 = "https://www.volampelektrikals.com";
 var INDEXNOW_KEY = "c4b1e5a8f27d49e18b76c905e321ad84";
 var STATIC_PAGES = [
   { path: "" },
@@ -6550,19 +6948,19 @@ function generateSitemapXml() {
   const lastModDate = "2026-11-12";
   const staticUrls = STATIC_PAGES.map(
     (page) => `  <url>
-    <loc>${BASE_URL2}/${page.path}</loc>
+    <loc>${BASE_URL3}/${page.path}</loc>
     <lastmod>${lastModDate}</lastmod>
   </url>`
   ).join("\n");
   const categoryUrls = CATEGORY_SLUGS.map(
     (slug) => `  <url>
-    <loc>${BASE_URL2}/category/${slug}</loc>
+    <loc>${BASE_URL3}/category/${slug}</loc>
     <lastmod>${lastModDate}</lastmod>
   </url>`
   ).join("\n");
   const blogUrls = BLOG_SLUGS.map(
     (slug) => `  <url>
-    <loc>${BASE_URL2}/blog/${slug}</loc>
+    <loc>${BASE_URL3}/blog/${slug}</loc>
     <lastmod>${lastModDate}</lastmod>
   </url>`
   ).join("\n");
@@ -6570,11 +6968,11 @@ function generateSitemapXml() {
   const productUrls = products2.filter((prod) => prod.productId && prod.name).map((prod) => {
     const rawImg = prod.imageUrl || "";
     const isValidImage = rawImg.startsWith("http") && !rawImg.includes("drive.google.com");
-    const imgLink = isValidImage ? rawImg : !rawImg.includes("drive.google.com") && rawImg ? `${BASE_URL2}${rawImg}` : "";
+    const imgLink = isValidImage ? rawImg : !rawImg.includes("drive.google.com") && rawImg ? `${BASE_URL3}${rawImg}` : "";
     const rawLast = prod.lastUpdated;
     const prodLastMod = typeof rawLast === "string" ? rawLast.split("T")[0] : rawLast instanceof Date ? rawLast.toISOString().split("T")[0] : lastModDate;
     return `  <url>
-    <loc>${BASE_URL2}/product/${encodeURIComponent(prod.productId)}</loc>
+    <loc>${BASE_URL3}/product/${encodeURIComponent(prod.productId)}</loc>
     <lastmod>${prodLastMod}</lastmod>${imgLink ? `
     <image:image>
       <image:loc>${imgLink}</image:loc>
@@ -6626,7 +7024,7 @@ ${disallows}`
   ).join("\n\n");
   return `${body}
 
-Sitemap: ${BASE_URL2}/sitemap.xml
+Sitemap: ${BASE_URL3}/sitemap.xml
 `.trim();
 }
 function generateLlmsTxt() {
@@ -6739,7 +7137,7 @@ function registerSeoRoutes(app2) {
       const payload = {
         host: "www.volampelektrikals.com",
         key: INDEXNOW_KEY,
-        keyLocation: `${BASE_URL2}/${INDEXNOW_KEY}.txt`,
+        keyLocation: `${BASE_URL3}/${INDEXNOW_KEY}.txt`,
         urlList: urls
       };
       let bingStatus = "not_dispatched";
@@ -6756,7 +7154,7 @@ function registerSeoRoutes(app2) {
         success: true,
         message: "IndexNow submission triggered",
         key: INDEXNOW_KEY,
-        keyLocation: `${BASE_URL2}/${INDEXNOW_KEY}.txt`,
+        keyLocation: `${BASE_URL3}/${INDEXNOW_KEY}.txt`,
         urlCount: urls.length,
         bingStatus,
         sampleUrls: urls.slice(0, 10)
@@ -6784,11 +7182,11 @@ function registerSeoRoutes(app2) {
   });
 }
 function getIndexNowUrlList() {
-  const staticUrls = STATIC_PAGES.map((p) => `${BASE_URL2}/${p.path}`);
-  const catUrls = CATEGORY_SLUGS.map((slug) => `${BASE_URL2}/category/${slug}`);
-  const blogUrls = BLOG_SLUGS.map((slug) => `${BASE_URL2}/blog/${slug}`);
+  const staticUrls = STATIC_PAGES.map((p) => `${BASE_URL3}/${p.path}`);
+  const catUrls = CATEGORY_SLUGS.map((slug) => `${BASE_URL3}/category/${slug}`);
+  const blogUrls = BLOG_SLUGS.map((slug) => `${BASE_URL3}/blog/${slug}`);
   const products2 = loadProductsFromDisk();
-  const prodUrls = products2.filter((prod) => prod.productId && prod.name).slice(0, 300).map((prod) => `${BASE_URL2}/product/${encodeURIComponent(prod.productId)}`);
+  const prodUrls = products2.filter((prod) => prod.productId && prod.name).slice(0, 300).map((prod) => `${BASE_URL3}/product/${encodeURIComponent(prod.productId)}`);
   return Array.from(/* @__PURE__ */ new Set([...staticUrls, ...catUrls, ...blogUrls, ...prodUrls]));
 }
 
@@ -14952,364 +15350,6 @@ import fs7 from "fs";
 import path7 from "path";
 import { fileURLToPath as fileURLToPath2 } from "url";
 
-// shared/seoPageTemplates.ts
-var BRAND_SUFFIX = " | VOLAMP";
-function getCanonicalCategorySlug(category) {
-  const c = (category || "").toLowerCase();
-  if (c.includes("switch") || c.includes("gear") || c.includes("mcb") || c.includes("mccb") || c.includes("acb")) return "switch-gears";
-  if (c.includes("solar")) return "solar";
-  if (c.includes("earth")) return "earthing";
-  if (c.includes("lug")) return "lugs";
-  if (c.includes("gland")) return "glands";
-  if (c.includes("conduit") || c.includes("pipe")) return "conduit";
-  if (c.includes("device") || c.includes("plug") || c.includes("socket")) return "wiring-devices";
-  return "wire-cables";
-}
-function normalizeSize(rawSize, rawName) {
-  const combined = `${rawSize || ""} ${rawName || ""}`;
-  const sqmmMatch = combined.match(/(\d+(?:\.\d+)?)\s*(?:sq\s*mm|sqmm|sq\.mm)/i);
-  if (sqmmMatch) {
-    return `${sqmmMatch[1]} sq mm`;
-  }
-  const mmMatch = combined.match(/(\d+(?:\.\d+)?)\s*mm\b/i);
-  if (mmMatch) {
-    return `${mmMatch[1]}mm`;
-  }
-  if (rawSize && rawSize.trim()) {
-    const s = rawSize.trim();
-    return s.toLowerCase().includes("sq") ? s : `${s} sq mm`;
-  }
-  return null;
-}
-function normalizeCores(specs, rawName) {
-  const combined = `${specs.cores || ""} ${rawName || ""}`;
-  const coreMatch = combined.match(/(\d+(?:\.5)?)\s*(?:core|c)\b/i);
-  if (coreMatch) {
-    return coreMatch[1];
-  }
-  return null;
-}
-function normalizeArmour(specs, rawName) {
-  const combined = `${specs.typeOfArmour || ""} ${rawName || ""}`.toLowerCase();
-  if (combined.includes("unarmoured") || combined.includes("un-armoured") || combined.includes("non-armoured")) {
-    return "unarmoured";
-  }
-  if (combined.includes("armoured") || combined.includes("armored")) {
-    return "armoured";
-  }
-  return null;
-}
-function normalizeConductor(rawMat, rawName) {
-  const combined = `${rawMat || ""} ${rawName || ""}`.toLowerCase();
-  if (combined.includes("copper") || combined.includes("cu\b") || combined.includes(" cu ")) {
-    return "Copper";
-  }
-  if (combined.includes("aluminium") || combined.includes("aluminum") || combined.includes(" al ") || combined.includes("al\b")) {
-    return "Aluminium";
-  }
-  return null;
-}
-function formatTargetTitle(basePhrase, maxLength = 60) {
-  const targetMax = maxLength - BRAND_SUFFIX.length;
-  let clean = basePhrase.trim().replace(/\s+/g, " ");
-  if (clean.length > targetMax) {
-    const truncated = clean.substring(0, targetMax);
-    const lastSpace = truncated.lastIndexOf(" ");
-    clean = (lastSpace > 30 ? truncated.substring(0, lastSpace) : truncated).trim();
-  }
-  clean = clean.replace(/[,;:\s-]+$/, "");
-  return `${clean}${BRAND_SUFFIX}`;
-}
-function formatTargetDescription(coreDesc, callToAction = "Request a quote from VOLAMP, Ahmedabad.") {
-  let combined = `${coreDesc.trim()} ${callToAction.trim()}`.replace(/\s+/g, " ").trim();
-  if (combined.length < 120) {
-    combined = `${combined.replace(/\.*$/, "")}. Genuine stock with MTC test certificate.`;
-  }
-  if (combined.length > 155) {
-    const truncated = combined.substring(0, 151);
-    const lastSpace = truncated.lastIndexOf(" ");
-    combined = `${(lastSpace > 110 ? truncated.substring(0, lastSpace) : truncated).replace(/[,;:\s-]+$/, "")}.`;
-  }
-  return combined;
-}
-function generateProductPageMeta(product, specs = {}, standardsText = null, canonicalCatSlug = "wire-cables") {
-  const brand = (product.brand || "Polycab").trim();
-  const rawName = product.name || "";
-  const standard = standardsText || specs.standard || specs.testedStandard || null;
-  if (canonicalCatSlug === "wire-cables") {
-    const size2 = normalizeSize(product.size, rawName);
-    const cores = normalizeCores(specs, rawName);
-    const armour = normalizeArmour(specs, rawName);
-    const conductor = normalizeConductor(product.material, rawName);
-    const voltage = specs.voltageRating || (rawName.includes("1.1KV") ? "1.1kV" : null);
-    const isBuildingWire = Boolean(
-      /wire|frls|house|building wire/i.test(rawName) || cores === "1" && size2 && /(0\.5|0\.75|1(\.0)?|1\.5|2\.5|4(\.0)?|6(\.0)?)\s*sq/i.test(size2)
-    );
-    let title2 = "";
-    if (isBuildingWire) {
-      const parts = [brand];
-      if (size2) parts.push(size2);
-      if (conductor) parts.push(conductor);
-      parts.push("Wire & Cable Ahmedabad");
-      title2 = formatTargetTitle(parts.join(" "));
-    } else {
-      const titleParts = [brand];
-      if (size2) titleParts.push(size2);
-      if (cores) titleParts.push(`${cores} core`);
-      if (armour) titleParts.push(armour);
-      if (conductor) titleParts.push(conductor);
-      titleParts.push("cable");
-      if (voltage) titleParts.push(voltage);
-      title2 = formatTargetTitle(titleParts.join(" "));
-    }
-    let metaDescription2 = "";
-    if (isBuildingWire) {
-      const descCore2 = `Buy ${brand} ${size2 || ""} ${conductor || "copper"} wire & cable in Ahmedabad. B2B wholesale rates & B2C 90m retail coils.${standard ? ` Standard: ${standard}.` : ""}`;
-      metaDescription2 = formatTargetDescription(descCore2);
-    } else {
-      const descParts = [brand];
-      if (size2) descParts.push(size2);
-      if (cores) descParts.push(`${cores} core`);
-      if (conductor) descParts.push(conductor);
-      descParts.push("cable.");
-      if (standard) {
-        descParts.push(`Standard: ${standard}.`);
-      }
-      metaDescription2 = formatTargetDescription(descParts.join(" "));
-    }
-    let h12 = "";
-    if (isBuildingWire) {
-      const h1Parts = [brand];
-      if (size2) h1Parts.push(size2);
-      if (cores) h1Parts.push(`${cores} Core`);
-      if (armour) h1Parts.push(armour === "armoured" ? "Armoured" : "Unarmoured");
-      if (conductor) h1Parts.push(conductor);
-      h1Parts.push("Wire & Cable in Ahmedabad");
-      h12 = h1Parts.join(" ");
-    } else {
-      const h1Parts = [brand];
-      if (size2) h1Parts.push(size2);
-      if (cores) h1Parts.push(`${cores} Core`);
-      if (armour) h1Parts.push(armour === "armoured" ? "Armoured" : "Unarmoured");
-      if (conductor) h1Parts.push(conductor);
-      h1Parts.push("Cable");
-      h12 = h1Parts.join(" ");
-    }
-    return {
-      title: title2,
-      metaDescription: metaDescription2,
-      h1: h12,
-      canonicalCatSlug,
-      categoryRule: "Wires and cables template: brand, size, cores, conductor, armouring, voltage grade, standard",
-      brand,
-      verifiedFields: {
-        size: size2 || void 0,
-        cores: cores || void 0,
-        armour: armour || void 0,
-        conductor: conductor || void 0,
-        voltage: voltage || void 0,
-        standard: standard || void 0
-      }
-    };
-  }
-  if (canonicalCatSlug === "switch-gears") {
-    const rawRating = specs.currentRatingA || product.size || "";
-    const ratingMatch = `${rawRating} ${rawName}`.match(/(\d+)\s*(?:a|amp)\b/i);
-    const rating = ratingMatch ? ratingMatch[1] : null;
-    const rawPoles = specs.polesPhase || "";
-    let poles = null;
-    if (/4\s*p|4\s*pole/i.test(`${rawPoles} ${rawName}`)) poles = "4 Pole";
-    else if (/3\s*p|3\s*pole|triple\s*pole/i.test(`${rawPoles} ${rawName}`)) poles = "3 Pole";
-    else if (/2\s*p|2\s*pole|double\s*pole/i.test(`${rawPoles} ${rawName}`)) poles = "2 Pole";
-    else if (/1\s*p|1\s*pole|single\s*pole/i.test(`${rawPoles} ${rawName}`)) poles = "Single Pole";
-    let type = "Switchgear";
-    if (/mccb/i.test(rawName)) type = "MCCB";
-    else if (/acb/i.test(rawName)) type = "ACB";
-    else if (/mcb/i.test(rawName)) type = "MCB";
-    else if (/contactor/i.test(rawName)) type = "Contactor";
-    else if (/distribution board|db\b/i.test(rawName)) type = "Distribution Board";
-    const series = specs.series || null;
-    const ka = specs.breakingCapacityKa || null;
-    const titleParts = [brand];
-    if (rating) titleParts.push(`${rating}A`);
-    if (poles) titleParts.push(poles);
-    titleParts.push(type);
-    if (series) titleParts.push(series);
-    const title2 = formatTargetTitle(titleParts.join(" "));
-    const descParts = [brand];
-    if (rating) descParts.push(`${rating}A`);
-    if (poles) descParts.push(poles);
-    descParts.push(`${type}.`);
-    if (ka) descParts.push(`Breaking capacity ${ka} kA.`);
-    if (standard) descParts.push(`Tested to ${standard}.`);
-    const metaDescription2 = formatTargetDescription(descParts.join(" "));
-    const h1Parts = [brand];
-    if (rating) h1Parts.push(`${rating}A`);
-    if (poles) h1Parts.push(poles);
-    h1Parts.push(type);
-    const h12 = h1Parts.join(" ");
-    return {
-      title: title2,
-      metaDescription: metaDescription2,
-      h1: h12,
-      canonicalCatSlug,
-      categoryRule: "Switchgear template: brand, rating, poles, type, series, breaking capacity",
-      brand,
-      verifiedFields: {
-        rating: rating || void 0,
-        poles: poles || void 0,
-        type,
-        series: series || void 0,
-        breakingCapacityKa: ka || void 0,
-        standard: standard || void 0
-      }
-    };
-  }
-  if (canonicalCatSlug === "lugs") {
-    const size2 = normalizeSize(product.size, rawName);
-    const material = normalizeConductor(product.material, rawName) || "Copper";
-    const titleParts = [brand];
-    if (size2) titleParts.push(size2);
-    titleParts.push(`${material} cable lug`);
-    const title2 = formatTargetTitle(titleParts.join(" "));
-    const descCore2 = `${material} cable lug for ${size2 || "specified"} cable. Precision heavy-duty crimping terminal.`;
-    const metaDescription2 = formatTargetDescription(descCore2);
-    const h12 = `${size2 || ""} ${material} Cable Lug`.trim();
-    return {
-      title: title2,
-      metaDescription: metaDescription2,
-      h1: h12,
-      canonicalCatSlug,
-      categoryRule: "Lugs template: brand, size, material, plating, hole size",
-      brand,
-      verifiedFields: {
-        size: size2 || void 0,
-        material
-      }
-    };
-  }
-  if (canonicalCatSlug === "glands") {
-    const size2 = normalizeSize(product.size, rawName);
-    const isDouble = /double\s*compression/i.test(`${specs.compressionType || ""} ${rawName}`);
-    const type = isDouble ? "Double Compression" : "Single Compression";
-    const material = /brass/i.test(`${product.material || ""} ${rawName}`) ? "Brass" : product.material || "Brass";
-    const title2 = formatTargetTitle(`${size2 || ""} ${type} cable gland (${material})`);
-    const descCore2 = `${type} cable gland, ${size2 || ""} thread. Ingress-protected industrial mechanical termination.`;
-    const metaDescription2 = formatTargetDescription(descCore2);
-    const h12 = `${size2 || ""} ${type} Cable Gland`.trim();
-    return {
-      title: title2,
-      metaDescription: metaDescription2,
-      h1: h12,
-      canonicalCatSlug,
-      categoryRule: "Glands template: size, type, material, thread size",
-      brand,
-      verifiedFields: {
-        size: size2 || void 0,
-        type,
-        material
-      }
-    };
-  }
-  if (canonicalCatSlug === "solar") {
-    const size2 = normalizeSize(product.size, rawName);
-    const voltage = specs.voltageRating || "1500V DC";
-    const solarStd = standard || "EN 50618 / IEC 62930";
-    const titleParts = [brand];
-    if (size2) titleParts.push(size2);
-    titleParts.push("solar DC cable");
-    if (voltage) titleParts.push(voltage);
-    const title2 = formatTargetTitle(titleParts.join(" "));
-    const descCore2 = `${size2 || "Solar"} DC cable, ${voltage}. Standard: ${solarStd}. UV and cross-linked zero halogen.`;
-    const metaDescription2 = formatTargetDescription(descCore2);
-    const h12 = `${brand} ${size2 || ""} Solar DC Cable`.trim();
-    return {
-      title: title2,
-      metaDescription: metaDescription2,
-      h1: h12,
-      canonicalCatSlug,
-      categoryRule: "Solar template: brand, size, voltage, standard",
-      brand,
-      verifiedFields: {
-        size: size2 || void 0,
-        voltage,
-        standard: solarStd
-      }
-    };
-  }
-  if (canonicalCatSlug === "earthing") {
-    const size2 = product.size || "";
-    let productType = product.name || "Earthing Material";
-    if (/copper bonded|rod/i.test(rawName)) productType = "Copper Bonded Earthing Rod";
-    else if (/chemical|compound/i.test(rawName)) productType = "Chemical Earthing Compound";
-    else if (/strip/i.test(rawName)) productType = "GI Earth Strip";
-    else if (/plate/i.test(rawName)) productType = "Copper Earth Plate";
-    const title2 = formatTargetTitle(`${productType} ${size2}`.trim());
-    const descCore2 = `${productType} for industrial and commercial earthing systems. Sourced to documented standards.`;
-    const metaDescription2 = formatTargetDescription(descCore2);
-    const h12 = `${productType} ${size2}`.trim();
-    return {
-      title: title2,
-      metaDescription: metaDescription2,
-      h1: h12,
-      canonicalCatSlug,
-      categoryRule: "Earthing template: product type, size, material, standard",
-      brand,
-      verifiedFields: {
-        productType,
-        size: size2 || void 0
-      }
-    };
-  }
-  const size = product.size || "";
-  const title = formatTargetTitle(`${brand} ${rawName} ${size}`.trim());
-  const descCore = `${brand} ${rawName} supplied with verified technical specifications. B2B wholesale pricing.`;
-  const metaDescription = formatTargetDescription(descCore);
-  const h1 = `${brand} ${rawName}`.trim();
-  return {
-    title,
-    metaDescription,
-    h1,
-    canonicalCatSlug,
-    categoryRule: "General electrical template: brand, product, size, verified specifications",
-    brand,
-    verifiedFields: {
-      size: size || void 0
-    }
-  };
-}
-function generateCategoryPageMeta(catSlug, catTitle) {
-  const titles = {
-    "wire-cables": "Copper & Aluminium Wires, Cables Provider Ahmedabad (B2B & B2C) | VOLAMP",
-    "switch-gears": "Best Switchgear Provider in Ahmedabad | MCB, MCCB, ACB (B2B & B2C) | VOLAMP",
-    "solar": "Solar DC Cables & BOS Provider in Ahmedabad (B2B & B2C) | VOLAMP",
-    "earthing": "Best Earthing Material & Chemical Rods Provider Ahmedabad | VOLAMP",
-    "lugs": "Best Cable Lugs Provider in Ahmedabad | Copper & Aluminium (B2B & B2C) | VOLAMP",
-    "glands": "Best Cable Glands Provider in Ahmedabad | Single & Double Compression | VOLAMP",
-    "conduit": "Best Conduit Pipes & Cable Raceway Provider Ahmedabad (B2B & B2C) | VOLAMP",
-    "wiring-devices": "Wiring Devices, Industrial Plugs & Sockets Provider Ahmedabad | VOLAMP"
-  };
-  const descriptions = {
-    "wire-cables": "Ahmedabad's best wire & cable provider, dealer & distributor. Polycab, Finolex, KEI copper wires & aluminium cables for B2B wholesale & B2C small orders.",
-    "switch-gears": "Ahmedabad's best switchgear provider & distributor. Schneider Electric, L&T MCBs, MCCBs, ACBs, contactors for B2B industrial projects and B2C small orders.",
-    "solar": "Ahmedabad's best solar cable & BOS provider. 1500V DC UV-resistant tinned copper solar cables for rooftop solar panels & utility plants. B2B & B2C orders.",
-    "earthing": "Ahmedabad's best earthing provider. Copper bonded rods, chemical compounds & GI flats for B2B industrial substations & B2C residential earthing small orders.",
-    "lugs": "Ahmedabad's best cable lugs provider, wholesaler & distributor. Dowells copper & aluminium crimping terminal lugs for B2B project bulk & B2C small orders.",
-    "glands": "Ahmedabad's best cable gland provider & distributor. Brass single & double compression weatherproof & flameproof glands for B2B & B2C small orders.",
-    "conduit": "Ahmedabad's best conduit pipe & fitting provider. Heavy-duty PVC conduits, GI flexible pipes & raceways for B2B wholesale projects & B2C small orders.",
-    "wiring-devices": "Ahmedabad's best wiring devices & industrial plug provider. Weatherproof isolators, distribution boxes & modular accessories for B2B & B2C small orders."
-  };
-  const title = titles[catSlug] || `${catTitle} Supplier in Ahmedabad | VOLAMP`;
-  const metaDescription = descriptions[catSlug] || `Wholesale supplier of genuine ${catTitle} in Ahmedabad, Gujarat. Verified manufacturer specifications and fast dispatch from Volamp.`;
-  const h1 = titles[catSlug]?.split("|")[0]?.trim() || `${catTitle} in Ahmedabad`;
-  return {
-    title,
-    metaDescription,
-    h1,
-    intro: metaDescription
-  };
-}
-
 // shared/homeKnowledgeGraph.ts
 var HOME_KNOWLEDGE_GRAPH = {
   "@context": "https://schema.org",
@@ -15877,7 +15917,7 @@ var HOME_KNOWLEDGE_GRAPH = {
 // server/seoPrerender.ts
 var __filename2 = fileURLToPath2(import.meta.url);
 var __dirname2 = path7.dirname(__filename2);
-var BASE_URL3 = "https://www.volampelektrikals.com";
+var BASE_URL4 = "https://www.volampelektrikals.com";
 var STATIC_ROUTES = {
   "": {
     title: "VOLAMP ELEKTRIKALS | Polycab, Finolex, KEI Dealer & Distributor Ahmedabad (B2B & B2C)",
@@ -16448,6 +16488,16 @@ function renderProductQuestionBank(p, specs, catSlug, standardsText) {
         a: `The rated continuous current capacity is ${specs.currentRatingAmp} A under standard installation conditions. Actual operating ampacity depends on ambient temperature, burial depth, and grouping derating factors.`
       });
     }
+    if (p.size && /(0\.5|0\.75|1(\.0)?|1\.5|2\.5|4(\.0)?|6(\.0)?)\s*sq/i.test(p.size)) {
+      qas.push({
+        q: `Can I buy ${p.brand || "Polycab"} ${p.size} wire & cable in small retail quantities or 90m coils in Ahmedabad?`,
+        a: `Yes. Volamp Elektrikals stocks ${p.brand || "Polycab"} ${p.size} copper wire and flexible cable for both B2B wholesale drum consignments and retail small orders (single 90m / 100m coils and cut lengths). You can purchase directly from our Khadia Gandhi Road counter in Old City Ahmedabad or request same-day courier delivery.`
+      });
+      qas.push({
+        q: `What is the price of ${p.size} copper wire & flexible cable in Ahmedabad?`,
+        a: `Indicative pricing for genuine ${p.brand || "Polycab"} ${p.size} copper wire starts from ${p.discountedPrice || p.price || "wholesale price list"} per meter (or per 90m standard coil). Contractual volume discounts and GST invoices are provided with every order.`
+      });
+    }
   } else if (catSlug === "switch-gears") {
     if (specs.breakingCapacityKa && specs.currentRatingA) {
       qas.push({
@@ -16838,7 +16888,7 @@ function seoPrerenderMiddleware(req, res, next) {
       const html2 = renderPageHtml({
         title: "Product Not Found (404) | Volamp",
         description: "The requested electrical product could not be found. Browse over 3,385 active power cables, switchgear, and earthing supplies in our catalog.",
-        canonical: `${BASE_URL3}/404`,
+        canonical: `${BASE_URL4}/404`,
         noIndex: true,
         bodyHtml: `
           <div style="font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:80px auto;padding:32px;text-align:center;">
@@ -16890,15 +16940,13 @@ function seoPrerenderMiddleware(req, res, next) {
     }
     const fullDisplayName = distinguishingAttrs.length > 0 ? `${fullName} - ${distinguishingAttrs.join(", ")}` : fullName;
     const uniquePageTitle = `${fullDisplayName} (${product.productId}) | Volamp Elektrikals Ahmedabad`;
-    const rawImg = product.imageUrl || "";
-    const isDriveImg = rawImg.includes("drive.google.com");
-    const validImgUrl = rawImg && !isDriveImg ? rawImg.startsWith("http") ? rawImg : `${BASE_URL3}${rawImg}` : `${BASE_URL3}/volamp-og-image.jpg`;
+    const standardsText = extractVerifiedStandards(product);
+    const canonicalCatSlug = getCanonicalCategorySlug(product.category);
+    const validImgUrl = resolveDirectImageUrl(product.imageUrl, canonicalCatSlug, BASE_URL4);
     const rawPrice = product.numericPrice || (typeof product.price === "string" ? parseFloat(product.price.replace(/[^0-9.]/g, "")) : 0);
     const hasPrice = rawPrice > 0;
     const priceFormatted = hasPrice ? rawPrice.toLocaleString("en-IN", { style: "currency", currency: "INR" }) : "Price on Request / RFQ";
-    const productUrl = `${BASE_URL3}/product/${encodeURIComponent(product.productId)}`;
-    const standardsText = extractVerifiedStandards(product);
-    const canonicalCatSlug = getCanonicalCategorySlug(product.category);
+    const productUrl = `${BASE_URL4}/product/${encodeURIComponent(product.productId)}`;
     const isInStock = Boolean(product.availability && /in stock|available/i.test(product.availability));
     if (isJsonFeed) {
       res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -16931,7 +16979,7 @@ function seoPrerenderMiddleware(req, res, next) {
           rfqEmail: "sales@volampelektrikals.com"
         },
         canonicalUrl: productUrl,
-        rfqUrl: `${BASE_URL3}/enquire?product=${encodeURIComponent(fullDisplayName)}`
+        rfqUrl: `${BASE_URL4}/enquire?product=${encodeURIComponent(fullDisplayName)}`
       });
     }
     const productEntity = {
@@ -16939,7 +16987,10 @@ function seoPrerenderMiddleware(req, res, next) {
       "@type": "Product",
       "@id": `${productUrl}#product`,
       "name": fullDisplayName,
-      "image": validImgUrl,
+      "image": [
+        validImgUrl,
+        `${BASE_URL4}/products/cables.jpg?v=3`
+      ],
       "description": product.description || `${fullDisplayName} industrial electrical supply from Volamp Elektrikals Ahmedabad.`,
       "sku": product.productId,
       "brand": {
@@ -16975,7 +17026,7 @@ function seoPrerenderMiddleware(req, res, next) {
         "seller": {
           "@type": "Organization",
           "name": "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
-          "url": BASE_URL3,
+          "url": BASE_URL4,
           "telephone": "+919512365582"
         }
       };
@@ -17022,13 +17073,16 @@ function seoPrerenderMiddleware(req, res, next) {
           </header>
           <section style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:32px;margin-bottom:36px;">
             <div>
+              <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+                <img src="${validImgUrl}" alt="${escapeXml2(pageMeta.h1)}" width="240" height="240" style="max-width:100%;height:auto;max-height:240px;object-fit:contain;border-radius:8px;" loading="eager" />
+              </div>
               <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px;">
-                <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 6px 0;">B2B Wholesale Price (excl. GST)</p>
+                <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 6px 0;">B2B Wholesale &amp; Retail Pricing (excl. GST)</p>
                 <div style="font-size:32px;font-weight:900;color:#0f172a;">
                   ${priceFormatted} ${product.unit ? `<span style="font-size:14px;color:#64748b;font-weight:600;">/ ${escapeXml2(product.unit)}</span>` : ""}
                 </div>
                 <p style="font-size:12px;color:${isInStock ? "#16a34a" : "#d97706"};font-weight:700;margin:8px 0 0 0;">
-                  ${isInStock ? "\u2713 In Stock" : "Available on Order"} \u2014 Aslali Warehouse, Ahmedabad
+                  ${isInStock ? "\u2713 In Stock" : "Available on Order"} \u2014 Aslali Central Hub &amp; Khadia Counter, Ahmedabad
                 </p>
               </div>
               <div style="display:flex;gap:12px;flex-wrap:wrap;">
@@ -17071,7 +17125,13 @@ function seoPrerenderMiddleware(req, res, next) {
     return res.send(html);
   }
   if (cleanPath.startsWith("category/")) {
-    const slug = cleanPath.replace(/^category\//, "").trim().toLowerCase();
+    const rawRest = cleanPath.replace(/^category\//, "").trim();
+    const parts = rawRest.split("/").filter(Boolean);
+    const slug = (parts[0] || "").toLowerCase();
+    const routeLoc = parts[1] || "";
+    const queryLoc = typeof req.query?.location === "string" ? req.query.location : typeof req.query?.city === "string" ? req.query.city : "";
+    const rawLoc = (routeLoc || queryLoc || "Ahmedabad").trim();
+    const location = rawLoc.charAt(0).toUpperCase() + rawLoc.slice(1);
     const catInfo = CATEGORY_DATA[slug];
     if (!catInfo) {
       res.status(404);
@@ -17079,7 +17139,7 @@ function seoPrerenderMiddleware(req, res, next) {
       const html2 = renderPageHtml({
         title: "Category Not Found (404) | Volamp",
         description: "The requested electrical category does not exist. Browse our verified categories across power cables, switchgear, and solar PV.",
-        canonical: `${BASE_URL3}/404`,
+        canonical: `${BASE_URL4}/404`,
         noIndex: true,
         bodyHtml: `
           <div style="font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:80px auto;padding:32px;text-align:center;">
@@ -17111,22 +17171,166 @@ function seoPrerenderMiddleware(req, res, next) {
       return false;
     }).slice(0, 24);
     const productLinksHtml = categoryProducts.map(
-      (p) => `
-        <li style="padding:12px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
-          <a href="/product/${encodeURIComponent(p.productId)}" style="color:#0f172a;font-weight:600;text-decoration:none;font-size:14px;">
-            ${escapeXml2(p.name)}
-          </a>
-          <span style="font-family:monospace;font-size:12px;color:#64748b;">${escapeXml2(p.productId)}</span>
-        </li>
-      `
+      (p) => {
+        const thumbUrl = resolveDirectImageUrl(p.imageUrl, slug, BASE_URL4);
+        const rawP = p.numericPrice || (typeof p.price === "string" ? parseFloat(p.price.replace(/[^0-9.]/g, "")) : 0);
+        const priceStr = rawP > 0 ? `\u20B9${rawP.toFixed(2)}` : "Price on Request";
+        return `
+          <li style="padding:12px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+              <img src="${thumbUrl}" alt="${escapeXml2(p.name)}" width="44" height="44" style="width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;flex-shrink:0;" loading="lazy" />
+              <div style="min-width:0;">
+                <a href="/product/${encodeURIComponent(p.productId)}" style="color:#0f172a;font-weight:600;text-decoration:none;font-size:14px;display:block;">
+                  ${escapeXml2(p.name)}
+                </a>
+                <span style="font-size:12px;color:#64748b;">${escapeXml2(p.brand || "Polycab")} \u2022 ${escapeXml2(p.size || "")} \u2022 ${priceStr}</span>
+              </div>
+            </div>
+            <span style="font-family:monospace;font-size:11px;color:#64748b;background:#f1f5f9;padding:4px 8px;border-radius:4px;flex-shrink:0;">${escapeXml2(p.productId)}</span>
+          </li>
+        `;
+      }
     ).join("");
-    const catMeta = generateCategoryPageMeta(slug, catInfo.name);
+    const catMeta = generateCategoryPageMeta(slug, catInfo.name, location);
+    const canonical = routeLoc ? `${BASE_URL4}/category/${slug}/${encodeURIComponent(routeLoc.toLowerCase())}` : `${BASE_URL4}/category/${slug}`;
+    const corridorCities = [
+      "Ahmedabad",
+      "Surat",
+      "Vadodara",
+      "Rajkot",
+      "Gandhinagar",
+      "Sanand",
+      "Vatva",
+      "Dahej",
+      "Ankleshwar",
+      "Mumbai",
+      "Pune",
+      "Delhi NCR"
+    ];
+    const corridorHtml = `
+      <div style="margin:20px 0 28px 0;padding:14px 18px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
+        <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-right:12px;">Fast Delivery Corridors in ${escapeXml2(location)} &amp; India:</span>
+        <div style="display:inline-flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+          ${corridorCities.map((city) => `
+            <a href="/category/${slug}/${city.toLowerCase()}" style="font-size:12px;padding:4px 10px;border-radius:6px;background:${city.toLowerCase() === location.toLowerCase() ? "#c56718" : "#ffffff"};color:${city.toLowerCase() === location.toLowerCase() ? "#ffffff" : "#334155"};border:1px solid #cbd5e1;text-decoration:none;font-weight:600;">
+              ${escapeXml2(city)}
+            </a>
+          `).join("")}
+        </div>
+      </div>
+    `;
+    const wireSizeMatrixHtml = slug === "wire-cables" ? `
+      <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+        <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin-bottom:12px;">Standard Wire &amp; Cable Sizing Catalog &amp; Pricing (${escapeXml2(location)})</h2>
+        <p style="font-size:14px;color:#64748b;margin-bottom:18px;">
+          Volamp Elektrikals stocks complete cross-sectional sizes from 0.5 sqmm to 400 sqmm in copper and aluminium. Accepted for B2B industrial bulk drum consignments and B2C retail 90m coils.
+        </p>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid #e2e8f0;">
+            <thead>
+              <tr style="background:#f8fafc;border-bottom:2px solid #cbd5e1;">
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Size (sq mm / sqmm)</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Cable / Wire Subtype</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Voltage &amp; Standard</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Typical Application</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Indicative Price</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Verified Products</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #f1f5f9;background:#fffaf5;">
+                <td style="padding:10px 14px;font-weight:700;color:#c56718;border:1px solid #e2e8f0;">0.5 sq mm (0.5 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Flexible Copper Wire &amp; Multicore Cable (1C to 24C)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V \xB7 IS 694 / IS 8130</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Control panels, automation cabinets, machine wiring, signaling</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">\u20B912.93/m to \u20B933.09/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000001" style="color:#c56718;font-weight:bold;text-decoration:none;">0.5 SQMM 1C Wire</a> \xB7
+                  <a href="/product/CAB-000046" style="color:#c56718;font-weight:bold;text-decoration:none;">0.5 SQMM 2C Cable</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">0.75 sq mm (0.75 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Flexible Copper Wire &amp; Multicore Cable (1C to 19C)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V \xB7 IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Panel boards, industrial appliances, signaling</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">From \u20B918.67/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000002" style="color:#c56718;font-weight:bold;text-decoration:none;">0.75 SQMM 1C Wire</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">1.0 sq mm (1 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Building House Wire &amp; Flexible Multicore</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V \xB7 IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Lighting circuits, small appliances, commercial lighting</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">From \u20B923.95/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000003" style="color:#c56718;font-weight:bold;text-decoration:none;">1 SQMM 1C Wire</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">1.5 sq mm (1.5 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">FRLS House Wire &amp; Industrial Control Cable</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V \xB7 IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Standard lighting, fan circuits, 6A sockets, control wiring</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">From \u20B934.68/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000004" style="color:#c56718;font-weight:bold;text-decoration:none;">1.5 SQMM 1C Wire</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">2.5 sq mm (2.5 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Heavy Power House Wire &amp; Multicore Cable</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V \xB7 IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">16A power points, geysers, refrigerators, 1 Ton AC</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">From \u20B957.75/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000005" style="color:#c56718;font-weight:bold;text-decoration:none;">2.5 SQMM 1C Wire</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">4.0 sq mm (4 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Heavy Load Wire &amp; Submain Feeder</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V \xB7 IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1.5T-2T air conditioners, heavy kitchen appliances, power sub-mains</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">From \u20B991.50/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000006" style="color:#c56718;font-weight:bold;text-decoration:none;">4 SQMM 1C Wire</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">6.0 sq mm to 16 sq mm</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Main Incomer Wire &amp; Heavy Power Cable</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V \xB7 IS 694 / IS 1554</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Meter-to-panel incomer cables, EV chargers, solar DC strings</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">Wholesale list</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/products?search=6+SQMM" style="color:#c56718;font-weight:bold;text-decoration:none;">6 SQMM Wires</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">25 sq mm to 400 sq mm</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">LT XLPE Armoured Power Feeder Cable (Aluminium / Copper)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1.1kV \xB7 IS 7098 (Part 1)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Underground mains, plant distribution, transformers, switchboards</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">Contractor Bulk Rate</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/products?search=70+SQMM" style="color:#c56718;font-weight:bold;text-decoration:none;">70 SQMM Cable</a> \xB7
+                  <a href="/products?search=185+SQMM" style="color:#c56718;font-weight:bold;text-decoration:none;">185 SQMM Cable</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ` : "";
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     const html = renderPageHtml({
       title: catMeta.title,
       description: catMeta.metaDescription,
-      canonical: `${BASE_URL3}/category/${slug}`,
+      canonical,
       isBot,
       bodyHtml: `
         <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
@@ -17135,7 +17339,7 @@ function seoPrerenderMiddleware(req, res, next) {
             <a href="/products" style="color:#64748b;text-decoration:none;">Products</a> &gt;
             <span style="color:#0f172a;font-weight:600;">${escapeXml2(catInfo.name)}</span>
           </nav>
-          <header style="margin-bottom:32px;">
+          <header style="margin-bottom:24px;">
             <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.2;margin:0 0 16px 0;">${escapeXml2(catMeta.h1)}</h1>
             <p style="font-size:15px;line-height:1.7;color:#475569;max-width:900px;">
               ${escapeXml2(catInfo.desc)}
@@ -17143,7 +17347,9 @@ function seoPrerenderMiddleware(req, res, next) {
               Every consignment is supplied with manufacturer Material Test Certificates (MTC) and undergoes strict quality verification to ensure flawless performance in continuous industrial and utility service.
             </p>
           </header>
-          <section>
+          ${corridorHtml}
+          ${wireSizeMatrixHtml}
+          <section style="margin-top:32px;">
             <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0 0 16px 0;">Available Products in this Category</h2>
             <ul style="list-style:none;padding:0;margin:0;">
               ${productLinksHtml}
@@ -17152,9 +17358,9 @@ function seoPrerenderMiddleware(req, res, next) {
           ${renderCategoryBuyerGuide(slug)}
           ${slug === "wire-cables" ? `
           <section style="background:#f8fafc;padding:24px;border-radius:12px;border:1px solid #e2e8f0;margin-top:36px;font-size:14px;line-height:1.7;color:#475569;">
-            <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin-top:0;">Armoured &amp; Unarmoured Power Cable Suppliers in Ahmedabad</h2>
+            <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin-top:0;">Armoured &amp; Unarmoured Power Cable Suppliers in ${escapeXml2(location)}</h2>
             <p>
-              Volamp Elektrikals Private Limited is a leading wholesale distributor and supplier of LT XLPE and PVC insulated copper and aluminium unarmoured power cables (1.5 sqmm to 1000 sqmm) and heavy armoured cables in Ahmedabad, Gujarat. Sourcing directly from premier manufacturers including Polycab, Finolex, and KEI Industries, our unarmoured power and control cables conform to IS:694, IS:1554, and IS:7098 standards with original Manufacturer Test Certificates (MTC) and routine test reports. Express same-day dispatch to Vatva, Sanand, Naroda, and Changodar GIDC industrial zones, and 48\u201372h delivery across India from our Aslali logistics terminal.
+              Volamp Elektrikals Private Limited is a leading wholesale distributor and supplier of LT XLPE and PVC insulated copper and aluminium unarmoured power cables and flexible wires (0.5 sqmm to 1000 sqmm) and heavy armoured cables in ${escapeXml2(location)} and across Gujarat. Sourcing directly from premier manufacturers including Polycab, Finolex, and KEI Industries, our unarmoured power and control cables conform to IS:694, IS:1554, and IS:7098 standards with original Manufacturer Test Certificates (MTC) and routine test reports. Express same-day dispatch to Vatva, Sanand, Naroda, and Changodar GIDC industrial zones, and 48\u201372h delivery across India from our Aslali logistics terminal.
             </p>
           </section>
               ` : ""}
@@ -17172,7 +17378,7 @@ function seoPrerenderMiddleware(req, res, next) {
       const html2 = renderPageHtml({
         title: "Article Not Found (404) | Volamp",
         description: "The requested engineering article does not exist.",
-        canonical: `${BASE_URL3}/404`,
+        canonical: `${BASE_URL4}/404`,
         noIndex: true,
         bodyHtml: `<div style="font-family:system-ui;max-width:800px;margin:80px auto;text-align:center;"><h1>Article Not Found (404)</h1><p><a href="/blog">Browse All Engineering Articles</a></p></div>`
       });
@@ -17194,16 +17400,16 @@ function seoPrerenderMiddleware(req, res, next) {
       "publisher": {
         "@type": "Organization",
         "name": "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
-        "url": BASE_URL3
+        "url": BASE_URL4
       },
       "datePublished": blog.date,
       "dateModified": blog.date,
-      "mainEntityOfPage": `${BASE_URL3}/blog/${slug}`
+      "mainEntityOfPage": `${BASE_URL4}/blog/${slug}`
     });
     const html = renderPageHtml({
       title: `${blog.title} | Volamp`,
       description: blog.metaDescription || blog.excerpt,
-      canonical: `${BASE_URL3}/blog/${slug}`,
+      canonical: `${BASE_URL4}/blog/${slug}`,
       schemaJson: articleSchema,
       bodyHtml: `
         <article style="font-family:system-ui,-apple-system,sans-serif;max-width:920px;margin:40px auto;padding:24px;color:#1e293b;">
@@ -17246,7 +17452,7 @@ function seoPrerenderMiddleware(req, res, next) {
   }
   if (KNOWN_STATIC_PATHS.has(cleanPath)) {
     const meta = STATIC_ROUTES[cleanPath];
-    const canonical = cleanPath === "" ? `${BASE_URL3}/` : `${BASE_URL3}/${cleanPath}`;
+    const canonical = cleanPath === "" ? `${BASE_URL4}/` : `${BASE_URL4}/${cleanPath}`;
     let homeExtraHtml = "";
     if (cleanPath === "") {
       homeExtraHtml = `
@@ -17646,13 +17852,13 @@ function seoPrerenderMiddleware(req, res, next) {
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Home",
-                  "item": BASE_URL3
+                  "item": BASE_URL4
                 },
                 {
                   "@type": "ListItem",
                   "position": 2,
                   "name": "Dealers & Hubs",
-                  "item": `${BASE_URL3}/dealers`
+                  "item": `${BASE_URL4}/dealers`
                 },
                 {
                   "@type": "ListItem",
@@ -17719,7 +17925,7 @@ function seoPrerenderMiddleware(req, res, next) {
     const html = renderPageHtml({
       title: pageTitle,
       description: pageDesc,
-      canonical: `${BASE_URL3}/${cleanPath}`,
+      canonical: `${BASE_URL4}/${cleanPath}`,
       noIndex: true,
       bodyHtml: `
         <div style="font-family:system-ui,-apple-system,sans-serif;max-width:900px;margin:60px auto;padding:24px;text-align:center;">
@@ -17735,7 +17941,7 @@ function seoPrerenderMiddleware(req, res, next) {
   const notFoundHtml = renderPageHtml({
     title: "Page Not Found (404) | Volamp Elektrikals",
     description: "The page you are looking for does not exist or has moved. Browse our full electrical catalog or contact our sales desk in Ahmedabad.",
-    canonical: `${BASE_URL3}/404`,
+    canonical: `${BASE_URL4}/404`,
     noIndex: true,
     bodyHtml: `
       <div style="font-family:system-ui,-apple-system,sans-serif;max-width:800px;margin:80px auto;padding:32px;text-align:center;">

@@ -137,14 +137,23 @@ describe("SEO Prerendering & Real 404 Status", () => {
     expect(humanResult.sentHtml).not.toContain('<div id="root"><main style="font-family:system-ui');
   });
 
-  it("prerenders category page with 200 and H1", () => {
+  it("prerenders category page with 200, dynamic location H1, and wire sizing matrix", () => {
     const { req, res, next, getResult } = mockHttp("/category/wire-cables");
     seoPrerenderMiddleware(req, res, next);
     const result = getResult();
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
-    expect(result.sentHtml).toContain("Copper &amp; Aluminium Wires, Cables Provider Ahmedabad (B2B &amp; B2C)");
+    expect(result.sentHtml).toContain("Wires and Cables Supplier in Ahmedabad");
+    expect(result.sentHtml).toContain("0.5 sq mm (0.5 sqmm)");
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/category/wire-cables"');
+
+    // Dynamic [x location] route test for Surat
+    const { req: suratReq, res: suratRes, next: suratNext, getResult: getSuratResult } = mockHttp("/category/wire-cables/surat");
+    seoPrerenderMiddleware(suratReq, suratRes, suratNext);
+    const suratResult = getSuratResult();
+    expect(suratResult.statusCode).toBe(200);
+    expect(suratResult.sentHtml).toContain("Wires and Cables Supplier in Surat");
+    expect(suratResult.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/category/wire-cables/surat"');
   });
 
   it("prerenders regional dealer hub page (/dealers/polycab-ahmedabad) with 200, H1, and canonical", () => {

@@ -46,6 +46,48 @@ const BRAND_SUFFIX = " | VOLAMP";
 const BASE_URL = "https://www.volampelektrikals.com";
 
 /**
+ * Resolves Google Drive file sharing links to direct public thumbnail image URLs (HTTP 200 JPEG).
+ */
+export function extractDriveThumbnail(url?: string | null): string | null {
+  if (!url || typeof url !== "string") return null;
+  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) {
+    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+  }
+  return null;
+}
+
+/**
+ * Resolves a product's image to a direct, crawler-ready public JPEG URL.
+ * Converts Google Drive sharing links to high-performance direct CDN thumbnails
+ * or falls back to an exact, high-resolution product category image.
+ */
+export function resolveDirectImageUrl(imgUrl?: string | null, catSlug?: string, baseUrl: string = BASE_URL): string {
+  if (imgUrl && typeof imgUrl === "string") {
+    const driveThumbnail = extractDriveThumbnail(imgUrl);
+    if (driveThumbnail) return driveThumbnail;
+    if (!imgUrl.includes("drive.google.com")) {
+      return imgUrl.startsWith("http") ? imgUrl : `${baseUrl}${imgUrl.startsWith("/") ? "" : "/"}${imgUrl}`;
+    }
+  }
+
+  const fallbackMap: Record<string, string> = {
+    "wire-cables": "/products/cables.jpg?v=3",
+    "switch-gears": "/products/switchgear.jpg?v=3",
+    "switchgear": "/products/switchgear.jpg?v=3",
+    "solar": "/products/solar-panel.jpg?v=3",
+    "lugs": "/products/cable-lugs.jpg?v=3",
+    "glands": "/products/cable-gland.jpg?v=3",
+    "conduit": "/products/pvc-pipe.jpg?v=3",
+    "earthing-material": "/products/earthing-rods.png?v=3",
+    "earthing": "/products/earthing-rods.png?v=3",
+    "wiring-device": "/products/wiring-devices.jpg?v=3",
+  };
+  const catFallback = fallbackMap[catSlug || "wire-cables"] || "/products/cables.jpg?v=3";
+  return `${baseUrl}${catFallback}`;
+}
+
+/**
  * Resolves category string to standard canonical slug
  */
 export function getCanonicalCategorySlug(category?: string): string {
@@ -186,19 +228,25 @@ export function generateProductPageMeta(
     const conductor = normalizeConductor(product.material, rawName);
     const voltage = specs.voltageRating || (rawName.includes("1.1KV") ? "1.1kV" : null);
 
-    const isBuildingWire = Boolean(
-      /wire|frls|house|building wire/i.test(rawName) ||
-      (cores === "1" && size && /(0\.5|0\.75|1(\.0)?|1\.5|2\.5|4(\.0)?|6(\.0)?)\s*sq/i.test(size))
+    const isBuildingOrFlexibleWire = Boolean(
+      /wire|frls|house|building wire|flexible/i.test(rawName) ||
+      (product.subcategory && /flexible|wire/i.test(product.subcategory)) ||
+      (size && /(0\.5|0\.75|1(\.0)?|1\.5|2\.5|4(\.0)?|6(\.0)?|10|16)\s*sq/i.test(size))
     );
 
     // Build Title (50-60 chars)
     let title = "";
-    if (isBuildingWire) {
-      const parts = [brand];
-      if (size) parts.push(size);
-      if (conductor) parts.push(conductor);
-      parts.push("Wire & Cable Ahmedabad");
-      title = formatTargetTitle(parts.join(" "));
+    if (isBuildingOrFlexibleWire) {
+      if (cores && cores !== "1") {
+        const parts = [brand, size, `${cores} Core`, "Wire & Cable Ahmedabad"];
+        title = formatTargetTitle(parts.join(" "));
+      } else {
+        const parts = [brand];
+        if (size) parts.push(size);
+        if (conductor) parts.push(conductor);
+        parts.push("Wire & Cable Ahmedabad");
+        title = formatTargetTitle(parts.join(" "));
+      }
     } else {
       const titleParts = [brand];
       if (size) titleParts.push(size);
@@ -212,8 +260,10 @@ export function generateProductPageMeta(
 
     // Build Meta Description (120–155 chars)
     let metaDescription = "";
-    if (isBuildingWire) {
-      const descCore = `Buy ${brand} ${size || ""} ${conductor || "copper"} wire & cable in Ahmedabad. B2B wholesale rates & B2C 90m retail coils.${standard ? ` Standard: ${standard}.` : ""}`;
+    if (isBuildingOrFlexibleWire) {
+      const sqmmNoSpace = (size || "").replace(/\s+/g, "");
+      const coreText = cores && cores !== "1" ? `${cores} core ` : "";
+      const descCore = `Buy ${brand} ${size || ""} (${sqmmNoSpace}) ${coreText}${conductor || "copper"} wire & cable in Ahmedabad. B2B wholesale rates & B2C 90m retail coils.${standard ? ` Standard: ${standard}.` : ""}`;
       metaDescription = formatTargetDescription(descCore);
     } else {
       const descParts: string[] = [brand];
@@ -229,7 +279,7 @@ export function generateProductPageMeta(
 
     // Build H1
     let h1 = "";
-    if (isBuildingWire) {
+    if (isBuildingOrFlexibleWire) {
       const h1Parts = [brand];
       if (size) h1Parts.push(size);
       if (cores) h1Parts.push(`${cores} Core`);
@@ -495,33 +545,40 @@ export function generateProductPageMeta(
 
 /**
  * 2. Category Page Metadata Generator
+ * Supports dynamic location targeting across all cities in India (defaults to Ahmedabad).
  */
-export function generateCategoryPageMeta(catSlug: string, catTitle: string): CategoryPageMeta {
+export function generateCategoryPageMeta(
+  catSlug: string,
+  catTitle: string,
+  location: string = "Ahmedabad"
+): CategoryPageMeta {
+  const loc = (location || "Ahmedabad").trim();
+
   const titles: Record<string, string> = {
-    "wire-cables": "Copper & Aluminium Wires, Cables Provider Ahmedabad (B2B & B2C) | VOLAMP",
-    "switch-gears": "Best Switchgear Provider in Ahmedabad | MCB, MCCB, ACB (B2B & B2C) | VOLAMP",
-    "solar": "Solar DC Cables & BOS Provider in Ahmedabad (B2B & B2C) | VOLAMP",
-    "earthing": "Best Earthing Material & Chemical Rods Provider Ahmedabad | VOLAMP",
-    "lugs": "Best Cable Lugs Provider in Ahmedabad | Copper & Aluminium (B2B & B2C) | VOLAMP",
-    "glands": "Best Cable Glands Provider in Ahmedabad | Single & Double Compression | VOLAMP",
-    "conduit": "Best Conduit Pipes & Cable Raceway Provider Ahmedabad (B2B & B2C) | VOLAMP",
-    "wiring-devices": "Wiring Devices, Industrial Plugs & Sockets Provider Ahmedabad | VOLAMP",
+    "wire-cables": `Wires and Cables Supplier in ${loc} | VOLAMP`,
+    "switch-gears": `Best Switchgear Provider in ${loc} | MCB, MCCB, ACB | VOLAMP`,
+    "solar": `Solar DC Cables & BOS Provider in ${loc} | VOLAMP`,
+    "earthing": `Best Earthing Material & Chemical Rods in ${loc} | VOLAMP`,
+    "lugs": `Best Cable Lugs Provider in ${loc} (B2B & B2C) | VOLAMP`,
+    "glands": `Best Cable Glands Provider in ${loc} (B2B & B2C) | VOLAMP`,
+    "conduit": `Best Conduit Pipes & Cable Raceway in ${loc} | VOLAMP`,
+    "wiring-devices": `Wiring Devices & Plugs Provider in ${loc} | VOLAMP`,
   };
 
   const descriptions: Record<string, string> = {
-    "wire-cables": "Ahmedabad's best wire & cable provider, dealer & distributor. Polycab, Finolex, KEI copper wires & aluminium cables for B2B wholesale & B2C small orders.",
-    "switch-gears": "Ahmedabad's best switchgear provider & distributor. Schneider Electric, L&T MCBs, MCCBs, ACBs, contactors for B2B industrial projects and B2C small orders.",
-    "solar": "Ahmedabad's best solar cable & BOS provider. 1500V DC UV-resistant tinned copper solar cables for rooftop solar panels & utility plants. B2B & B2C orders.",
-    "earthing": "Ahmedabad's best earthing provider. Copper bonded rods, chemical compounds & GI flats for B2B industrial substations & B2C residential earthing small orders.",
-    "lugs": "Ahmedabad's best cable lugs provider, wholesaler & distributor. Dowells copper & aluminium crimping terminal lugs for B2B project bulk & B2C small orders.",
-    "glands": "Ahmedabad's best cable gland provider & distributor. Brass single & double compression weatherproof & flameproof glands for B2B & B2C small orders.",
-    "conduit": "Ahmedabad's best conduit pipe & fitting provider. Heavy-duty PVC conduits, GI flexible pipes & raceways for B2B wholesale projects & B2C small orders.",
-    "wiring-devices": "Ahmedabad's best wiring devices & industrial plug provider. Weatherproof isolators, distribution boxes & modular accessories for B2B & B2C small orders.",
+    "wire-cables": `${loc}'s premier wire & cable supplier, dealer & distributor. Polycab, Finolex, KEI copper wires & aluminium cables for B2B wholesale & B2C orders.`,
+    "switch-gears": `${loc}'s best switchgear provider & distributor. Schneider Electric, L&T MCBs, MCCBs, ACBs, contactors for B2B industrial projects and B2C small orders.`,
+    "solar": `${loc}'s best solar cable & BOS provider. 1500V DC UV-resistant tinned copper solar cables for rooftop solar panels & utility plants. B2B & B2C orders.`,
+    "earthing": `${loc}'s best earthing provider. Copper bonded rods, chemical compounds & GI flats for B2B industrial substations & B2C residential earthing small orders.`,
+    "lugs": `${loc}'s best cable lugs provider, wholesaler & distributor. Dowells copper & aluminium crimping terminal lugs for B2B project bulk & B2C small orders.`,
+    "glands": `${loc}'s best cable gland provider & distributor. Brass single & double compression weatherproof & flameproof glands for B2B & B2C small orders.`,
+    "conduit": `${loc}'s best conduit pipe & fitting provider. Heavy-duty PVC conduits, GI flexible pipes & raceways for B2B wholesale projects & B2C small orders.`,
+    "wiring-devices": `${loc}'s best wiring devices & industrial plug provider. Weatherproof isolators, distribution boxes & modular accessories for B2B & B2C small orders.`,
   };
 
-  const title = titles[catSlug] || `${catTitle} Supplier in Ahmedabad | VOLAMP`;
-  const metaDescription = descriptions[catSlug] || `Wholesale supplier of genuine ${catTitle} in Ahmedabad, Gujarat. Verified manufacturer specifications and fast dispatch from Volamp.`;
-  const h1 = titles[catSlug]?.split("|")[0]?.trim() || `${catTitle} in Ahmedabad`;
+  const title = titles[catSlug] || `${catTitle} Supplier in ${loc} | VOLAMP`;
+  const metaDescription = descriptions[catSlug] || `Wholesale supplier of genuine ${catTitle} in ${loc}, Gujarat. Verified manufacturer specifications and fast dispatch from Volamp.`;
+  const h1 = titles[catSlug]?.split("|")[0]?.trim() || `${catTitle} in ${loc}`;
 
   return {
     title,

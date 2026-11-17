@@ -4,7 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { loadProductsFromDisk, getProductByProductId } from "./services/productService";
 import { BLOG_POSTS_DATA, type BlogPost } from "../shared/blogData";
-import { generateProductPageMeta, generateCategoryPageMeta, getCanonicalCategorySlug } from "../shared/seoPageTemplates";
+import { generateProductPageMeta, generateCategoryPageMeta, getCanonicalCategorySlug, resolveDirectImageUrl } from "../shared/seoPageTemplates";
 import { HOME_KNOWLEDGE_GRAPH } from "../shared/homeKnowledgeGraph";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -681,6 +681,16 @@ function renderProductQuestionBank(p: any, specs: Record<string, any>, catSlug: 
         a: `The rated continuous current capacity is ${specs.currentRatingAmp} A under standard installation conditions. Actual operating ampacity depends on ambient temperature, burial depth, and grouping derating factors.`,
       });
     }
+    if (p.size && /(0\.5|0\.75|1(\.0)?|1\.5|2\.5|4(\.0)?|6(\.0)?)\s*sq/i.test(p.size)) {
+      qas.push({
+        q: `Can I buy ${p.brand || "Polycab"} ${p.size} wire & cable in small retail quantities or 90m coils in Ahmedabad?`,
+        a: `Yes. Volamp Elektrikals stocks ${p.brand || "Polycab"} ${p.size} copper wire and flexible cable for both B2B wholesale drum consignments and retail small orders (single 90m / 100m coils and cut lengths). You can purchase directly from our Khadia Gandhi Road counter in Old City Ahmedabad or request same-day courier delivery.`,
+      });
+      qas.push({
+        q: `What is the price of ${p.size} copper wire & flexible cable in Ahmedabad?`,
+        a: `Indicative pricing for genuine ${p.brand || "Polycab"} ${p.size} copper wire starts from ${p.discountedPrice || p.price || "wholesale price list"} per meter (or per 90m standard coil). Contractual volume discounts and GST invoices are provided with every order.`,
+      });
+    }
   } else if (catSlug === "switch-gears") {
     if (specs.breakingCapacityKa && specs.currentRatingA) {
       qas.push({
@@ -1259,12 +1269,12 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
     // Unique page title including verified product ID (resolves duplicate title groups)
     const uniquePageTitle = `${fullDisplayName} (${product.productId}) | Volamp Elektrikals Ahmedabad`;
 
-    // Filter out Google Drive HTML viewer links for valid image representation
-    const rawImg = product.imageUrl || "";
-    const isDriveImg = rawImg.includes("drive.google.com");
-    const validImgUrl = (rawImg && !isDriveImg)
-      ? (rawImg.startsWith("http") ? rawImg : `${BASE_URL}${rawImg}`)
-      : `${BASE_URL}/volamp-og-image.jpg`;
+    // Verified standards and canonical category slug
+    const standardsText = extractVerifiedStandards(product);
+    const canonicalCatSlug = getCanonicalCategorySlug(product.category);
+
+    // Resolve direct, crawler-ready public JPEG product photo (converts Google Drive links to direct CDN thumbnails)
+    const validImgUrl = resolveDirectImageUrl(product.imageUrl, canonicalCatSlug, BASE_URL);
 
     const rawPrice =
       product.numericPrice ||
@@ -1275,9 +1285,6 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       : "Price on Request / RFQ";
     const productUrl = `${BASE_URL}/product/${encodeURIComponent(product.productId)}`;
 
-    // Verified standards and canonical category slug
-    const standardsText = extractVerifiedStandards(product);
-    const canonicalCatSlug = getCanonicalCategorySlug(product.category);
     const isInStock = Boolean(product.availability && /in stock|available/i.test(product.availability));
 
     // Dedicated Machine-Readable JSON Feed for AI Search Engines & Bots (/product/:id.json)
@@ -1322,7 +1329,10 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
       "@type": "Product",
       "@id": `${productUrl}#product`,
       "name": fullDisplayName,
-      "image": validImgUrl,
+      "image": [
+        validImgUrl,
+        `${BASE_URL}/products/cables.jpg?v=3`
+      ],
       "description": product.description || `${fullDisplayName} industrial electrical supply from Volamp Elektrikals Ahmedabad.`,
       "sku": product.productId,
       "brand": {
@@ -1413,13 +1423,16 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
           </header>
           <section style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:32px;margin-bottom:36px;">
             <div>
+              <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:20px;text-align:center;">
+                <img src="${validImgUrl}" alt="${escapeXml(pageMeta.h1)}" width="240" height="240" style="max-width:100%;height:auto;max-height:240px;object-fit:contain;border-radius:8px;" loading="eager" />
+              </div>
               <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px;">
-                <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 6px 0;">B2B Wholesale Price (excl. GST)</p>
+                <p style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 6px 0;">B2B Wholesale &amp; Retail Pricing (excl. GST)</p>
                 <div style="font-size:32px;font-weight:900;color:#0f172a;">
                   ${priceFormatted} ${product.unit ? `<span style="font-size:14px;color:#64748b;font-weight:600;">/ ${escapeXml(product.unit)}</span>` : ""}
                 </div>
                 <p style="font-size:12px;color:${isInStock ? "#16a34a" : "#d97706"};font-weight:700;margin:8px 0 0 0;">
-                  ${isInStock ? "✓ In Stock" : "Available on Order"} — Aslali Warehouse, Ahmedabad
+                  ${isInStock ? "✓ In Stock" : "Available on Order"} — Aslali Central Hub &amp; Khadia Counter, Ahmedabad
                 </p>
               </div>
               <div style="display:flex;gap:12px;flex-wrap:wrap;">
@@ -1466,7 +1479,13 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
   // 2. DYNAMIC ROUTE: /category/:slug
   // =========================================================================
   if (cleanPath.startsWith("category/")) {
-    const slug = cleanPath.replace(/^category\//, "").trim().toLowerCase();
+    const rawRest = cleanPath.replace(/^category\//, "").trim();
+    const parts = rawRest.split("/").filter(Boolean);
+    const slug = (parts[0] || "").toLowerCase();
+    const routeLoc = parts[1] || "";
+    const queryLoc = typeof req.query?.location === "string" ? req.query.location : (typeof req.query?.city === "string" ? req.query.city : "");
+    const rawLoc = (routeLoc || queryLoc || "Ahmedabad").trim();
+    const location = rawLoc.charAt(0).toUpperCase() + rawLoc.slice(1);
     const catInfo = CATEGORY_DATA[slug];
 
     if (!catInfo) {
@@ -1512,25 +1531,161 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
 
     const productLinksHtml = categoryProducts
       .map(
-        (p) => `
-        <li style="padding:12px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
-          <a href="/product/${encodeURIComponent(p.productId)}" style="color:#0f172a;font-weight:600;text-decoration:none;font-size:14px;">
-            ${escapeXml(p.name)}
-          </a>
-          <span style="font-family:monospace;font-size:12px;color:#64748b;">${escapeXml(p.productId)}</span>
-        </li>
-      `
+        (p) => {
+          const thumbUrl = resolveDirectImageUrl(p.imageUrl, slug, BASE_URL);
+          const rawP = p.numericPrice || (typeof p.price === "string" ? parseFloat(p.price.replace(/[^0-9.]/g, "")) : 0);
+          const priceStr = rawP > 0 ? `₹${rawP.toFixed(2)}` : "Price on Request";
+          return `
+          <li style="padding:12px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+              <img src="${thumbUrl}" alt="${escapeXml(p.name)}" width="44" height="44" style="width:44px;height:44px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;flex-shrink:0;" loading="lazy" />
+              <div style="min-width:0;">
+                <a href="/product/${encodeURIComponent(p.productId)}" style="color:#0f172a;font-weight:600;text-decoration:none;font-size:14px;display:block;">
+                  ${escapeXml(p.name)}
+                </a>
+                <span style="font-size:12px;color:#64748b;">${escapeXml(p.brand || "Polycab")} • ${escapeXml(p.size || "")} • ${priceStr}</span>
+              </div>
+            </div>
+            <span style="font-family:monospace;font-size:11px;color:#64748b;background:#f1f5f9;padding:4px 8px;border-radius:4px;flex-shrink:0;">${escapeXml(p.productId)}</span>
+          </li>
+        `;
+        }
       )
       .join("");
 
-    const catMeta = generateCategoryPageMeta(slug, catInfo.name);
+    const catMeta = generateCategoryPageMeta(slug, catInfo.name, location);
+    const canonical = routeLoc ? `${BASE_URL}/category/${slug}/${encodeURIComponent(routeLoc.toLowerCase())}` : `${BASE_URL}/category/${slug}`;
+
+    const corridorCities = [
+      "Ahmedabad", "Surat", "Vadodara", "Rajkot", "Gandhinagar",
+      "Sanand", "Vatva", "Dahej", "Ankleshwar", "Mumbai", "Pune", "Delhi NCR"
+    ];
+    const corridorHtml = `
+      <div style="margin:20px 0 28px 0;padding:14px 18px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;">
+        <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-right:12px;">Fast Delivery Corridors in ${escapeXml(location)} &amp; India:</span>
+        <div style="display:inline-flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+          ${corridorCities.map(city => `
+            <a href="/category/${slug}/${city.toLowerCase()}" style="font-size:12px;padding:4px 10px;border-radius:6px;background:${city.toLowerCase() === location.toLowerCase() ? '#c56718' : '#ffffff'};color:${city.toLowerCase() === location.toLowerCase() ? '#ffffff' : '#334155'};border:1px solid #cbd5e1;text-decoration:none;font-weight:600;">
+              ${escapeXml(city)}
+            </a>
+          `).join("")}
+        </div>
+      </div>
+    `;
+
+    const wireSizeMatrixHtml = slug === "wire-cables" ? `
+      <section style="margin-top:36px;border-top:1px solid #e2e8f0;padding-top:28px;">
+        <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin-bottom:12px;">Standard Wire &amp; Cable Sizing Catalog &amp; Pricing (${escapeXml(location)})</h2>
+        <p style="font-size:14px;color:#64748b;margin-bottom:18px;">
+          Volamp Elektrikals stocks complete cross-sectional sizes from 0.5 sqmm to 400 sqmm in copper and aluminium. Accepted for B2B industrial bulk drum consignments and B2C retail 90m coils.
+        </p>
+        <div style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:13px;border:1px solid #e2e8f0;">
+            <thead>
+              <tr style="background:#f8fafc;border-bottom:2px solid #cbd5e1;">
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Size (sq mm / sqmm)</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Cable / Wire Subtype</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Voltage &amp; Standard</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Typical Application</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Indicative Price</th>
+                <th style="padding:10px 14px;text-align:left;color:#0f172a;border:1px solid #e2e8f0;">Verified Products</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #f1f5f9;background:#fffaf5;">
+                <td style="padding:10px 14px;font-weight:700;color:#c56718;border:1px solid #e2e8f0;">0.5 sq mm (0.5 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Flexible Copper Wire &amp; Multicore Cable (1C to 24C)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V · IS 694 / IS 8130</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Control panels, automation cabinets, machine wiring, signaling</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">₹12.93/m to ₹33.09/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000001" style="color:#c56718;font-weight:bold;text-decoration:none;">0.5 SQMM 1C Wire</a> ·
+                  <a href="/product/CAB-000046" style="color:#c56718;font-weight:bold;text-decoration:none;">0.5 SQMM 2C Cable</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">0.75 sq mm (0.75 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Flexible Copper Wire &amp; Multicore Cable (1C to 19C)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V · IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Panel boards, industrial appliances, signaling</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">From ₹18.67/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000002" style="color:#c56718;font-weight:bold;text-decoration:none;">0.75 SQMM 1C Wire</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">1.0 sq mm (1 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Building House Wire &amp; Flexible Multicore</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V · IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Lighting circuits, small appliances, commercial lighting</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">From ₹23.95/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000003" style="color:#c56718;font-weight:bold;text-decoration:none;">1 SQMM 1C Wire</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">1.5 sq mm (1.5 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">FRLS House Wire &amp; Industrial Control Cable</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V · IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Standard lighting, fan circuits, 6A sockets, control wiring</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">From ₹34.68/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000004" style="color:#c56718;font-weight:bold;text-decoration:none;">1.5 SQMM 1C Wire</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">2.5 sq mm (2.5 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Heavy Power House Wire &amp; Multicore Cable</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V · IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">16A power points, geysers, refrigerators, 1 Ton AC</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">From ₹57.75/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000005" style="color:#c56718;font-weight:bold;text-decoration:none;">2.5 SQMM 1C Wire</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">4.0 sq mm (4 sqmm)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Heavy Load Wire &amp; Submain Feeder</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V · IS 694</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1.5T-2T air conditioners, heavy kitchen appliances, power sub-mains</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">From ₹91.50/m</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/product/CAB-000006" style="color:#c56718;font-weight:bold;text-decoration:none;">4 SQMM 1C Wire</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">6.0 sq mm to 16 sq mm</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Main Incomer Wire &amp; Heavy Power Cable</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1100V · IS 694 / IS 1554</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Meter-to-panel incomer cables, EV chargers, solar DC strings</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">Wholesale list</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/products?search=6+SQMM" style="color:#c56718;font-weight:bold;text-decoration:none;">6 SQMM Wires</a>
+                </td>
+              </tr>
+              <tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:10px 14px;font-weight:700;border:1px solid #e2e8f0;">25 sq mm to 400 sq mm</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">LT XLPE Armoured Power Feeder Cable (Aluminium / Copper)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">1.1kV · IS 7098 (Part 1)</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">Underground mains, plant distribution, transformers, switchboards</td>
+                <td style="padding:10px 14px;font-weight:700;color:#0f172a;border:1px solid #e2e8f0;">Contractor Bulk Rate</td>
+                <td style="padding:10px 14px;border:1px solid #e2e8f0;">
+                  <a href="/products?search=70+SQMM" style="color:#c56718;font-weight:bold;text-decoration:none;">70 SQMM Cable</a> ·
+                  <a href="/products?search=185+SQMM" style="color:#c56718;font-weight:bold;text-decoration:none;">185 SQMM Cable</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ` : "";
 
     res.status(200);
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     const html = renderPageHtml({
       title: catMeta.title,
       description: catMeta.metaDescription,
-      canonical: `${BASE_URL}/category/${slug}`,
+      canonical,
       isBot,
       bodyHtml: `
         <main style="font-family:system-ui,-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:24px;color:#1e293b;">
@@ -1539,7 +1694,7 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             <a href="/products" style="color:#64748b;text-decoration:none;">Products</a> &gt;
             <span style="color:#0f172a;font-weight:600;">${escapeXml(catInfo.name)}</span>
           </nav>
-          <header style="margin-bottom:32px;">
+          <header style="margin-bottom:24px;">
             <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.2;margin:0 0 16px 0;">${escapeXml(catMeta.h1)}</h1>
             <p style="font-size:15px;line-height:1.7;color:#475569;max-width:900px;">
               ${escapeXml(catInfo.desc)}
@@ -1547,7 +1702,9 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
               Every consignment is supplied with manufacturer Material Test Certificates (MTC) and undergoes strict quality verification to ensure flawless performance in continuous industrial and utility service.
             </p>
           </header>
-          <section>
+          ${corridorHtml}
+          ${wireSizeMatrixHtml}
+          <section style="margin-top:32px;">
             <h2 style="font-size:20px;font-weight:700;color:#0f172a;margin:0 0 16px 0;">Available Products in this Category</h2>
             <ul style="list-style:none;padding:0;margin:0;">
               ${productLinksHtml}
@@ -1558,9 +1715,9 @@ export function seoPrerenderMiddleware(req: Request, res: Response, next: NextFu
             slug === "wire-cables"
               ? `
           <section style="background:#f8fafc;padding:24px;border-radius:12px;border:1px solid #e2e8f0;margin-top:36px;font-size:14px;line-height:1.7;color:#475569;">
-            <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin-top:0;">Armoured &amp; Unarmoured Power Cable Suppliers in Ahmedabad</h2>
+            <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin-top:0;">Armoured &amp; Unarmoured Power Cable Suppliers in ${escapeXml(location)}</h2>
             <p>
-              Volamp Elektrikals Private Limited is a leading wholesale distributor and supplier of LT XLPE and PVC insulated copper and aluminium unarmoured power cables (1.5 sqmm to 1000 sqmm) and heavy armoured cables in Ahmedabad, Gujarat. Sourcing directly from premier manufacturers including Polycab, Finolex, and KEI Industries, our unarmoured power and control cables conform to IS:694, IS:1554, and IS:7098 standards with original Manufacturer Test Certificates (MTC) and routine test reports. Express same-day dispatch to Vatva, Sanand, Naroda, and Changodar GIDC industrial zones, and 48–72h delivery across India from our Aslali logistics terminal.
+              Volamp Elektrikals Private Limited is a leading wholesale distributor and supplier of LT XLPE and PVC insulated copper and aluminium unarmoured power cables and flexible wires (0.5 sqmm to 1000 sqmm) and heavy armoured cables in ${escapeXml(location)} and across Gujarat. Sourcing directly from premier manufacturers including Polycab, Finolex, and KEI Industries, our unarmoured power and control cables conform to IS:694, IS:1554, and IS:7098 standards with original Manufacturer Test Certificates (MTC) and routine test reports. Express same-day dispatch to Vatva, Sanand, Naroda, and Changodar GIDC industrial zones, and 48–72h delivery across India from our Aslali logistics terminal.
             </p>
           </section>
               `

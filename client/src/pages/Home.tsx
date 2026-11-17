@@ -388,9 +388,8 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/75 z-1" />
       </div>
 
-      {/* 2. Top utility row (overlaid on top of video, 100% transparent) */}
       {/* 2. Top utility row (overlaid on top of video, 100% transparent, responsive) */}
-      <div className="relative z-50 border-b border-white/10 bg-transparent">
+      <div className="relative z-[90] border-b border-white/10 bg-transparent">
         <div className="market-container py-1.5 md:py-2 text-xs flex flex-col md:flex-row md:items-center justify-between gap-2 md:gap-4">
           {/* Top row on Mobile / Left on Desktop: Location picker & Quick Mobile Action */}
           <div className="flex items-center justify-between w-full md:w-auto shrink-0">
@@ -425,7 +424,7 @@ export default function Home() {
           </div>
 
           {/* Search Bar: 100% width on mobile (< md), centered flex-1 on tablet & desktop (md+) */}
-          <div className="w-full md:flex-1 md:max-w-md lg:max-w-lg md:mx-2 relative z-50">
+          <div className="w-full md:flex-1 md:max-w-md lg:max-w-lg md:mx-2 relative z-[95]">
             <div className="flex items-center gap-2 bg-black/25 hover:bg-black/35 focus-within:bg-black/50 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/20 text-white transition-all shadow-xs">
               <Search className="size-3.5 text-amber-400 shrink-0" />
               <input
@@ -453,7 +452,7 @@ export default function Home() {
 
             {/* Autocomplete dropdown */}
             {search && (
-              <div className="search-results absolute top-full left-0 right-0 text-left rounded-xl shadow-2xl overflow-hidden mt-1.5 z-[100] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white divide-y divide-slate-100 dark:divide-slate-800">
+              <div className="search-results absolute top-full left-0 right-0 text-left rounded-xl shadow-2xl overflow-hidden mt-1.5 z-[1000] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white divide-y divide-slate-100 dark:divide-slate-800">
                 {searchResults.length ? searchResults.map((product) => {
                   const prodImg = product.image || getProductImage(product, product.category);
                   return (
@@ -510,7 +509,7 @@ export default function Home() {
       </div>
 
       {/* 3. Main Transparent Navigation Header directly over the video (Cleveland Cable style) */}
-      <header className="relative z-20 w-full border-b border-white/10">
+      <header className="relative z-10 isolate w-full border-b border-white/10">
         <div className="market-container flex items-center justify-between py-2.5 sm:py-3 gap-2 xl:gap-4 flex-nowrap">
           <a href="#top" className="shrink-0 flex items-center">
             <BrandMark />

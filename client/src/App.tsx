@@ -167,6 +167,7 @@ function Router() {
       <Suspense fallback={<RouteSuspenseFallback />}>
         <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/category/:slug/:location"} component={CategoryPage} />
       <Route path={"/category/:slug"} component={CategoryPage} />
       <Route path="/product/:productId/:slug" component={ProductDetailPage} />
       <Route path="/product/:productId" component={ProductDetailPage} />

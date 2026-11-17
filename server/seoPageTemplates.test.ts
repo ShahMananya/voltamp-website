@@ -143,10 +143,16 @@ describe("SEO Page Templates Engine (SEO Target Map & Checklist Compliance)", ()
 
   it("Category page metadata generates clean titles and 120-155 char descriptions", () => {
     const catMeta = generateCategoryPageMeta("wire-cables", "Wires & Cables");
-    expect(catMeta.title).toBe("Copper & Aluminium Wires, Cables Provider Ahmedabad (B2B & B2C) | VOLAMP");
+    expect(catMeta.title).toBe("Wires and Cables Supplier in Ahmedabad | VOLAMP");
     expect(catMeta.metaDescription.length).toBeGreaterThanOrEqual(120);
     expect(catMeta.metaDescription.length).toBeLessThanOrEqual(155);
-    expect(catMeta.h1).toBe("Copper & Aluminium Wires, Cables Provider Ahmedabad (B2B & B2C)");
+    expect(catMeta.h1).toBe("Wires and Cables Supplier in Ahmedabad");
+
+    // Dynamic [x location] testing
+    const suratMeta = generateCategoryPageMeta("wire-cables", "Wires & Cables", "Surat");
+    expect(suratMeta.title).toBe("Wires and Cables Supplier in Surat | VOLAMP");
+    expect(suratMeta.h1).toBe("Wires and Cables Supplier in Surat");
+    expect(suratMeta.metaDescription).toContain("Surat");
   });
 
   it("Brand hub metadata follows formula '{brand} products supplier in Ahmedabad | VOLAMP'", () => {
@@ -231,6 +237,52 @@ describe("SEO Keyword Map (1,474 Candidate Query Engine)", () => {
     const stats = getKeywordMapStats();
     expect(stats.panIndiaCitiesIndexed).toBeGreaterThanOrEqual(140);
     expect(stats.allIndianStatesCovered).toBe(28);
+  });
+
+  it("generates optimized metadata for 0.5 sqmm single-core and multi-core flexible wires & cables", () => {
+    const singleCoreProd = {
+      productId: "CAB-000001",
+      name: "0.5 SQMM X 1 CORE Unarmoured Copper CABLE",
+      brand: "Polycab",
+      category: "Wires & Cables",
+      size: "0.5 SQMM",
+      material: "Copper",
+    };
+    const singleSpecs = { cores: "1", typeOfArmour: "Unarmoured", voltageRating: "Upto 1100V" };
+    const meta1 = generateProductPageMeta(singleCoreProd, singleSpecs, "IS 694", "wire-cables");
+
+    expect(meta1.title).toContain("Polycab");
+    expect(meta1.title).toContain("0.5 sq mm");
+    expect(meta1.title).toContain("Ahmedabad");
+    expect(meta1.title.length).toBeLessThanOrEqual(60);
+    expect(meta1.metaDescription.length).toBeGreaterThanOrEqual(120);
+    expect(meta1.metaDescription.length).toBeLessThanOrEqual(155);
+    expect(meta1.metaDescription).toContain("0.5 sq mm");
+    expect(meta1.metaDescription).toContain("Ahmedabad");
+    expect(meta1.h1).toContain("0.5 sq mm");
+    expect(meta1.h1).toContain("Ahmedabad");
+
+    const multiCoreProd = {
+      productId: "CAB-000046",
+      name: "0.5 SQMM X 2 CORE Unarmoured Copper CABLE",
+      brand: "Polycab",
+      category: "Wires & Cables",
+      size: "0.5 SQMM",
+      material: "Copper",
+    };
+    const multiSpecs = { cores: "2", typeOfArmour: "Unarmoured", voltageRating: "Upto 1100V" };
+    const meta46 = generateProductPageMeta(multiCoreProd, multiSpecs, "IS 694", "wire-cables");
+
+    expect(meta46.title).toContain("Polycab");
+    expect(meta46.title).toContain("0.5 sq mm");
+    expect(meta46.title).toContain("2 Core");
+    expect(meta46.title).toContain("Ahmedabad");
+    expect(meta46.title.length).toBeLessThanOrEqual(60);
+    expect(meta46.metaDescription.length).toBeGreaterThanOrEqual(120);
+    expect(meta46.metaDescription.length).toBeLessThanOrEqual(155);
+    expect(meta46.h1).toContain("0.5 sq mm");
+    expect(meta46.h1).toContain("2 Core");
+    expect(meta46.h1).toContain("Ahmedabad");
   });
 });
 

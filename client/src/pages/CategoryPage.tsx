@@ -16,6 +16,7 @@ import {
   Headphones,
   LayoutGrid,
   List,
+  MapPin,
   Menu,
   PackageSearch,
   Phone,
@@ -45,6 +46,7 @@ import SeoHead from "@/components/seo/SeoHead";
 import { generateCategoryPageMeta } from "@shared/seoPageTemplates";
 import { useCart } from "@/contexts/CartContext";
 import { useCompare } from "@/contexts/CompareContext";
+import { useUserLocation } from "@/contexts/LocationContext";
 import { toast } from "sonner";
 
 function parseSpecs(raw: any) {
@@ -127,9 +129,19 @@ function matchesCategory(prodCategory: string = "", targetCategory?: string): bo
 }
 
 export default function CategoryPage() {
+  const [matchWithLocation, paramsWithLocation] = useRoute("/category/:slug/:location");
   const [isCategoryRoute, params] = useRoute("/category/:slug");
   const [, navigate] = useLocation();
-  const slug = isCategoryRoute ? params?.slug : undefined;
+  const slug = paramsWithLocation?.slug || (isCategoryRoute ? params?.slug : undefined);
+
+  const { location: userDetectedLocation, openLocationPicker } = useUserLocation();
+
+  // Location resolution: route param > query param (?location= or ?city=) > user detected location > "Ahmedabad"
+  const queryParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+  const routeCity = paramsWithLocation?.location ? decodeURIComponent(paramsWithLocation.location) : "";
+  const queryCity = queryParams.get("location") || queryParams.get("city") || "";
+  const rawCity = (routeCity || queryCity || userDetectedLocation || "Ahmedabad").split(",")[0].trim();
+  const activeCity = rawCity ? rawCity.charAt(0).toUpperCase() + rawCity.slice(1) : "Ahmedabad";
 
   const { addItem, totalCount, openCart } = useCart();
 
@@ -570,14 +582,14 @@ export default function CategoryPage() {
     ];
   }, [categoryTitle, slug]);
 
-  const catMeta = generateCategoryPageMeta(slug || "wire-cables", categoryTitle);
+  const catMeta = generateCategoryPageMeta(slug || "wire-cables", categoryTitle, activeCity);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0c1520] text-[#1e293b] dark:text-[#f1f5f9] flex flex-col font-sans transition-colors">
       <SeoHead
         title={catMeta.title}
         description={catMeta.metaDescription}
-        canonicalPath={slug ? `/category/${slug}` : "/products"}
+        canonicalPath={slug ? (routeCity ? `/category/${slug}/${encodeURIComponent(routeCity.toLowerCase())}` : `/category/${slug}`) : "/products"}
         ogType="website"
         jsonLd={categoryJsonLd}
       />
@@ -1817,18 +1829,81 @@ export default function CategoryPage() {
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Authorized Stockist • <strong className="text-slate-700 dark:text-slate-200 font-semibold">Ahmedabad Central Depot</strong> • 2026 Price List
+                  Authorized Stockist • <strong className="text-slate-700 dark:text-slate-200 font-semibold">{activeCity} Delivery Hub</strong> • 2026 Price List
+                </div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-900 dark:text-amber-300">
+                  <MapPin className="size-3 text-[#c56718] shrink-0" />
+                  <span>Delivering to <strong>{activeCity}</strong></span>
+                  <button
+                    onClick={openLocationPicker}
+                    className="text-[#c56718] dark:text-amber-400 font-bold hover:underline cursor-pointer ml-1"
+                    title="Change Delivery Location"
+                  >
+                    (Change)
+                  </button>
                 </div>
               </div>
 
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 dark:text-white font-['Plus_Jakarta_Sans',sans-serif] tracking-tight">
-                {category ? `${category.name} Wholesale Distributor & Stockist` : "Industrial Electrical Cables, Switchgear & Power Distribution Catalogue"}
+                {catMeta.h1}
               </h1>
 
               {/* ~150 words of rich, indexable technical intro copy */}
               <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
-                Volamp Elektrikals is an authorized wholesale distributor and stockist supplying certified {categoryTitle} manufactured by leading OEMs including Polycab, Finolex, KEI Industries, Schneider Electric, L&amp;T (Lauritz Knudsen), Dowells, and Legrand. Engineered for heavy industrial infrastructure, substations, commercial complexes, and EPC project contracting, our complete inventory complies strictly with Bureau of Indian Standards (IS 7098 Part 1 &amp; 2 for XLPE armoured cables, IS 1554 for PVC power cables, IS 694 for building wires, and EN 50618 for solar photovoltaic arrays). Every consignment is accompanied by official manufacturer Material Test Certificates (MTC) with complete batch traceability and guaranteed copper/aluminium conductor purity. Headquartered in Ahmedabad with centralized warehousing in Aslali, we ensure immediate same-day dispatch across Gujarat's industrial corridors (Sanand, Vatva, Naroda GIDC) and 48 to 72-hour insured freight to project sites across 28 states.
+                Volamp Elektrikals is an authorized wholesale distributor and stockist supplying certified {categoryTitle} manufactured by leading OEMs including Polycab, Finolex, KEI Industries, Schneider Electric, L&amp;T (Lauritz Knudsen), Dowells, and Legrand. Engineered for heavy industrial infrastructure, substations, commercial complexes, and EPC project contracting, our complete inventory complies strictly with Bureau of Indian Standards (IS 7098 Part 1 &amp; 2 for XLPE armoured cables, IS 1554 for PVC power cables, IS 694 for building wires, and EN 50618 for solar photovoltaic arrays). Every consignment is accompanied by official manufacturer Material Test Certificates (MTC) with complete batch traceability and guaranteed copper/aluminium conductor purity. Headquartered in Ahmedabad with centralized warehousing in Aslali, we ensure immediate same-day dispatch across {activeCity} and Gujarat's industrial corridors (Sanand, Vatva, Naroda GIDC) and 48 to 72-hour insured freight to project sites across 28 states.
               </p>
+
+              {/* Pan-India Delivery Corridor Bar */}
+              <div className="pt-2 pb-1 border-t border-slate-100 dark:border-slate-800/80">
+                <span className="text-[11px] font-semibold text-slate-500 mr-2">Express Corridors:</span>
+                <div className="inline-flex gap-1.5 flex-wrap">
+                  {[
+                    "Ahmedabad", "Surat", "Vadodara", "Rajkot", "Gandhinagar",
+                    "Sanand", "Vatva", "Dahej", "Ankleshwar", "Mumbai", "Pune", "Delhi NCR"
+                  ].map((city) => (
+                    <Link
+                      key={city}
+                      href={`/category/${slug || "wire-cables"}/${city.toLowerCase()}`}
+                      className={`text-[10px] sm:text-[11px] font-medium px-2 py-0.5 rounded transition-colors ${
+                        city.toLowerCase() === activeCity.toLowerCase()
+                          ? "bg-[#c56718] text-white font-bold"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                      }`}
+                    >
+                      {city}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Standard Cross-Section Quick Sizing Chips */}
+              {(slug === "wire-cables" || slug?.includes("wire") || slug?.includes("cable")) && (
+                <div className="pt-2">
+                  <span className="text-[11px] font-semibold text-slate-500 block mb-1.5">Standard Cross-Section Sizes (Click to filter):</span>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {[
+                      "0.5 SQMM", "0.75 SQMM", "1 SQMM", "1.5 SQMM", "2.5 SQMM",
+                      "4 SQMM", "6 SQMM", "10 SQMM", "16 SQMM", "25 SQMM",
+                      "50 SQMM", "70 SQMM", "95 SQMM", "120 SQMM", "185 SQMM"
+                    ].map((sz) => (
+                      <button
+                        key={sz}
+                        onClick={() => {
+                          setSelectedSize(selectedSize === sz ? null : sz);
+                          setPage(1);
+                        }}
+                        className={`text-[11px] font-mono font-medium px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
+                          selectedSize === sz
+                            ? "bg-[#c56718] text-white border-[#c56718] shadow-xs"
+                            : "bg-white dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#c56718]/60"
+                        }`}
+                      >
+                        {sz}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Standards Badges */}
               <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/80">
