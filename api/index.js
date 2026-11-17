@@ -15875,10 +15875,10 @@ var STATIC_ROUTES = {
     intro: "Volamp Elektrikals delivers end-to-end electrical procurement packages tailored to specific sector requirements: EPC infrastructure contractors requiring bulk HT armoured drum deliveries with CPRI type-test reports; solar developers needing 1500V DC UV-resistant PV cables; industrial manufacturing plants needing fast replacement switchgear; and commercial builders seeking IS:694 certified wiring."
   },
   "branch-locations": {
-    title: "Branch Locations & Pan-India Warehouse Depots | VOLAMP",
-    description: "Visit Volamp Elektrikals offices in Khadia, Ahmedabad and Aslali Central Logistics Terminal. Pan-India dispatch across 140+ cities in all 28 states.",
-    h1: "Branch Locations, Sales Desks & Pan-India Distribution Terminals",
-    intro: "Our operations are centered in Ahmedabad, Gujarat with strategic distribution access: Corporate Sales Office at 1753, Dhobi's Pole, Sir Chinubhai Road, Khadia, Ahmedabad 380001 (Gandhi Road Electrical Market Belt), and Central Logistics Fulfillment Terminal at Aslali Highway Terminal, NH-48 & SP Ring Road Junction, Ahmedabad 382427. Same-day dispatch to Vatva, Sanand, Naroda, and Changodar GIDC zones. We provide scheduled freight and full-truckload (FTL) deliveries across 140+ cities spanning all 28 states of India, including Mumbai, Pune, Delhi NCR, Jaipur, Indore, Bengaluru, Hyderabad, Chennai, and Kolkata, backed by factory Material Test Certificates (MTC)."
+    title: "Branch Locations & Stores | Volamp B2B & B2C Ahmedabad & Aslali",
+    description: "Visit Volamp Elektrikals: Khadia retail store counter & Aslali warehouse in Ahmedabad. Wholesalers & distributors for B2B & B2C. Small orders accepted.",
+    h1: "Branch Locations, B2B & B2C Stores & Pan-India Distribution Terminals",
+    intro: "Our operations are centered in Ahmedabad, Gujarat serving both large-scale B2B industrial projects and B2C retail counter walk-ins. We deal with small orders for customers' end-to-end needs with no minimum purchase barrier: Corporate Sales Office & Retail Store Counter at 1753, Dhobi's Pole, Sir Chinubhai Road, Khadia, Ahmedabad 380001 (Gandhi Road Electrical Market Belt), and Central Logistics Fulfillment Terminal at Aslali Highway Terminal, NH-48 & SP Ring Road Junction, Ahmedabad 382427. Same-day dispatch to Vatva, Sanand, Naroda, and Changodar GIDC zones. We provide scheduled freight and full-truckload (FTL) deliveries across 140+ cities spanning all 28 states of India, including Mumbai, Pune, Delhi NCR, Jaipur, Indore, Bengaluru, Hyderabad, Chennai, and Kolkata, backed by factory Material Test Certificates (MTC)."
   },
   "products": {
     title: "Industrial Electrical Products Catalog | Volamp",
@@ -17557,8 +17557,8 @@ function seoPrerenderMiddleware(req, res, next) {
         "@context": "https://schema.org",
         "@graph": [
           {
-            "@type": "LocalBusiness",
-            "name": "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
+            "@type": ["WholesaleStore", "RetailStore", "LocalBusiness"],
+            "name": "VOLAMP ELEKTRIKALS PRIVATE LIMITED - Corporate Office & Retail Store",
             "telephone": "+919512365582",
             "email": "sales@volampelektrikals.com",
             "address": {
