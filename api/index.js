@@ -15937,10 +15937,10 @@ var STATIC_ROUTES = {
     intro: "Volamp Elektrikals Private Limited is an international electrical procurement and export partner headquartered in Ahmedabad, Gujarat, India. Leveraging deep logistics proximity to India's premier western deep-water container ports (Mundra and Kandla, <350 km from our central Aslali stockyard), we supply certified HT/LT power cables, solar photovoltaic cables, switchgear, and earthing infrastructure to international EPC contractors, utility developers, and industrial projects across the Middle East, Africa, and Southeast Asia. All export drums comply with ISPM-15 phytosanitary heat-treatment standards, accompanied by SGS/Bureau Veritas pre-shipment inspection certificates and Letters of Credit (LC) facilitation."
   },
   "dealers/polycab-ahmedabad": {
-    title: "Polycab Wires & Cables Wholesale Stockist Ahmedabad | Volamp",
-    description: "Wholesale stockist & supplier of Polycab cables and wires in Ahmedabad, Gujarat. Ready stock of LT/HT XLPE power cables, flexible wires & solar cables.",
-    h1: "Polycab Wires & Cables Wholesale Stockist in Ahmedabad",
-    intro: "Volamp Elektrikals Private Limited is a wholesale stockist and supplier of Polycab India Ltd. wires and cables in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, we maintain ready inventory of Polycab 1.1kV LT XLPE aluminium and copper armoured cables (IS 7098 Part 1), 11kV to 33kV HT XLPE power cables (IS 7098 Part 2), 1500V DC solar PV cables (EN 50618), Green Wire building wires, and multi-core flexible control cables."
+    title: "Polycab Ahmedabad | Authorized Cables & Wires Stockist | Volamp",
+    description: "Polycab Ahmedabad authorized distributor & wholesale stockist. Ready stock of Polycab LT/HT XLPE power cables, flexible wires & solar cables with factory MTC.",
+    h1: "Polycab Ahmedabad | Authorized Distributor & Master Stockist",
+    intro: "Volamp Elektrikals Private Limited is an authorized Polycab Ahmedabad master distributor and wholesale stockist of Polycab India Ltd. wires and cables in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, we maintain ready inventory of Polycab 1.1kV LT XLPE aluminium and copper armoured cables (IS 7098 Part 1), 11kV to 33kV HT XLPE power cables (IS 7098 Part 2), 1500V DC solar PV cables (EN 50618), Green Wire building wires, and multi-core flexible control cables."
   },
   "dealers/finolex-cables-ahmedabad": {
     title: "Finolex Wires & Cables Wholesale Stockist Ahmedabad | Volamp",

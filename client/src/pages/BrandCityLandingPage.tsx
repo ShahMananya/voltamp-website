@@ -58,12 +58,12 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     brand: "Polycab India",
     categoryTag: "LT & HT Armoured, Flexible & Solar Cables",
     location: "Ahmedabad, Gujarat",
-    metaTitle: "Polycab Authorized Distributor & Cable Stockist in Ahmedabad | Volamp",
+    metaTitle: "Polycab Ahmedabad | Authorized Cables & Wires Stockist | Volamp",
     metaDescription:
-      "Authorized Polycab distributor & channel partner in Ahmedabad, Gujarat. Master stockist of Polycab LT/HT armoured cables, FRLS flexible wires & solar cables with test certificates.",
-    h1: "Polycab Authorized Distributor & Master Stockist in Ahmedabad",
+      "Polycab Ahmedabad authorized distributor & channel partner in Gujarat. Master stockist of Polycab LT/HT armoured cables, FRLS flexible wires & solar cables with factory MTC certificates.",
+    h1: "Polycab Ahmedabad | Authorized Distributor & Master Stockist",
     subtitle:
-      "Gujarat's authorized distributor and master stockist of genuine Polycab industrial power cables, flexible building wires, and 1500V solar DC cables with guaranteed Manufacturer Test Certificates (MTC).",
+      "Gujarat's authorized Polycab Ahmedabad distributor and master stockist of genuine Polycab industrial power cables, flexible building wires, and 1500V solar DC cables with guaranteed Manufacturer Test Certificates (MTC).",
     heroHighlights: [
       "Authorized Channel Partner with 1,045+ Polycab SKUs in Catalog",
       "Official 2026 Price Circulars with Competitive Contractor Discounts",

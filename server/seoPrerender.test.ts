@@ -153,7 +153,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     const result = getResult();
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
-    expect(result.sentHtml).toContain("Polycab Wires &amp; Cables Wholesale Stockist in Ahmedabad");
+    expect(result.sentHtml).toContain("Polycab Ahmedabad | Authorized Distributor &amp; Master Stockist");
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/dealers/polycab-ahmedabad"');
   });
 
