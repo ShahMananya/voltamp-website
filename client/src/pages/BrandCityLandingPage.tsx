@@ -58,23 +58,24 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     brand: "Polycab India",
     categoryTag: "LT & HT Armoured, Flexible & Solar Cables",
     location: "Ahmedabad, Gujarat",
-    metaTitle: "Polycab Ahmedabad | Authorized Cables & Wires Stockist | Volamp",
+    metaTitle: "Polycab Ahmedabad | Authorized Dealer & Distributor (B2B & B2C) | Volamp",
     metaDescription:
-      "Polycab Ahmedabad authorized distributor & channel partner in Gujarat. Master stockist of Polycab LT/HT armoured cables, FRLS flexible wires & solar cables with factory MTC certificates.",
-    h1: "Polycab Ahmedabad | Authorized Distributor & Master Stockist",
+      "Authorized Polycab dealer, retail electrical store & wholesale distributor in Ahmedabad. Buy Polycab house wires & industrial cables at B2B wholesale & B2C retail rates with factory MTC.",
+    h1: "Polycab Ahmedabad | Authorized Dealer, Distributor & Cable Store",
     subtitle:
-      "Gujarat's authorized Polycab Ahmedabad distributor and master stockist of genuine Polycab industrial power cables, flexible building wires, and 1500V solar DC cables with guaranteed Manufacturer Test Certificates (MTC).",
+      "Ahmedabad's authorized Polycab dealer and master distributor supplying genuine Polycab industrial power cables, flexible building wires, and solar DC cables for B2B wholesale projects and B2C retail house wiring.",
     heroHighlights: [
-      "Authorized Channel Partner with 1,045+ Polycab SKUs in Catalog",
+      "Authorized Dealer & Channel Partner with 1,045+ Polycab SKUs in Catalog",
+      "B2B Wholesale Bulk Drums & B2C Retail House Wire Coils Available",
       "Official 2026 Price Circulars with Competitive Contractor Discounts",
       "Same-Day Dispatch to Vatva, Sanand, Naroda, & Changodar GIDC",
-      "Routine Spark & Conductor Resistance MTC Available with Orders",
+      "Counter Sales in Khadia Electrical Market & Express Aslali Depot Dispatch",
     ],
-    authorizedStatus: "Authorized Channel Partner & Master Stockist",
+    authorizedStatus: "Authorized Dealer, Retail Store & Master Stockist (B2B & B2C)",
     stockCount: "1,045+ SKUs in Catalog",
     dispatchTime: "Same-Day / Within 24h",
     overview:
-      "Volamp Elektrikals Private Limited is a leading Polycab cable wholesale supplier and stockist in Ahmedabad, Gujarat. Operating from our central logistics facility at Aslali Highway Terminal, we supply complete turnkey drum orders to EPC contractors, solar power developers, manufacturing facilities, and electrical panel builders across Gujarat and nationwide across India.",
+      "Volamp Elektrikals Private Limited is an authorized Polycab cable dealer, retail store, and wholesale distributor in Ahmedabad, Gujarat. Operating our retail counter in the Khadia electrical market (Gandhi Road belt) and central logistics terminal at Aslali Highway, we cater to both B2B wholesale project requirements (bulk power cable drums for EPC contractors, panel builders, and factories) and B2C retail purchases (house wire coils, building wires, and maintenance cabling for homeowners and licensed electricians) with original Manufacturer Test Certificates (MTC).",
     popularProducts: [
       {
         name: "185 SQMM X 3.5 CORE Armoured Aluminium CABLE",
@@ -110,12 +111,20 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     ],
     faq: [
       {
-        q: "Where is the Polycab warehouse of Volamp located in Ahmedabad?",
-        a: "Our central fulfillment stockyard is strategically located at Aslali Highway Terminal (NH-48 & SP Ring Road Junction, Ahmedabad 382427) with our corporate sales office in Khadia, Ahmedabad 380001.",
+        q: "Where is the Polycab warehouse and retail shop of Volamp located in Ahmedabad?",
+        a: "Our central fulfillment stockyard is strategically located at Aslali Highway Terminal (NH-48 & SP Ring Road Junction, Ahmedabad 382427), while our retail sales counter and showroom is situated in Khadia (1753 Dhobi's Pole, Sir Chinubhai Road, Ahmedabad 380001) in the heart of Ahmedabad's Gandhi Road electrical trading hub.",
+      },
+      {
+        q: "Do you supply Polycab wires and cables for both B2B wholesale and B2C retail customers?",
+        a: "Yes! Volamp Elektrikals operates both as a B2B wholesale distributor for industrial cable drums and infrastructure projects, and as a B2C retail dealer/store for individual homeowners, builders, and electricians purchasing house wire coils (Polycab Green Wire, FRLS, 90m coils) with instant retail billing and counter pickup at Khadia or doorstep delivery across Ahmedabad.",
+      },
+      {
+        q: "Can I buy Polycab house wires in retail quantities near Gandhi Road / Khadia?",
+        a: "Yes. Our historical sales counter and showroom in Khadia offers over-the-counter sales of single coils and retail packs for home renovation and electrical contracting.",
       },
       {
         q: "Do you supply original Polycab Manufacturer Test Certificates (MTC)?",
-        a: "Yes. Original Polycab factory routine test reports covering conductor resistance, insulation spark test, and dimensions can be provided upon request with order consignments.",
+        a: "Yes. Original Polycab factory routine test reports covering conductor resistance, insulation spark test, and dimensions are provided with order consignments.",
       },
       {
         q: "What discount structure is offered on Polycab 2026 price lists?",
@@ -128,23 +137,24 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     brand: "Finolex Cables",
     categoryTag: "Pure Electrolytic Copper Wires, Submersible & Communication",
     location: "Ahmedabad, Gujarat",
-    metaTitle: "Finolex Authorized Channel Partner & Distributor in Ahmedabad | Volamp",
+    metaTitle: "Finolex Cables Ahmedabad | Authorized Dealer & Distributor (B2B & B2C) | Volamp",
     metaDescription:
-      "Officially certified Finolex Authorized Channel Partner in Ahmedabad. 100% genuine Finolex copper flexible wires, 3-core submersible flat cables & LAN cables at wholesale prices.",
-    h1: "Finolex Authorized Channel Partner & Distributor in Ahmedabad",
+      "Authorized Finolex dealer, retail store & wholesale distributor in Ahmedabad. Buy Finolex Flame Guard FRLS house wires & submersible cables at B2B & B2C rates.",
+    h1: "Finolex Cables Ahmedabad | Authorized Dealer, Distributor & Wires Store",
     subtitle:
-      "Certified Authorized Channel Partner for genuine Finolex pure electrolytic copper wires, FRLS building cables, and submersible pump cables for residential, commercial, and industrial projects.",
+      "Ahmedabad's certified Finolex dealer and distributor supplying genuine 99.97% pure copper Flame Guard FRLS building wires and submersible pump cables for B2B wholesale projects and B2C retail buyers.",
     heroHighlights: [
-      "Official Authorised Channel Partner Appointment (Valid through 2026)",
+      "Official Authorised Dealer & Channel Partner Appointment (Valid through 2026)",
+      "B2B Wholesale Project Supply & B2C Retail Counter Sales",
       "High-Purity 99.97% Electrolytic Copper Conductors per IS:8130",
       "Full Range of 3-Core Flat Submersible & CCTV/LAN Coaxial Cables",
-      "Wholesale Bulk Pack Rates for Electrical Contractors & Panel Builders",
+      "Wholesale & Retail Pack Rates for Electrical Contractors & Homeowners",
     ],
-    authorizedStatus: "Authorized Channel Partner (Valid through 2026)",
+    authorizedStatus: "Authorized Dealer & Channel Partner (B2B & B2C)",
     stockCount: "950+ Finolex Items",
     dispatchTime: "Same-Day Dispatch",
     overview:
-      "Finolex Cables is India's most trusted name in pure electrolytic copper conductors. Volamp Elektrikals maintains exhaustive warehouse inventory of Finolex Flame Guard (FRLS) wires, multi-core flexible industrial cords, 3-core flat submersible cables, and communication wiring in Ahmedabad, ensuring rapid delivery to projects across Gujarat.",
+      "Finolex Cables is India's most trusted name in pure electrolytic copper conductors. Volamp Elektrikals maintains exhaustive warehouse inventory of Finolex Flame Guard (FRLS) wires, multi-core flexible industrial cords, 3-core flat submersible cables, and communication wiring in Ahmedabad, serving both B2B industrial projects and B2C retail house wiring customers.",
     popularProducts: [
       {
         name: "Finolex Flame Guard FRLS 1C x 1.5 sqmm (90m Coil)",
@@ -179,12 +189,16 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     ],
     faq: [
       {
+        q: "Can I buy single coils of Finolex Flame Guard wires for home wiring?",
+        a: "Yes! We stock full color (Red, Yellow, Blue, Black, Green, White, Grey) and sqmm ranges (0.75, 1.0, 1.5, 2.5, 4.0, 6.0 sqmm) of Finolex Flame Guard FRLS wires in 90m and 180m coils for direct retail purchase at our Khadia store or delivery across Ahmedabad.",
+      },
+      {
         q: "How can I verify the authenticity of Finolex cables supplied by Volamp?",
         a: "Every Finolex coil supplied by Volamp features official brand security holograms, manufacturer batch codes, meter marking on the outer jacket, and is supplied with authentic GST billing.",
       },
       {
         q: "What lengths are Finolex wires available in?",
-        a: "Standard building wires are stocked in 90-metre and 180-metre coils. Industrial multi-core flexible cables can be supplied in 100m, 500m, or 1000m drums.",
+        a: "Standard building wires are stocked in 90-metre and 180-metre coils for retail, while industrial multi-core flexible cables can be supplied in 100m, 500m, or 1000m drums for wholesale.",
       },
     ],
   },
@@ -193,19 +207,20 @@ const BRAND_HUBS: Record<string, BrandHubData> = {
     brand: "KEI Industries",
     categoryTag: "Extra High Voltage (EHV), HT XLPE & Heavy Industrial Cables",
     location: "Gujarat & Pan-India",
-    metaTitle: "KEI Authorized Cable Partner & Star Dealer in Gujarat | Volamp",
+    metaTitle: "KEI Cables Ahmedabad & Gujarat | Authorized Dealer & Distributor (B2B & B2C) | Volamp",
     metaDescription:
-      "Authorized KEI cable partner and star dealer in Gujarat. Stockist of KEI 11kV/33kV HT XLPE power cables, rubber trailing cables, control cables & fire survival cables.",
-    h1: "KEI Authorized Cable Partner & Star Dealer in Gujarat",
+      "Authorized KEI Cables dealer and distributor in Ahmedabad & Gujarat. Master stockist of KEI 11kV/33kV HT XLPE power cables, rubber trailing cables & flexible wires for B2B & B2C buyers.",
+    h1: "KEI Cables Ahmedabad & Gujarat | Authorized Dealer & Cable Stockist",
     subtitle:
-      "Authorized industrial partner and star dealer for KEI Industries heavy industrial cables, medium and high-voltage distribution lines, and specialized rubber trailing cables across Gujarat industrial corridors.",
+      "Authorized star dealer and industrial partner for KEI Industries heavy power distribution cables, HT/LT power cables, and specialized rubber trailing cables across Ahmedabad, Gujarat, and pan-India.",
     heroHighlights: [
       "Authorized Star Dealer Recognition & 50-Year Milestone Association",
+      "B2B Infrastructure Sourcing & B2C Commercial Building Cable Supplies",
       "11kV & 33kV Triple Extruded XLPE Power Cables with CPRI Test Reports",
       "Specialty EPR / Silicon Rubber Trailing Cables for Cranes & Mining",
       "Complete Engineering Project Sourcing with Transporter LR Tracking",
     ],
-    authorizedStatus: "Authorized Industrial Partner & Star Dealer",
+    authorizedStatus: "Authorized Industrial Partner & Star Dealer (B2B & B2C)",
     stockCount: "950+ KEI SKUs",
     dispatchTime: "Same-Day to 24h (GIDC) / 48-72h (Pan-India)",
     overview:

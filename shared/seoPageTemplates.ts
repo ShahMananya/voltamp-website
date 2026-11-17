@@ -468,25 +468,25 @@ export function generateProductPageMeta(
  */
 export function generateCategoryPageMeta(catSlug: string, catTitle: string): CategoryPageMeta {
   const titles: Record<string, string> = {
-    "wire-cables": "Wires and Cables Supplier in Ahmedabad | VOLAMP",
-    "switch-gears": "Industrial Switchgear Supplier in Ahmedabad | VOLAMP",
-    "solar": "Solar DC Cables Supplier in Ahmedabad | VOLAMP",
-    "earthing": "Earthing Material Supplier in Ahmedabad | VOLAMP",
-    "lugs": "Cable Lugs Wholesale Supplier Ahmedabad | VOLAMP",
-    "glands": "Cable Glands Wholesale Supplier Ahmedabad | VOLAMP",
-    "conduit": "Conduit Pipes and Fittings Supplier Ahmedabad | VOLAMP",
-    "wiring-devices": "Wiring Devices & Industrial Plugs Ahmedabad | VOLAMP",
+    "wire-cables": "Copper & Aluminium Wires, Cables Provider Ahmedabad (B2B & B2C) | VOLAMP",
+    "switch-gears": "Best Switchgear Provider in Ahmedabad | MCB, MCCB, ACB (B2B & B2C) | VOLAMP",
+    "solar": "Solar DC Cables & BOS Provider in Ahmedabad (B2B & B2C) | VOLAMP",
+    "earthing": "Best Earthing Material & Chemical Rods Provider Ahmedabad | VOLAMP",
+    "lugs": "Best Cable Lugs Provider in Ahmedabad | Copper & Aluminium (B2B & B2C) | VOLAMP",
+    "glands": "Best Cable Glands Provider in Ahmedabad | Single & Double Compression | VOLAMP",
+    "conduit": "Best Conduit Pipes & Cable Raceway Provider Ahmedabad (B2B & B2C) | VOLAMP",
+    "wiring-devices": "Wiring Devices, Industrial Plugs & Sockets Provider Ahmedabad | VOLAMP",
   };
 
   const descriptions: Record<string, string> = {
-    "wire-cables": "Wholesale distributor of LT & HT armoured and unarmoured power cables, flexible wires & control cables in Ahmedabad. Polycab, KEI, Finolex with MTC.",
-    "switch-gears": "Wholesale stockist of MCB, MCCB, ACB & contactors in Ahmedabad. Genuine Schneider Electric, L&T, and Legrand with verified breaking capacity ratings.",
-    "solar": "Specialized solar DC cables 4 sq mm to 16 sq mm, 1500V DC conforming to EN 50618 & IEC 62930. UV-resistant tinned copper for solar EPC projects.",
-    "earthing": "Copper bonded earthing rods, chemical earthing compounds, GI earth strips & copper plates for fault current dissipation conforming to IS 3043.",
-    "lugs": "Heavy-duty copper and aluminium terminal crimping lugs from 1.5 sq mm to 400 sq mm. Precision electro-tinned finish conforming to IS/IEC standards.",
-    "glands": "Brass single and double compression cable glands for armoured & unarmoured cables from 20mm to 75mm. Ingress-protected industrial cable entry.",
-    "conduit": "Heavy-duty PVC conduit pipes, GI conduits, flexible conduits & accessories for protected industrial cable routing and raceways in Ahmedabad.",
-    "wiring-devices": "Industrial plugs, sockets, interlocked isolators, modular switches & accessories for commercial and manufacturing infrastructure installations.",
+    "wire-cables": "Ahmedabad's best wire & cable provider, dealer & distributor. Polycab, Finolex, KEI copper wires & aluminium cables for B2B wholesale & B2C small orders.",
+    "switch-gears": "Ahmedabad's best switchgear provider & distributor. Schneider Electric, L&T MCBs, MCCBs, ACBs, contactors for B2B industrial projects and B2C small orders.",
+    "solar": "Ahmedabad's best solar cable & BOS provider. 1500V DC UV-resistant tinned copper solar cables for rooftop solar panels & utility plants. B2B & B2C orders.",
+    "earthing": "Ahmedabad's best earthing provider. Copper bonded rods, chemical compounds & GI flats for B2B industrial substations & B2C residential earthing small orders.",
+    "lugs": "Ahmedabad's best cable lugs provider, wholesaler & distributor. Dowells copper & aluminium crimping terminal lugs for B2B project bulk & B2C small orders.",
+    "glands": "Ahmedabad's best cable gland provider & distributor. Brass single & double compression weatherproof & flameproof glands for B2B & B2C small orders.",
+    "conduit": "Ahmedabad's best conduit pipe & fitting provider. Heavy-duty PVC conduits, GI flexible pipes & raceways for B2B wholesale projects & B2C small orders.",
+    "wiring-devices": "Ahmedabad's best wiring devices & industrial plug provider. Weatherproof isolators, distribution boxes & modular accessories for B2B & B2C small orders.",
   };
 
   const title = titles[catSlug] || `${catTitle} Supplier in Ahmedabad | VOLAMP`;

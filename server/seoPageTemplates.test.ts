@@ -143,10 +143,10 @@ describe("SEO Page Templates Engine (SEO Target Map & Checklist Compliance)", ()
 
   it("Category page metadata generates clean titles and 120-155 char descriptions", () => {
     const catMeta = generateCategoryPageMeta("wire-cables", "Wires & Cables");
-    expect(catMeta.title).toBe("Wires and Cables Supplier in Ahmedabad | VOLAMP");
+    expect(catMeta.title).toBe("Copper & Aluminium Wires, Cables Provider Ahmedabad (B2B & B2C) | VOLAMP");
     expect(catMeta.metaDescription.length).toBeGreaterThanOrEqual(120);
     expect(catMeta.metaDescription.length).toBeLessThanOrEqual(155);
-    expect(catMeta.h1).toBe("Wires and Cables Supplier in Ahmedabad");
+    expect(catMeta.h1).toBe("Copper & Aluminium Wires, Cables Provider Ahmedabad (B2B & B2C)");
   });
 
   it("Brand hub metadata follows formula '{brand} products supplier in Ahmedabad | VOLAMP'", () => {

@@ -92,7 +92,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     const result = getResult();
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
-    expect(result.sentHtml).toContain("Wires and Cables in Ahmedabad");
+    expect(result.sentHtml).toContain("Cables, Wires &amp; Electrical Store Ahmedabad (B2B &amp; B2C)");
     expect(result.sentHtml).toContain('href="/category/wire-cables"');
     expect(result.sentHtml).toContain('href="/category/lugs"');
     expect(result.sentHtml).toContain('href="/category/glands"');
@@ -117,7 +117,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     const botResult = getBotResult();
     expect(botResult.statusCode).toBe(200);
     expect(botResult.sentHtml).toContain("<h1");
-    expect(botResult.sentHtml).toContain("Wires and Cables in Ahmedabad");
+    expect(botResult.sentHtml).toContain("Cables, Wires &amp; Electrical Store Ahmedabad (B2B &amp; B2C)");
     expect(botResult.sentHtml).toContain('href="/dealers/polycab-ahmedabad"');
     expect(botResult.sentHtml).toContain('<main style="font-family:system-ui');
 
@@ -129,7 +129,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     const humanResult = getHumanResult();
     expect(humanResult.statusCode).toBe(200);
     // Human gets all meta tags in <head> for social and SEO
-    expect(humanResult.sentHtml).toContain("<title>VOLAMP ELEKTRIKALS | Wires and Cables in Ahmedabad</title>");
+    expect(humanResult.sentHtml).toContain("<title>VOLAMP ELEKTRIKALS | Polycab, Finolex, KEI Dealer &amp; Distributor Ahmedabad (B2B &amp; B2C)</title>");
     expect(humanResult.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/"');
     expect(humanResult.sentHtml).toContain('name="google-site-verification"');
     // But <div id="root"></div> is clean so human users never see the flash of raw text!
@@ -143,7 +143,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     const result = getResult();
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
-    expect(result.sentHtml).toContain("Wires &amp; Cables");
+    expect(result.sentHtml).toContain("Copper &amp; Aluminium Wires, Cables Provider Ahmedabad (B2B &amp; B2C)");
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/category/wire-cables"');
   });
 
@@ -153,7 +153,7 @@ describe("SEO Prerendering & Real 404 Status", () => {
     const result = getResult();
     expect(result.statusCode).toBe(200);
     expect(result.sentHtml).toContain("<h1");
-    expect(result.sentHtml).toContain("Polycab Ahmedabad | Authorized Distributor &amp; Master Stockist");
+    expect(result.sentHtml).toContain("Polycab Ahmedabad | Authorized Dealer, Distributor &amp; Master Stockist");
     expect(result.sentHtml).toContain('rel="canonical" href="https://www.volampelektrikals.com/dealers/polycab-ahmedabad"');
   });
 

@@ -7,9 +7,9 @@
 export const HOME_KNOWLEDGE_GRAPH = {
   "@context": "https://schema.org",
   "@graph": [
-    // 1. Core Corporate & LocalBusiness Entity for Google Knowledge Panel
+    // 1. Core Corporate, Retail Store & LocalBusiness Entity for Google Knowledge Panel
     {
-      "@type": ["Corporation", "WholesaleStore", "ElectricalSupplyStore", "LocalBusiness"],
+      "@type": ["Corporation", "WholesaleStore", "RetailStore", "Store", "ElectricalSupplyStore", "LocalBusiness"],
       "@id": "https://www.volampelektrikals.com/#organization",
       "name": "VOLAMP ELEKTRIKALS",
       "legalName": "VOLAMP ELEKTRIKALS PRIVATE LIMITED",
@@ -18,6 +18,10 @@ export const HOME_KNOWLEDGE_GRAPH = {
         "Volamp Elektrikals",
         "Volamp Elektrikals Pvt Ltd",
         "VOLAMP ELEKTRIKALS PVT LTD",
+        "Volamp Polycab Dealer Ahmedabad",
+        "Volamp Finolex Dealer Ahmedabad",
+        "Volamp Cable Store Khadia",
+        "Volamp Electrical Shop Ahmedabad",
         "Volamp Wires and Cables Ahmedabad",
         "Volamp Switchgear & Lugs",
         "Volamp Electricals"
@@ -28,7 +32,7 @@ export const HOME_KNOWLEDGE_GRAPH = {
         "https://www.volampelektrikals.com/team/volamp-khadia-storefront.jpg",
         "https://www.volampelektrikals.com/volamp-logo.png"
       ],
-      "description": "Premier wholesale distributor and master stockist of industrial cables, house wires, switchgear, cable lugs, brass cable glands, and solar DC cabling in Ahmedabad, Gujarat. Authorized distributor and channel partner for Polycab India, Finolex Cables, KEI Industries, Schneider Electric, Dowells, and Comet.",
+      "description": "Ahmedabad's premier authorized dealer, retail electrical store, and wholesale distributor of industrial power cables, residential house wires, switchgear, cable lugs, brass cable glands, and solar DC cables. Serving both B2B commercial contractors and B2C retail customers with ready stock of Polycab India, Finolex Cables, KEI Industries, Schneider Electric, Dowells, and Comet with original Manufacturer Test Certificates (MTC).",
       "telephone": "+919512365582",
       "email": "sales@volampelektrikals.com",
       "foundingDate": "1964",
@@ -110,6 +114,14 @@ export const HOME_KNOWLEDGE_GRAPH = {
         }
       ],
       "knowsAbout": [
+        "Polycab Dealer Ahmedabad",
+        "Polycab Distributor Ahmedabad",
+        "Polycab Wires and Cables Store",
+        "Finolex Cables Dealer Ahmedabad",
+        "KEI Cables Dealer Gujarat",
+        "B2B Wholesale Electrical Cables",
+        "B2C Retail House Wires",
+        "Electrical Shop Khadia Gandhi Road Ahmedabad",
         "Armoured Power Cables",
         "Unarmoured Flexible Cables",
         "LT XLPE Power Cables",
@@ -173,7 +185,7 @@ export const HOME_KNOWLEDGE_GRAPH = {
       "@id": "https://www.volampelektrikals.com/#website",
       "url": "https://www.volampelektrikals.com",
       "name": "VOLAMP ELEKTRIKALS",
-      "alternateName": "Volamp Elektrikals Official Wholesale Portal",
+      "alternateName": "Volamp Elektrikals Official B2B Wholesale & B2C Retail Portal",
       "publisher": {
         "@id": "https://www.volampelektrikals.com/#organization"
       },
@@ -501,10 +513,26 @@ export const HOME_KNOWLEDGE_GRAPH = {
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Is VOLAMP ELEKTRIKALS an authorized distributor for Polycab, Finolex, and KEI?",
+          "name": "Is VOLAMP ELEKTRIKALS an authorized dealer and distributor for Polycab, Finolex, and KEI?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes. VOLAMP ELEKTRIKALS PRIVATE LIMITED is an authorized channel partner, wholesale distributor, and star stockist for India's leading electrical manufacturers, including Polycab India, Finolex Cables, KEI Industries, Schneider Electric, Dowells, and Comet. Every consignment is supplied with authentic brand packaging, serial numbers, and manufacturer warranties."
+            "text": "Yes. VOLAMP ELEKTRIKALS PRIVATE LIMITED is an authorized dealer, wholesale distributor, and retail stockist for India's leading electrical manufacturers, including Polycab India, Finolex Cables, KEI Industries, Schneider Electric, Dowells, and Comet. We supply both B2B bulk industrial buyers and B2C retail customers with genuine products, factory pricing, and official manufacturer warranties."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Volamp serve both B2B wholesale and B2C retail customers in Ahmedabad?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Volamp Elektrikals caters to both B2B wholesale project requirements (bulk power cable drums, industrial switchgear, corporate credit terms for contractors) and B2C retail customers (house wire coils, residential building wires, electrical accessories) with over-the-counter retail sales at our Khadia store and express doorstep delivery across Ahmedabad."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I buy Polycab or Finolex house wires in retail quantities from your Ahmedabad shop?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Our retail sales counter and showroom is located in Khadia, Ahmedabad (1753 Dhobi's Pole, Sir Chinubhai Road, near Gandhi Road electrical market belt). Homeowners, electricians, and builders can purchase single 90m coils or project quantities of Polycab Green Wire and Finolex Flame Guard FRLS wires at wholesale-discounted retail rates."
           }
         },
         {

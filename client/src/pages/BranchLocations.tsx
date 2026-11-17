@@ -29,6 +29,7 @@ import {
   Truck,
   Send,
   Zap,
+  Store,
 } from "lucide-react";
 import { toast } from "sonner";
 import BranchLocationMap from "@/components/maps/BranchLocationMap";
@@ -138,14 +139,14 @@ export default function BranchLocations() {
   return (
     <div className="volamp-marketplace min-h-screen bg-[#faf7f3] dark:bg-[#0c1520] text-[#3d2b2d] dark:text-[#f5f7f9] flex flex-col font-sans transition-colors">
       <SeoHead
-        title="Branch Locations & Warehouse Depots | Volamp Ahmedabad & Aslali"
-        description="Visit Volamp Elektrikals: Corporate Sales Office at Khadia (Old City) and Central Logistics Fulfillment Center at Aslali, Ahmedabad, Gujarat. Pan-India dispatch across 140+ cities."
+        title="Branch Locations & Stores | Volamp B2B & B2C Ahmedabad & Aslali"
+        description="Visit Volamp Elektrikals: Khadia retail counter & Aslali warehouse in Ahmedabad. Wholesalers & distributors for B2B & B2C. Small orders accepted for all needs."
         canonical="https://www.volampelektrikals.com/branch-locations"
         jsonLd={{
           "@context": "https://schema.org",
           "@graph": [
             {
-              "@type": "LocalBusiness",
+              "@type": ["WholesaleStore", "RetailStore", "LocalBusiness"],
               "name": "Volamp Elektrikals Private Limited - Corporate Office",
               "telephone": "+919512365582",
               "email": "sales@volampelektrikals.com",
@@ -533,6 +534,121 @@ export default function BranchLocations() {
             </a>
           </div>
         </div>
+
+        {/* 6B. B2B Wholesale & B2C Retail Counter Distribution — Small Orders Accepted */}
+        <section className="bg-gradient-to-r from-amber-500/10 via-amber-50 to-orange-500/10 dark:from-slate-800 dark:via-slate-800/80 dark:to-slate-850 rounded-3xl border border-amber-200 dark:border-slate-700 p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+            <div className="space-y-2 max-w-3xl">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#c56718] dark:text-amber-400 bg-amber-100 dark:bg-amber-950/80 px-2.5 py-1 rounded-md border border-amber-300/50">
+                  B2B &amp; B2C DUAL SUPPLY DESK
+                </span>
+                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+                  <Check className="size-3.5" /> No Minimum Order Value
+                </span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold font-['Plus_Jakarta_Sans',sans-serif] text-[#4d1217] dark:text-white">
+                Wholesalers &amp; Authorized Distributors for B2B Projects &amp; B2C Retail
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                Whether you need a full drum of 1.1kV HT XLPE power cables for an industrial plant or a single 90m coil of copper house wire for home renovation, Volamp Elektrikals handles your end-to-end electrical needs. We serve industrial EPC contractors, government utilities, commercial builders, electricians, and direct retail consumers with equal dedication.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0">
+              <a
+                href="https://wa.me/919512365582?text=Hello%20VOLAMP%20team%2C%20I%20need%20a%20B2B%20wholesale%20quote%20or%20B2C%20retail%20order."
+                target="_blank"
+                rel="noreferrer"
+                className="bg-[#c56718] hover:bg-[#b45309] text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Phone className="size-3.5" />
+                <span>Quick WhatsApp Order</span>
+              </a>
+              <button
+                type="button"
+                onClick={() => handleOpenRFQ("B2B & B2C Small Order")}
+                className="border border-[#c56718] text-[#c56718] hover:bg-[#c56718] hover:text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+              >
+                Request Custom Quote
+              </button>
+            </div>
+          </div>
+
+          {/* Dual Pillar Cards: B2B Wholesale vs B2C Retail Counter */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-850 border border-amber-200/80 dark:border-slate-700 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-[#4d1217] text-white">
+                  <Factory className="size-4 text-amber-300" />
+                </div>
+                <strong className="text-sm font-bold text-[#4d1217] dark:text-white">
+                  B2B Wholesale &amp; Project Distribution
+                </strong>
+              </div>
+              <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-2 list-disc list-inside">
+                <li>Factory drum cut lengths (100m, 500m, 1000m) for LT &amp; HT XLPE cables</li>
+                <li>Original Manufacturer Test Certificates (MTC) &amp; Type Test reports</li>
+                <li>Commercial trade credit, GST billing &amp; scheduled GIDC delivery corridors</li>
+                <li>Direct factory-to-site dispatches for solar farms, substations &amp; plants</li>
+              </ul>
+            </div>
+
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-850 border border-amber-200/80 dark:border-slate-700 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-[#c56718] text-white">
+                  <Store className="size-4 text-white" />
+                </div>
+                <strong className="text-sm font-bold text-[#4d1217] dark:text-white">
+                  B2C Retail Counter &amp; Small Orders (Khadia Gandhi Road)
+                </strong>
+              </div>
+              <ul className="text-xs text-slate-600 dark:text-slate-300 space-y-2 list-disc list-inside">
+                <li>Single 90m coils of Polycab, Finolex &amp; KEI Flame Guard copper house wires</li>
+                <li>Zero minimum order barrier — buy 1 piece of MCB, 10 lugs, or 2 glands</li>
+                <li>Same-day over-the-counter pickup at our historic Khadia store in Old City</li>
+                <li>Friendly counter assistance for homeowners, electricians, and repair specialists</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* 25 Query Term Matrix */}
+          <div className="pt-2 border-t border-amber-200/60 dark:border-slate-700">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-3">
+              Product Categories Supplied Across Ahmedabad, Gujarat &amp; All Locations:
+            </span>
+            <div className="flex flex-wrap gap-2 text-xs">
+              {[
+                { label: "Copper Wires & House Wires", path: "/category/wire-cables" },
+                { label: "Copper Power Cables", path: "/category/wire-cables" },
+                { label: "Aluminium Wires & Feeder Cables", path: "/category/wire-cables" },
+                { label: "Polycab Wires & Cables", path: "/dealers/polycab-ahmedabad" },
+                { label: "Finolex Wires & Cables", path: "/dealers/finolex-cables-ahmedabad" },
+                { label: "KEI Wires & HT Cables", path: "/dealers/kei-cables-gujarat" },
+                { label: "Best Cable Provider", path: "/category/wire-cables" },
+                { label: "Best Wire Provider", path: "/category/wire-cables" },
+                { label: "Best Switchgear & MCBs", path: "/category/switch-gears" },
+                { label: "Switchgear & MCCBs", path: "/category/switch-gears" },
+                { label: "Best Cable Lugs & Terminals", path: "/category/lugs" },
+                { label: "Copper & Aluminium Lugs", path: "/category/lugs" },
+                { label: "Best Cable Glands", path: "/category/glands" },
+                { label: "Single & Double Compression Glands", path: "/category/glands" },
+                { label: "Best Conduit Pipes", path: "/category/conduit" },
+                { label: "PVC Conduit & Raceways", path: "/category/conduit" },
+                { label: "Solar DC Cables (1500V)", path: "/category/solar" },
+                { label: "Solar Panels & BOS", path: "/category/solar" },
+                { label: "Earthing Rods & Chemical Compounds", path: "/category/earthing" },
+              ].map((item, idx) => (
+                <Link
+                  key={idx}
+                  href={item.path}
+                  className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-[#c56718] hover:text-[#c56718] dark:hover:text-amber-400 font-medium transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* 7. Comprehensive Pan-India Delivery Corridors (All Indian Cities) */}
         <section className="bg-white dark:bg-slate-800/95 rounded-3xl border border-[#ebd7c7] dark:border-slate-700 p-6 sm:p-8 shadow-xs space-y-6">

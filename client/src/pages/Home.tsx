@@ -359,9 +359,9 @@ export default function Home() {
 
   return <div className="volamp-marketplace">
     <SeoHead
-      title="VOLAMP ELEKTRIKALS | Wires and Cables in Ahmedabad"
-      description="Official portal of VOLAMP ELEKTRIKALS, Ahmedabad. Wholesale distributor of Polycab, KEI, Finolex cables, wires & switchgear with factory MTC certificates."
-      keywords="Volamp Elektrikals, Volamp Ahmedabad, electrical supplier Ahmedabad, cable distributor Gujarat, Polycab distributor Ahmedabad, Finolex cables, KEI cables, switchgear"
+      title="VOLAMP ELEKTRIKALS | Polycab, Finolex, KEI Dealer & Distributor Ahmedabad (B2B & B2C)"
+      description="Authorized dealer, retail electrical store & wholesale distributor in Ahmedabad. Buy Polycab, Finolex, KEI house wires & industrial cables at B2B wholesale & B2C retail rates."
+      keywords="Volamp Elektrikals, Polycab dealer Ahmedabad, Polycab distributor Ahmedabad, Polycab wire shop, Finolex dealer Ahmedabad, KEI cables Gujarat, electrical shop Gandhi Road Khadia, B2B wholesale, B2C retail house wire, cable store, switchgear"
       canonicalPath="/"
       ogType="website"
       jsonLd={HOME_KNOWLEDGE_GRAPH}
@@ -1141,7 +1141,7 @@ export default function Home() {
       <div className="relative z-20 market-container w-full flex flex-col items-center justify-end text-center pt-16 sm:pt-24 lg:pt-32 pb-4 sm:pb-6 px-4 mt-auto">
         {/* Screen-reader accessible H1 for SEO compliance */}
         <h1 className="sr-only">
-          VOLAMP ELEKTRIKALS | Wholesale Electrical Cables, Wires & Switchgear Distributor Ahmedabad
+          VOLAMP ELEKTRIKALS | Polycab, Finolex, KEI Dealer, Retail Store & Wholesale Distributor Ahmedabad (B2B & B2C)
         </h1>
 
         {/* Bottom controls row */}
@@ -1506,23 +1506,23 @@ export default function Home() {
               VOLAMP ELEKTRIKALS PRIVATE LIMITED
             </h2>
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Ahmedabad&apos;s premier authorized wholesale distributor and stockist of industrial cables, building wires, and power distribution switchgear. 4 Generations · 60+ Years Family Legacy (est. 1964).
+              Ahmedabad&apos;s premier authorized dealer, retail electrical store &amp; wholesale distributor of Polycab, Finolex, KEI cables, building wires, and switchgear. B2B Wholesale Projects &amp; B2C Retail Counter · 4 Generations · 60+ Years Family Legacy (est. 1964).
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {/* Card 1: Khadia Corporate Sales Office */}
+            {/* Card 1: Khadia Corporate Sales Office & Retail Store */}
             <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-[#fdfbf9] dark:bg-slate-900 p-6 flex flex-col justify-between hover:border-[#c56718] transition-all">
               <div>
                 <div className="flex items-center gap-2.5 mb-3 text-[#c56718] font-bold text-sm">
                   <Building2 className="size-4 shrink-0" />
-                  <span>Khadia Corporate Sales Office</span>
+                  <span>Khadia Sales Office &amp; B2C Retail Store</span>
                 </div>
                 <h3 className="font-bold text-base text-slate-900 dark:text-white mb-2">
                   1753, Dhobi&apos;s Pole, Sir Chinubhai Rd
                 </h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
-                  Old City, Khadia, Ahmedabad, Gujarat 380001 (Historic Gandhi Road Electrical Trading Market Belt).
+                  Old City, Khadia, Ahmedabad, Gujarat 380001 (Historic Gandhi Road Electrical Trading Belt) — Over-the-counter retail sales for homeowners, electricians, and contractors.
                 </p>
                 <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300 mb-4">
                   <div className="flex items-center gap-2">
@@ -1699,13 +1699,13 @@ export default function Home() {
           <div className="text-center space-y-3 mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-950/60 border border-orange-200 dark:border-orange-800 text-[#c56718] dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
               <ShieldCheck className="size-3.5" />
-              <span>OFFICIAL MANUFACTURER DISTRIBUTORSHIP &amp; CATALOG HUBS</span>
+              <span>OFFICIAL AUTHORIZED DEALER &amp; DISTRIBUTOR HUBS (B2B &amp; B2C)</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Manufacturer Authorized Brand Portals &amp; Fast-Moving SKUs
+              Manufacturer Authorized Dealer Portals &amp; Fast-Moving SKUs
             </h2>
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Direct factory procurement discounts, routine Manufacturer Test Certificates (MTC), and express 24-hour dispatch from our Aslali logistics terminal for commercial and industrial contractors.
+              Direct factory procurement discounts, routine Manufacturer Test Certificates (MTC), and express 24-hour dispatch from our Aslali logistics terminal for commercial contractors, retail buyers, and homeowners.
             </p>
           </div>
 
@@ -1726,11 +1726,11 @@ export default function Home() {
                   Polycab India
                 </h3>
                 <p className="text-xs text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
-                  Authorized wholesale stockist for LT/HT XLPE armoured power cables, flexible copper building wires (IS 694), control cables &amp; 1500V solar PV cables.
+                  Authorized dealer &amp; wholesale distributor for LT/HT XLPE armoured cables, house wires, flexible copper building wires (IS 694), control cables &amp; solar cables.
                 </p>
                 <div className="space-y-1.5 text-xs text-slate-500 dark:text-slate-400 mb-6 border-t border-slate-100 dark:border-slate-800 pt-3">
                   <div>&bull; 1.5 to 1000 sqmm Armoured Power</div>
-                  <div>&bull; Official 2026 Price Circulars</div>
+                  <div>&bull; B2B Wholesale &amp; B2C Retail Coils</div>
                   <div>&bull; Routine Spark &amp; Resistance MTC</div>
                 </div>
               </div>
@@ -1738,7 +1738,7 @@ export default function Home() {
                 href="/dealers/polycab-ahmedabad"
                 className="inline-flex items-center justify-between w-full px-4 py-2.5 rounded-xl bg-orange-50 dark:bg-orange-950/40 text-[#c56718] hover:bg-[#c56718] hover:text-white dark:hover:bg-[#c56718] dark:hover:text-white font-bold text-xs transition-all"
               >
-                <span>Polycab Ahmedabad Hub</span>
+                <span>Polycab Ahmedabad Dealer Hub</span>
                 <ArrowRight className="size-3.5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>

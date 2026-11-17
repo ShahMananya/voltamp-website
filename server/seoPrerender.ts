@@ -18,12 +18,12 @@ const STATIC_ROUTES: Record<
   { title: string; description: string; h1: string; intro: string }
 > = {
   "": {
-    title: "VOLAMP ELEKTRIKALS | Wires and Cables in Ahmedabad",
+    title: "VOLAMP ELEKTRIKALS | Polycab, Finolex, KEI Dealer & Distributor Ahmedabad (B2B & B2C)",
     description:
-      "Official portal of VOLAMP ELEKTRIKALS, Ahmedabad. Wholesale distributor of Polycab, KEI, Finolex cables, wires & switchgear with factory MTC certificates.",
-    h1: "VOLAMP ELEKTRIKALS | Wires and Cables in Ahmedabad",
+      "Ahmedabad's premier authorized dealer, retail electrical store & wholesale distributor of Polycab, Finolex, KEI cables, house wires & switchgear. B2B wholesale & B2C retail with factory MTC.",
+    h1: "VOLAMP ELEKTRIKALS | Cables, Wires & Electrical Store Ahmedabad (B2B & B2C)",
     intro:
-      "Volamp Elektrikals Private Limited is Ahmedabad's premier wholesale distributor and supplier of electrical house wires and industrial cables. Supplies popular electrical house wire and cable brands like Polycab, Finolex, and KEI with a 60+ year family legacy established in 1964. Operating modern corporate distribution hubs in Khadia and Aslali, Ahmedabad, we supply genuine certified electrical materials with original Manufacturer Test Certificates (MTC) to EPC contractors, government utilities, solar developers, and industrial manufacturing plants across Gujarat and Western India.",
+      "Volamp Elektrikals Private Limited is Ahmedabad's premier authorized dealer, retail electrical store, and wholesale distributor of electrical house wires and industrial power cables. Serving both B2B industrial project contractors and B2C retail homeowners, builders, and electricians, we supply genuine products from India's top brands including Polycab, Finolex, KEI, and Schneider Electric with a 60+ year family legacy established in 1964. Operating our retail counter in Khadia (Old City Gandhi Road electrical market) and central logistics terminal in Aslali, we supply certified electrical materials with original Manufacturer Test Certificates (MTC) at competitive wholesale and retail prices.",
   },
   "about-volamp": {
     title: "About Volamp Elektrikals | 60+ Years Electrical Legacy",
@@ -170,28 +170,28 @@ const STATIC_ROUTES: Record<
       "Volamp Elektrikals Private Limited is an international electrical procurement and export partner headquartered in Ahmedabad, Gujarat, India. Leveraging deep logistics proximity to India's premier western deep-water container ports (Mundra and Kandla, <350 km from our central Aslali stockyard), we supply certified HT/LT power cables, solar photovoltaic cables, switchgear, and earthing infrastructure to international EPC contractors, utility developers, and industrial projects across the Middle East, Africa, and Southeast Asia. All export drums comply with ISPM-15 phytosanitary heat-treatment standards, accompanied by SGS/Bureau Veritas pre-shipment inspection certificates and Letters of Credit (LC) facilitation.",
   },
   "dealers/polycab-ahmedabad": {
-    title: "Polycab Ahmedabad | Authorized Cables & Wires Stockist | Volamp",
+    title: "Polycab Ahmedabad | Authorized Dealer, Distributor & Cable Store (B2B & B2C) | Volamp",
     description:
-      "Polycab Ahmedabad authorized distributor & wholesale stockist. Ready stock of Polycab LT/HT XLPE power cables, flexible wires & solar cables with factory MTC.",
-    h1: "Polycab Ahmedabad | Authorized Distributor & Master Stockist",
+      "Polycab Ahmedabad authorized dealer, retail store & wholesale distributor. Buy genuine Polycab LT/HT cables, house wires & solar cables at B2B wholesale & B2C retail rates with factory MTC.",
+    h1: "Polycab Ahmedabad | Authorized Dealer, Distributor & Master Stockist",
     intro:
-      "Volamp Elektrikals Private Limited is an authorized Polycab Ahmedabad master distributor and wholesale stockist of Polycab India Ltd. wires and cables in Ahmedabad, Gujarat. Operating from our central logistics fulfillment terminal on Aslali Highway and corporate sales office in Khadia, we maintain ready inventory of Polycab 1.1kV LT XLPE aluminium and copper armoured cables (IS 7098 Part 1), 11kV to 33kV HT XLPE power cables (IS 7098 Part 2), 1500V DC solar PV cables (EN 50618), Green Wire building wires, and multi-core flexible control cables.",
+      "Volamp Elektrikals Private Limited is an authorized Polycab Ahmedabad dealer, retail electrical store, and wholesale distributor of Polycab India Ltd. wires and cables in Ahmedabad, Gujarat. Serving both B2B commercial contractors and B2C retail house wiring customers, we operate our retail sales counter in the Khadia electrical market and central warehouse terminal at Aslali Highway. We maintain ready stock of Polycab 1.1kV LT XLPE aluminium and copper armoured cables (IS 7098 Part 1), 11kV to 33kV HT XLPE power cables (IS 7098 Part 2), 1500V DC solar PV cables (EN 50618), Green Wire building wires for homes, and multi-core flexible control cables.",
   },
   "dealers/finolex-cables-ahmedabad": {
-    title: "Finolex Wires & Cables Wholesale Stockist Ahmedabad | Volamp",
+    title: "Finolex Cables Ahmedabad | Authorized Dealer & Distributor (B2B & B2C) | Volamp",
     description:
-      "Wholesale stockist & supplier of Finolex wires and cables in Ahmedabad, Gujarat. Flame retardant industrial flexible wires, 3-core flat submersible cables.",
-    h1: "Finolex Wires & Cables Wholesale Stockist in Ahmedabad",
+      "Finolex Cables Ahmedabad authorized dealer, retail shop & wholesale distributor. Buy Flame Guard FRLS house wires & 3-core flat submersible cables at B2B & B2C rates.",
+    h1: "Finolex Cables Ahmedabad | Authorized Dealer, Distributor & Retail Stockist",
     intro:
-      "Volamp Elektrikals Private Limited is a wholesale stockist and supplier of Finolex Cables Ltd. products in Ahmedabad and across Gujarat. We supply commercial contractors and industrial builders with Finolex Flame Guard FRLS wires, 3-core flat submersible cables, and multi-conductor industrial flexible cables from our Ahmedabad facilities.",
+      "Volamp Elektrikals Private Limited is an authorized dealer, retail store, and wholesale distributor of Finolex Cables Ltd. products in Ahmedabad and across Gujarat. We supply both B2B commercial contractors and B2C retail customers with genuine Finolex Flame Guard FRLS wires, 3-core flat submersible cables, and multi-conductor flexible cables from our Khadia store and Aslali warehouse.",
   },
   "dealers/kei-cables-gujarat": {
-    title: "KEI Cables Wholesale Stockist & Industrial Supplier Gujarat | Volamp",
+    title: "KEI Cables Ahmedabad & Gujarat | Authorized Dealer & Distributor (B2B & B2C) | Volamp",
     description:
-      "Wholesale supplier of KEI Industries power cables in Ahmedabad & Gujarat. Heavy-duty HT power cables, rubber trailing cables, and control cables.",
-    h1: "KEI Cables Wholesale Industrial Stockist in Gujarat",
+      "KEI Cables Ahmedabad & Gujarat authorized dealer, stockist & distributor. Heavy-duty HT power cables, rubber trailing cables & flexible wires for B2B & B2C buyers.",
+    h1: "KEI Cables Ahmedabad & Gujarat | Authorized Dealer & Industrial Stockist",
     intro:
-      "Volamp Elektrikals Private Limited is an industrial stockist and project supplier for KEI Industries Ltd. cables in Ahmedabad and throughout Gujarat. We supply KEI power and control cable lines including Extra High Voltage (EHV) cables, rubber EPR/CSP trailing cables, and industrial HT cables.",
+      "Volamp Elektrikals Private Limited is an authorized KEI Cables dealer, project stockist, and distributor in Ahmedabad and throughout Gujarat. We cater to B2B industrial infrastructure and B2C commercial buyers with ready stock of KEI Extra High Voltage (EHV) cables, rubber EPR/CSP trailing cables, and industrial HT power cables.",
   },
   "dealers/schneider-electric-ahmedabad": {
     title: "Schneider Electric Switchgear Wholesale Supplier Ahmedabad | Volamp",
@@ -246,36 +246,36 @@ const OTHER_VALID_PATHS = new Set([
 // 8 Master Categories + standard aliases
 const CATEGORY_DATA: Record<string, { name: string; desc: string }> = {
   "wire-cables": {
-    name: "Wires & Cables (LT / HT Armoured & Unarmoured Power Cables)",
-    desc: "Complete range of IS:7098 and IS:1554 certified LT and HT XLPE armoured and unarmoured power cables, flexible copper building wires (IS:694), unarmoured control cables (1.5 sqmm to 1000 sqmm), submersible flat cables, and fire-survival cables from Polycab, KEI, and Finolex in Ahmedabad, Gujarat.",
+    name: "Copper & Aluminium Wires & Cables (LT / HT Armoured & Flexible)",
+    desc: "Ahmedabad's best wire and cable provider, authorized dealer, wholesaler, and distributor for B2B and B2C needs. Complete ready stock of copper wires, copper cables, aluminium wires, and aluminium cables from India's premier brands: Polycab wire, Polycab cable, Finolex wire, Finolex cable, KEI wire, and KEI cable. We supply both bulk project drum orders and small orders (single coils, retail cut-meter lengths) for customers' end-to-end electrical wiring needs with original factory MTC test certificates.",
   },
   "switch-gears": {
-    name: "Switchgear & Power Protection",
-    desc: "Low-voltage and medium-voltage switchgear including Air Circuit Breakers (ACB), Molded Case Circuit Breakers (MCCB), Miniature Circuit Breakers (MCB), Residual Current Breakers (RCCB), and contactors.",
+    name: "Switchgear & Power Protection (MCB, MCCB, ACB)",
+    desc: "Ahmedabad's best switchgear provider, wholesaler, and distributor for B2B and B2C needs. Authorized dealer for Schneider Electric, L&T, and Legrand low-voltage and medium-voltage switchgear including Miniature Circuit Breakers (MCB), Molded Case Circuit Breakers (MCCB), Air Circuit Breakers (ACB), contactors, and motor starters. Supplying large plant panels as well as small individual orders.",
   },
   "switchgear": {
-    name: "Switchgear & Power Protection",
-    desc: "Low-voltage and medium-voltage switchgear including Air Circuit Breakers (ACB), Molded Case Circuit Breakers (MCCB), Miniature Circuit Breakers (MCB), Residual Current Breakers (RCCB), and contactors.",
+    name: "Switchgear & Power Protection (MCB, MCCB, ACB)",
+    desc: "Ahmedabad's best switchgear provider, wholesaler, and distributor for B2B and B2C needs. Authorized dealer for Schneider Electric, L&T, and Legrand low-voltage and medium-voltage switchgear including Miniature Circuit Breakers (MCB), Molded Case Circuit Breakers (MCCB), Air Circuit Breakers (ACB), contactors, and motor starters. Supplying large plant panels as well as small individual orders.",
   },
   "solar": {
-    name: "Solar PV Cables & Renewable Balance of System",
-    desc: "TÜV and EN 50618 / IEC 62930 certified 1500V DC solar photovoltaic cables, MC4 connectors, solar array junction boxes, and UV-resistant earthing conductors.",
+    name: "Solar DC Cables & Renewable Balance of System",
+    desc: "Ahmedabad's best solar cable and solar balance provider for B2B and B2C needs. TÜV and EN 50618 / IEC 62930 certified 1500V DC UV-resistant tinned copper solar photovoltaic cables for solar panels, rooftop solar plants, and utility megawatt solar farms. Dealing with large EPC drum consignments and small residential solar orders.",
   },
   "lugs": {
-    name: "Cable Lugs & Crimping Terminals",
-    desc: "Heavy-duty Dowells electrolytic tinned copper and aluminium crimping lugs, bi-metallic lugs, pin type terminals, and ring type terminal ends compliant with IS 8337.",
+    name: "Cable Lugs & Crimping Terminals (Copper & Aluminium)",
+    desc: "Ahmedabad's best cable lugs provider, wholesaler, and distributor for B2B and B2C needs. Heavy-duty Dowells electrolytic tinned copper lugs, aluminium lugs, bi-metallic lugs, pin type terminals, and ring type terminal ends compliant with IS 8337. Available in bulk project bags and small order quantities.",
   },
   "glands": {
-    name: "Cable Glands & Industrial Terminations",
-    desc: "High-integrity brass single compression and double compression weatherproof cable glands, flameproof (FLP) cable glands, and heat-shrink termination kits up to 33kV.",
+    name: "Cable Glands & Industrial Terminations (Brass)",
+    desc: "Ahmedabad's best cable gland provider, wholesaler, and distributor for B2B and B2C needs. High-integrity Comet brass single compression and double compression weatherproof cable glands, flameproof (FLP) cable glands, and heat-shrink termination kits up to 33kV for commercial and industrial contractors.",
   },
   "conduit": {
-    name: "Conduit Pipes & Cable Containment",
-    desc: "Heavy-duty rigid PVC conduit pipes, GI flexible conduits, perforated cable trays, and containment accessories for industrial wiring protection.",
+    name: "Conduit Pipes & Cable Raceways (PVC & GI)",
+    desc: "Ahmedabad's best conduit provider, wholesaler, and distributor for B2B and B2C needs. Heavy-duty rigid PVC conduit pipes, GI flexible conduits, perforated cable trays, and containment accessories for industrial wiring protection and commercial home wiring small orders.",
   },
   "earthing-material": {
-    name: "Earthing Material & Lightning Protection",
-    desc: "CPRI and UL certified copper bonded earthing rods, pure electrolytic copper plates, chemical backfill earthing compounds (BFC), and GI earthing flats.",
+    name: "Earthing Material & Chemical Electrodes",
+    desc: "Ahmedabad's best earthing provider, wholesaler, and distributor for B2B and B2C needs. CPRI and UL certified copper bonded earthing rods, pure electrolytic copper plates, chemical backfill earthing compounds (BFC), and GI earthing flats for power stations and residential earthing.",
   },
   "wiring-device": {
     name: "Wiring Devices & Industrial Enclosures",
