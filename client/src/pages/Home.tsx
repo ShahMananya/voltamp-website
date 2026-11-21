@@ -381,7 +381,6 @@ export default function Home() {
           className="w-full h-full object-cover object-center"
         >
           <source src="/videos/volamp-operations-hero.mp4" type="video/mp4" />
-          <source src="/videos/volamp-reel.mp4" type="video/mp4" />
           <source src="/videos/IMG_1536.mp4" type="video/mp4" />
           <source src="/videos/VolampIMG_1104.mp4" type="video/mp4" />
         </video>
