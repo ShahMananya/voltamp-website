@@ -57,11 +57,11 @@ export default function BranchLocationMap({
           scrollWheelZoom: false,
         });
 
-        // 1. Street layer - CartoDB Voyager (clean, highly legible, retina supported)
+        // 1. Street layer - OpenStreetMap (clean, high-resolution, no API key required)
         const streetLayer = L.tileLayer(
-          "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
           {
-            subdomains: "abcd",
+            subdomains: "abc",
             maxZoom: 19,
           }
         );
