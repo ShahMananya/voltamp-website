@@ -377,12 +377,13 @@ export default function Home() {
           loop
           muted={heroVideoMuted}
           playsInline
-          preload="metadata"
-          poster="/products/cable-store-background.jpg"
+          preload="auto"
           className="w-full h-full object-cover object-center"
         >
-          <source src="/videos/volamp-reel.mp4" type="video/mp4" />
           <source src="/videos/volamp-operations-hero.mp4" type="video/mp4" />
+          <source src="/videos/volamp-reel.mp4" type="video/mp4" />
+          <source src="/videos/IMG_1536.mp4" type="video/mp4" />
+          <source src="/videos/VolampIMG_1104.mp4" type="video/mp4" />
         </video>
         {/* Crisp cinematic gradient overlay - keeps video vibrant while ensuring text legibility */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/75 z-1" />
